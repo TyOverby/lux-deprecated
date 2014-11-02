@@ -16,7 +16,6 @@ pub mod window;
 pub type Vec2f = (f32, f32);
 pub type Color = color::Rgba<f32>;
 
-
 pub enum DrawPrimitive {
     Points,
     Lines,

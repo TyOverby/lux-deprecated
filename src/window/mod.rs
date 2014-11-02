@@ -105,11 +105,13 @@ impl super::Lovely<()> for Window {
 
         let batch = self.rect_batch.unwrap();
 
+        let (tx, ty) = pos;
+        println!("{}, {}", tx, ty);
         let data = gfx_integration::Params {
             transform: [[1.0, 0.0, 0.0, 0.0],
-                        [0.0, 1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0, 0.0] ,
                         [0.0, 0.0, 1.0, 0.0],
-                        [0.0, 0.0, 0.0, 1.0]],
+                        [ tx,  ty, 0.0, 1.0]],
             color: [1.0, 0.0, 0.0, 1.0]
         };
 
