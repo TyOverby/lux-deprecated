@@ -8,7 +8,7 @@ fn main() {
     let mut window = Window::new().unwrap();
     loop {
         window.clear(color::consts::CYAN);
-        window.draw_rect((-0.5,-0.5), (0.0, 0.0));
+        window.draw_rect((0.0, 0.0), (0.0, 0.0));
         window.render();
     }
 }

@@ -107,11 +107,13 @@ impl super::Lovely<()> for Window {
 
         let (tx, ty) = pos;
         println!("{}, {}", tx, ty);
+        let (w, h) = (self.width() as f32, self.height() as f32);
+        let (sx, sy) = (2.0 / w, -2.0 / h);
         let data = gfx_integration::Params {
-            transform: [[1.0, 0.0, 0.0, 0.0],
-                        [0.0, 1.0, 0.0, 0.0] ,
+            transform: [[sx , 0.0, 0.0, 0.0],
+                        [0.0,  sy, 0.0, 0.0] ,
                         [0.0, 0.0, 1.0, 0.0],
-                        [ tx,  ty, 0.0, 1.0]],
+                        [ tx-1.0,  ty+1.0, 0.0, 1.0]],
             color: [1.0, 0.0, 0.0, 1.0]
         };
 
