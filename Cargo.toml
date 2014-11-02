@@ -1,0 +1,22 @@
+[package]
+
+name = "lovely"
+version = "0.0.1"
+authors = ["Ty Overby <ty@pre-alpha.com>"]
+
+[lib]
+name = "lovely"
+path = "src/lib.rs"
+
+[[bin]]
+name = "lovely_demo"
+path = "src/bin.rs"
+
+[dependencies.glutin]
+git = "https://github.com/tomaka/glutin.git"
+
+[dependencies.gfx]
+git = "https://github.com/gfx-rs/gfx-rs.git"
+
+[dependencies.color]
+git = "https://github.com/bjz/color-rs.git"
