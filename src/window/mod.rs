@@ -15,13 +15,15 @@ use super::color::Color4;
 use super::color::Color3;
 use super::Vertex;
 
-mod gfx_integration;
+pub mod gfx_integration;
 
 pub struct Window {
     glutin_window: ::glutin::Window,
     graphics: Graphics<GlDevice, GlCommandBuffer>,
     program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
     frame: Frame,
+
+    rect_batch: Option<gfx_integration::BasicBatch>
 }
 
 impl Window {
@@ -42,7 +44,9 @@ impl Window {
                             glutin_window: w,
                             graphics: graphics,
                             program: program,
-                            frame: Frame::new(width as u16, height as u16)
+                            frame: Frame::new(width as u16, height as u16),
+
+                            rect_batch: None
                         })
                     }
                     Err(_) => None
@@ -84,17 +88,32 @@ impl super::Lovely<()> for Window {
     }
 
     fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
-        let vertex_data = [
-            Vertex{pos: [-0.5, -0.5], color: [1.0, 0.0, 0.0], tex: [0.0, 0.0]},
-            Vertex{pos: [ 0.5, -0.5], color: [0.0, 1.0, 0.0], tex: [0.0, 0.0]},
-            Vertex{pos: [ 0.0,  0.5], color: [0.0, 0.0, 1.0], tex: [0.0, 0.0]}
-        ];
-        let mesh = self.graphics.device.create_mesh(vertex_data);
-        let slice = mesh.to_slice(TriangleList);
-        let state = ::gfx::DrawState::new();
-        let batch: RefBatch<(), ()> =
-            self.graphics.make_batch(&self.program, &mesh, slice, &state).unwrap();
-        self.graphics.draw(&batch, &(), &self.frame)
+        if self.rect_batch.is_none() {
+            let vertex_data = [
+                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
+                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
+                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
+                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+            ];
+            let mesh = self.graphics.device.create_mesh(vertex_data);
+            let slice = mesh.to_slice(::gfx::TriangleFan);
+            let state = ::gfx::DrawState::new();
+            let batch: gfx_integration::BasicBatch =
+                self.graphics.make_batch(&self.program, &mesh, slice, &state).unwrap();
+            self.rect_batch = Some(batch);
+        }
+
+        let batch = self.rect_batch.unwrap();
+
+        let data = gfx_integration::Params {
+            transform: [[1.0, 0.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                        [0.0, 0.0, 0.0, 1.0]],
+            color: [1.0, 0.0, 0.0, 1.0]
+        };
+
+        self.graphics.draw(&batch, &data, &self.frame)
     }
     fn draw_border_rect(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
         unimplemented!();

@@ -9,21 +9,13 @@ extern crate device;
 extern crate "color" as color_lib;
 
 pub use color_lib as color;
+pub use window::gfx_integration::Vertex;
 
 pub mod window;
 
 pub type Vec2f = (f32, f32);
 pub type Color = color::Rgba<f32>;
 
-#[vertex_format]
-pub struct Vertex {
-    #[name = "a_Pos"]
-    pub pos: [f32, ..2],
-    #[name = "a_Color"]
-    pub color: [f32, ..3],
-    #[name = "a_Tex"]
-    pub tex: [f32, ..2]
-}
 
 pub enum DrawPrimitive {
     Points,
