@@ -5,6 +5,7 @@ dependencies = [
  "color 0.0.1 (git+https://github.com/bjz/color-rs.git)",
  "gfx 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
  "glutin 0.0.1 (git+https://github.com/tomaka/glutin.git)",
+ "vecmath 0.0.0 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
 
 [[package]]
@@ -104,4 +105,9 @@ dependencies = [
 name = "rust-xml"
 version = "0.1.0"
 source = "git+https://github.com/netvl/rust-xml#7d867d8020e6ee845d198e012124c698738804a2"
+
+[[package]]
+name = "vecmath"
+version = "0.0.0"
+source = "git+https://github.com/PistonDevelopers/vecmath#052095e8da431a8996d9b90d6745ee2d172022f2"
 

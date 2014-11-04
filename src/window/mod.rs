@@ -14,8 +14,11 @@ use super::Color;
 use super::color::Color4;
 use super::color::Color3;
 use super::Vertex;
+use vecmath;
 
 pub mod gfx_integration;
+
+type Mat4f = [[f32, ..4], ..4];
 
 pub struct Window {
     glutin_window: ::glutin::Window,
@@ -23,12 +26,16 @@ pub struct Window {
     program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
     frame: Frame,
 
+    basis_matrix: Mat4f,
+    matrix_stack: Vec<Mat4f>,
+
     rect_batch: Option<gfx_integration::BasicBatch>
 }
 
+
 pub struct Shape {
     batch: gfx_integration::BasicBatch,
-    params: gfx_integration::Params
+    color: Option<super::color::Rgba<f32>>
 }
 
 impl Window {
@@ -50,7 +57,12 @@ impl Window {
                             graphics: graphics,
                             program: program,
                             frame: Frame::new(width as u16, height as u16),
-
+                            basis_matrix:
+                                 [[1.0, 0.0, 0.0, 0.0],
+                                 [0.0,-1.0, 0.0, 0.0],
+                                 [0.0, 0.0, 1.0, 0.0],
+                                 [-1.0, 1.0, 0.0, 1.0]],
+                            matrix_stack: vec![],
                             rect_batch: None
                         })
                     }
@@ -75,10 +87,22 @@ impl Window {
     pub fn render(&mut self) {
         self.graphics.end_frame();
         self.glutin_window.swap_buffers();
-    }
-}
+        self.matrix_stack.clear();
 
-impl Window {
+        let (w, h) = (self.w() as f32, self.h() as f32);
+        let (sx, sy) = (2.0 / w, -2.0 / h);
+        self.basis_matrix[0][0] = sx;
+        self.basis_matrix[1][1] = sy;
+    }
+
+    pub fn scale(&mut self, x: f32, y: f32) {
+        let mat = self.current_matrix();
+        let mut prod = vecmath::mat4_id();
+        prod[0][0] = x;
+        prod[1][1] = y;
+        self.matrix_stack.push(vecmath::col_mat4_mul(mat, prod));
+    }
+
     fn w(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (w, _) => w as i32
@@ -91,7 +115,33 @@ impl Window {
         }
     }
 
-    fn stamp_shape(&mut self, vertices: &[Vertex]) -> Shape {
+    fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] {
+        let len = self.matrix_stack.len();
+        if len == 0 {
+            return &mut self.basis_matrix;
+        } else {
+            return self.matrix_stack.get_mut(len - 1);
+        }
+    }
+
+    fn current_matrix(&self) -> [[f32, ..4], ..4] {
+        if self.matrix_stack.len() == 0 {
+            return self.basis_matrix;
+        } else {
+            return self.matrix_stack[self.matrix_stack.len()-1];
+        }
+    }
+
+    pub fn push_matrix(&mut self) {
+        let mat = self.current_matrix();
+        self.matrix_stack.push(mat);
+    }
+
+    pub fn pop_matrix(&mut self) {
+        self.matrix_stack.pop();
+    }
+
+    pub fn stamp_shape(&mut self, vertices: &[Vertex]) -> Shape {
         let mesh = self.graphics.device.create_mesh(vertices);
         let slice = mesh.to_slice(::gfx::TriangleFan);
         let state = ::gfx::DrawState::new();
@@ -108,12 +158,19 @@ impl Window {
         };
         Shape {
             batch: batch,
-            params: data
+            color: None
         }
     }
 
-    fn draw_shape(&mut self, shape: &Shape) {
-        self.graphics.draw(&shape.batch, &shape.params, &self.frame)
+    pub fn draw_shape(&mut self, shape: &Shape) {
+        let mut mat = self.current_matrix();
+
+        let params = gfx_integration::Params {
+            transform: mat,
+            color: shape.color.map_or([1.0, 1.0, 0.0, 1.0], |c| c.to_rgba())
+        };
+
+        self.graphics.draw(&shape.batch, &params, &self.frame)
     }
 }
 

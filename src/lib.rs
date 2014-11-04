@@ -2,10 +2,14 @@
 
 #[phase(plugin)]
 extern crate gfx_macros;
-extern crate glutin;
 extern crate gfx;
 extern crate render;
 extern crate device;
+
+extern crate glutin;
+
+extern crate vecmath;
+
 extern crate "color" as color_lib;
 
 pub use color_lib as color;
