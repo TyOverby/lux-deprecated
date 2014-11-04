@@ -274,12 +274,24 @@ impl super::LovelyWindow for Window {
     fn is_closed(&self) -> bool {
         self.glutin_window.is_closed()
     }
+
     fn title(&self) -> &str {
         self.title.as_slice()
     }
+
     fn set_title(&mut self, title: &str) {
         self.title = title.to_string();
         self.glutin_window.set_title(self.title.as_slice());
+    }
+
+    fn set_size(&mut self, width: u32, height: u32) {
+        self.glutin_window.set_inner_size(width as uint, height as uint);
+    }
+
+    fn get_size(&self) -> (u32, u32) {
+        self.glutin_window.get_inner_size()
+            .map(|(a,b)| (a as u32, b as u32))
+            .unwrap_or((0,0))
     }
 }
 

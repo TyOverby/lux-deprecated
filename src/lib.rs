@@ -68,4 +68,6 @@ pub trait LovelyWindow {
     fn is_closed(&self) -> bool;
     fn title(&self) -> &str;
     fn set_title(&mut self, title: &str);
+    fn set_size(&mut self, width: u32, height: u32);
+    fn get_size(&self) -> (u32, u32);
 }
