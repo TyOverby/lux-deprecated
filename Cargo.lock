@@ -33,12 +33,12 @@ source = "git+https://github.com/huonw/compile_msg#569c6f186a4ec4f6e8970dff4302b
 [[package]]
 name = "core_foundation"
 version = "0.1.0"
-source = "git+https://github.com/servo/rust-core-foundation#5c3b85b079ab2fe4a046497a84e55386db7598e8"
+source = "git+https://github.com/servo/rust-core-foundation#6e079a065fc02f1f688f16d65be1dcb352e36eae"
 
 [[package]]
 name = "device"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#ef1e5698a183dba359980659d45a2546eac957fa"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
 dependencies = [
  "gfx_gl 0.1.0 (git+https://github.com/gfx-rs/gfx_gl.git)",
 ]
@@ -46,7 +46,7 @@ dependencies = [
 [[package]]
 name = "gfx"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#ef1e5698a183dba359980659d45a2546eac957fa"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
 dependencies = [
  "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
  "gfx_macros 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
@@ -58,20 +58,20 @@ name = "gfx_gl"
 version = "0.1.0"
 source = "git+https://github.com/gfx-rs/gfx_gl.git#ed681503da2e7ed9343003e78af4767e8e4e33a8"
 dependencies = [
- "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs)",
+ "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
 ]
 
 [[package]]
 name = "gfx_macros"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#ef1e5698a183dba359980659d45a2546eac957fa"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
 
 [[package]]
 name = "gl_generator"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#df380704256f6eb9c9cf6850181bb7250995c50a"
+source = "git+https://github.com/bjz/gl-rs.git#325b34c470b18f83756fe86e48cce56dba28d648"
 dependencies = [
- "khronos_api 0.0.1 (git+https://github.com/bjz/gl-rs)",
+ "khronos_api 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
  "rust-xml 0.1.0 (git+https://github.com/netvl/rust-xml)",
 ]
 
@@ -84,18 +84,18 @@ dependencies = [
  "cocoa 0.1.0 (git+https://github.com/DavidPartouche/rust-cocoa)",
  "compile_msg 0.1.0 (git+https://github.com/huonw/compile_msg)",
  "core_foundation 0.1.0 (git+https://github.com/servo/rust-core-foundation)",
- "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs)",
+ "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
 ]
 
 [[package]]
 name = "khronos_api"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs#df380704256f6eb9c9cf6850181bb7250995c50a"
+source = "git+https://github.com/bjz/gl-rs.git#325b34c470b18f83756fe86e48cce56dba28d648"
 
 [[package]]
 name = "render"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#ef1e5698a183dba359980659d45a2546eac957fa"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
 dependencies = [
  "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
 ]
@@ -103,5 +103,5 @@ dependencies = [
 [[package]]
 name = "rust-xml"
 version = "0.1.0"
-source = "git+https://github.com/netvl/rust-xml#4876722236a9c0f973e4867e3b2971368ed3111b"
+source = "git+https://github.com/netvl/rust-xml#7d867d8020e6ee845d198e012124c698738804a2"
 
