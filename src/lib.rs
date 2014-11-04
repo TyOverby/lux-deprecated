@@ -5,11 +5,8 @@ extern crate gfx_macros;
 extern crate gfx;
 extern crate render;
 extern crate device;
-
 extern crate glutin;
-
 extern crate vecmath;
-
 extern crate "color" as color_lib;
 
 pub use color_lib as color;
@@ -37,7 +34,7 @@ pub trait Drawable<Tex> {
     fn color(&self) -> Option<Color>;
 }
 
-pub trait Lovely<Tex> {
+pub trait LovelyCanvas<Tex> {
     fn width(&self) -> i32;
     fn height(&self) -> i32;
 
@@ -65,4 +62,10 @@ pub trait Lovely<Tex> {
     fn draw<T: Drawable<Tex>>(&mut self, figure: T);
 
     fn draw_text(&mut self, pos: Vec2f, text: &str);
+}
+
+pub trait LovelyWindow {
+    fn is_closed(&self) -> bool;
+    fn title(&self) -> &str;
+    fn set_title(&mut self, title: &str);
 }

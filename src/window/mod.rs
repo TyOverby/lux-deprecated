@@ -27,6 +27,8 @@ pub struct Window {
 
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
+
+    title: String
 }
 
 
@@ -60,6 +62,7 @@ impl Window {
                                  [0.0, 0.0, 1.0, 0.0],
                                  [-1.0, 1.0, 0.0, 1.0]],
                             matrix_stack: vec![],
+                            title: "Lovely".to_string()
                         })
                     }
                     Err(_) => None
@@ -180,7 +183,7 @@ impl Window {
 }
 
 #[allow(unused_variables)]
-impl super::Lovely<()> for Window {
+impl super::LovelyCanvas<()> for Window {
     fn width(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (w, _) => w as i32
@@ -264,6 +267,19 @@ impl super::Lovely<()> for Window {
 
     fn draw_text(&mut self, pos: super::Vec2f, text: &str) {
         unimplemented!();
+    }
+}
+
+impl super::LovelyWindow for Window {
+    fn is_closed(&self) -> bool {
+        self.glutin_window.is_closed()
+    }
+    fn title(&self) -> &str {
+        self.title.as_slice()
+    }
+    fn set_title(&mut self, title: &str) {
+        self.title = title.to_string();
+        self.glutin_window.set_title(self.title.as_slice());
     }
 }
 

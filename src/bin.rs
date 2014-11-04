@@ -1,7 +1,7 @@
 extern crate lovely;
 
 use lovely::window::Window;
-use lovely::{Lovely, color, Vertex};
+use lovely::{LovelyCanvas, color, Vertex};
 
 fn main() {
     let mut window = Window::new().unwrap();
