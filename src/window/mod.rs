@@ -73,6 +73,45 @@ impl Window {
     }
 }
 
+impl Window {
+    fn w(&self) -> i32 {
+        match self.glutin_window.get_inner_size().unwrap() {
+            (w, _) => w as i32
+        }
+    }
+
+    fn h(&self) -> i32 {
+        match self.glutin_window.get_inner_size().unwrap() {
+            (_, h) => h as i32
+        }
+    }
+
+    fn get_batch_and_params(&mut self, vertices: &[Vertex]) ->
+    (gfx_integration::BasicBatch, gfx_integration::Params) {
+        let mesh = self.graphics.device.create_mesh(vertices);
+        let slice = mesh.to_slice(::gfx::TriangleFan);
+        let state = ::gfx::DrawState::new();
+        let batch: gfx_integration::BasicBatch =
+            self.graphics.make_batch(&self.program, &mesh, slice, &state).unwrap();
+        let (w, h) = (self.w() as f32, self.h() as f32);
+        let (sx, sy) = (2.0 / w, -2.0 / h);
+        let data = gfx_integration::Params {
+            transform: [[sx , 0.0, 0.0, 0.0],
+                        [0.0,  sy, 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                        [-1.0,1.0, 0.0, 1.0]],
+            color: [1.0, 0.0, 0.0, 1.0]
+        };
+        (batch, data)
+    }
+
+    fn draw_batch_and_params(&mut self,
+                             batch: &gfx_integration::BasicBatch,
+                             params: &gfx_integration::Params) {
+        self.graphics.draw(batch, params, &self.frame)
+    }
+}
+
 #[allow(unused_variables)]
 impl super::Lovely<()> for Window {
     fn width(&self) -> i32 {
@@ -86,14 +125,13 @@ impl super::Lovely<()> for Window {
             (_, h) => h as i32
         }
     }
-
     fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
         if self.rect_batch.is_none() {
             let vertex_data = [
                 Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
-                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
-                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
-                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+                Vertex{ pos: [5.0, 0.0], tex: [1.0, 0.0] },
+                Vertex{ pos: [5.0, 5.0], tex: [1.0, 1.0] },
+                Vertex{ pos: [0.0, 5.0], tex: [0.0, 1.0] },
             ];
             let mesh = self.graphics.device.create_mesh(vertex_data);
             let slice = mesh.to_slice(::gfx::TriangleFan);
@@ -106,14 +144,13 @@ impl super::Lovely<()> for Window {
         let batch = self.rect_batch.unwrap();
 
         let (tx, ty) = pos;
-        println!("{}, {}", tx, ty);
         let (w, h) = (self.width() as f32, self.height() as f32);
         let (sx, sy) = (2.0 / w, -2.0 / h);
         let data = gfx_integration::Params {
             transform: [[sx , 0.0, 0.0, 0.0],
                         [0.0,  sy, 0.0, 0.0] ,
                         [0.0, 0.0, 1.0, 0.0],
-                        [ tx-1.0,  ty+1.0, 0.0, 1.0]],
+                        [tx-1.0,  ty+1.0, 0.0, 1.0]],
             color: [1.0, 0.0, 0.0, 1.0]
         };
 
