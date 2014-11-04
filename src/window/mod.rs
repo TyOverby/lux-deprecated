@@ -1,15 +1,14 @@
+use std::num::FloatMath;
 use gfx::{
     ClearData,
     COLOR,
     Frame,
-    TriangleList,
     ToSlice,
     DeviceHelper,
     Graphics,
     GlCommandBuffer,
     GlDevice
 };
-use gfx::batch::RefBatch;
 use super::Color;
 use super::color::Color4;
 use super::color::Color3;
@@ -28,8 +27,6 @@ pub struct Window {
 
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
-
-    rect_batch: Option<gfx_integration::BasicBatch>
 }
 
 
@@ -63,7 +60,6 @@ impl Window {
                                  [0.0, 0.0, 1.0, 0.0],
                                  [-1.0, 1.0, 0.0, 1.0]],
                             matrix_stack: vec![],
-                            rect_batch: None
                         })
                     }
                     Err(_) => None
@@ -95,12 +91,40 @@ impl Window {
         self.basis_matrix[1][1] = sy;
     }
 
+    fn new_scope_transform(&mut self, mat: Mat4f) {
+        let cur = self.current_matrix();
+        self.matrix_stack.push(vecmath::col_mat4_mul(cur, mat));
+    }
+
     pub fn scale(&mut self, x: f32, y: f32) {
-        let mat = self.current_matrix();
         let mut prod = vecmath::mat4_id();
         prod[0][0] = x;
         prod[1][1] = y;
-        self.matrix_stack.push(vecmath::col_mat4_mul(mat, prod));
+        self.new_scope_transform(prod);
+    }
+
+    pub fn shear(&mut self, sx: f32, sy: f32) {
+        let mut prod = vecmath::mat4_id();
+        prod[1][0] = sx;
+        prod[0][1] = sy;
+        self.new_scope_transform(prod);
+    }
+
+    pub fn rotate(&mut self, theta: f32) {
+        let mut prod = vecmath::mat4_id();
+        let (c, s) = (theta.cos(), theta.sin());
+        prod[0][0] = c;
+        prod[0][1] = s;
+        prod[1][0] = -s;
+        prod[1][1] = c;
+        self.new_scope_transform(prod);
+    }
+
+    pub fn translate(&mut self, dx: f32, dy: f32) {
+        let mut prod = vecmath::mat4_id();
+        prod[3][0] = dx;
+        prod[3][1] = dy;
+        self.new_scope_transform(prod);
     }
 
     fn w(&self) -> i32 {
@@ -112,15 +136,6 @@ impl Window {
     fn h(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (_, h) => h as i32
-        }
-    }
-
-    fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] {
-        let len = self.matrix_stack.len();
-        if len == 0 {
-            return &mut self.basis_matrix;
-        } else {
-            return self.matrix_stack.get_mut(len - 1);
         }
     }
 
@@ -147,15 +162,6 @@ impl Window {
         let state = ::gfx::DrawState::new();
         let batch: gfx_integration::BasicBatch =
             self.graphics.make_batch(&self.program, &mesh, slice, &state).unwrap();
-        let (w, h) = (self.w() as f32, self.h() as f32);
-        let (sx, sy) = (2.0 / w, -2.0 / h);
-        let data = gfx_integration::Params {
-            transform: [[sx , 0.0, 0.0, 0.0],
-                        [0.0,  sy, 0.0, 0.0],
-                        [0.0, 0.0, 1.0, 0.0],
-                        [-1.0,1.0, 0.0, 1.0]],
-            color: [1.0, 0.0, 0.0, 1.0]
-        };
         Shape {
             batch: batch,
             color: None
@@ -163,8 +169,7 @@ impl Window {
     }
 
     pub fn draw_shape(&mut self, shape: &Shape) {
-        let mut mat = self.current_matrix();
-
+        let mat = self.current_matrix();
         let params = gfx_integration::Params {
             transform: mat,
             color: shape.color.map_or([1.0, 1.0, 0.0, 1.0], |c| c.to_rgba())
@@ -232,18 +237,25 @@ impl super::Lovely<()> for Window {
     fn with_border_color(&mut self, color: Color, f: |&mut Window| -> ()) {
         unimplemented!();
     }
-    fn with_rotation(&mut self, rotation: f32, f: |&mut Window| -> ()) {
-        unimplemented!();
+    fn with_rotation(&mut self, theta: f32, f: |&mut Window| -> ()) {
+        self.rotate(theta);
+        f(self);
+        self.pop_matrix();
     }
-    fn with_translation(&mut self, translation: f32, f: |&mut Window| -> ()) {
-        unimplemented!();
+    fn with_translation(&mut self, dx: f32, dy: f32, f: |&mut Window| -> ()) {
+        self.translate(dx, dy);
+        f(self);
+        self.pop_matrix();
     }
-    fn with_scale(&mut self, scale: f32, f: |&mut Window| -> ()) {
-        unimplemented!();
+    fn with_scale(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
+        self.scale(sx, sy);
+        f(self);
+        self.pop_matrix();
     }
-    fn with_shear(&mut self, shear: super::Vec2f, f: |&mut Window| -> ()) {
-        unimplemented!();
-
+    fn with_shear(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
+        self.shear(sx, sy);
+        f(self);
+        self.pop_matrix();
     }
 
     fn draw<T: super::Drawable<()>>(&mut self, figure: T) {
