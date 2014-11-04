@@ -26,6 +26,11 @@ pub struct Window {
     rect_batch: Option<gfx_integration::BasicBatch>
 }
 
+pub struct Shape {
+    batch: gfx_integration::BasicBatch,
+    params: gfx_integration::Params
+}
+
 impl Window {
     pub fn new() -> Option<Window> {
         let glutin_window = ::glutin::Window::new();
@@ -86,8 +91,7 @@ impl Window {
         }
     }
 
-    fn get_batch_and_params(&mut self, vertices: &[Vertex]) ->
-    (gfx_integration::BasicBatch, gfx_integration::Params) {
+    fn stamp_shape(&mut self, vertices: &[Vertex]) -> Shape {
         let mesh = self.graphics.device.create_mesh(vertices);
         let slice = mesh.to_slice(::gfx::TriangleFan);
         let state = ::gfx::DrawState::new();
@@ -102,13 +106,14 @@ impl Window {
                         [-1.0,1.0, 0.0, 1.0]],
             color: [1.0, 0.0, 0.0, 1.0]
         };
-        (batch, data)
+        Shape {
+            batch: batch,
+            params: data
+        }
     }
 
-    fn draw_batch_and_params(&mut self,
-                             batch: &gfx_integration::BasicBatch,
-                             params: &gfx_integration::Params) {
-        self.graphics.draw(batch, params, &self.frame)
+    fn draw_shape(&mut self, shape: &Shape) {
+        self.graphics.draw(&shape.batch, &shape.params, &self.frame)
     }
 }
 
@@ -126,35 +131,14 @@ impl super::Lovely<()> for Window {
         }
     }
     fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
-        if self.rect_batch.is_none() {
-            let vertex_data = [
-                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
-                Vertex{ pos: [5.0, 0.0], tex: [1.0, 0.0] },
-                Vertex{ pos: [5.0, 5.0], tex: [1.0, 1.0] },
-                Vertex{ pos: [0.0, 5.0], tex: [0.0, 1.0] },
-            ];
-            let mesh = self.graphics.device.create_mesh(vertex_data);
-            let slice = mesh.to_slice(::gfx::TriangleFan);
-            let state = ::gfx::DrawState::new();
-            let batch: gfx_integration::BasicBatch =
-                self.graphics.make_batch(&self.program, &mesh, slice, &state).unwrap();
-            self.rect_batch = Some(batch);
-        }
-
-        let batch = self.rect_batch.unwrap();
-
-        let (tx, ty) = pos;
-        let (w, h) = (self.width() as f32, self.height() as f32);
-        let (sx, sy) = (2.0 / w, -2.0 / h);
-        let data = gfx_integration::Params {
-            transform: [[sx , 0.0, 0.0, 0.0],
-                        [0.0,  sy, 0.0, 0.0] ,
-                        [0.0, 0.0, 1.0, 0.0],
-                        [tx-1.0,  ty+1.0, 0.0, 1.0]],
-            color: [1.0, 0.0, 0.0, 1.0]
-        };
-
-        self.graphics.draw(&batch, &data, &self.frame)
+        let vertex_data = [
+            Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
+            Vertex{ pos: [5.0, 0.0], tex: [1.0, 0.0] },
+            Vertex{ pos: [5.0, 5.0], tex: [1.0, 1.0] },
+            Vertex{ pos: [0.0, 5.0], tex: [0.0, 1.0] },
+        ];
+        let shape = self.stamp_shape(vertex_data);
+        self.draw_shape(&shape)
     }
     fn draw_border_rect(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
         unimplemented!();
