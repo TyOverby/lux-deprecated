@@ -22,6 +22,7 @@ pub use self::gfx_integration as gfxi;
 pub mod gfx_integration;
 
 type Mat4f = [[f32, ..4], ..4];
+type BaseColor = [f32, ..4];
 
 pub struct Window {
     glutin_window: ::glutin::Window,
@@ -31,14 +32,17 @@ pub struct Window {
 
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
+    color_stack: Vec<BaseColor>,
 
-    title: String
+    title: String,
+
+    stored_rect: Option<Shape>
 }
 
 
 pub struct Shape {
     batch: gfx_integration::BasicBatch,
-    color: Option<super::color::Rgba<f32>>
+    color: Option<BaseColor>
 }
 
 
@@ -69,8 +73,10 @@ impl Window {
                     program: p,
                     frame: Frame::new(width as u16, height as u16),
                     matrix_stack: vec![],
+                    color_stack: vec![[1.0,0.0,0.0,1.0]],
                     title: "Lovely".to_string(),
-                    basis_matrix: basis
+                    basis_matrix: basis,
+                    stored_rect: None
                 }
             })
     }
@@ -179,7 +185,7 @@ impl Window {
         let mat = self.current_matrix();
         let params = gfx_integration::Params {
             transform: mat,
-            color: shape.color.map_or([1.0, 1.0, 0.0, 1.0], |c| c.to_rgba())
+            color: shape.color.unwrap_or([1.0, 1.0, 0.0, 1.0])
         };
 
         self.graphics.draw(&shape.batch, &params, &self.frame)
@@ -200,14 +206,24 @@ impl super::LovelyCanvas<()> for Window {
         }
     }
     fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
-        let vertex_data = [
-            Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
-            Vertex{ pos: [5.0, 0.0], tex: [1.0, 0.0] },
-            Vertex{ pos: [5.0, 5.0], tex: [1.0, 1.0] },
-            Vertex{ pos: [0.0, 5.0], tex: [0.0, 1.0] },
-        ];
-        let shape = self.stamp_shape(vertex_data);
-        self.draw_shape(&shape)
+        if self.stored_rect.is_none() {
+            let vertex_data = [
+                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
+                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
+                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
+                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+            ];
+            let shape = self.stamp_shape(vertex_data);
+            self.stored_rect = Some(shape);
+        }
+        let shape = self.stored_rect.unwrap();
+        let (x, y) = pos;
+        let (w, h) = size;
+        self.with_translate(x, y, |window| {
+            window.with_scale(w, h, |window| {
+                window.draw_shape(&shape)
+            });
+        });
     }
     fn draw_border_rect(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
         unimplemented!();
@@ -249,7 +265,7 @@ impl super::LovelyCanvas<()> for Window {
         f(self);
         self.pop_matrix();
     }
-    fn with_translation(&mut self, dx: f32, dy: f32, f: |&mut Window| -> ()) {
+    fn with_translate(&mut self, dx: f32, dy: f32, f: |&mut Window| -> ()) {
         self.translate(dx, dy);
         f(self);
         self.pop_matrix();

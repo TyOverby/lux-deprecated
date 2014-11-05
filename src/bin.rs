@@ -14,7 +14,7 @@ fn main() {
 
     while window.is_open() {
         window.clear(color::consts::CYAN);
-        window.draw_rect((0.0, 0.0), (0.0, 0.0));
+        window.draw_rect((10.0, 10.0), (20.0, 20.0));
         window.with_scale(10.0, 10.0, |window| {
             window.draw_shape(&shape);
         });

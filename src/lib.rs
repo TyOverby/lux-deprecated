@@ -63,7 +63,7 @@ pub trait LovelyCanvas<Tex> {
     fn with_color(&mut self, color: Color, f: |&mut Self| -> ());
     fn with_border_color(&mut self, color: Color, f: |&mut Self| -> ());
     fn with_rotation(&mut self, rotation: f32, f: |&mut Self| -> ());
-    fn with_translation(&mut self, dx: f32, dy: f32, f: |&mut Self| -> ());
+    fn with_translate(&mut self, dx: f32, dy: f32, f: |&mut Self| -> ());
     fn with_scale(&mut self, scale_x: f32, scale_y: f32, f: |&mut Self| -> ());
     fn with_shear(&mut self, sx: f32, sy: f32, f: |&mut Self| -> ());
 
