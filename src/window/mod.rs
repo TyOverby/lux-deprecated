@@ -44,8 +44,7 @@ pub struct Shape {
 
 impl Window {
     pub fn new() -> LovelyResult<Window> {
-        let glutin_window = ::glutin::Window::new();
-        glutin_window
+        ::glutin::Window::new()
             .map_err(|_| Dummy)
             .and_then(|w| {
                 w.set_title("Lovely");
@@ -57,15 +56,14 @@ impl Window {
                     Ok(p) => Ok((w, device, p)),
                     Err(_) => Err(Dummy)
                 }
-            }).and_then(|(w, d, p)|{
+            }).map(|(w, d, p)|{
                 let graphics = Graphics::new(d);
                 let (width, height) = w.get_inner_size().unwrap_or((0, 0));
-                let basis =
-                    [[1.0, 0.0, 0.0, 0.0],
-                    [0.0,-1.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0],
-                    [-1.0, 1.0, 0.0, 1.0]];
-                let window = Window {
+                let mut basis = vecmath::mat4_id();
+                basis[1][1] = -1.0;
+                basis[3][0] = -1.0;
+                basis[3][1] = 1.0;
+                Window {
                     glutin_window: w,
                     graphics: graphics,
                     program: p,
@@ -73,8 +71,7 @@ impl Window {
                     matrix_stack: vec![],
                     title: "Lovely".to_string(),
                     basis_matrix: basis
-                };
-                Ok(window)
+                }
             })
     }
 
