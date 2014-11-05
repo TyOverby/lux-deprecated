@@ -9,12 +9,16 @@ use gfx::{
     GlCommandBuffer,
     GlDevice
 };
-use super::Color;
-use super::color::Color4;
-use super::color::Color3;
-use super::Vertex;
+use super::{
+    Color,
+    Vertex,
+    LovelyResult,
+    Dummy
+};
+use super::color::{Color4, Color3};
 use vecmath;
 
+pub use self::gfx_integration as gfxi;
 pub mod gfx_integration;
 
 type Mat4f = [[f32, ..4], ..4];
@@ -37,39 +41,41 @@ pub struct Shape {
     color: Option<super::color::Rgba<f32>>
 }
 
+
 impl Window {
-    pub fn new() -> Option<Window> {
+    pub fn new() -> LovelyResult<Window> {
         let glutin_window = ::glutin::Window::new();
-        match glutin_window {
-            Ok(w) => {
+        glutin_window
+            .map_err(|_| Dummy)
+            .and_then(|w| {
                 w.set_title("Lovely");
                 unsafe { w.make_current(); }
-                let mut device = ::gfx::GlDevice::new(|s| w.get_proc_address(s));
-
-                match device.link_program(gfx_integration::VERTEX_SRC.clone(),
-                                          gfx_integration::FRAGMENT_SRC.clone()) {
-                    Ok(program) => {
-                        let graphics = Graphics::new(device);
-                        let (width, height) = w.get_inner_size().unwrap();
-                        Some(Window{
-                            glutin_window: w,
-                            graphics: graphics,
-                            program: program,
-                            frame: Frame::new(width as u16, height as u16),
-                            basis_matrix:
-                                 [[1.0, 0.0, 0.0, 0.0],
-                                 [0.0,-1.0, 0.0, 0.0],
-                                 [0.0, 0.0, 1.0, 0.0],
-                                 [-1.0, 1.0, 0.0, 1.0]],
-                            matrix_stack: vec![],
-                            title: "Lovely".to_string()
-                        })
-                    }
-                    Err(_) => None
+                let mut device = GlDevice::new(|s| w.get_proc_address(s));
+                let program = device.link_program(gfxi::VERTEX_SRC.clone(),
+                                                  gfxi::FRAGMENT_SRC.clone());
+                match program {
+                    Ok(p) => Ok((w, device, p)),
+                    Err(_) => Err(Dummy)
                 }
-            }
-            Err(_) => None
-        }
+            }).and_then(|(w, d, p)|{
+                let graphics = Graphics::new(d);
+                let (width, height) = w.get_inner_size().unwrap_or((0, 0));
+                let basis =
+                    [[1.0, 0.0, 0.0, 0.0],
+                    [0.0,-1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [-1.0, 1.0, 0.0, 1.0]];
+                let window = Window {
+                    glutin_window: w,
+                    graphics: graphics,
+                    program: p,
+                    frame: Frame::new(width as u16, height as u16),
+                    matrix_stack: vec![],
+                    title: "Lovely".to_string(),
+                    basis_matrix: basis
+                };
+                Ok(window)
+            })
     }
 
     pub fn clear<C: ToRgba>(&mut self, color: C) {
@@ -92,6 +98,7 @@ impl Window {
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
+        self.glutin_window.wait_events();
     }
 
     fn new_scope_transform(&mut self, mat: Mat4f) {
@@ -271,8 +278,8 @@ impl super::LovelyCanvas<()> for Window {
 }
 
 impl super::LovelyWindow for Window {
-    fn is_closed(&self) -> bool {
-        self.glutin_window.is_closed()
+    fn is_open(&self) -> bool {
+        !self.glutin_window.is_closed()
     }
 
     fn title(&self) -> &str {

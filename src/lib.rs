@@ -1,4 +1,5 @@
 #![feature(phase)]
+#![feature(unboxed_closures)]
 
 #[phase(plugin)]
 extern crate gfx_macros;
@@ -16,6 +17,13 @@ pub mod window;
 
 pub type Vec2f = (f32, f32);
 pub type Color = color::Rgba<f32>;
+
+#[deriving(Show)]
+pub enum LovelyError {
+    Dummy
+}
+
+pub type LovelyResult<A> = Result<A, LovelyError>;
 
 pub enum DrawPrimitive {
     Points,
@@ -65,7 +73,7 @@ pub trait LovelyCanvas<Tex> {
 }
 
 pub trait LovelyWindow {
-    fn is_closed(&self) -> bool;
+    fn is_open(&self) -> bool;
     fn title(&self) -> &str;
     fn set_title(&mut self, title: &str);
     fn set_size(&mut self, width: u32, height: u32);
