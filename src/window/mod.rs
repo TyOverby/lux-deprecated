@@ -253,10 +253,6 @@ impl super::LovelyCanvas<()> for Window {
         unimplemented!();
     }
 
-    fn draw_point(&mut self, pos: super::Vec2f) {
-        unimplemented!();
-    }
-
     fn with_color<C: Color>(&mut self, color: C, f: |&mut Window| -> ()) {
         self.color_stack.push(color.to_rgba());
         f(self);

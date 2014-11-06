@@ -62,8 +62,6 @@ pub trait LovelyCanvas<Tex> {
     fn draw_line(&mut self, positions: &Vec<Vec2f>, line_size: f32);
     fn draw_arc(&mut self, pos: Vec2f, radius: f32, angle1: f32, angle2: f32);
 
-    fn draw_point(&mut self, pos: Vec2f);
-
     fn with_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());
     fn with_border_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());
     fn with_rotation(&mut self, rotation: f32, f: |&mut Self| -> ());
