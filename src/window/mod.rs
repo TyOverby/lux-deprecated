@@ -1,5 +1,6 @@
 use std::num::FloatMath;
 use gfx::{
+    DrawState,
     ClearData,
     COLOR,
     Frame,
@@ -9,13 +10,14 @@ use gfx::{
     GlCommandBuffer,
     GlDevice
 };
+use render::state::BlendAlpha;
 use super::{
     Color,
     Vertex,
     LovelyResult,
     Dummy
 };
-use super::color::{Color4, Color3};
+
 use vecmath;
 
 pub use self::gfx_integration as gfxi;
@@ -28,6 +30,7 @@ pub struct Window {
     glutin_window: ::glutin::Window,
     graphics: Graphics<GlDevice, GlCommandBuffer>,
     program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
+    draw_state: DrawState,
     frame: Frame,
 
     basis_matrix: Mat4f,
@@ -71,6 +74,7 @@ impl Window {
                     glutin_window: w,
                     graphics: graphics,
                     program: p,
+                    draw_state: DrawState::new().blend(BlendAlpha),
                     frame: Frame::new(width as u16, height as u16),
                     matrix_stack: vec![],
                     color_stack: vec![[1.0,0.0,0.0,1.0]],
@@ -81,7 +85,7 @@ impl Window {
             })
     }
 
-    pub fn clear<C: ToRgba>(&mut self, color: C) {
+    pub fn clear<C: Color>(&mut self, color: C) {
         self.graphics.clear(
             ClearData{
                 color: color.to_rgba(),
@@ -101,7 +105,7 @@ impl Window {
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
-        self.glutin_window.wait_events();
+        self.glutin_window.poll_events();
     }
 
     fn new_scope_transform(&mut self, mat: Mat4f) {
@@ -152,29 +156,28 @@ impl Window {
         }
     }
 
+    //// Matrix
+
     fn current_matrix(&self) -> [[f32, ..4], ..4] {
         if self.matrix_stack.len() == 0 {
-            return self.basis_matrix;
+            self.basis_matrix
         } else {
-            return self.matrix_stack[self.matrix_stack.len()-1];
+            self.matrix_stack[self.matrix_stack.len()-1]
         }
     }
 
-    pub fn push_matrix(&mut self) {
-        let mat = self.current_matrix();
-        self.matrix_stack.push(mat);
-    }
+    //// Color
 
-    pub fn pop_matrix(&mut self) {
-        self.matrix_stack.pop();
+    pub fn current_color(&self) -> [f32, ..4] {
+        let len = self.color_stack.len();
+        self.color_stack[len - 1]
     }
 
     pub fn stamp_shape(&mut self, vertices: &[Vertex]) -> Shape {
         let mesh = self.graphics.device.create_mesh(vertices);
         let slice = mesh.to_slice(::gfx::TriangleFan);
-        let state = ::gfx::DrawState::new();
         let batch: gfx_integration::BasicBatch =
-            self.graphics.make_batch(&self.program, &mesh, slice, &state).unwrap();
+            self.graphics.make_batch(&self.program, &mesh, slice, &self.draw_state).unwrap();
         Shape {
             batch: batch,
             color: None
@@ -185,7 +188,7 @@ impl Window {
         let mat = self.current_matrix();
         let params = gfx_integration::Params {
             transform: mat,
-            color: shape.color.unwrap_or([1.0, 1.0, 0.0, 1.0])
+            color: shape.color.unwrap_or_else(|| self.current_color())
         };
 
         self.graphics.draw(&shape.batch, &params, &self.frame)
@@ -254,31 +257,38 @@ impl super::LovelyCanvas<()> for Window {
         unimplemented!();
     }
 
-    fn with_color(&mut self, color: Color, f: |&mut Window| -> ()) {
+    fn with_color<C: Color>(&mut self, color: C, f: |&mut Window| -> ()) {
+        self.color_stack.push(color.to_rgba());
+        f(self);
+        self.color_stack.pop();
+    }
+
+    fn with_border_color<C: Color>(&mut self, color: C, f: |&mut Window| -> ()) {
         unimplemented!();
     }
-    fn with_border_color(&mut self, color: Color, f: |&mut Window| -> ()) {
-        unimplemented!();
-    }
+
     fn with_rotation(&mut self, theta: f32, f: |&mut Window| -> ()) {
         self.rotate(theta);
         f(self);
-        self.pop_matrix();
+        self.matrix_stack.pop();
     }
+
     fn with_translate(&mut self, dx: f32, dy: f32, f: |&mut Window| -> ()) {
         self.translate(dx, dy);
         f(self);
-        self.pop_matrix();
+        self.matrix_stack.pop();
     }
+
     fn with_scale(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
         self.scale(sx, sy);
         f(self);
-        self.pop_matrix();
+        self.matrix_stack.pop();
     }
+
     fn with_shear(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
         self.shear(sx, sy);
         f(self);
-        self.pop_matrix();
+        self.matrix_stack.pop();
     }
 
     fn draw<T: super::Drawable<()>>(&mut self, figure: T) {
@@ -315,31 +325,4 @@ impl super::LovelyWindow for Window {
     }
 }
 
-pub trait ToRgba {
-    fn to_rgba(self) -> [f32, ..4];
-}
 
-impl ToRgba for super::color::Rgb<f32> {
-    fn to_rgba(self) -> [f32, ..4] {
-        match self.into_fixed() {
-            [r,g,b] => [r,g,b,1.0]
-        }
-    }
-}
-
-impl ToRgba for super::color::Rgb<u8> {
-    fn to_rgba(self) -> [f32, ..4] {
-        match self.into_fixed() {
-            [r,g,b] => [r as f32 / 255u as f32,
-                        g as f32 / 255u as f32,
-                        b as f32 / 255u as f32,
-                        1.0]
-        }
-    }
-}
-
-impl ToRgba for super::color::Rgba<f32> {
-    fn to_rgba(self) -> [f32, ..4] {
-        self.into_fixed()
-    }
-}
