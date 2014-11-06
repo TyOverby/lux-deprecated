@@ -19,7 +19,7 @@ fn main() {
         x += 1.0;
         y += 1.0;
         window.with_color([1.0f32, 0.0, 1.0, 0.5], |window| {
-            window.draw_rect((10.0, 10.0), (20.0, 20.0));
+            window.draw_border_rect((50.0, 50.0), (40.0, 40.0), 5.0);
         });
         window.with_scale(10.0, 10.0, |window| {
             window.draw_shape(&shape);

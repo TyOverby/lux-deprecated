@@ -113,37 +113,6 @@ impl Window {
         self.matrix_stack.push(vecmath::col_mat4_mul(cur, mat));
     }
 
-    pub fn scale(&mut self, x: f32, y: f32) {
-        let mut prod = vecmath::mat4_id();
-        prod[0][0] = x;
-        prod[1][1] = y;
-        self.new_scope_transform(prod);
-    }
-
-    pub fn shear(&mut self, sx: f32, sy: f32) {
-        let mut prod = vecmath::mat4_id();
-        prod[1][0] = sx;
-        prod[0][1] = sy;
-        self.new_scope_transform(prod);
-    }
-
-    pub fn rotate(&mut self, theta: f32) {
-        let mut prod = vecmath::mat4_id();
-        let (c, s) = (theta.cos(), theta.sin());
-        prod[0][0] = c;
-        prod[0][1] = s;
-        prod[1][0] = -s;
-        prod[1][1] = c;
-        self.new_scope_transform(prod);
-    }
-
-    pub fn translate(&mut self, dx: f32, dy: f32) {
-        let mut prod = vecmath::mat4_id();
-        prod[3][0] = dx;
-        prod[3][1] = dy;
-        self.new_scope_transform(prod);
-    }
-
     fn w(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (w, _) => w as i32
@@ -208,6 +177,7 @@ impl super::LovelyCanvas<()> for Window {
             (_, h) => h as i32
         }
     }
+
     fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
         if self.stored_rect.is_none() {
             let vertex_data = [
@@ -228,13 +198,30 @@ impl super::LovelyCanvas<()> for Window {
             });
         });
     }
+
     fn draw_border_rect(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
-        unimplemented!();
+        let (px, py) = pos;
+        let (w, h) = size;
+        let smallest = ::std::cmp::partial_min(w,h).unwrap_or(0.0);
+        let bs = ::std::cmp::partial_max(border_size, smallest).unwrap_or(0.0);
+        self.draw_rect((px + bs, py + bs), (w - 2.0 * bs, h - 2.0 * bs));
+        self.with_color([1.0,1.0,1.0,0.5], |window| {
+            window.draw_rect((px+border_size, py),
+                             (w-2.0*border_size, border_size));
+            window.draw_rect((px+border_size, py+h-border_size),
+                             (w-2.0*border_size, border_size));
+
+            window.draw_rect((px, py),
+                             (border_size, h));
+            window.draw_rect((px+w-border_size, py),
+                             (border_size, h));
+        });
     }
 
     fn draw_circle(&mut self, pos: super::Vec2f, radius: f32) {
         unimplemented!();
     }
+
     fn draw_border_circle(&mut self, pos: super::Vec2f, radius: f32, border_size: f32) {
         unimplemented!();
     }
@@ -264,25 +251,43 @@ impl super::LovelyCanvas<()> for Window {
     }
 
     fn with_rotation(&mut self, theta: f32, f: |&mut Window| -> ()) {
-        self.rotate(theta);
+        let mut prod = vecmath::mat4_id();
+        let (c, s) = (theta.cos(), theta.sin());
+        prod[0][0] = c;
+        prod[0][1] = s;
+        prod[1][0] = -s;
+        prod[1][1] = c;
+
+        self.new_scope_transform(prod);
         f(self);
         self.matrix_stack.pop();
     }
 
     fn with_translate(&mut self, dx: f32, dy: f32, f: |&mut Window| -> ()) {
-        self.translate(dx, dy);
+        let mut prod = vecmath::mat4_id();
+        prod[3][0] = dx;
+        prod[3][1] = dy;
+
+        self.new_scope_transform(prod);
         f(self);
         self.matrix_stack.pop();
     }
 
     fn with_scale(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
-        self.scale(sx, sy);
+        let mut prod = vecmath::mat4_id();
+        prod[0][0] = sx;
+        prod[1][1] = sy;
+
+        self.new_scope_transform(prod);
         f(self);
         self.matrix_stack.pop();
     }
 
     fn with_shear(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
-        self.shear(sx, sy);
+        let mut prod = vecmath::mat4_id();
+        prod[1][0] = sx;
+        prod[0][1] = sy;
+        self.new_scope_transform(prod);
         f(self);
         self.matrix_stack.pop();
     }
