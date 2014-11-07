@@ -8,12 +8,8 @@ extern crate render;
 extern crate device;
 extern crate glutin;
 extern crate vecmath;
-extern crate "color" as color_lib;
 
-pub use color_lib as color;
 pub use window::gfx_integration::Vertex;
-use color::{Color4, Color3};
-
 
 pub use render::ProgramError;
 pub use render::ErrorVertex;
@@ -115,30 +111,5 @@ impl Color for [f32, ..3] {
         match self {
             [r,g,b] => [r,g,b,1.0]
         }
-    }
-}
-
-impl Color for color::Rgb<f32> {
-    fn to_rgba(self) -> [f32, ..4] {
-        match self.into_fixed() {
-            [r,g,b] => [r,g,b,1.0]
-        }
-    }
-}
-
-impl Color for color::Rgb<u8> {
-    fn to_rgba(self) -> [f32, ..4] {
-        match self.into_fixed() {
-            [r,g,b] => [r as f32 / 255u as f32,
-                        g as f32 / 255u as f32,
-                        b as f32 / 255u as f32,
-                        1.0]
-        }
-    }
-}
-
-impl Color for color::Rgba<f32> {
-    fn to_rgba(self) -> [f32, ..4] {
-        self.into_fixed()
     }
 }

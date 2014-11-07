@@ -1,7 +1,7 @@
 extern crate lovely;
 
 use lovely::window::Window;
-use lovely::{LovelyCanvas, LovelyWindow, color, Vertex};
+use lovely::{LovelyCanvas, LovelyWindow, Vertex};
 
 fn main() {
     let mut window = Window::new().unwrap();
@@ -14,7 +14,7 @@ fn main() {
 
     let (mut x, mut y) = (0.0f32, 10.0f32);
     while window.is_open() {
-        window.clear(color::consts::CYAN);
+        window.clear([0.5, 0.5, 0.5]);
         window.draw_rect((x, y), (10.0f32, 10.0f32));
         x += 1.0;
         y += 1.0;
