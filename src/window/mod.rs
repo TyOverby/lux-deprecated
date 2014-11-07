@@ -90,6 +90,15 @@ impl Window {
         Ok(window)
     }
 
+    pub fn process_events(&mut self) {
+        use glutin::{MouseMoved, Focused};
+        for event in self.glutin_window.poll_events() { match event {
+            MouseMoved((x, y)) => self.mouse_pos = (x as i32, y as i32),
+            Focused(f) => self.focused = f,
+            _ => {}
+        }}
+    }
+
     pub fn clear<C: Color>(&mut self, color: C) {
         self.graphics.clear(
             ClearData{
@@ -98,7 +107,7 @@ impl Window {
                 stencil: 0
             },
             COLOR,
-            &Frame::new(50, 50))
+            &self.frame);
     }
 
     pub fn render(&mut self) {
@@ -106,11 +115,13 @@ impl Window {
         self.glutin_window.swap_buffers();
         self.matrix_stack.clear();
 
-        let (w, h) = (self.w() as f32, self.h() as f32);
+        let(wi, hi) = (self.w(), self.h());
+        let (w, h) = (wi as f32, hi as f32);
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
-        self.glutin_window.poll_events();
+        self.process_events();
+        self.frame = Frame::new(wi as u16, hi as u16);
     }
 
     fn new_scope_transform(&mut self, mat: Mat4f) {
@@ -326,7 +337,7 @@ impl super::LovelyWindow for Window {
 
     fn get_size(&self) -> (u32, u32) {
         self.glutin_window.get_inner_size()
-            .map(|(a,b)| (a as u32, b as u32))
+            .map(|(w, h)| (w as u32, h as u32))
             .unwrap_or((0,0))
     }
 

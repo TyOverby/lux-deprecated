@@ -12,12 +12,11 @@ fn main() {
         Vertex { pos: [40.0, 40.0], tex: [0.0, 0.0] },
     ]);
 
-    let (mut x, mut y) = (0.0f32, 10.0f32);
     while window.is_open() {
+        window.process_events();
         window.clear([0.5, 0.5, 0.5]);
-        window.draw_rect((x, y), (10.0f32, 10.0f32));
-        x += 1.0;
-        y += 1.0;
+        let (x, y) = window.mouse_pos();
+        window.draw_rect((x as f32, y as f32), (10.0f32, 10.0f32));
         window.with_color([1.0f32, 0.0, 1.0, 0.5], |window| {
             window.draw_border_rect((50.0, 50.0), (40.0, 40.0), 5.0);
         });
