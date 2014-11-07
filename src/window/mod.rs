@@ -39,7 +39,11 @@ pub struct Window {
 
     title: String,
 
-    stored_rect: Option<Shape>
+    stored_rect: Option<Shape>,
+
+    mouse_pos: (i32, i32),
+    focused: bool,
+    mouse_down: bool
 }
 
 
@@ -80,7 +84,10 @@ impl Window {
                     color_stack: vec![[1.0,0.0,0.0,1.0]],
                     title: "Lovely".to_string(),
                     basis_matrix: basis,
-                    stored_rect: None
+                    stored_rect: None,
+                    mouse_pos: (0, 0),
+                    focused: true,
+                    mouse_down: false
                 }
             })
     }
@@ -323,6 +330,17 @@ impl super::LovelyWindow for Window {
         self.glutin_window.get_inner_size()
             .map(|(a,b)| (a as u32, b as u32))
             .unwrap_or((0,0))
+    }
+
+    fn is_focused(&self) -> bool {
+        self.focused
+    }
+
+    fn mouse_pos(&self) -> (i32, i32) {
+        self.mouse_pos
+    }
+    fn mouse_down(&self) -> bool {
+        self.mouse_down
     }
 }
 

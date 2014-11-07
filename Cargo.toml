@@ -14,6 +14,7 @@ path = "src/bin.rs"
 
 [dependencies.glutin]
 git = "https://github.com/tomaka/glutin.git"
+features = ["headless"]
 
 [dependencies.gfx]
 git = "https://github.com/gfx-rs/gfx-rs.git"
