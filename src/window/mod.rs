@@ -15,7 +15,8 @@ use super::{
     Color,
     Vertex,
     LovelyResult,
-    Dummy
+    WindowError,
+    ShaderError
 };
 
 use vecmath;
@@ -52,44 +53,37 @@ pub struct Shape {
     color: Option<BaseColor>
 }
 
-
 impl Window {
     pub fn new() -> LovelyResult<Window> {
-        ::glutin::Window::new()
-            .map_err(|_| Dummy)
-            .and_then(|w| {
-                w.set_title("Lovely");
-                unsafe { w.make_current(); }
-                let mut device = GlDevice::new(|s| w.get_proc_address(s));
-                let program = device.link_program(gfxi::VERTEX_SRC.clone(),
-                                                  gfxi::FRAGMENT_SRC.clone());
-                match program {
-                    Ok(p) => Ok((w, device, p)),
-                    Err(_) => Err(Dummy)
-                }
-            }).map(|(w, d, p)|{
-                let graphics = Graphics::new(d);
-                let (width, height) = w.get_inner_size().unwrap_or((0, 0));
-                let mut basis = vecmath::mat4_id();
-                basis[1][1] = -1.0;
-                basis[3][0] = -1.0;
-                basis[3][1] = 1.0;
-                Window {
-                    glutin_window: w,
-                    graphics: graphics,
-                    program: p,
-                    draw_state: DrawState::new().blend(BlendAlpha),
-                    frame: Frame::new(width as u16, height as u16),
-                    matrix_stack: vec![],
-                    color_stack: vec![[1.0,0.0,0.0,1.0]],
-                    title: "Lovely".to_string(),
-                    basis_matrix: basis,
-                    stored_rect: None,
-                    mouse_pos: (0, 0),
-                    focused: true,
-                    mouse_down: false
-                }
-            })
+        let window = try!(::glutin::Window::new().map_err(WindowError));
+        window.set_title("Lovely");
+        unsafe { window.make_current(); }
+        let mut device = GlDevice::new(|s| window.get_proc_address(s));
+        let (vtx, frag) = (gfxi::VERTEX_SRC.clone(), gfxi::FRAGMENT_SRC.clone());
+        let program = try!(device.link_program(vtx, frag)
+                           .map_err(super::ShaderError));
+        let graphics = Graphics::new(device);
+        let (width, height) = window.get_inner_size().unwrap_or((0, 0));
+        let mut basis = vecmath::mat4_id();
+        basis[1][1] = -1.0;
+        basis[3][0] = -1.0;
+        basis[3][1] = 1.0;
+        let window = Window {
+            glutin_window: window,
+            graphics: graphics,
+            program: program,
+            draw_state: DrawState::new().blend(BlendAlpha),
+            frame: Frame::new(width as u16, height as u16),
+            matrix_stack: vec![],
+            color_stack: vec![[1.0,0.0,0.0,1.0]],
+            title: "Lovely".to_string(),
+            basis_matrix: basis,
+            stored_rect: None,
+            mouse_pos: (0, 0),
+            focused: true,
+            mouse_down: false
+        };
+        Ok(window)
     }
 
     pub fn clear<C: Color>(&mut self, color: C) {
