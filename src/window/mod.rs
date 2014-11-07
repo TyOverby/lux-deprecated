@@ -55,7 +55,11 @@ pub struct Shape {
 
 impl Window {
     pub fn new() -> LovelyResult<Window> {
-        let window = try!(::glutin::Window::new().map_err(WindowError));
+        let window = try!(::glutin::Window::new().map_err(|e| {
+            match e {
+                ::glutin::OsError(s) => WindowError(s)
+            }
+        }));
         window.set_title("Lovely");
         unsafe { window.make_current(); }
         let mut device = GlDevice::new(|s| window.get_proc_address(s));

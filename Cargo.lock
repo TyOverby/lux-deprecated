@@ -18,7 +18,7 @@ dependencies = [
 [[package]]
 name = "cocoa"
 version = "0.1.0"
-source = "git+https://github.com/DavidPartouche/rust-cocoa#b9cbbd50adbae585f446cb5c7c70c63946676dab"
+source = "git+https://github.com/DavidPartouche/rust-cocoa#a6420c5aaa4633a2f9c76bcd7259cf4e5d4894de"
 
 [[package]]
 name = "compile_msg"
@@ -28,12 +28,20 @@ source = "git+https://github.com/huonw/compile_msg#569c6f186a4ec4f6e8970dff4302b
 [[package]]
 name = "core_foundation"
 version = "0.1.0"
-source = "git+https://github.com/servo/rust-core-foundation#6e079a065fc02f1f688f16d65be1dcb352e36eae"
+source = "git+https://github.com/servo/rust-core-foundation#6fa0b908f3912e20d081193e83bf5a9aa958fb83"
+
+[[package]]
+name = "core_graphics"
+version = "0.1.0"
+source = "git+https://github.com/servo/rust-core-graphics#9434e2bda65d259f825104170b5fa6cc6dbaf5a9"
+dependencies = [
+ "core_foundation 0.1.0 (git+https://github.com/servo/rust-core-foundation)",
+]
 
 [[package]]
 name = "device"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#f93d2313eae673bbe6cd5765d27cbbd101fbde03"
 dependencies = [
  "gfx_gl 0.1.0 (git+https://github.com/gfx-rs/gfx_gl.git)",
 ]
@@ -41,7 +49,7 @@ dependencies = [
 [[package]]
 name = "gfx"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#f93d2313eae673bbe6cd5765d27cbbd101fbde03"
 dependencies = [
  "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
  "gfx_macros 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
@@ -59,13 +67,19 @@ dependencies = [
 [[package]]
 name = "gfx_macros"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#f93d2313eae673bbe6cd5765d27cbbd101fbde03"
+
+[[package]]
+name = "gl_common"
+version = "0.0.1"
+source = "git+https://github.com/bjz/gl-rs.git#678346eb5f8ba95f50a8d0f7ff9d87a7338953dc"
 
 [[package]]
 name = "gl_generator"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#325b34c470b18f83756fe86e48cce56dba28d648"
+source = "git+https://github.com/bjz/gl-rs.git#678346eb5f8ba95f50a8d0f7ff9d87a7338953dc"
 dependencies = [
+ "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
  "khronos_api 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
  "rust-xml 0.1.0 (git+https://github.com/netvl/rust-xml)",
 ]
@@ -73,24 +87,24 @@ dependencies = [
 [[package]]
 name = "glutin"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/glutin.git#605bf39b78c0afc38f8d14b12605f9e3a27bac65"
+source = "git+https://github.com/tomaka/glutin.git#b55f18f13545422f9f19658d0ae02bb7e83ea0cd"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.0 (git+https://github.com/DavidPartouche/rust-cocoa)",
  "compile_msg 0.1.0 (git+https://github.com/huonw/compile_msg)",
- "core_foundation 0.1.0 (git+https://github.com/servo/rust-core-foundation)",
+ "core_graphics 0.1.0 (git+https://github.com/servo/rust-core-graphics)",
  "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
 ]
 
 [[package]]
 name = "khronos_api"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#325b34c470b18f83756fe86e48cce56dba28d648"
+source = "git+https://github.com/bjz/gl-rs.git#678346eb5f8ba95f50a8d0f7ff9d87a7338953dc"
 
 [[package]]
 name = "render"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#d7e47b45702ad97d7c3d7bb84ce6c66cc7c17386"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#f93d2313eae673bbe6cd5765d27cbbd101fbde03"
 dependencies = [
  "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
 ]
@@ -98,7 +112,7 @@ dependencies = [
 [[package]]
 name = "rust-xml"
 version = "0.1.0"
-source = "git+https://github.com/netvl/rust-xml#7d867d8020e6ee845d198e012124c698738804a2"
+source = "git+https://github.com/netvl/rust-xml#a4109a2b99e602a26f157f052f4d2677f9b4aa8e"
 
 [[package]]
 name = "vecmath"
