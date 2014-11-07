@@ -14,6 +14,12 @@ pub use color_lib as color;
 pub use window::gfx_integration::Vertex;
 use color::{Color4, Color3};
 
+
+pub use render::ProgramError;
+pub use render::ErrorVertex;
+pub use render::ErrorFragment;
+pub use render::ErrorLink;
+
 pub mod window;
 
 pub type Vec2f = (f32, f32);
@@ -24,7 +30,8 @@ pub trait Color {
 
 #[deriving(Show)]
 pub enum LovelyError {
-    Dummy
+    WindowError(String),
+    ShaderError(ProgramError)
 }
 
 pub type LovelyResult<A> = Result<A, LovelyError>;
