@@ -225,7 +225,16 @@ impl LovelyCanvas for Window {
     }
 
     fn draw_circle(&mut self, pos: super::Vec2f, radius: f32) {
+        self.draw_elipse(pos, (radius, radius));
+    }
+
+    fn draw_border_circle(&mut self, pos: super::Vec2f, radius: f32, border_size: f32) {
+        unimplemented!();
+    }
+
+    fn draw_elipse(&mut self, pos: super::Vec2f, size: super::Vec2f) {
         use std::num::FloatMath;
+        use std::intrinsics::transmute;
         if self.stored_circle.is_none() {
             let mut vertex_data = vec![];
             let pi = Float::pi();
@@ -238,22 +247,34 @@ impl LovelyCanvas for Window {
             let shape = self.stamp_shape(vertex_data.as_slice());
             self.stored_circle = Some(shape);
         }
-        let shape = self.stored_circle.as_ref().unwrap();
-    }
 
-    fn draw_border_circle(&mut self, pos: super::Vec2f, radius: f32, border_size: f32) {
-        unimplemented!();
-    }
-
-    fn draw_elipse(&mut self, pos: super::Vec2f, size: super::Vec2f) {
-        unimplemented!();
+        let shape = unsafe{ transmute(self.stored_circle.as_ref().unwrap()) };
+        let (x, y) = pos;
+        let (sx, sy) = size;
+        self.push_matrix();
+        self.translate(x+sx, y+sy);
+        self.scale(sx, sy);
+        self.draw_shape(shape);
+        self.pop_matrix();
     }
     fn draw_border_elipse(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
         unimplemented!();
     }
 
-    fn draw_line(&mut self, positions: &Vec<super::Vec2f>, line_size: f32) {
-        unimplemented!();
+    fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32) {
+        let (ax, ay) = start;
+        let (bx, by) = end;
+        let (dx, dy) = (bx - ax, by - ay);
+        let length = (dx * dx + dy * dy).sqrt();
+        let angle = dy.atan2(dx);
+
+        self.push_matrix();
+        self.translate(ax, ay);
+        self.rotate(angle);
+        self.scale(length , line_size / 2.0);
+        self.translate(0.0, -0.5);
+        self.draw_rect((0.0,0.0), (1.0,1.0));
+        self.pop_matrix();
     }
     fn draw_arc(&mut self, pos: super::Vec2f, radius: f32, angle1: f32, angle2: f32) {
         unimplemented!();

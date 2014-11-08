@@ -62,7 +62,7 @@ pub trait LovelyCanvas: LovelyRaw {
     fn draw_elipse(&mut self, pos: Vec2f, size: Vec2f);
     fn draw_border_elipse(&mut self, pos: Vec2f, size: Vec2f, border_size: f32);
 
-    fn draw_line(&mut self, positions: &Vec<Vec2f>, line_size: f32);
+    fn draw_line(&mut self, start: Vec2f, end: Vec2f, line_size: f32);
     fn draw_arc(&mut self, pos: Vec2f, radius: f32, angle1: f32, angle2: f32);
 
     fn with_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());
@@ -126,6 +126,11 @@ pub trait LovelyRaw {
     fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4];
     fn push_matrix(&mut self);
     fn pop_matrix(&mut self);
+    fn with_matrix(&mut self, f: |&Self|) {
+        self.push_matrix();
+        f(self);
+        self.pop_matrix();
+    }
     fn apply_matrix(&mut self, matrix: [[f32, ..4], ..4]) {
         use vecmath::col_mat4_mul as multiply;
         let current = self.current_matrix_mut();
