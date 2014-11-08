@@ -18,7 +18,7 @@ use super::{
     WindowError,
     ShaderError
 };
-
+use super::{LovelyCanvas, LovelyWindow, LovelyRaw};
 use vecmath;
 
 pub use self::gfx_integration as gfxi;
@@ -41,6 +41,7 @@ pub struct Window {
     title: String,
 
     stored_rect: Option<Shape>,
+    stored_circle: Option<Shape>,
 
     mouse_pos: (i32, i32),
     focused: bool,
@@ -83,6 +84,7 @@ impl Window {
             title: "Lovely".to_string(),
             basis_matrix: basis,
             stored_rect: None,
+            stored_circle: None,
             mouse_pos: (0, 0),
             focused: true,
             mouse_down: false
@@ -124,11 +126,6 @@ impl Window {
         self.frame = Frame::new(wi as u16, hi as u16);
     }
 
-    fn new_scope_transform(&mut self, mat: Mat4f) {
-        let cur = self.current_matrix();
-        self.matrix_stack.push(vecmath::col_mat4_mul(cur, mat));
-    }
-
     fn w(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (w, _) => w as i32
@@ -138,16 +135,6 @@ impl Window {
     fn h(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (_, h) => h as i32
-        }
-    }
-
-    //// Matrix
-
-    fn current_matrix(&self) -> [[f32, ..4], ..4] {
-        if self.matrix_stack.len() == 0 {
-            self.basis_matrix
-        } else {
-            self.matrix_stack[self.matrix_stack.len()-1]
         }
     }
 
@@ -170,7 +157,7 @@ impl Window {
     }
 
     pub fn draw_shape(&mut self, shape: &Shape) {
-        let mat = self.current_matrix();
+        let mat = *self.current_matrix();
         let params = gfx_integration::Params {
             transform: mat,
             color: shape.color.unwrap_or_else(|| self.current_color())
@@ -181,7 +168,7 @@ impl Window {
 }
 
 #[allow(unused_variables)]
-impl super::LovelyCanvas<()> for Window {
+impl LovelyCanvas for Window {
     fn width(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (w, _) => w as i32
@@ -195,6 +182,7 @@ impl super::LovelyCanvas<()> for Window {
     }
 
     fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
+        use std::intrinsics::transmute;
         if self.stored_rect.is_none() {
             let vertex_data = [
                 Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
@@ -205,21 +193,23 @@ impl super::LovelyCanvas<()> for Window {
             let shape = self.stamp_shape(vertex_data);
             self.stored_rect = Some(shape);
         }
-        let shape = self.stored_rect.unwrap();
         let (x, y) = pos;
         let (w, h) = size;
-        self.with_translate(x, y, |window| {
-            window.with_scale(w, h, |window| {
-                window.draw_shape(&shape)
-            });
-        });
+        self.push_matrix();
+        self.translate(x, y);
+        self.scale(w, h);
+        // This is safe because draw_shape does *not* mutate the shape itself.
+        let shape = unsafe { transmute(self.stored_rect.as_ref().unwrap()) };
+        self.draw_shape(shape);
+        self.pop_matrix();
     }
 
     fn draw_border_rect(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
+        use std::cmp::{partial_min, partial_max};
         let (px, py) = pos;
         let (w, h) = size;
-        let smallest = ::std::cmp::partial_min(w,h).unwrap_or(0.0);
-        let bs = ::std::cmp::partial_max(border_size, smallest).unwrap_or(0.0);
+        let smallest = partial_min(w,h).unwrap_or(0.0);
+        let bs = partial_max(border_size, smallest).unwrap_or(0.0);
         self.draw_rect((px + bs, py + bs), (w - 2.0 * bs, h - 2.0 * bs));
         self.with_color([1.0,1.0,1.0,0.5], |window| {
             window.draw_rect((px+border_size, py),
@@ -235,7 +225,20 @@ impl super::LovelyCanvas<()> for Window {
     }
 
     fn draw_circle(&mut self, pos: super::Vec2f, radius: f32) {
-        unimplemented!();
+        use std::num::FloatMath;
+        if self.stored_circle.is_none() {
+            let mut vertex_data = vec![];
+            let pi = Float::pi();
+            let mut i = 0.0f32;
+            while i < 2.0 * pi {
+                let p = [i.sin(), i.cos()];
+                vertex_data.push(Vertex{pos: p, tex: p});
+                i += pi / 360.0;
+            }
+            let shape = self.stamp_shape(vertex_data.as_slice());
+            self.stored_circle = Some(shape);
+        }
+        let shape = self.stored_circle.as_ref().unwrap();
     }
 
     fn draw_border_circle(&mut self, pos: super::Vec2f, radius: f32, border_size: f32) {
@@ -266,49 +269,7 @@ impl super::LovelyCanvas<()> for Window {
         unimplemented!();
     }
 
-    fn with_rotation(&mut self, theta: f32, f: |&mut Window| -> ()) {
-        let mut prod = vecmath::mat4_id();
-        let (c, s) = (theta.cos(), theta.sin());
-        prod[0][0] = c;
-        prod[0][1] = s;
-        prod[1][0] = -s;
-        prod[1][1] = c;
-
-        self.new_scope_transform(prod);
-        f(self);
-        self.matrix_stack.pop();
-    }
-
-    fn with_translate(&mut self, dx: f32, dy: f32, f: |&mut Window| -> ()) {
-        let mut prod = vecmath::mat4_id();
-        prod[3][0] = dx;
-        prod[3][1] = dy;
-
-        self.new_scope_transform(prod);
-        f(self);
-        self.matrix_stack.pop();
-    }
-
-    fn with_scale(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
-        let mut prod = vecmath::mat4_id();
-        prod[0][0] = sx;
-        prod[1][1] = sy;
-
-        self.new_scope_transform(prod);
-        f(self);
-        self.matrix_stack.pop();
-    }
-
-    fn with_shear(&mut self, sx: f32, sy: f32, f: |&mut Window| -> ()) {
-        let mut prod = vecmath::mat4_id();
-        prod[1][0] = sx;
-        prod[0][1] = sy;
-        self.new_scope_transform(prod);
-        f(self);
-        self.matrix_stack.pop();
-    }
-
-    fn draw<T: super::Drawable<()>>(&mut self, figure: T) {
+    fn draw<T: super::Drawable>(&mut self, figure: T) {
         unimplemented!();
     }
 
@@ -317,7 +278,7 @@ impl super::LovelyCanvas<()> for Window {
     }
 }
 
-impl super::LovelyWindow for Window {
+impl LovelyWindow for Window {
     fn is_open(&self) -> bool {
         !self.glutin_window.is_closed()
     }
@@ -353,4 +314,30 @@ impl super::LovelyWindow for Window {
     }
 }
 
+impl LovelyRaw for Window {
+    fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] {
+        let len = self.matrix_stack.len();
+        if len == 0 {
+            &mut self.basis_matrix
+        } else {
+            &mut self.matrix_stack[len - 1]
+        }
+    }
 
+    fn current_matrix(&self) -> &[[f32, ..4], ..4] {
+        if self.matrix_stack.len() == 0 {
+            &self.basis_matrix
+        } else {
+            &self.matrix_stack[self.matrix_stack.len()-1]
+        }
+    }
+
+    fn push_matrix(&mut self) {
+        let c = *self.current_matrix();
+        self.matrix_stack.push(c);
+    }
+
+    fn pop_matrix(&mut self) {
+        self.matrix_stack.pop();
+    }
+}
