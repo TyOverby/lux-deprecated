@@ -16,8 +16,9 @@ fn main() {
         window.process_events();
         window.clear([0.5, 0.5, 0.5]);
         let (x, y) = window.mouse_pos();
+        let (x, y) = (x as f32, y as f32);
         window.with_color([1.0f32, 0.0, 1.0, 0.1], |window| {
-            window.draw_elipse((x as f32, y as f32), (10.0, 20.0));
+            window.draw_elipse((x, y), (10.0, 20.0));
             window.draw_border_rect((50.0, 50.0), (40.0, 40.0), 5.0);
         });
         window.with_scale(10.0, 10.0, |window| {
@@ -28,8 +29,9 @@ fn main() {
         let sz = (5.0, 5.0);
         window.draw_rect(start, sz);
         window.draw_rect(end, sz);
-        window.with_color([0.0,0.0,1.0, 0.5], |window| {
-            window.draw_line(start, end, 50.0);
+        window.with_color([0.0,1.0,1.0, 1.0], |window| {
+            //window.draw_line(start, end, 50.0);
+            window.draw_lines(&[start, end, (x, y), (y, x)], 10.0);
         });
         window.render();
     }

@@ -276,6 +276,20 @@ impl LovelyCanvas for Window {
         self.draw_rect((0.0,0.0), (1.0,1.0));
         self.pop_matrix();
     }
+
+    fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32) {
+        if positions.len() <= 1 { return; }
+        let l_mod = line_size / 4.0;
+        for i in range(0, positions.len() - 1) {
+            let (x1, y1) = positions[i];
+            let (x2, y2) = positions[i+1];
+            self.draw_line((x1, y1), (x2, y2), line_size);
+            self.draw_circle((x1 - l_mod, y1 - l_mod), l_mod);
+        }
+        let (lx, ly) = positions[positions.len()-1];
+        self.draw_circle((lx - l_mod, ly - l_mod), l_mod);
+    }
+
     fn draw_arc(&mut self, pos: super::Vec2f, radius: f32, angle1: f32, angle2: f32) {
         unimplemented!();
     }

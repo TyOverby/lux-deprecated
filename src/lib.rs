@@ -63,6 +63,7 @@ pub trait LovelyCanvas: LovelyRaw {
     fn draw_border_elipse(&mut self, pos: Vec2f, size: Vec2f, border_size: f32);
 
     fn draw_line(&mut self, start: Vec2f, end: Vec2f, line_size: f32);
+    fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32);
     fn draw_arc(&mut self, pos: Vec2f, radius: f32, angle1: f32, angle2: f32);
 
     fn with_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());
