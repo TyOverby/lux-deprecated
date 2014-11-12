@@ -11,10 +11,9 @@ extern crate vecmath;
 
 pub use window::gfx_integration::Vertex;
 
-pub use render::ProgramError;
-pub use render::ErrorVertex;
-pub use render::ErrorFragment;
-pub use render::ErrorLink;
+pub use render::{ ProgramError, ErrorVertex, ErrorFragment, ErrorLink };
+pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
+               TriangleList, TriangleStrip, TriangleFan };
 
 pub mod window;
 
@@ -29,6 +28,7 @@ pub enum LovelyError {
     WindowError(String),
     ShaderError(ProgramError)
 }
+
 
 pub type LovelyResult<A> = Result<A, LovelyError>;
 
