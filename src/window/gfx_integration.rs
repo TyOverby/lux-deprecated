@@ -17,7 +17,7 @@ pub struct Params {
     pub color: [f32, ..4]
 }
 
-pub static VERTEX_SRC: ShaderSource = shaders! {
+pub static VERTEX_SRC: ShaderSource<'static> = shaders! {
 GLSL_120: b"
     #version 120
     attribute vec2 a_Pos;
@@ -42,7 +42,7 @@ GLSL_150: b"
 "
 };
 
-pub static FRAGMENT_SRC: ShaderSource = shaders! {
+pub static FRAGMENT_SRC: ShaderSource<'static> = shaders! {
 GLSL_120: b"
     #version 120
     varying vec2 v_TexCoord;

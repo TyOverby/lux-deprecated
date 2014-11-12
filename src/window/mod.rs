@@ -24,6 +24,18 @@ use vecmath;
 pub use self::gfx_integration as gfxi;
 pub mod gfx_integration;
 
+pub mod draw_types {
+    pub use gfx::{
+        PrimitiveType,
+        Point,
+        Line,
+        LineStrip,
+        TriangleList,
+        TriangleStrip,
+        TriangleFan
+    };
+}
+
 type Mat4f = [[f32, ..4], ..4];
 type BaseColor = [f32, ..4];
 
@@ -145,9 +157,10 @@ impl Window {
         self.color_stack[len - 1]
     }
 
-    pub fn stamp_shape(&mut self, vertices: &[Vertex]) -> Shape {
+    pub fn stamp_shape(&mut self, vertices: &[Vertex],
+                       draw_type: draw_types::PrimitiveType) -> Shape {
         let mesh = self.graphics.device.create_mesh(vertices);
-        let slice = mesh.to_slice(::gfx::TriangleFan);
+        let slice = mesh.to_slice(draw_type);
         let batch: gfx_integration::BasicBatch =
             self.graphics.make_batch(&self.program, &mesh, slice, &self.draw_state).unwrap();
         Shape {
@@ -185,12 +198,14 @@ impl LovelyCanvas for Window {
         use std::intrinsics::transmute;
         if self.stored_rect.is_none() {
             let vertex_data = [
-                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
                 Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
-                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
+                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
                 Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
+                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
             ];
-            let shape = self.stamp_shape(vertex_data);
+            let shape = self.stamp_shape(vertex_data, self::draw_types::TriangleList);
             self.stored_rect = Some(shape);
         }
         let (x, y) = pos;
@@ -244,7 +259,7 @@ impl LovelyCanvas for Window {
                 vertex_data.push(Vertex{pos: p, tex: p});
                 i += pi / 360.0;
             }
-            let shape = self.stamp_shape(vertex_data.as_slice());
+            let shape = self.stamp_shape(vertex_data.as_slice(), self::draw_types::TriangleFan);
             self.stored_circle = Some(shape);
         }
 
