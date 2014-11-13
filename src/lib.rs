@@ -32,18 +32,8 @@ pub enum LovelyError {
 
 pub type LovelyResult<A> = Result<A, LovelyError>;
 
-pub enum DrawPrimitive {
-    Points,
-    Lines,
-    LinesStrip,
-    Triangles,
-    TrianglesStrip,
-    TrianglesFan,
-    Quads
-}
-
 pub trait Drawable {
-    fn primitive(&self) -> DrawPrimitive;
+    fn primitive(&self) -> PrimitiveType;
     fn vertices(&self) -> &Vec<Vertex>;
     fn texture(&self) -> Option<&()>;
     fn color(&self) -> Option<Color>;
