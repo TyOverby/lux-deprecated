@@ -1,7 +1,7 @@
 extern crate lovely;
 
 use lovely::window::Window;
-use lovely::{LovelyCanvas, LovelyWindow, Vertex};
+use lovely::{LovelyCanvas, LovelyWindow, Vertex, TriangleList};
 
 fn main() {
     let mut window = Window::new().unwrap();
@@ -10,7 +10,7 @@ fn main() {
         Vertex { pos: [20.0, 20.0], tex: [0.0, 0.0] },
         Vertex { pos: [20.0, 40.0], tex: [0.0, 0.0] },
         Vertex { pos: [40.0, 40.0], tex: [0.0, 0.0] },
-    ]);
+    ], TriangleList);
 
     while window.is_open() {
         window.process_events();

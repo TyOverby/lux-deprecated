@@ -145,9 +145,10 @@ impl Window {
         self.color_stack[len - 1]
     }
 
-    pub fn stamp_shape(&mut self, vertices: &[Vertex]) -> Shape {
+    pub fn stamp_shape(&mut self, vertices: &[Vertex],
+                       draw_type: super::PrimitiveType) -> Shape {
         let mesh = self.graphics.device.create_mesh(vertices);
-        let slice = mesh.to_slice(::gfx::TriangleFan);
+        let slice = mesh.to_slice(draw_type);
         let batch: gfx_integration::BasicBatch =
             self.graphics.make_batch(&self.program, &mesh, slice, &self.draw_state).unwrap();
         Shape {
@@ -185,12 +186,14 @@ impl LovelyCanvas for Window {
         use std::intrinsics::transmute;
         if self.stored_rect.is_none() {
             let vertex_data = [
-                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
                 Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
-                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
+                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
                 Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
+                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
+                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
             ];
-            let shape = self.stamp_shape(vertex_data);
+            let shape = self.stamp_shape(vertex_data, super::TriangleList);
             self.stored_rect = Some(shape);
         }
         let (x, y) = pos;
@@ -244,7 +247,7 @@ impl LovelyCanvas for Window {
                 vertex_data.push(Vertex{pos: p, tex: p});
                 i += pi / 360.0;
             }
-            let shape = self.stamp_shape(vertex_data.as_slice());
+            let shape = self.stamp_shape(vertex_data.as_slice(), ::TriangleFan);
             self.stored_circle = Some(shape);
         }
 

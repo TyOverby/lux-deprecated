@@ -18,7 +18,7 @@ dependencies = [
 [[package]]
 name = "cocoa"
 version = "0.1.1"
-source = "git+https://github.com/DavidPartouche/rust-cocoa#a01fd681faa63566231a700ab526f41b5379eab7"
+source = "git+https://github.com/DavidPartouche/rust-cocoa#0a951a6cdd5f1a175b929754c134f9443b105642"
 
 [[package]]
 name = "compile_msg"
@@ -72,34 +72,35 @@ source = "git+https://github.com/gfx-rs/gfx-rs.git#8c30d07565fcde68a95389ab6baf0
 [[package]]
 name = "gl_common"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#8cc900ad44a8f8ac28d9a0402b49a472712966cb"
+source = "git+https://github.com/bjz/gl-rs.git#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
 
 [[package]]
 name = "gl_generator"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#8cc900ad44a8f8ac28d9a0402b49a472712966cb"
+source = "git+https://github.com/bjz/gl-rs.git#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
 dependencies = [
  "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
- "khronos_api 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
+ "khronos_api 0.0.2 (git+https://github.com/bjz/gl-rs.git)",
  "rust-xml 0.1.0 (git+https://github.com/netvl/rust-xml)",
 ]
 
 [[package]]
 name = "glutin"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/glutin.git#039a974e258e5a6ccfa75692f9663150b623f43f"
+source = "git+https://github.com/tomaka/glutin.git#7268082b767fffc648152e183e99fa9688eb7683"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.1 (git+https://github.com/DavidPartouche/rust-cocoa)",
  "compile_msg 0.1.0 (git+https://github.com/huonw/compile_msg)",
  "core_graphics 0.1.0 (git+https://github.com/servo/rust-core-graphics)",
+ "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
  "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
 ]
 
 [[package]]
 name = "khronos_api"
-version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#8cc900ad44a8f8ac28d9a0402b49a472712966cb"
+version = "0.0.2"
+source = "git+https://github.com/bjz/gl-rs.git#218f14c94d79331fc5487f8564dc71f7ec4a22a8"
 
 [[package]]
 name = "render"

@@ -11,10 +11,9 @@ extern crate vecmath;
 
 pub use window::gfx_integration::Vertex;
 
-pub use render::ProgramError;
-pub use render::ErrorVertex;
-pub use render::ErrorFragment;
-pub use render::ErrorLink;
+pub use render::{ ProgramError, ErrorVertex, ErrorFragment, ErrorLink };
+pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
+               TriangleList, TriangleStrip, TriangleFan };
 
 pub mod window;
 
@@ -30,20 +29,11 @@ pub enum LovelyError {
     ShaderError(ProgramError)
 }
 
+
 pub type LovelyResult<A> = Result<A, LovelyError>;
 
-pub enum DrawPrimitive {
-    Points,
-    Lines,
-    LinesStrip,
-    Triangles,
-    TrianglesStrip,
-    TrianglesFan,
-    Quads
-}
-
 pub trait Drawable {
-    fn primitive(&self) -> DrawPrimitive;
+    fn primitive(&self) -> PrimitiveType;
     fn vertices(&self) -> &Vec<Vertex>;
     fn texture(&self) -> Option<&()>;
     fn color(&self) -> Option<Color>;
