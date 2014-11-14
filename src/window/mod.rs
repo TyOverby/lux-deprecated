@@ -271,7 +271,7 @@ impl LovelyCanvas for Window {
         self.push_matrix();
         self.translate(ax, ay);
         self.rotate(angle);
-        self.scale(length , line_size / 2.0);
+        self.scale(length , line_size);
         self.translate(0.0, -0.5);
         self.draw_rect((0.0,0.0), (1.0,1.0));
         self.pop_matrix();
@@ -279,7 +279,7 @@ impl LovelyCanvas for Window {
 
     fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32) {
         if positions.len() <= 1 { return; }
-        let l_mod = line_size / 4.0;
+        let l_mod = line_size / 2.0;
         for i in range(0, positions.len() - 1) {
             let (x1, y1) = positions[i];
             let (x2, y2) = positions[i+1];
