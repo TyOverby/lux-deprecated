@@ -182,7 +182,7 @@ impl LovelyCanvas for Window {
         }
     }
 
-    fn draw_rect(&mut self, pos: super::Vec2f, size: super::Vec2f) {
+    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32)) {
         use std::intrinsics::transmute;
         if self.stored_rect.is_none() {
             let vertex_data = [
@@ -207,7 +207,7 @@ impl LovelyCanvas for Window {
         self.pop_matrix();
     }
 
-    fn draw_border_rect(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
+    fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
         use std::cmp::{partial_min, partial_max};
         let (px, py) = pos;
         let (w, h) = size;
@@ -227,15 +227,15 @@ impl LovelyCanvas for Window {
         });
     }
 
-    fn draw_circle(&mut self, pos: super::Vec2f, radius: f32) {
+    fn draw_circle(&mut self, pos: (f32, f32), radius: f32) {
         self.draw_elipse(pos, (radius, radius));
     }
 
-    fn draw_border_circle(&mut self, pos: super::Vec2f, radius: f32, border_size: f32) {
+    fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32) {
         unimplemented!();
     }
 
-    fn draw_elipse(&mut self, pos: super::Vec2f, size: super::Vec2f) {
+    fn draw_elipse(&mut self, pos: (f32, f32), size: (f32, f32)) {
         use std::num::FloatMath;
         use std::intrinsics::transmute;
         if self.stored_circle.is_none() {
@@ -260,7 +260,7 @@ impl LovelyCanvas for Window {
         self.draw_shape(shape);
         self.pop_matrix();
     }
-    fn draw_border_elipse(&mut self, pos: super::Vec2f, size: super::Vec2f, border_size: f32) {
+    fn draw_border_elipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
         unimplemented!();
     }
 
@@ -293,7 +293,7 @@ impl LovelyCanvas for Window {
         self.draw_circle((lx - l_mod, ly - l_mod), l_mod);
     }
 
-    fn draw_arc(&mut self, pos: super::Vec2f, radius: f32, angle1: f32, angle2: f32) {
+    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32) {
         unimplemented!();
     }
 
@@ -311,7 +311,7 @@ impl LovelyCanvas for Window {
         unimplemented!();
     }
 
-    fn draw_text(&mut self, pos: super::Vec2f, text: &str) {
+    fn draw_text(&mut self, pos: (f32, f32), text: &str) {
         unimplemented!();
     }
 }

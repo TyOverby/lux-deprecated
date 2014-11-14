@@ -17,8 +17,6 @@ pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
 
 pub mod window;
 
-pub type Vec2f = (f32, f32);
-
 pub trait Color {
     fn to_rgba(self) -> [f32, ..4];
 }
@@ -28,7 +26,6 @@ pub enum LovelyError {
     WindowError(String),
     ShaderError(ProgramError)
 }
-
 
 pub type LovelyResult<A> = Result<A, LovelyError>;
 
@@ -43,18 +40,18 @@ pub trait LovelyCanvas: LovelyRaw {
     fn width(&self) -> i32;
     fn height(&self) -> i32;
 
-    fn draw_rect(&mut self, pos: Vec2f, size: Vec2f);
-    fn draw_border_rect(&mut self, pos: Vec2f, size: Vec2f, border_size: f32);
+    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32));
+    fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
 
-    fn draw_circle(&mut self, pos: Vec2f, radius: f32);
-    fn draw_border_circle(&mut self, pos: Vec2f, radius: f32, border_size: f32);
+    fn draw_circle(&mut self, pos: (f32, f32), radius: f32);
+    fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32);
 
-    fn draw_elipse(&mut self, pos: Vec2f, size: Vec2f);
-    fn draw_border_elipse(&mut self, pos: Vec2f, size: Vec2f, border_size: f32);
+    fn draw_elipse(&mut self, pos: (f32, f32), size: (f32, f32));
+    fn draw_border_elipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
 
-    fn draw_line(&mut self, start: Vec2f, end: Vec2f, line_size: f32);
+    fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32);
     fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32);
-    fn draw_arc(&mut self, pos: Vec2f, radius: f32, angle1: f32, angle2: f32);
+    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32);
 
     fn with_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());
     fn with_border_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());
@@ -86,7 +83,7 @@ pub trait LovelyCanvas: LovelyRaw {
 
     fn draw<T: Drawable>(&mut self, figure: T);
 
-    fn draw_text(&mut self, pos: Vec2f, text: &str);
+    fn draw_text(&mut self, pos: (f32, f32), text: &str);
 }
 
 pub trait LovelyWindow {
