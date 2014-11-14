@@ -22,12 +22,12 @@ pub trait Color {
 }
 
 #[deriving(Show)]
-pub enum LovelyError {
+pub enum LuxError {
     WindowError(String),
     ShaderError(ProgramError)
 }
 
-pub type LovelyResult<A> = Result<A, LovelyError>;
+pub type LuxResult<A> = Result<A, LuxError>;
 
 pub trait Drawable {
     fn primitive(&self) -> PrimitiveType;
@@ -36,7 +36,7 @@ pub trait Drawable {
     fn color(&self) -> Option<Color>;
 }
 
-pub trait LovelyCanvas: LovelyRaw {
+pub trait LuxCanvas: LuxRaw {
     fn width(&self) -> i32;
     fn height(&self) -> i32;
 
@@ -86,7 +86,7 @@ pub trait LovelyCanvas: LovelyRaw {
     fn draw_text(&mut self, pos: (f32, f32), text: &str);
 }
 
-pub trait LovelyWindow {
+pub trait LuxWindow {
     fn is_open(&self) -> bool;
     fn title(&self) -> &str;
     fn set_title(&mut self, title: &str);
@@ -109,7 +109,7 @@ pub trait LovelyWindow {
     }
 }
 
-pub trait LovelyRaw {
+pub trait LuxRaw {
     fn current_matrix(&self) -> &[[f32, ..4], ..4];
     fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4];
     fn push_matrix(&mut self);

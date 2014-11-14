@@ -1,7 +1,7 @@
-extern crate lovely;
+extern crate lux;
 
-use lovely::window::Window;
-use lovely::{LovelyCanvas, LovelyWindow, Vertex, TriangleList};
+use lux::window::Window;
+use lux::{LuxCanvas, LuxWindow, Vertex, TriangleList};
 
 fn main() {
     let mut window = Window::new().unwrap();

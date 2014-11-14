@@ -14,11 +14,11 @@ use render::state::BlendAlpha;
 use super::{
     Color,
     Vertex,
-    LovelyResult,
+    LuxResult,
     WindowError,
     ShaderError
 };
-use super::{LovelyCanvas, LovelyWindow, LovelyRaw};
+use super::{LuxCanvas, LuxWindow, LuxRaw};
 use vecmath;
 
 pub use self::gfx_integration as gfxi;
@@ -55,13 +55,13 @@ pub struct Shape {
 }
 
 impl Window {
-    pub fn new() -> LovelyResult<Window> {
+    pub fn new() -> LuxResult<Window> {
         let window = try!(::glutin::Window::new().map_err(|e| {
             match e {
                 ::glutin::OsError(s) => WindowError(s)
             }
         }));
-        window.set_title("Lovely");
+        window.set_title("Lux");
         unsafe { window.make_current(); }
         let mut device = GlDevice::new(|s| window.get_proc_address(s));
         let (vtx, frag) = (gfxi::VERTEX_SRC.clone(), gfxi::FRAGMENT_SRC.clone());
@@ -81,7 +81,7 @@ impl Window {
             frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
             color_stack: vec![[1.0,0.0,0.0,1.0]],
-            title: "Lovely".to_string(),
+            title: "Lux".to_string(),
             basis_matrix: basis,
             stored_rect: None,
             stored_circle: None,
@@ -169,7 +169,7 @@ impl Window {
 }
 
 #[allow(unused_variables)]
-impl LovelyCanvas for Window {
+impl LuxCanvas for Window {
     fn width(&self) -> i32 {
         match self.glutin_window.get_inner_size().unwrap() {
             (w, _) => w as i32
@@ -316,7 +316,7 @@ impl LovelyCanvas for Window {
     }
 }
 
-impl LovelyWindow for Window {
+impl LuxWindow for Window {
     fn is_open(&self) -> bool {
         !self.glutin_window.is_closed()
     }
@@ -352,7 +352,7 @@ impl LovelyWindow for Window {
     }
 }
 
-impl LovelyRaw for Window {
+impl LuxRaw for Window {
     fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] {
         let len = self.matrix_stack.len();
         if len == 0 {
