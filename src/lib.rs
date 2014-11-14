@@ -30,10 +30,7 @@ pub enum LuxError {
 pub type LuxResult<A> = Result<A, LuxError>;
 
 pub trait Drawable {
-    fn primitive(&self) -> PrimitiveType;
-    fn vertices(&self) -> &Vec<Vertex>;
-    fn texture(&self) -> Option<&()>;
-    fn color(&self) -> Option<Color>;
+    fn draw<C: LuxCanvas>(&self, &mut C);
 }
 
 pub trait LuxCanvas: LuxRaw {
@@ -81,7 +78,9 @@ pub trait LuxCanvas: LuxRaw {
         self.pop_matrix();
     }
 
-    fn draw<T: Drawable>(&mut self, figure: T);
+    fn draw<T: Drawable>(&mut self, figure: &T) {
+        figure.draw(self);
+    }
 
     fn draw_text(&mut self, pos: (f32, f32), text: &str);
 }

@@ -307,10 +307,6 @@ impl LuxCanvas for Window {
         unimplemented!();
     }
 
-    fn draw<T: super::Drawable>(&mut self, figure: T) {
-        unimplemented!();
-    }
-
     fn draw_text(&mut self, pos: (f32, f32), text: &str) {
         unimplemented!();
     }
