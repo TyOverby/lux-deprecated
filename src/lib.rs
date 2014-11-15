@@ -15,21 +15,20 @@ pub use render::{ ProgramError, ErrorVertex, ErrorFragment, ErrorLink };
 pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
-
 pub use canvas::LuxCanvas;
 pub use window::LuxWindow;
 pub use raw::LuxRaw;
 pub use glutin_window::Window;
+pub use color::Color;
 
 mod window;
 mod canvas;
 mod raw;
 mod gfx_integration;
 mod glutin_window;
+mod color;
 
-pub trait Color {
-    fn to_rgba(self) -> [f32, ..4];
-}
+pub type LuxResult<A> = Result<A, LuxError>;
 
 #[deriving(Show)]
 pub enum LuxError {
@@ -37,23 +36,6 @@ pub enum LuxError {
     ShaderError(ProgramError)
 }
 
-pub type LuxResult<A> = Result<A, LuxError>;
-
 pub trait Drawable {
     fn draw<C: LuxCanvas>(&self, &mut C);
-}
-
-
-impl Color for [f32, ..4] {
-    fn to_rgba(self) -> [f32, ..4] {
-        self
-    }
-}
-
-impl Color for [f32, ..3] {
-    fn to_rgba(self) -> [f32, ..4] {
-        match self {
-            [r,g,b] => [r,g,b,1.0]
-        }
-    }
 }
