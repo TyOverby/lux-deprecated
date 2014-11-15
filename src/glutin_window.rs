@@ -21,8 +21,8 @@ use super::{
 use super::{LuxCanvas, LuxWindow, LuxRaw};
 use vecmath;
 
-pub use self::gfx_integration as gfxi;
-pub mod gfx_integration;
+use super::gfx_integration;
+use super::gfx_integration as gfxi;
 
 type Mat4f = [[f32, ..4], ..4];
 type BaseColor = [f32, ..4];
