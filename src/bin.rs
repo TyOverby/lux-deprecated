@@ -34,25 +34,8 @@ fn main() {
         });
         window.render();
 
-        /*
-        for e in window.events() { match e {
-            MouseMoved(x, y) => {
-
-            }
-            MouseDown(Left, x, y) => {
-
-            }
-
-            MouseReleased(Numbered(a), x, y) => {
-
-            }
-
-            KeyPressed(code, Some(chr), Other) => {
-
-            }
-            KeyReleased(code, _, Shift) => {
-
-            }
-        }}*/
+        for e in window.events() {
+            println!("{}", e);
+        }
     }
 }

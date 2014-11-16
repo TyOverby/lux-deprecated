@@ -1,5 +1,4 @@
-#![feature(phase)]
-#![feature(unboxed_closures)]
+#![feature(phase, globs, unboxed_closures)]
 
 #[phase(plugin)]
 extern crate gfx_macros;
@@ -16,7 +15,7 @@ pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
 pub use canvas::LuxCanvas;
-pub use window::LuxWindow;
+pub use window::*;
 pub use raw::LuxRaw;
 pub use glutin_window::Window;
 pub use color::Color;

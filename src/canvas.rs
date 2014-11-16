@@ -3,8 +3,18 @@ use super::Color;
 use super::LuxRaw;
 
 pub trait LuxCanvas: LuxRaw {
-    fn width(&self) -> i32;
-    fn height(&self) -> i32;
+    fn size(&self) -> (u32, u32);
+    fn width(&self) -> u32 {
+        match self.size() {
+            (w, _) => w
+        }
+    }
+    fn height(&self) -> u32 {
+        match self.size() {
+            (_, h) => h
+        }
+    }
+
 
     fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32));
     fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);

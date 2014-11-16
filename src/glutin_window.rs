@@ -1,4 +1,5 @@
 use std::num::FloatMath;
+use std::vec::MoveItems;
 use gfx::{
     DrawState,
     ClearData,
@@ -18,7 +19,7 @@ use super::{
     WindowError,
     ShaderError
 };
-use super::{LuxCanvas, LuxWindow, LuxRaw};
+use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent};
 use vecmath;
 
 use super::gfx_integration;
@@ -28,24 +29,33 @@ type Mat4f = [[f32, ..4], ..4];
 type BaseColor = [f32, ..4];
 
 pub struct Window {
+    // CANVAS
     glutin_window: ::glutin::Window,
     graphics: Graphics<GlDevice, GlCommandBuffer>,
     program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
     draw_state: DrawState,
     frame: Frame,
 
+    // RAW
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
     color_stack: Vec<BaseColor>,
 
+    // WINDOW
     title: String,
 
+    // CANVAS
     stored_rect: Option<Shape>,
     stored_circle: Option<Shape>,
 
+    // EVENT
+    event_store: Vec<LuxEvent>,
     mouse_pos: (i32, i32),
+    window_pos: (i32, i32),
+    window_size: (u32, u32),
     focused: bool,
-    mouse_down: bool
+    mouse_down_count: u8,
+    events_since_last_render: bool
 }
 
 
@@ -85,18 +95,69 @@ impl Window {
             basis_matrix: basis,
             stored_rect: None,
             stored_circle: None,
+            event_store: vec![],
             mouse_pos: (0, 0),
+            window_pos: (0, 0),
+            window_size: (width as u32, height as u32),
             focused: true,
-            mouse_down: false
+            mouse_down_count: 0,
+            events_since_last_render: false
         };
         Ok(window)
     }
 
     pub fn process_events(&mut self) {
-        use glutin::{MouseMoved, Focused};
+        use glutin;
+        self.events_since_last_render = true;
+        fn t_mouse(button: glutin::MouseButton) -> super::MouseButton {
+            match button {
+                glutin::LeftMouseButton => super::Left,
+                glutin::RightMouseButton => super::Right,
+                glutin::MiddleMouseButton => super::Middle,
+                glutin::OtherMouseButton(a) => super::OtherMouseButton(a)
+            }
+        }
+        let mut last_char = None;
         for event in self.glutin_window.poll_events() { match event {
-            MouseMoved((x, y)) => self.mouse_pos = (x as i32, y as i32),
-            Focused(f) => self.focused = f,
+            glutin::MouseMoved((x, y)) => {
+                self.mouse_pos = (x as i32, y as i32);
+                self.event_store.push(super::MouseMoved((x as i32, y as i32)))
+            }
+            glutin::MouseInput(glutin::Pressed, button) => {
+                self.event_store.push(super::MouseDown(t_mouse(button)));
+                self.mouse_down_count += 1;
+            }
+            glutin::MouseInput(glutin::Released, button) => {
+                self.event_store.push(super::MouseUp(t_mouse(button)));
+                self.mouse_down_count -= 1;
+            }
+            glutin::Resized(w, h) => {
+                self.window_size = (w as u32, h as u32);
+                self.event_store.push(super::WindowResized(self.window_size));
+            }
+            glutin::Moved(x, y) => {
+                self.window_pos = (x as i32, y as i32);
+                self.event_store.push(super::WindowMoved(self.window_pos));
+            }
+            glutin::MouseWheel(i) => {
+                self.event_store.push(super::MouseWheel(i as i32));
+            }
+            glutin::ReceivedCharacter(c) => {
+                last_char = Some(c);
+            }
+            glutin::KeyboardInput(glutin::Pressed, code, virt)  => {
+                let c = virt.and_then(super::keycode_to_char)
+                            .or_else(|| last_char.take());
+                self.event_store.push( super::KeyPressed(code, c, virt));
+            }
+            glutin::KeyboardInput(glutin::Released, code, virt) => {
+                let c = virt.and_then(super::keycode_to_char)
+                            .or_else(|| last_char.take());
+                self.event_store.push( super::KeyReleased(code, c, virt));
+            }
+            glutin::Focused(f) => {
+                self.focused = f;
+            }
             _ => {}
         }}
     }
@@ -113,29 +174,20 @@ impl Window {
     }
 
     pub fn render(&mut self) {
+        if !self.events_since_last_render {
+            self.process_events();
+        }
         self.graphics.end_frame();
         self.glutin_window.swap_buffers();
         self.matrix_stack.clear();
 
-        let(wi, hi) = (self.w(), self.h());
+        let(wi, hi) = self.size();
         let (w, h) = (wi as f32, hi as f32);
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
-        self.process_events();
         self.frame = Frame::new(wi as u16, hi as u16);
-    }
-
-    fn w(&self) -> i32 {
-        match self.glutin_window.get_inner_size().unwrap() {
-            (w, _) => w as i32
-        }
-    }
-
-    fn h(&self) -> i32 {
-        match self.glutin_window.get_inner_size().unwrap() {
-            (_, h) => h as i32
-        }
+        self.events_since_last_render = false;
     }
 
     //// Color
@@ -170,16 +222,8 @@ impl Window {
 
 #[allow(unused_variables)]
 impl LuxCanvas for Window {
-    fn width(&self) -> i32 {
-        match self.glutin_window.get_inner_size().unwrap() {
-            (w, _) => w as i32
-        }
-    }
-
-    fn height(&self) -> i32 {
-        match self.glutin_window.get_inner_size().unwrap() {
-            (_, h) => h as i32
-        }
+    fn size(&self) -> (u32, u32) {
+        self.window_size
     }
 
     fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32)) {
@@ -344,7 +388,12 @@ impl LuxWindow for Window {
         self.mouse_pos
     }
     fn mouse_down(&self) -> bool {
-        self.mouse_down
+        self.mouse_down_count != 0
+    }
+    fn events(&mut self) -> MoveItems<LuxEvent> {
+        use std::mem::replace;
+        self.process_events();
+        replace(&mut self.event_store, vec![]).into_iter()
     }
 }
 
