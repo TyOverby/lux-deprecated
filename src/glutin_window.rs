@@ -1,6 +1,6 @@
 use std::num::FloatMath;
 use std::vec::MoveItems;
-use std::collections::HashMap;
+use std::collections::{HashMap, VecMap};
 use gfx::{
     DrawState,
     ClearData,
@@ -59,9 +59,11 @@ pub struct Window {
     mouse_down_count: u8,
     events_since_last_render: bool,
 
+    // KEY EVENTS
     codes_pressed: HashMap<u8, bool>,
     chars_pressed: HashMap<char, bool>,
-    virtual_keys_pressed: HashMap<VirtualKeyCode, bool>
+    virtual_keys_pressed: HashMap<VirtualKeyCode, bool>,
+    code_to_char: VecMap<char>
 }
 
 
@@ -111,6 +113,7 @@ impl Window {
             codes_pressed: HashMap::new(),
             chars_pressed: HashMap::new(),
             virtual_keys_pressed: HashMap::new(),
+            code_to_char: VecMap::new(),
         };
         Ok(window)
     }
@@ -156,9 +159,14 @@ impl Window {
             }
             glutin::KeyboardInput(glutin::Pressed, code, virt)  => {
                 let c = virt.and_then(super::keycode_to_char)
-                            .or(last_char.take());
+                            .or(last_char.take())
+                            .or_else(|| self.code_to_char.get(&(code as uint))
+                                                         .map(|a| *a));
                 self.event_store.push( super::KeyPressed(code, c, virt));
                 self.codes_pressed.insert(code, true);
+                if !self.code_to_char.contains_key(&(code as uint)) && c.is_some(){
+                    self.code_to_char.insert(code as uint, c.unwrap());
+                }
                 if let Some(chr) = c {
                     self.chars_pressed.insert(chr, true);
                 }
@@ -168,8 +176,9 @@ impl Window {
             }
             glutin::KeyboardInput(glutin::Released, code, virt) => {
                 let c = virt.and_then(super::keycode_to_char)
-                            .or(last_char.take());
-                self.event_store.push( super::KeyReleased(code, c, virt));
+                            .or_else(|| self.code_to_char.get(&(code as uint))
+                                                         .map(|a| *a));
+                self.event_store.push(super::KeyReleased(code, c, virt));
                 self.codes_pressed.insert(code, false);
                 if let Some(chr) = c {
                     self.chars_pressed.insert(chr, false);
