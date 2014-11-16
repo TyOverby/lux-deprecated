@@ -1,5 +1,6 @@
 use std::num::FloatMath;
 use std::vec::MoveItems;
+use std::collections::HashMap;
 use gfx::{
     DrawState,
     ClearData,
@@ -19,7 +20,8 @@ use super::{
     WindowError,
     ShaderError
 };
-use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent};
+use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent, AbstractKey};
+use super::keycodes::VirtualKeyCode;
 use vecmath;
 
 use super::gfx_integration;
@@ -55,7 +57,11 @@ pub struct Window {
     window_size: (u32, u32),
     focused: bool,
     mouse_down_count: u8,
-    events_since_last_render: bool
+    events_since_last_render: bool,
+
+    codes_pressed: HashMap<u8, bool>,
+    chars_pressed: HashMap<char, bool>,
+    virtual_keys_pressed: HashMap<VirtualKeyCode, bool>
 }
 
 
@@ -101,7 +107,10 @@ impl Window {
             window_size: (width as u32, height as u32),
             focused: true,
             mouse_down_count: 0,
-            events_since_last_render: false
+            events_since_last_render: false,
+            codes_pressed: HashMap::new(),
+            chars_pressed: HashMap::new(),
+            virtual_keys_pressed: HashMap::new(),
         };
         Ok(window)
     }
@@ -149,11 +158,25 @@ impl Window {
                 let c = virt.and_then(super::keycode_to_char)
                             .or_else(|| last_char.take());
                 self.event_store.push( super::KeyPressed(code, c, virt));
+                self.codes_pressed.insert(code, true);
+                if let Some(chr) = c {
+                    self.chars_pressed.insert(chr, true);
+                }
+                if let Some(v_key) = virt {
+                    self.virtual_keys_pressed.insert(v_key, true);
+                }
             }
             glutin::KeyboardInput(glutin::Released, code, virt) => {
                 let c = virt.and_then(super::keycode_to_char)
                             .or_else(|| last_char.take());
                 self.event_store.push( super::KeyReleased(code, c, virt));
+                self.codes_pressed.insert(code, false);
+                if let Some(chr) = c {
+                    self.chars_pressed.insert(chr, false);
+                }
+                if let Some(v_key) = virt {
+                    self.virtual_keys_pressed.insert(v_key, false);
+                }
             }
             glutin::Focused(f) => {
                 self.focused = f;
@@ -394,6 +417,14 @@ impl LuxWindow for Window {
         use std::mem::replace;
         self.process_events();
         replace(&mut self.event_store, vec![]).into_iter()
+    }
+    fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool {
+        match k.to_key() {
+            (Some(code), _, _) => self.codes_pressed.get(&code).map(|x| *x),
+            (_, Some(chr), _) => self.chars_pressed.get(&chr).map(|x| *x),
+            (_, _, Some(key)) => self.virtual_keys_pressed.get(&key).map(|x| *x),
+            (None, None, None) => None
+        }.unwrap_or(false)
     }
 }
 

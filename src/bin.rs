@@ -13,7 +13,11 @@ fn main() {
 
     while window.is_open() {
         window.process_events();
-        window.clear([0.5, 0.5, 0.5]);
+        if window.is_key_pressed(' ') {
+            window.clear([1.0, 0.5, 0.5]);
+        } else {
+            window.clear([0.5, 0.5, 0.5]);
+        }
         let (x, y) = window.mouse_pos();
         let (x, y) = (x as f32, y as f32);
         window.with_color([1.0f32, 0.0, 1.0, 0.1], |window| {
