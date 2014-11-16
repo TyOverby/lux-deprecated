@@ -98,7 +98,7 @@ impl Window {
             draw_state: DrawState::new().blend(BlendAlpha),
             frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
-            color_stack: vec![[1.0,0.0,0.0,1.0]],
+            color_stack: vec![[0.0,0.0,0.0,1.0]],
             title: "Lux".to_string(),
             basis_matrix: basis,
             stored_rect: None,
