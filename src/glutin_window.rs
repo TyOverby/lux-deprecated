@@ -156,7 +156,7 @@ impl Window {
             }
             glutin::KeyboardInput(glutin::Pressed, code, virt)  => {
                 let c = virt.and_then(super::keycode_to_char)
-                            .or_else(|| last_char.take());
+                            .or(last_char.take());
                 self.event_store.push( super::KeyPressed(code, c, virt));
                 self.codes_pressed.insert(code, true);
                 if let Some(chr) = c {
@@ -168,7 +168,7 @@ impl Window {
             }
             glutin::KeyboardInput(glutin::Released, code, virt) => {
                 let c = virt.and_then(super::keycode_to_char)
-                            .or_else(|| last_char.take());
+                            .or(last_char.take());
                 self.event_store.push( super::KeyReleased(code, c, virt));
                 self.codes_pressed.insert(code, false);
                 if let Some(chr) = c {
