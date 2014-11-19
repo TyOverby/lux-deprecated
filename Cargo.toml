@@ -9,7 +9,7 @@ name = "lux"
 path = "src/lib.rs"
 
 [[bin]]
-name = "lovely_demo"
+name = "lux_demo"
 path = "src/bin.rs"
 
 [dependencies.glutin]
