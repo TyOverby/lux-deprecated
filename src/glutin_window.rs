@@ -215,7 +215,7 @@ impl Window {
         self.glutin_window.swap_buffers();
         self.matrix_stack.clear();
 
-        let(wi, hi) = self.size();
+        let (wi, hi) = self.size();
         let (w, h) = (wi as f32, hi as f32);
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;

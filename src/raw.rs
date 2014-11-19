@@ -42,4 +42,3 @@ pub trait LuxRaw {
         self.apply_matrix(prod);
     }
 }
-
