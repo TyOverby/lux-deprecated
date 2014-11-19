@@ -33,6 +33,7 @@ pub trait LuxRaw {
         self.apply_matrix(prod);
     }
     fn rotate(&mut self, theta: f32) {
+        use std::num::FloatMath;
         let mut prod = mat4_id();
         let (c, s) = (theta.cos(), theta.sin());
         prod[0][0] = c;

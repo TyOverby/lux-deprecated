@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::{LuxCanvas, LuxWindow, Window, Vertex, TriangleList};
+use lux::{LuxWindow, Window, Vertex, TriangleList};
 
 fn main() {
     let mut window = Window::new().unwrap();
