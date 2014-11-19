@@ -12,13 +12,12 @@ use gfx::{
     GlCommandBuffer,
     GlDevice
 };
-use render::state::BlendAlpha;
+use render::state::BlendPreset;
 use super::{
     Color,
     Vertex,
     LuxResult,
-    WindowError,
-    ShaderError
+    LuxError
 };
 use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent, AbstractKey};
 use super::keycodes::VirtualKeyCode;
@@ -76,7 +75,7 @@ impl Window {
     pub fn new() -> LuxResult<Window> {
         let window = try!(::glutin::Window::new().map_err(|e| {
             match e {
-                ::glutin::OsError(s) => WindowError(s)
+                ::glutin::OsError(s) => LuxError::WindowError(s)
             }
         }));
         window.set_title("Lux");
@@ -84,7 +83,7 @@ impl Window {
         let mut device = GlDevice::new(|s| window.get_proc_address(s));
         let (vtx, frag) = (gfxi::VERTEX_SRC.clone(), gfxi::FRAGMENT_SRC.clone());
         let program = try!(device.link_program(vtx, frag)
-                           .map_err(super::ShaderError));
+                           .map_err(LuxError::ShaderError));
         let graphics = Graphics::new(device);
         let (width, height) = window.get_inner_size().unwrap_or((0, 0));
         let mut basis = vecmath::mat4_id();
@@ -95,7 +94,7 @@ impl Window {
             glutin_window: window,
             graphics: graphics,
             program: program,
-            draw_state: DrawState::new().blend(BlendAlpha),
+            draw_state: DrawState::new().blend(BlendPreset::Alpha),
             frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
             color_stack: vec![[0.0,0.0,0.0,1.0]],
@@ -120,44 +119,45 @@ impl Window {
 
     pub fn process_events(&mut self) {
         use glutin;
+        use glutin::Event as glevent;
         self.events_since_last_render = true;
         fn t_mouse(button: glutin::MouseButton) -> super::MouseButton {
             match button {
-                glutin::LeftMouseButton => super::Left,
-                glutin::RightMouseButton => super::Right,
-                glutin::MiddleMouseButton => super::Middle,
-                glutin::OtherMouseButton(a) => super::OtherMouseButton(a)
+                glutin::MouseButton::LeftMouseButton => super::Left,
+                glutin::MouseButton::RightMouseButton => super::Right,
+                glutin::MouseButton::MiddleMouseButton => super::Middle,
+                glutin::MouseButton::OtherMouseButton(a) => super::OtherMouseButton(a)
             }
         }
         let mut last_char = None;
         for event in self.glutin_window.poll_events() { match event {
-            glutin::MouseMoved((x, y)) => {
+            glevent::MouseMoved((x, y)) => {
                 self.mouse_pos = (x as i32, y as i32);
                 self.event_store.push(super::MouseMoved((x as i32, y as i32)))
             }
-            glutin::MouseInput(glutin::Pressed, button) => {
+            glevent::MouseInput(glutin::ElementState::Pressed, button) => {
                 self.event_store.push(super::MouseDown(t_mouse(button)));
                 self.mouse_down_count += 1;
             }
-            glutin::MouseInput(glutin::Released, button) => {
+            glevent::MouseInput(glutin::ElementState::Released, button) => {
                 self.event_store.push(super::MouseUp(t_mouse(button)));
                 self.mouse_down_count -= 1;
             }
-            glutin::Resized(w, h) => {
+            glevent::Resized(w, h) => {
                 self.window_size = (w as u32, h as u32);
                 self.event_store.push(super::WindowResized(self.window_size));
             }
-            glutin::Moved(x, y) => {
+            glevent::Moved(x, y) => {
                 self.window_pos = (x as i32, y as i32);
                 self.event_store.push(super::WindowMoved(self.window_pos));
             }
-            glutin::MouseWheel(i) => {
+            glevent::MouseWheel(i) => {
                 self.event_store.push(super::MouseWheel(i as i32));
             }
-            glutin::ReceivedCharacter(c) => {
+            glevent::ReceivedCharacter(c) => {
                 last_char = Some(c);
             }
-            glutin::KeyboardInput(glutin::Pressed, code, virt)  => {
+            glevent::KeyboardInput(glutin::ElementState::Pressed, code, virt)  => {
                 let c = virt.and_then(super::keycode_to_char)
                             .or(last_char.take())
                             .or_else(|| self.code_to_char.get(&(code as uint))
@@ -176,7 +176,7 @@ impl Window {
                     self.virtual_keys_pressed.insert(v_key, true);
                 }
             }
-            glutin::KeyboardInput(glutin::Released, code, virt) => {
+            glevent::KeyboardInput(glutin::ElementState::Released, code, virt) => {
                 let c = virt.and_then(super::keycode_to_char)
                             .or_else(|| self.code_to_char.get(&(code as uint))
                                                          .map(|a| *a));
@@ -189,7 +189,7 @@ impl Window {
                     self.virtual_keys_pressed.insert(v_key, false);
                 }
             }
-            glutin::Focused(f) => {
+            glevent::Focused(f) => {
                 self.focused = f;
             }
             _ => {}
@@ -314,7 +314,7 @@ impl LuxCanvas for Window {
     }
 
     fn draw_elipse(&mut self, pos: (f32, f32), size: (f32, f32)) {
-        use std::num::FloatMath;
+        use std::num::Float;
         use std::intrinsics::transmute;
         if self.stored_circle.is_none() {
             let mut vertex_data = vec![];

@@ -10,12 +10,15 @@ extern crate vecmath;
 
 pub use gfx_integration::Vertex;
 
-pub use render::{ ProgramError, ErrorVertex, ErrorFragment, ErrorLink };
+pub use render::ProgramError;
 pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
 pub use canvas::LuxCanvas;
 pub use window::*;
+pub use window::LuxEvent::*;
+pub use window::LuxEvent::*;
+pub use window::MouseButton::*;
 pub use raw::LuxRaw;
 pub use glutin_window::Window;
 pub use color::Color;
