@@ -41,7 +41,7 @@ dependencies = [
 [[package]]
 name = "device"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#160b84f32a292c5c6e40b49ea50c17b5abd31d0a"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#6ea9c69a61edd85fb64071dca6f89a7745d29a8d"
 dependencies = [
  "gfx_gl 0.1.0 (git+https://github.com/gfx-rs/gfx_gl.git)",
 ]
@@ -49,7 +49,7 @@ dependencies = [
 [[package]]
 name = "gfx"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#160b84f32a292c5c6e40b49ea50c17b5abd31d0a"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#6ea9c69a61edd85fb64071dca6f89a7745d29a8d"
 dependencies = [
  "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
  "gfx_macros 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
@@ -67,7 +67,7 @@ dependencies = [
 [[package]]
 name = "gfx_macros"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#160b84f32a292c5c6e40b49ea50c17b5abd31d0a"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#6ea9c69a61edd85fb64071dca6f89a7745d29a8d"
 
 [[package]]
 name = "gl_common"
@@ -105,7 +105,7 @@ source = "git+https://github.com/bjz/gl-rs.git#d9e63fcb0cb0a2fd97a815bee612a96b3
 [[package]]
 name = "render"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#160b84f32a292c5c6e40b49ea50c17b5abd31d0a"
+source = "git+https://github.com/gfx-rs/gfx-rs.git#6ea9c69a61edd85fb64071dca6f89a7745d29a8d"
 dependencies = [
  "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
 ]

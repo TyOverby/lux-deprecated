@@ -1,4 +1,4 @@
-use std::num::FloatMath;
+use std::num::{FloatMath, Float};
 use std::vec::MoveItems;
 use std::collections::{HashMap, VecMap};
 use gfx::{
@@ -271,7 +271,7 @@ impl LuxCanvas for Window {
                 Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
                 Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
             ];
-            let shape = self.stamp_shape(vertex_data, super::TriangleList);
+            let shape = self.stamp_shape(&vertex_data, super::TriangleList);
             self.stored_rect = Some(shape);
         }
         let (x, y) = pos;
