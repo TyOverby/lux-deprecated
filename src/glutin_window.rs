@@ -163,10 +163,12 @@ impl Window {
                             .or_else(|| self.code_to_char.get(&(code as uint))
                                                          .map(|a| *a));
                 self.event_store.push( super::KeyPressed(code, c, virt));
-                self.codes_pressed.insert(code, true);
-                if !self.code_to_char.contains_key(&(code as uint)) && c.is_some(){
+
+                if c.is_some() && !self.code_to_char.contains_key(&(code as uint)) {
                     self.code_to_char.insert(code as uint, c.unwrap());
                 }
+
+                self.codes_pressed.insert(code, true);
                 if let Some(chr) = c {
                     self.chars_pressed.insert(chr, true);
                 }
@@ -330,6 +332,7 @@ impl LuxCanvas for Window {
         let shape = unsafe{ transmute(self.stored_circle.as_ref().unwrap()) };
         let (x, y) = pos;
         let (sx, sy) = size;
+        let (sx, sy) = (sx/2.0, sy/2.0);
         self.push_matrix();
         self.translate(x+sx, y+sy);
         self.scale(sx, sy);
@@ -363,10 +366,10 @@ impl LuxCanvas for Window {
             let (x1, y1) = positions[i];
             let (x2, y2) = positions[i+1];
             self.draw_line((x1, y1), (x2, y2), line_size);
-            self.draw_circle((x1 - l_mod, y1 - l_mod), l_mod);
+            self.draw_circle((x1 - l_mod, y1 - l_mod), line_size);
         }
         let (lx, ly) = positions[positions.len()-1];
-        self.draw_circle((lx - l_mod, ly - l_mod), l_mod);
+        self.draw_circle((lx - l_mod, ly - l_mod), line_size);
     }
 
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32) {
