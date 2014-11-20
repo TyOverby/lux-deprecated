@@ -1,4 +1,4 @@
-#![feature(phase, globs, unboxed_closures, if_let)]
+#![feature(phase, globs, unboxed_closures, if_let, tuple_indexing)]
 
 #[phase(plugin)]
 extern crate gfx_macros;

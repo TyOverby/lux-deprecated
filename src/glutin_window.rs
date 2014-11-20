@@ -34,6 +34,7 @@ pub struct Window {
     glutin_window: ::glutin::Window,
     graphics: Graphics<GlDevice, GlCommandBuffer>,
     program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
+    ellipse_border_program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
     draw_state: DrawState,
     frame: Frame,
 
@@ -48,6 +49,7 @@ pub struct Window {
     // CANVAS
     stored_rect: Option<Shape>,
     stored_circle: Option<Shape>,
+    stored_circle_border: Option<Shape>,
 
     // EVENT
     event_store: Vec<LuxEvent>,
@@ -81,9 +83,14 @@ impl Window {
         window.set_title("Lux");
         unsafe { window.make_current(); }
         let mut device = GlDevice::new(|s| window.get_proc_address(s));
-        let (vtx, frag) = (gfxi::VERTEX_SRC.clone(), gfxi::FRAGMENT_SRC.clone());
-        let program = try!(device.link_program(vtx, frag)
+        let program = try!(device.link_program(
+                            gfxi::VERTEX_SRC.clone(),
+                            gfxi::FRAGMENT_SRC.clone())
                            .map_err(LuxError::ShaderError));
+        let ellipse_border_program = try!(device.link_program(
+                            gfxi::ELLIPSE_BORDER_VERTEX_SRC.clone(),
+                            gfxi::ELLIPSE_BORDER_FRAGMENT_SRC.clone())
+                            .map_err(LuxError::ShaderError));
         let graphics = Graphics::new(device);
         let (width, height) = window.get_inner_size().unwrap_or((0, 0));
         let mut basis = vecmath::mat4_id();
@@ -94,6 +101,7 @@ impl Window {
             glutin_window: window,
             graphics: graphics,
             program: program,
+            ellipse_border_program:  ellipse_border_program,
             draw_state: DrawState::new().blend(BlendPreset::Alpha),
             frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
@@ -102,6 +110,7 @@ impl Window {
             basis_matrix: basis,
             stored_rect: None,
             stored_circle: None,
+            stored_circle_border: None,
             event_store: vec![],
             mouse_pos: (0, 0),
             window_pos: (0, 0),
@@ -340,7 +349,45 @@ impl LuxCanvas for Window {
         self.pop_matrix();
     }
     fn draw_border_elipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
-        unimplemented!();
+        use std::num::Float;
+        use std::intrinsics::transmute;
+        if self.stored_circle_border.is_none() {
+            let mut vertex_data = vec![];
+            let pi = Float::pi();
+            let mut i = 0.0f32;
+            while i < 2.0 * pi {
+                let p = [i.sin(), i.cos()];
+                vertex_data.push(gfx_integration::EllipseBorderVertex{
+                    pos: p,
+                    tex: [0.0,0.0],
+                    is_outer: 0.0
+                });
+                vertex_data.push(gfx_integration::EllipseBorderVertex{
+                    pos: p,
+                    tex: [0.0,0.0],
+                    is_outer: 1.0
+                });
+                i += pi / 360.0;
+            }
+            let mesh = self.graphics.device.create_mesh(vertex_data.as_slice());
+            let slice = mesh.to_slice(super::TriangleStrip);
+            let batch: gfx_integration::EllipseBorderBatch =
+                self.graphics.make_batch(&self.ellipse_border_program, &mesh, slice, &self.draw_state).unwrap();
+
+
+            self.push_matrix();
+            self.translate(pos.0, pos.1);
+            self.scale(size.0, size.1);
+            let mat = *self.current_matrix();
+            let params = gfx_integration::EllipseBorderParams {
+                transform: mat,
+                width: border_size / size.0,
+                color: [1.0, 0.0, 0.0, 1.0] // TODO change this
+            };
+
+            self.graphics.draw(&batch, &params, &self.frame);
+            self.pop_matrix();
+        }
     }
 
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32) {
