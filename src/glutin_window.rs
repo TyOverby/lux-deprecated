@@ -386,9 +386,17 @@ impl LuxCanvas for Window {
             self.stored_circle_border = Some(batch);
         }
 
+        let pos = (pos.0 + border_size, pos.1 + border_size);
+        let size = (size.0 - border_size * 2.0, size.1 - border_size * 2.0);
+
+        self.draw_elipse(pos, size);
+        let size = (size.0 / 2.0, size.1 / 2.0);
+        let (x, y) = pos;
+        let (sx, sy) = size;
+
         self.push_matrix();
-        self.translate(pos.0, pos.1);
-        self.scale(size.0, size.1);
+        self.translate(x + sx, y + sy);
+        self.scale(sx, sy);
         let mat = *self.current_matrix();
         let params = gfx_integration::EllipseBorderParams {
             transform: mat,
