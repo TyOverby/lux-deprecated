@@ -88,6 +88,7 @@ pub struct EllipseBorderVertex {
 pub struct EllipseBorderParams {
     #[name = "u_Transform"]
     pub transform: [[f32, ..4], ..4],
+    pub ratio: [f32, ..2],
     #[name = "u_Width"]
     pub width: f32,
     #[name = "t_Color"]
@@ -103,15 +104,15 @@ GLSL_120: b"
     varying vec2 v_TexCoord;
     uniform mat4 u_Transform;
     uniform float u_Width;
+    uniform vec2 ratio;
     void main() {
         v_TexCoord = a_TexCoord;
-        vec4 zero_t = vec4(0.0, 0.0, 0.0, 1.0);
+
         vec4 this_t = vec4(a_Pos, 0.0, 1.0);
-        vec4 delt_t = normalize(this_t - zero_t);
-
-        float factor = 1.0 / length(this_t - u_Transform * this_t);
-
-        gl_Position = u_Transform * (this_t + a_IsOuter * delt_t * factor);
+        vec2 mod = a_Pos * a_IsOuter;
+        mod /= ratio;
+        mod *= u_Width;
+        gl_Position = u_Transform * (this_t + vec4(mod, 0, 0));
     }
 "
 GLSL_150: b"
@@ -122,12 +123,15 @@ GLSL_150: b"
     out vec2 v_TexCoord;
     uniform mat4 u_Transform;
     uniform float u_width;
+    uniform vec2 ratio;
     void main() {
         v_TexCoord = a_TexCoord;
-        vec4 zero_t = u_Transform * vec4(0.0, 0.0, 0.0, 1.0);
-        vec4 this_t = u_Transform * vec4(a_Pos, 0.0, 1.0);
-        vec4 delt_t = normalize(this_t - zero_t);
-        gl_Position = this_t + a_IsOuter * delt_t;
+
+        vec4 this_t = vec4(a_Pos, 0.0, 1.0);
+        vec2 mod = a_Pos * a_IsOuter;
+        mod /= ratio;
+        mod *= u_Width;
+        gl_Position = u_Transform * (this_t + vec4(mod, 0, 0));
     }
 "
 };

@@ -19,6 +19,8 @@ use super::{
     LuxResult,
     LuxError
 };
+use glutin::WindowBuilder;
+
 use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent, AbstractKey};
 use super::keycodes::VirtualKeyCode;
 use vecmath;
@@ -49,7 +51,7 @@ pub struct Window {
     // CANVAS
     stored_rect: Option<Shape>,
     stored_circle: Option<Shape>,
-    stored_circle_border: Option<Shape>,
+    stored_circle_border: Option<gfx_integration::EllipseBorderBatch>,
 
     // EVENT
     event_store: Vec<LuxEvent>,
@@ -75,12 +77,20 @@ pub struct Shape {
 
 impl Window {
     pub fn new() -> LuxResult<Window> {
-        let window = try!(::glutin::Window::new().map_err(|e| {
+        let window_builder =
+            WindowBuilder::new()
+            .with_title("Lux".to_string())
+            .with_dimensions(600, 500)
+            .with_vsync()
+            .with_gl_debug_flag(true)
+            .with_visibility(true);
+
+        let window = try!(window_builder.build().map_err(|e| {
             match e {
                 ::glutin::OsError(s) => LuxError::WindowError(s)
             }
         }));
-        window.set_title("Lux");
+
         unsafe { window.make_current(); }
         let mut device = GlDevice::new(|s| window.get_proc_address(s));
         let program = try!(device.link_program(
@@ -373,21 +383,25 @@ impl LuxCanvas for Window {
             let slice = mesh.to_slice(super::TriangleStrip);
             let batch: gfx_integration::EllipseBorderBatch =
                 self.graphics.make_batch(&self.ellipse_border_program, &mesh, slice, &self.draw_state).unwrap();
-
-
-            self.push_matrix();
-            self.translate(pos.0, pos.1);
-            self.scale(size.0, size.1);
-            let mat = *self.current_matrix();
-            let params = gfx_integration::EllipseBorderParams {
-                transform: mat,
-                width: border_size / size.0,
-                color: [1.0, 0.0, 0.0, 1.0] // TODO change this
-            };
-
-            self.graphics.draw(&batch, &params, &self.frame);
-            self.pop_matrix();
+            self.stored_circle_border = Some(batch);
         }
+
+        self.push_matrix();
+        self.translate(pos.0, pos.1);
+        self.scale(size.0, size.1);
+        let mat = *self.current_matrix();
+        let params = gfx_integration::EllipseBorderParams {
+            transform: mat,
+            width: border_size,
+            ratio: [size.0, size.1],
+            color: [1.0, 0.0, 0.0, 1.0] // TODO change this
+        };
+
+        {
+            let batch = self.stored_circle_border.as_ref().unwrap();
+            self.graphics.draw(batch, &params, &self.frame);
+        }
+        self.pop_matrix();
     }
 
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32) {
