@@ -22,8 +22,8 @@ pub trait LuxCanvas: LuxRaw {
     fn draw_circle(&mut self, pos: (f32, f32), radius: f32);
     fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32);
 
-    fn draw_elipse(&mut self, pos: (f32, f32), size: (f32, f32));
-    fn draw_border_elipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
+    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32));
+    fn draw_border_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
 
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32);
     fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32);

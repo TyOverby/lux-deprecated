@@ -14,7 +14,7 @@ fn main() {
             window.draw_rect(pos, size);
         });
         window.with_color([0.0, 1.0, 0.0], |window| {
-            window.draw_border_elipse(pos, size, 40.0);
+            window.draw_border_ellipse(pos, size, 40.0);
         });
         window.with_color([1.0, 1.0, 0.0, 0.25], |window| {
             window.draw_rect(pos, size);

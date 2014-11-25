@@ -325,14 +325,14 @@ impl LuxCanvas for Window {
     }
 
     fn draw_circle(&mut self, pos: (f32, f32), radius: f32) {
-        self.draw_elipse(pos, (radius, radius));
+        self.draw_ellipse(pos, (radius, radius));
     }
 
     fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32) {
-        self.draw_border_elipse(pos, (radius, radius), border_size);
+        self.draw_border_ellipse(pos, (radius, radius), border_size);
     }
 
-    fn draw_elipse(&mut self, pos: (f32, f32), size: (f32, f32)) {
+    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32)) {
         use std::intrinsics::transmute;
         if self.stored_circle.is_none() {
             let mut vertex_data = vec![];
@@ -357,7 +357,7 @@ impl LuxCanvas for Window {
         self.draw_shape(shape);
         self.pop_matrix();
     }
-    fn draw_border_elipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
+    fn draw_border_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
         if self.stored_circle_border.is_none() {
             let mut vertex_data = vec![];
             let pi = ::std::f32::consts::PI;
@@ -386,7 +386,7 @@ impl LuxCanvas for Window {
         let pos = (pos.0 + border_size, pos.1 + border_size);
         let size = (size.0 - border_size * 2.0, size.1 - border_size * 2.0);
 
-        self.draw_elipse(pos, size);
+        self.draw_ellipse(pos, size);
         let size = (size.0 / 2.0, size.1 / 2.0);
         let (x, y) = pos;
         let (sx, sy) = size;
