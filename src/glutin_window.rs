@@ -329,15 +329,14 @@ impl LuxCanvas for Window {
     }
 
     fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32) {
-        unimplemented!();
+        self.draw_border_elipse(pos, (radius, radius), border_size);
     }
 
     fn draw_elipse(&mut self, pos: (f32, f32), size: (f32, f32)) {
-        use std::num::Float;
         use std::intrinsics::transmute;
         if self.stored_circle.is_none() {
             let mut vertex_data = vec![];
-            let pi = Float::pi();
+            let pi = ::std::f32::consts::PI;
             let mut i = 0.0f32;
             while i < 2.0 * pi {
                 let p = [i.sin(), i.cos()];
@@ -359,11 +358,9 @@ impl LuxCanvas for Window {
         self.pop_matrix();
     }
     fn draw_border_elipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
-        use std::num::Float;
-        use std::intrinsics::transmute;
         if self.stored_circle_border.is_none() {
             let mut vertex_data = vec![];
-            let pi = Float::pi();
+            let pi = ::std::f32::consts::PI;
             let mut i = 0.0f32;
             while i < 2.0 * pi {
                 let p = [i.sin(), i.cos()];
