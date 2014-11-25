@@ -110,7 +110,7 @@ GLSL_120: b"
 
         vec4 this_t = vec4(a_Pos, 0.0, 1.0);
 
-        vec2 normal = a_Pos;
+        vec2 normal = normalize(a_Pos * vec2(ratio.y, ratio.x));
         normal /= ratio;
         gl_Position = u_Transform * (this_t + vec4(a_IsOuter * normal * u_Width, 0, 0));
     }
