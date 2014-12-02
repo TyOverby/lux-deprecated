@@ -83,6 +83,8 @@ impl Window {
             .with_dimensions(600, 500)
             .with_vsync()
             .with_gl_debug_flag(true)
+            .with_multisampling(8)
+            .with_gl_version((3, 3))
             .with_visibility(true);
 
         let window = try!(window_builder.build().map_err(|e| {
@@ -112,7 +114,9 @@ impl Window {
             graphics: graphics,
             program: program,
             ellipse_border_program:  ellipse_border_program,
-            draw_state: DrawState::new().blend(BlendPreset::Alpha),
+            draw_state: DrawState::new()
+                                  .blend(BlendPreset::Alpha)
+                                  .multi_sample(),
             frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
             color_stack: vec![[0.0,0.0,0.0,1.0]],

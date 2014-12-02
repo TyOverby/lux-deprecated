@@ -128,10 +128,10 @@ GLSL_150: b"
         v_TexCoord = a_TexCoord;
 
         vec4 this_t = vec4(a_Pos, 0.0, 1.0);
-        vec2 mod = a_Pos * a_IsOuter;
-        mod /= ratio;
-        mod *= u_Width;
-        gl_Position = u_Transform * (this_t + vec4(mod, 0, 0));
+
+        vec2 normal = normalize(a_Pos * vec2(ratio.y, ratio.x));
+        normal /= ratio;
+        gl_Position = u_Transform * (this_t + vec4(a_IsOuter * normal * u_Width, 0, 0));
     }
 "
 };
