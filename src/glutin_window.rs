@@ -425,17 +425,23 @@ impl LuxCanvas for Window {
         self.pop_matrix();
     }
 
-    fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32) {
-        if positions.len() <= 1 { return; }
+    fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32) {
         let l_mod = line_size / 2.0;
-        for i in range(0, positions.len() - 1) {
-            let (x1, y1) = positions[i];
-            let (x2, y2) = positions[i+1];
-            self.draw_line((x1, y1), (x2, y2), line_size);
-            self.draw_circle((x1 - l_mod, y1 - l_mod), line_size);
+        let mut last = None;
+        for p in positions {
+            match last {
+                Some((x1, y1)) => {
+                    let (x2, y2) = p;
+                    self.draw_line((x1, y1), (x2, y2), line_size);
+                    self.draw_circle((x1 - l_mod, y1 - l_mod), line_size);
+                }
+                None => { }
+            }
+            last = Some(p);
         }
-        let (lx, ly) = positions[positions.len()-1];
-        self.draw_circle((lx - l_mod, ly - l_mod), line_size);
+        if let Some((lx, ly)) = last {
+            self.draw_circle((lx - l_mod, ly - l_mod), line_size);
+        }
     }
 
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32) {

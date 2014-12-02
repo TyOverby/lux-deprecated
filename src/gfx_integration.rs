@@ -122,7 +122,7 @@ GLSL_150: b"
     in float a_IsOuter;
     out vec2 v_TexCoord;
     uniform mat4 u_Transform;
-    uniform float u_width;
+    uniform float u_Width;
     uniform vec2 ratio;
     void main() {
         v_TexCoord = a_TexCoord;
