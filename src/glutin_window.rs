@@ -84,6 +84,7 @@ impl Window {
             .with_vsync()
             .with_gl_debug_flag(true)
             .with_multisampling(8)
+            .with_gl_version((3, 3))
             .with_visibility(true);
 
         let window = try!(window_builder.build().map_err(|e| {
