@@ -1,8 +1,16 @@
-use super::Drawable;
-use super::Color;
-use super::LuxRaw;
+use super::{Drawable, Color, Transform, StackedTransform};
 
-pub trait LuxCanvas: LuxRaw {
+pub trait BasicShape {
+    fn fill(self) -> Self;
+    fn stroke(self) -> Self;
+    fn fill_color<C: Color>(self, C) -> Self;
+    fn stroke_color<C: Color>(self, C) -> Self;
+    fn border(self, f32) -> Self;
+    fn padding(self, f32) -> Self;
+    fn stroke_size(self, f32) -> Self;
+}
+
+pub trait LuxCanvas: Transform + StackedTransform {
     fn size(&self) -> (u32, u32);
     fn width(&self) -> u32 {
         match self.size() {
@@ -14,7 +22,6 @@ pub trait LuxCanvas: LuxRaw {
             (_, h) => h
         }
     }
-
 
     fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32));
     fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);

@@ -1,15 +1,8 @@
 use vecmath::{mat4_id, col_mat4_mul};
 
-pub trait LuxRaw {
+pub trait Transform {
     fn current_matrix(&self) -> &[[f32, ..4], ..4];
     fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4];
-    fn push_matrix(&mut self);
-    fn pop_matrix(&mut self);
-    fn with_matrix(&mut self, f: |&Self|) {
-        self.push_matrix();
-        f(self);
-        self.pop_matrix();
-    }
     fn apply_matrix(&mut self, matrix: [[f32, ..4], ..4]) {
         let current = self.current_matrix_mut();
         *current = col_mat4_mul(*current, matrix);
@@ -41,5 +34,15 @@ pub trait LuxRaw {
         prod[1][0] = -s;
         prod[1][1] = c;
         self.apply_matrix(prod);
+    }
+}
+
+pub trait StackedTransform {
+    fn push_matrix(&mut self);
+    fn pop_matrix(&mut self);
+    fn with_matrix(&mut self, f: |&Self|) {
+        self.push_matrix();
+        f(self);
+        self.pop_matrix();
     }
 }
