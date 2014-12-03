@@ -1,4 +1,5 @@
 use vecmath::{mat4_id, col_mat4_mul};
+use super::Color;
 
 pub trait Transform {
     fn current_matrix(&self) -> &[[f32, ..4], ..4];
@@ -44,5 +45,44 @@ pub trait StackedTransform {
         self.push_matrix();
         f(self);
         self.pop_matrix();
+
+    }
+}
+
+pub trait Colored {
+    fn current_fill_color(&self) -> &[f32, ..4];
+    fn current_fill_color_mut(&mut self) -> &mut[f32, ..4];
+
+    fn current_stroke_color(&self) -> &[f32, ..4];
+    fn current_stroke_color_mut(&mut self) -> &mut[f32, ..4];
+
+    fn fill_color<C: Color>(&mut self, c: C) {
+        *self.current_fill_color_mut() = c.to_rgba();
+    }
+
+    fn stroke_color<C: Color>(&mut self, c: C) {
+        *self.current_stroke_color_mut() = c.to_rgba();
+    }
+}
+
+pub trait StackedColored: Colored {
+    fn push_colors(&mut self);
+    fn pop_colors(&mut self);
+    fn with_colors(&mut self, f: ||) {
+        self.push_colors();
+        f();
+        self.pop_colors();
+    }
+    fn with_fill_color<C: Color>(&mut self, color: C, f: ||) {
+        self.push_colors();
+        self.fill_color(color);
+        f();
+        self.pop_colors();
+    }
+    fn with_stroke_color<C: Color>(&mut self, color: C, f: ||) {
+        self.push_colors();
+        self.stroke_color(color);
+        f();
+        self.pop_colors();
     }
 }
