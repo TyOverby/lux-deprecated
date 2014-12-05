@@ -14,7 +14,7 @@ pub use render::ProgramError;
 pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
-pub use canvas::{LuxCanvas, BasicShape};
+pub use canvas::{LuxCanvas, BasicShape, PrimitiveCanvas};
 pub use window::*;
 pub use window::LuxEvent::*;
 pub use window::LuxEvent::*;
