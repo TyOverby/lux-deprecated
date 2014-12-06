@@ -11,7 +11,8 @@ extern crate vecmath;
 pub use gfx_integration::Vertex;
 
 pub use render::ProgramError;
-pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
+pub use gfx::PrimitiveType;
+pub use gfx::PrimitiveType::{ Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
 pub use canvas::{LuxCanvas, BasicShape};

@@ -144,7 +144,7 @@ impl Window {
 
         let window = try!(window_builder.build().map_err(|e| {
             match e {
-                ::glutin::OsError(s) => LuxError::WindowError(s)
+                ::glutin::CreationError::OsError(s) => LuxError::WindowError(s)
             }
         }));
 
