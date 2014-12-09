@@ -15,12 +15,12 @@ pub use render::ProgramError;
 pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
-pub use canvas::LuxCanvas;
+pub use canvas::{LuxCanvas, BasicShape, PrimitiveCanvas};
 pub use window::*;
 pub use window::LuxEvent::*;
 pub use window::LuxEvent::*;
 pub use window::MouseButton::*;
-pub use raw::LuxRaw;
+pub use raw::{Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
 
@@ -30,8 +30,6 @@ mod raw;
 mod gfx_integration;
 mod glutin_window;
 mod color;
-
-pub type LuxResult<A> = Result<A, LuxError>;
 
 #[deriving(Show)]
 pub enum LuxError {
@@ -47,3 +45,5 @@ pub trait LuxExtend {
     fn typemap(&self) -> &typemap::TypeMap;
     fn typemap_mut(&mut self) -> &mut typemap::TypeMap;
 }
+
+pub type LuxResult<A> = Result<A, LuxError>;

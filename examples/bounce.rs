@@ -1,39 +1,39 @@
-#![feature(if_let)]
-extern crate lux;
 use lux::{LuxCanvas, LuxWindow, Window};
 
-fn main() {
-    fn clamp(l: f32, v: f32, u: f32) -> Option<f32> {
-        if v <= l {
-            Some(l)
-        } else if v >= u {
-            Some(u)
-        } else {
-            None
-        }
-    }
-    let mut lux = Window::new().unwrap();
-
-    let sz = 10.0;
-    let (mut x, mut y) = (3.0, 10.0);
-    let (mut vx, mut vy) = (3.0, 3.0);
-    while lux.is_open() {
-        lux.clear([0.9, 0.9, 0.9, 0.1]);
-        x += vx;
-        y += vy;
-
-        if let Some(nx) = clamp(0.0, x, lux.width() as f32 - sz) {
-            x = nx;
-            vx *= -1.0;
-        }
-
-        if let Some(ny) = clamp(0.0, y, lux.height() as f32 - sz) {
-            y = ny;
-            vy *= -1.0;
-        }
-
-        lux.draw_rect((x, y), (sz, sz));
-        lux.render();
+fn bound(l: f32, v: f32, h: f32) -> (f32, bool) {
+    if v <= l{
+        (l, true)
+    } else if v >= h {
+        (h, true)
+    } else {
+        (v, false)
     }
 }
 
+fn main() {
+    let mut window = Window::new().unwrap();
+    let size = 10.0f32;
+    let (mut x, mut y) = (20.0, 50.0);
+    let (mut vx, mut vy) = (1.5, 1.5);
+    while window.is_open() {
+        window.clear([0.9, 0.9, 0.9]);
+        x += vx;
+        y += vy;
+
+        let (nx, cx) = bound(0.0, x, window.width() as f32 - size);
+        if cx {
+            x = nx;
+            vx = - vx;
+        }
+
+        let (ny, cy) = bound(0.0, y, window.height() as f32 - size);
+        if cx {
+            y = ny;
+            vy = - vy;
+        }
+
+        window.draw_rect((x, y), (15.0, 25.0));
+
+        window.render();
+    }
+}

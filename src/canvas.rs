@@ -1,8 +1,22 @@
-use super::Drawable;
-use super::Color;
-use super::LuxRaw;
+use super::{Drawable, Color, Transform, StackedTransform};
 
-pub trait LuxCanvas: LuxRaw {
+pub trait BasicShape {
+    fn fill(self) -> Self;
+    fn stroke(self) -> Self;
+    fn fill_color<C: Color>(self, C) -> Self;
+    fn stroke_color<C: Color>(self, C) -> Self;
+    fn border(self, f32) -> Self;
+    fn padding(self, f32) -> Self;
+    fn stroke_size(self, f32) -> Self;
+}
+
+pub trait PrimitiveCanvas {
+    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]);
+    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]);
+    fn draw_ellipse_border(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32, color: [f32, ..4]);
+}
+
+pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas {
     fn size(&self) -> (u32, u32);
     fn width(&self) -> u32 {
         match self.size() {
@@ -15,18 +29,8 @@ pub trait LuxCanvas: LuxRaw {
         }
     }
 
-
-    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32));
-    fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
-
-    fn draw_circle(&mut self, pos: (f32, f32), radius: f32);
-    fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32);
-
-    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32));
-    fn draw_border_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
-
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32);
-    fn draw_lines(&mut self, positions: &[(f32, f32)], line_size: f32);
+    fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32);
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32);
 
     fn with_color<C: Color>(&mut self, color: C, f: |&mut Self| -> ());

@@ -8,9 +8,9 @@ fn main() {
         // draw_line(start, end, line_width)
         window.draw_line((5.0, 10.0), (30.0, 60.0), 5.0);
         // draw_lines(points, line_width)
-        window.draw_lines(&[
+        window.draw_lines([
             (50.0, 50.0), (150.0, 50.0), (150.0, 150.0), (50.0, 150.0)
-        ], 10.0);
+        ].iter().map(|a| *a), 10.0);
         window.render();
     }
 }
