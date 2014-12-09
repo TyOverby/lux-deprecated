@@ -1,6 +1,18 @@
 use std::num::{FloatMath, Float};
 use std::vec::MoveItems;
 use std::collections::{HashMap, VecMap};
+
+use super::{
+    Color,
+    Vertex,
+    LuxResult,
+    LuxError,
+    gfx_integration
+};
+use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent, LuxExtend, AbstractKey};
+use super::keycodes::VirtualKeyCode;
+use super::gfx_integration as gfxi;
+
 use gfx::{
     DrawState,
     ClearData,
@@ -12,21 +24,14 @@ use gfx::{
     GlCommandBuffer,
     GlDevice
 };
+
 use render::state::BlendPreset;
-use super::{
-    Color,
-    Vertex,
-    LuxResult,
-    LuxError
-};
+
 use glutin::WindowBuilder;
 
-use super::{LuxCanvas, LuxWindow, LuxRaw, LuxEvent, AbstractKey};
-use super::keycodes::VirtualKeyCode;
-use vecmath;
+use typemap::TypeMap;
 
-use super::gfx_integration;
-use super::gfx_integration as gfxi;
+use vecmath;
 
 type Mat4f = [[f32, ..4], ..4];
 type BaseColor = [f32, ..4];
@@ -66,7 +71,10 @@ pub struct Window {
     codes_pressed: HashMap<u8, bool>,
     chars_pressed: HashMap<char, bool>,
     virtual_keys_pressed: HashMap<VirtualKeyCode, bool>,
-    code_to_char: VecMap<char>
+    code_to_char: VecMap<char>,
+
+    // EXTEND
+    typemap: TypeMap
 }
 
 
@@ -82,7 +90,7 @@ impl Window {
             .with_title("Lux".to_string())
             .with_dimensions(600, 500)
             .with_vsync()
-            .with_gl_debug_flag(true)
+            .with_gl_debug_flag(false)
             .with_visibility(true);
 
         let window = try!(window_builder.build().map_err(|e| {
@@ -132,6 +140,7 @@ impl Window {
             chars_pressed: HashMap::new(),
             virtual_keys_pressed: HashMap::new(),
             code_to_char: VecMap::new(),
+            typemap: TypeMap::new(),
         };
         Ok(window)
     }
@@ -383,6 +392,9 @@ impl LuxCanvas for Window {
             self.stored_circle_border = Some(batch);
         }
 
+        // TODO handle edge case where size is partially negative or
+        // when the border-size is too big or something.
+
         let pos = (pos.0 + border_size, pos.1 + border_size);
         let size = (size.0 - border_size * 2.0, size.1 - border_size * 2.0);
 
@@ -531,5 +543,15 @@ impl LuxRaw for Window {
 
     fn pop_matrix(&mut self) {
         self.matrix_stack.pop();
+    }
+}
+
+impl LuxExtend for Window {
+    fn typemap(&self) -> &TypeMap {
+        &self.typemap
+    }
+
+    fn typemap_mut(&mut self) -> &mut TypeMap {
+        &mut self.typemap
     }
 }

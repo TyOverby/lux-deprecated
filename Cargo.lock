@@ -4,6 +4,7 @@ version = "0.0.1"
 dependencies = [
  "gfx 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
  "glutin 0.0.2 (git+https://github.com/tomaka/glutin.git)",
+ "typemap 0.0.4 (git+https://github.com/reem/rust-typemap)",
  "vecmath 0.0.0 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
 
@@ -103,6 +104,11 @@ version = "0.0.2"
 source = "git+https://github.com/bjz/gl-rs#157de977e025d3069f4219c713b071bacf8ed2a5"
 
 [[package]]
+name = "phantom"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "render"
 version = "0.1.0"
 source = "git+https://github.com/gfx-rs/gfx-rs.git#42b4a076d52ed2f4c87efe5d6ea7a903d59ecdd3"
@@ -114,6 +120,20 @@ dependencies = [
 name = "rust-xml"
 version = "0.1.2-pre"
 source = "git+https://github.com/netvl/rust-xml#2d9df3267aeaa4d442e1e19a4dfed733cb1397ed"
+
+[[package]]
+name = "typemap"
+version = "0.0.4"
+source = "git+https://github.com/reem/rust-typemap#3f16ac11ef75b955bd7bec534b5b4430a19c7025"
+dependencies = [
+ "phantom 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unsafe-any 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unsafe-any"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "vecmath"

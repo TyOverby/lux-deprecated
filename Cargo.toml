@@ -20,3 +20,6 @@ git = "https://github.com/gfx-rs/gfx-rs.git"
 
 [dependencies.vecmath]
 git = "https://github.com/PistonDevelopers/vecmath"
+
+[dependencies.typemap]
+git = "https://github.com/reem/rust-typemap"

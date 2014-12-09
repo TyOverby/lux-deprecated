@@ -10,6 +10,7 @@ fn main() {
         let pos = (100.0, 100.0);
         let size = window.mouse_pos();
         let size = (size.0 as f32, size.1 as f32);
+
         window.with_color([0.0, 0.0, 1.0], |window| {
             window.draw_rect(pos, size);
         });
