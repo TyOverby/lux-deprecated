@@ -1,7 +1,7 @@
 #![feature(tuple_indexing)]
 extern crate lux;
 
-use lux::{LuxCanvas, LuxWindow, Vertex, TriangleList, Window};
+use lux::{LuxCanvas, LuxWindow, Vertex, TriangleList, Window, PrimitiveCanvas};
 
 fn main() {
     let mut window = Window::new().unwrap();
@@ -10,11 +10,12 @@ fn main() {
         let pos = (100.0, 100.0);
         let size = window.mouse_pos();
         let size = (size.0 as f32, size.1 as f32);
+
         window.with_color([0.0, 0.0, 1.0], |window| {
-            window.draw_rect(pos, size);
+            window.draw_rect(pos, size, [0.0, 0.0, 1.0, 1.0]);
         });
         window.with_color([0.0, 1.0, 0.0], |window| {
-            window.draw_border_ellipse(pos, size, 40.0);
+            //window.draw_border_ellipse(pos, size, 40.0);
         });
         window.render();
     }

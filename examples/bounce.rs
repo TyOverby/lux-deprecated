@@ -1,4 +1,3 @@
-extern crate lux;
 use lux::{LuxCanvas, LuxWindow, Window};
 
 fn bound(l: f32, v: f32, h: f32) -> (f32, bool) {

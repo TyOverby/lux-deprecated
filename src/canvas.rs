@@ -10,7 +10,13 @@ pub trait BasicShape {
     fn stroke_size(self, f32) -> Self;
 }
 
-pub trait LuxCanvas: Transform + StackedTransform {
+pub trait PrimitiveCanvas {
+    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]);
+    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]);
+    fn draw_ellipse_border(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32, color: [f32, ..4]);
+}
+
+pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas {
     fn size(&self) -> (u32, u32);
     fn width(&self) -> u32 {
         match self.size() {
@@ -22,15 +28,6 @@ pub trait LuxCanvas: Transform + StackedTransform {
             (_, h) => h
         }
     }
-
-    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32));
-    fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
-
-    fn draw_circle(&mut self, pos: (f32, f32), radius: f32);
-    fn draw_border_circle(&mut self, pos: (f32, f32), radius: f32, border_size: f32);
-
-    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32));
-    fn draw_border_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32);
 
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32);
     fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32);

@@ -7,6 +7,7 @@ extern crate render;
 extern crate device;
 extern crate glutin;
 extern crate vecmath;
+extern crate typemap;
 
 pub use gfx_integration::Vertex;
 
@@ -15,7 +16,7 @@ pub use gfx::PrimitiveType;
 pub use gfx::PrimitiveType::{ Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
-pub use canvas::{LuxCanvas, BasicShape};
+pub use canvas::{LuxCanvas, BasicShape, PrimitiveCanvas};
 pub use window::*;
 pub use window::LuxEvent::*;
 pub use window::LuxEvent::*;
@@ -39,6 +40,11 @@ pub enum LuxError {
 
 pub trait Drawable {
     fn draw<C: LuxCanvas>(&self, &mut C);
+}
+
+pub trait LuxExtend {
+    fn typemap(&self) -> &typemap::TypeMap;
+    fn typemap_mut(&mut self) -> &mut typemap::TypeMap;
 }
 
 pub type LuxResult<A> = Result<A, LuxError>;
