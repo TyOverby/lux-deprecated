@@ -2,9 +2,23 @@ use std::num::{FloatMath, Float};
 use std::vec::MoveItems;
 use std::collections::{HashMap, VecMap};
 
-use super::{LuxCanvas, LuxWindow, LuxEvent, LuxExtend, AbstractKey};
-use super::keycodes::VirtualKeyCode;
-use super::gfx_integration as gfxi;
+use super::window::keycodes::VirtualKeyCode;
+use super::{
+    gfx_integration,
+    LuxCanvas,
+    LuxWindow,
+    LuxEvent,
+    LuxExtend,
+    AbstractKey,
+    Color,
+    BasicShape,
+    PrimitiveCanvas,
+    Vertex,
+    LuxResult,
+    LuxError,
+    Transform,
+    StackedTransform
+};
 
 use gfx::{
     DrawState,
@@ -22,19 +36,6 @@ use render::state::BlendPreset;
 use glutin::WindowBuilder;
 
 use typemap::TypeMap;
-use super::{
-    Color,
-    BasicShape,
-    PrimitiveCanvas,
-    Vertex,
-    LuxResult,
-    LuxError,
-
-    Transform,
-    StackedTransform
-};
-
-use super::gfx_integration;
 
 use vecmath;
 
@@ -113,8 +114,8 @@ pub struct Window {
     title: String,
 
     // CANVAS
-    stored_rect: Option<Shape>,
-    stored_circle: Option<Shape>,
+    stored_rect: Option<gfx_integration::BasicBatch>,
+    stored_circle: Option<gfx_integration::BasicBatch>,
     stored_circle_border: Option<gfx_integration::EllipseBorderBatch>,
 
     // EVENT
@@ -162,12 +163,12 @@ impl Window {
         unsafe { window.make_current(); }
         let mut device = GlDevice::new(|s| window.get_proc_address(s));
         let program = try!(device.link_program(
-                            gfxi::VERTEX_SRC.clone(),
-                            gfxi::FRAGMENT_SRC.clone())
+                            gfx_integration::VERTEX_SRC.clone(),
+                            gfx_integration::FRAGMENT_SRC.clone())
                            .map_err(LuxError::ShaderError));
         let ellipse_border_program = try!(device.link_program(
-                            gfxi::ELLIPSE_BORDER_VERTEX_SRC.clone(),
-                            gfxi::ELLIPSE_BORDER_FRAGMENT_SRC.clone())
+                            gfx_integration::ELLIPSE_BORDER_VERTEX_SRC.clone(),
+                            gfx_integration::ELLIPSE_BORDER_FRAGMENT_SRC.clone())
                             .map_err(LuxError::ShaderError));
         let graphics = Graphics::new(device);
         let (width, height) = window.get_inner_size().unwrap_or((0, 0));
@@ -439,7 +440,6 @@ impl LuxCanvas for Window {
 
 impl PrimitiveCanvas for Window {
     fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]) {
-        use std::intrinsics::transmute;
         if self.stored_rect.is_none() {
             let vertex_data = [
                 Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
@@ -450,7 +450,7 @@ impl PrimitiveCanvas for Window {
                 Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
             ];
             let shape = self.stamp_shape(&vertex_data, super::TriangleList);
-            self.stored_rect = Some(shape);
+            self.stored_rect = Some(shape.batch);
         }
         let (x, y) = pos;
         let (w, h) = size;
@@ -459,18 +459,18 @@ impl PrimitiveCanvas for Window {
         self.scale(w, h);
 
         {
-            // This is safe because draw_shape does *not* mutate the shape itself.
-            let shape = self.stored_rect.as_ref().unwrap();
+            let batch = self.stored_rect.as_ref().unwrap();
             let mat = *self.current_matrix();
             let params = gfx_integration::Params {
                 transform: mat,
                 color: color
             };
 
-            self.graphics.draw(&shape.batch, &params, &self.frame);
+            self.graphics.draw(batch, &params, &self.frame);
         }
         self.pop_matrix();
     }
+
     fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]) {
         use std::intrinsics::transmute;
         if self.stored_circle.is_none() {
@@ -483,17 +483,23 @@ impl PrimitiveCanvas for Window {
                 i += pi / 360.0;
             }
             let shape = self.stamp_shape(vertex_data.as_slice(), ::TriangleFan);
-            self.stored_circle = Some(shape);
+            self.stored_circle = Some(shape.batch);
         }
 
-        let shape = unsafe{ transmute(self.stored_circle.as_ref().unwrap()) };
         let (x, y) = pos;
         let (sx, sy) = size;
         let (sx, sy) = (sx/2.0, sy/2.0);
         self.push_matrix();
         self.translate(x+sx, y+sy);
         self.scale(sx, sy);
-        self.draw_shape(shape);
+        {
+            let batch = self.stored_circle.as_ref().unwrap();
+            let params = gfx_integration::Params {
+                transform: *self.current_matrix(),
+                color: color
+            };
+            self.graphics.draw(batch, &params, &self.frame);
+        }
         self.pop_matrix();
     }
 
@@ -585,14 +591,17 @@ impl LuxWindow for Window {
     fn mouse_pos(&self) -> (i32, i32) {
         self.mouse_pos
     }
+
     fn mouse_down(&self) -> bool {
         self.mouse_down_count != 0
     }
+
     fn events(&mut self) -> MoveItems<LuxEvent> {
         use std::mem::replace;
         self.process_events();
         replace(&mut self.event_store, vec![]).into_iter()
     }
+
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool {
         match k.to_key() {
             (Some(code), _, _) => self.codes_pressed.get(&code).map(|x| *x),

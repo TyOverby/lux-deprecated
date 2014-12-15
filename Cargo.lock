@@ -2,16 +2,16 @@
 name = "lux"
 version = "0.0.1"
 dependencies = [
- "gfx 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
+ "gfx 0.1.0 (git+https://github.com/csherratt/gfx-rs.git)",
  "glutin 0.0.2 (git+https://github.com/tomaka/glutin.git)",
  "typemap 0.0.4 (git+https://github.com/reem/rust-typemap)",
- "vecmath 0.0.0 (git+https://github.com/PistonDevelopers/vecmath)",
+ "vecmath 0.0.1 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
 
 [[package]]
 name = "android_glue"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/android-rs-glue#70636e9c03a25c83e61f06063e2437e714ed84aa"
+source = "git+https://github.com/tomaka/android-rs-glue#abadcdab0de6c4fd46feef02deb4dfd9e57f1a82"
 dependencies = [
  "compile_msg 0.1.1 (git+https://github.com/huonw/compile_msg)",
 ]
@@ -42,7 +42,7 @@ dependencies = [
 [[package]]
 name = "device"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#c1d157e6487b6dbfc0d7271e044eada0b5ae487f"
+source = "git+https://github.com/csherratt/gfx-rs.git#71a4a5ea55f301d7b11298e80cf6962f7a2ab813"
 dependencies = [
  "gfx_gl 0.1.0 (git+https://github.com/gfx-rs/gfx_gl.git)",
 ]
@@ -50,11 +50,11 @@ dependencies = [
 [[package]]
 name = "gfx"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#c1d157e6487b6dbfc0d7271e044eada0b5ae487f"
+source = "git+https://github.com/csherratt/gfx-rs.git#71a4a5ea55f301d7b11298e80cf6962f7a2ab813"
 dependencies = [
- "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
- "gfx_macros 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
- "render 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
+ "device 0.1.0 (git+https://github.com/csherratt/gfx-rs.git)",
+ "gfx_macros 0.1.0 (git+https://github.com/csherratt/gfx-rs.git)",
+ "render 0.1.0 (git+https://github.com/csherratt/gfx-rs.git)",
 ]
 
 [[package]]
@@ -68,65 +68,60 @@ dependencies = [
 [[package]]
 name = "gfx_macros"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#c1d157e6487b6dbfc0d7271e044eada0b5ae487f"
+source = "git+https://github.com/csherratt/gfx-rs.git#71a4a5ea55f301d7b11298e80cf6962f7a2ab813"
 
 [[package]]
 name = "gl_common"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#41fa9cb11188583874588180166337d8b1fc1b97"
+source = "git+https://github.com/bjz/gl-rs.git#b5e3f4f76c31bc1b459d5e4c10d879ffa4f67c6e"
 
 [[package]]
 name = "gl_generator"
 version = "0.0.1"
-source = "git+https://github.com/bjz/gl-rs.git#41fa9cb11188583874588180166337d8b1fc1b97"
+source = "git+https://github.com/bjz/gl-rs.git#b5e3f4f76c31bc1b459d5e4c10d879ffa4f67c6e"
 dependencies = [
  "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
  "khronos_api 0.0.2 (git+https://github.com/bjz/gl-rs.git)",
- "rust-xml 0.1.2-pre (git+https://github.com/netvl/rust-xml)",
+ "xml-rs 0.1.2 (git+https://github.com/netvl/xml-rs)",
 ]
 
 [[package]]
 name = "glutin"
 version = "0.0.2"
-source = "git+https://github.com/tomaka/glutin.git#6652cd0bdfa8c8db90ed01afaccad40f17228c43"
+source = "git+https://github.com/tomaka/glutin.git#65dfd5d7cead3b7d52c2e02e31efb2a8a83dc7f7"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.1 (git+https://github.com/servo/rust-cocoa)",
- "compile_msg 0.1.1 (git+https://github.com/huonw/compile_msg)",
  "core_graphics 0.1.0 (git+https://github.com/servo/rust-core-graphics)",
  "gl_common 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
  "gl_generator 0.0.1 (git+https://github.com/bjz/gl-rs.git)",
+ "winapi 0.0.1 (git+https://github.com/retep998/winapi-rs)",
 ]
 
 [[package]]
 name = "khronos_api"
 version = "0.0.2"
-source = "git+https://github.com/bjz/gl-rs.git#41fa9cb11188583874588180166337d8b1fc1b97"
+source = "git+https://github.com/bjz/gl-rs.git#b5e3f4f76c31bc1b459d5e4c10d879ffa4f67c6e"
 
 [[package]]
 name = "phantom"
-version = "0.0.1"
+version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "render"
 version = "0.1.0"
-source = "git+https://github.com/gfx-rs/gfx-rs.git#c1d157e6487b6dbfc0d7271e044eada0b5ae487f"
+source = "git+https://github.com/csherratt/gfx-rs.git#71a4a5ea55f301d7b11298e80cf6962f7a2ab813"
 dependencies = [
- "device 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
+ "device 0.1.0 (git+https://github.com/csherratt/gfx-rs.git)",
 ]
-
-[[package]]
-name = "rust-xml"
-version = "0.1.2-pre"
-source = "git+https://github.com/netvl/rust-xml#2d9df3267aeaa4d442e1e19a4dfed733cb1397ed"
 
 [[package]]
 name = "typemap"
 version = "0.0.4"
-source = "git+https://github.com/reem/rust-typemap#3f16ac11ef75b955bd7bec534b5b4430a19c7025"
+source = "git+https://github.com/reem/rust-typemap#c01749514e89eb716d84570adc8293f5d92d9340"
 dependencies = [
- "phantom 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "phantom 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "unsafe-any 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -137,6 +132,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "vecmath"
-version = "0.0.0"
-source = "git+https://github.com/PistonDevelopers/vecmath#f6fc01026677be506958dee6f61a40b991fe5bc1"
+version = "0.0.1"
+source = "git+https://github.com/PistonDevelopers/vecmath#23830f2b9eb9a3eb118173680984673adef2d4bb"
+
+[[package]]
+name = "winapi"
+version = "0.0.1"
+source = "git+https://github.com/retep998/winapi-rs#af839d599c29cb9d5ceb3aa5b1fa78b76c1ca4d3"
+
+[[package]]
+name = "xml-rs"
+version = "0.1.2"
+source = "git+https://github.com/netvl/xml-rs#8e68b6cf8a2c46898051ae6eb9fe202d20343d3f"
 
