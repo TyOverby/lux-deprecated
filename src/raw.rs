@@ -8,25 +8,28 @@ pub trait Transform {
         let current = self.current_matrix_mut();
         *current = col_mat4_mul(*current, matrix);
     }
-    fn translate(&mut self, dx: f32, dy: f32) {
+    fn translate(&mut self, dx: f32, dy: f32) -> &mut Self {
         let mut prod = mat4_id();
         prod[3][0] = dx;
         prod[3][1] = dy;
         self.apply_matrix(prod);
+        self
     }
-    fn scale(&mut self, sx: f32, sy: f32) {
+    fn scale(&mut self, sx: f32, sy: f32) -> &mut Self {
         let mut prod = mat4_id();
         prod[0][0] = sx;
         prod[1][1] = sy;
         self.apply_matrix(prod);
+        self
     }
-    fn shear(&mut self, sx: f32, sy: f32) {
+    fn shear(&mut self, sx: f32, sy: f32) -> &mut Self {
         let mut prod = mat4_id();
         prod[1][0] = sx;
         prod[0][1] = sy;
         self.apply_matrix(prod);
+        self
     }
-    fn rotate(&mut self, theta: f32) {
+    fn rotate(&mut self, theta: f32) -> &mut Self {
         use std::num::FloatMath;
         let mut prod = mat4_id();
         let (c, s) = (theta.cos(), theta.sin());
@@ -35,7 +38,13 @@ pub trait Transform {
         prod[1][0] = -s;
         prod[1][1] = c;
         self.apply_matrix(prod);
+        self
     }
+}
+
+impl Transform for [[f32, ..4], ..4] {
+    fn current_matrix(&self) -> &[[f32, ..4], ..4] { self }
+    fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] { self }
 }
 
 pub trait StackedTransform {
@@ -56,12 +65,14 @@ pub trait Colored {
     fn current_stroke_color(&self) -> &[f32, ..4];
     fn current_stroke_color_mut(&mut self) -> &mut[f32, ..4];
 
-    fn fill_color<C: Color>(&mut self, c: C) {
+    fn fill_color<C: Color>(&mut self, c: C) -> &mut Self {
         *self.current_fill_color_mut() = c.to_rgba();
+        self
     }
 
-    fn stroke_color<C: Color>(&mut self, c: C) {
+    fn stroke_color<C: Color>(&mut self, c: C) -> &mut Self {
         *self.current_stroke_color_mut() = c.to_rgba();
+        self
     }
 }
 
@@ -73,16 +84,16 @@ pub trait StackedColored: Colored {
         f();
         self.pop_colors();
     }
-    fn with_fill_color<C: Color>(&mut self, color: C, f: ||) {
+    fn with_fill_color<C: Color>(&mut self, color: C, f: |&mut Self|) {
         self.push_colors();
         self.fill_color(color);
-        f();
+        f(self);
         self.pop_colors();
     }
-    fn with_stroke_color<C: Color>(&mut self, color: C, f: ||) {
+    fn with_stroke_color<C: Color>(&mut self, color: C, f: |&mut Self|) {
         self.push_colors();
         self.stroke_color(color);
-        f();
+        f(self);
         self.pop_colors();
     }
 }

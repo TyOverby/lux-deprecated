@@ -1,4 +1,4 @@
-#![feature(phase, globs, unboxed_closures, if_let, tuple_indexing)]
+#![feature(phase, globs, unboxed_closures)]
 
 #[phase(plugin)]
 extern crate gfx_macros;
@@ -12,15 +12,16 @@ extern crate typemap;
 pub use gfx_integration::Vertex;
 
 pub use render::ProgramError;
-pub use gfx::{ PrimitiveType, Point, Line, LineStrip,
+pub use gfx::PrimitiveType;
+pub use gfx::PrimitiveType::{ Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
-pub use canvas::{LuxCanvas, BasicShape, PrimitiveCanvas};
+pub use canvas::{LuxCanvas, BasicShape, PrimitiveCanvas, Ellipse, Rectangle};
 pub use window::*;
 pub use window::LuxEvent::*;
 pub use window::LuxEvent::*;
 pub use window::MouseButton::*;
-pub use raw::{Transform, StackedTransform};
+pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
 

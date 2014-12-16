@@ -1,6 +1,6 @@
-use std::num::{FloatMath, Float};
 use std::vec::MoveItems;
 use std::collections::{HashMap, VecMap};
+use glutin;
 
 use super::window::keycodes::VirtualKeyCode;
 use super::{
@@ -11,7 +11,8 @@ use super::{
     LuxExtend,
     AbstractKey,
     Color,
-    BasicShape,
+    Colored,
+    StackedColored,
     PrimitiveCanvas,
     Vertex,
     LuxResult,
@@ -42,58 +43,10 @@ use vecmath;
 type Mat4f = [[f32, ..4], ..4];
 type BaseColor = [f32, ..4];
 
-struct BasicFields {
-    fill_color: Option<[f32, ..4]>,
-    stroke_color: Option<[f32, ..4]>,
-    border: Option<f32>,
-    padding: Option<f32>,
-    stroke_size: Option<f32>
-}
-
-pub struct Ellipse<'a, C: 'a> {
-    fields: BasicFields,
-    canvas: &'a mut C
-}
-
-pub struct Rectangle<'a, C: 'a> {
-    fields: BasicFields,
-    canvas: &'a mut C
-}
-
-
-impl <'a, C> BasicShape for Ellipse<'a, C> where C: LuxCanvas + 'a {
-    fn fill(self) -> Ellipse<'a, C> {
-        self
-    }
-
-    fn stroke(self) -> Ellipse<'a, C> {
-        self
-    }
-
-    fn fill_color<K: Color>(mut self, color: K) -> Ellipse<'a, C> {
-        self.fields.fill_color = Some(color.to_rgba());
-        self
-    }
-
-    fn stroke_color<K: Color>(mut self, color: K) -> Ellipse<'a, C> {
-        self.fields.stroke_color = Some(color.to_rgba());
-        self
-    }
-
-    fn border(mut self, border_size: f32) -> Ellipse<'a, C> {
-        self.fields.border = Some(border_size);
-        self
-    }
-
-    fn padding(mut self, padding_size: f32) -> Ellipse<'a, C> {
-        self.fields.padding = Some(padding_size);
-        self
-    }
-
-    fn stroke_size(mut self, stroke_size: f32) -> Ellipse<'a, C> {
-        self.fields.stroke_size = Some(stroke_size);
-        self
-    }
+struct CachedDrawCommand {
+    typ: super::PrimitiveType,
+    points: Vec<super::Vertex>,
+//    idxs: Vec<uint>,
 }
 
 pub struct Window {
@@ -101,22 +54,18 @@ pub struct Window {
     glutin_window: ::glutin::Window,
     graphics: Graphics<GlDevice, GlCommandBuffer>,
     program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
-    ellipse_border_program: ::device::Handle<u32, ::device::shade::ProgramInfo>,
     draw_state: DrawState,
     frame: Frame,
+
+    draw_cache: Option<CachedDrawCommand>,
 
     // RAW
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
-    color_stack: Vec<BaseColor>,
+    color_stack: Vec<(BaseColor, BaseColor)>,
 
     // WINDOW
     title: String,
-
-    // CANVAS
-    stored_rect: Option<gfx_integration::BasicBatch>,
-    stored_circle: Option<gfx_integration::BasicBatch>,
-    stored_circle_border: Option<gfx_integration::EllipseBorderBatch>,
 
     // EVENT
     event_store: Vec<LuxEvent>,
@@ -137,12 +86,6 @@ pub struct Window {
     typemap: TypeMap
 }
 
-
-pub struct Shape {
-    batch: gfx_integration::BasicBatch,
-    color: Option<BaseColor>
-}
-
 impl Window {
     pub fn new() -> LuxResult<Window> {
         let window_builder =
@@ -156,7 +99,7 @@ impl Window {
 
         let window = try!(window_builder.build().map_err(|e| {
             match e {
-                ::glutin::OsError(s) => LuxError::WindowError(s)
+                ::glutin::CreationError::OsError(s) => LuxError::WindowError(s)
             }
         }));
 
@@ -166,10 +109,6 @@ impl Window {
                             gfx_integration::VERTEX_SRC.clone(),
                             gfx_integration::FRAGMENT_SRC.clone())
                            .map_err(LuxError::ShaderError));
-        let ellipse_border_program = try!(device.link_program(
-                            gfx_integration::ELLIPSE_BORDER_VERTEX_SRC.clone(),
-                            gfx_integration::ELLIPSE_BORDER_FRAGMENT_SRC.clone())
-                            .map_err(LuxError::ShaderError));
         let graphics = Graphics::new(device);
         let (width, height) = window.get_inner_size().unwrap_or((0, 0));
         let mut basis = vecmath::mat4_id();
@@ -180,18 +119,15 @@ impl Window {
             glutin_window: window,
             graphics: graphics,
             program: program,
-            ellipse_border_program:  ellipse_border_program,
             draw_state: DrawState::new()
                                   .blend(BlendPreset::Alpha)
                                   .multi_sample(),
+            draw_cache: None,
             frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
-            color_stack: vec![[0.0,0.0,0.0,1.0]],
+            color_stack: vec![([0.0,0.0,0.0,1.0], [0.0,0.0,0.0,1.0])],
             title: "Lux".to_string(),
             basis_matrix: basis,
-            stored_rect: None,
-            stored_circle: None,
-            stored_circle_border: None,
             event_store: vec![],
             mouse_pos: (0, 0),
             window_pos: (0, 0),
@@ -209,7 +145,6 @@ impl Window {
     }
 
     pub fn process_events(&mut self) {
-        use glutin;
         use glutin::Event as glevent;
         self.events_since_last_render = true;
         fn t_mouse(button: glutin::MouseButton) -> super::MouseButton {
@@ -296,52 +231,47 @@ impl Window {
             },
             COLOR,
             &self.frame);
+        self.prepare();
     }
 
-    pub fn render(&mut self) {
-        if !self.events_since_last_render {
-            self.process_events();
-        }
-        self.graphics.end_frame();
-        self.glutin_window.swap_buffers();
-        self.matrix_stack.clear();
-
+    fn prepare(&mut self) {
         let (wi, hi) = self.size();
         let (w, h) = (wi as f32, hi as f32);
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
         self.frame = Frame::new(wi as u16, hi as u16);
-        self.events_since_last_render = false;
     }
 
-    //// Color
-
-    pub fn current_color(&self) -> [f32, ..4] {
-        let len = self.color_stack.len();
-        self.color_stack[len - 1]
-    }
-
-    pub fn stamp_shape(&mut self, vertices: &[Vertex],
-                       draw_type: super::PrimitiveType) -> Shape {
-        let mesh = self.graphics.device.create_mesh(vertices);
-        let slice = mesh.to_slice(draw_type);
-        let batch: gfx_integration::BasicBatch =
-            self.graphics.make_batch(&self.program, &mesh, slice, &self.draw_state).unwrap();
-        Shape {
-            batch: batch,
-            color: None
+    pub fn render(&mut self) {
+        if !self.events_since_last_render {
+            self.process_events();
         }
+        self.push_draw();
+
+        self.graphics.end_frame();
+        self.glutin_window.swap_buffers();
+        self.matrix_stack.clear();
+
+        self.events_since_last_render = false;
+
     }
 
-    pub fn draw_shape(&mut self, shape: &Shape) {
-        let mat = *self.current_matrix();
-        let params = gfx_integration::Params {
-            transform: mat,
-            color: shape.color.unwrap_or_else(|| self.current_color())
-        };
+    pub fn push_draw(&mut self) {
+        if let Some(ref cache_draw) = self.draw_cache {
+            let &CachedDrawCommand{ref typ, ref points} = cache_draw;
+            //panic!();
 
-        self.graphics.draw(&shape.batch, &params, &self.frame)
+            let mesh = self.graphics.device.create_mesh(points.as_slice());
+            let slice = mesh.to_slice(*typ);
+            let batch = self.graphics.make_batch(&self.program, &mesh, slice,
+                                                 &self.draw_state).unwrap();
+            let params = gfx_integration::Params {
+                transform: vecmath::mat4_id()//*self.current_matrix()
+            };
+            self.graphics.draw(&batch, &params, &self.frame);
+        }
+        self.draw_cache = None;
     }
 }
 
@@ -351,85 +281,15 @@ impl LuxCanvas for Window {
         self.window_size
     }
 
-    /*
-    fn draw_border_rect(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
-        use std::cmp::{partial_min, partial_max};
-        let (px, py) = pos;
-        let (w, h) = size;
-        let smallest = partial_min(w,h).unwrap_or(0.0);
-        let bs = partial_max(border_size, smallest).unwrap_or(0.0);
-        self.draw_rect((px + bs, py + bs), (w - 2.0 * bs, h - 2.0 * bs));
-        self.with_color([1.0,1.0,1.0,0.5], |window| {
-            window.draw_rect((px+border_size, py),
-                             (w-2.0*border_size, border_size));
-            window.draw_rect((px+border_size, py+h-border_size),
-                             (w-2.0*border_size, border_size));
-
-            window.draw_rect((px, py),
-                             (border_size, h));
-            window.draw_rect((px+w-border_size, py),
-                             (border_size, h));
-        });
-    } */
-
-    /*
-    fn draw_border_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), border_size: f32) {
-        let pos = (pos.0 + border_size, pos.1 + border_size);
-        let size = (size.0 - border_size * 2.0, size.1 - border_size * 2.0);
-        self.draw_ellipse(pos, size);
-        self._draw_ellipse_border(pos, size, border_size);
-    }*/
-
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32) {
-        let (ax, ay) = start;
-        let (bx, by) = end;
-        let (dx, dy) = (bx - ax, by - ay);
-        let length = (dx * dx + dy * dy).sqrt();
-        let angle = dy.atan2(dx);
-
-        self.push_matrix();
-        self.translate(ax, ay);
-        self.rotate(angle);
-        self.scale(length , line_size);
-        self.translate(0.0, -0.5);
-        // TODO: Remove hardcoded color.
-        self.draw_rect((0.0,0.0), (1.0,1.0), [0.0, 1.0, 0.0,1.0]);
-        self.pop_matrix();
-    }
-
-    fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32) {
-        let l_mod = line_size / 2.0;
-        let mut last = None;
-        for p in positions {
-            match last {
-                Some((x1, y1)) => {
-                    let (x2, y2) = p;
-                    self.draw_line((x1, y1), (x2, y2), line_size);
-                    // TODO: remove hardcoded color.
-                    self.draw_ellipse((x1 - l_mod, y1 - l_mod), (line_size, line_size), [0.0, 1.0, 0.0, 1.0]);
-                }
-                None => { }
-            }
-            last = Some(p);
-        }
-
-        if let Some((lx, ly)) = last {
-            // TODO: remove hardcoded color.
-            self.draw_ellipse((lx - l_mod, ly - l_mod), (line_size, line_size), [0.0, 1.0, 0.0, 1.0]);
-        }
-    }
-
-    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32) {
         unimplemented!();
     }
 
-    fn with_color<C: Color>(&mut self, color: C, f: |&mut Window| -> ()) {
-        self.color_stack.push(color.to_rgba());
-        f(self);
-        self.color_stack.pop();
+    fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, positions: I, line_size: f32) {
+        unimplemented!();
     }
 
-    fn with_border_color<C: Color>(&mut self, color: C, f: |&mut Window| -> ()) {
+    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32) {
         unimplemented!();
     }
 
@@ -439,124 +299,39 @@ impl LuxCanvas for Window {
 }
 
 impl PrimitiveCanvas for Window {
-    fn draw_rect(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]) {
-        if self.stored_rect.is_none() {
-            let vertex_data = [
-                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
-                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0] },
-                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
-                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0] },
-                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0] },
-                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0] },
-            ];
-            let shape = self.stamp_shape(&vertex_data, super::TriangleList);
-            self.stored_rect = Some(shape.batch);
-        }
-        let (x, y) = pos;
-        let (w, h) = size;
-        self.push_matrix();
-        self.translate(x, y);
-        self.scale(w, h);
+    fn draw_shape(&mut self,
+                  n_typ: super::PrimitiveType,
+                  n_points: &[super::Vertex],
+                  transform: [[f32, ..4], ..4]) {
 
-        {
-            let batch = self.stored_rect.as_ref().unwrap();
-            let mat = *self.current_matrix();
-            let params = gfx_integration::Params {
-                transform: mat,
-                color: color
-            };
-
-            self.graphics.draw(batch, &params, &self.frame);
-        }
-        self.pop_matrix();
-    }
-
-    fn draw_ellipse(&mut self, pos: (f32, f32), size: (f32, f32), color: [f32, ..4]) {
-        use std::intrinsics::transmute;
-        if self.stored_circle.is_none() {
-            let mut vertex_data = vec![];
-            let pi = ::std::f32::consts::PI;
-            let mut i = 0.0f32;
-            while i < 2.0 * pi {
-                let p = [i.sin(), i.cos()];
-                vertex_data.push(Vertex{pos: p, tex: p});
-                i += pi / 360.0;
-            }
-            let shape = self.stamp_shape(vertex_data.as_slice(), ::TriangleFan);
-            self.stored_circle = Some(shape.batch);
-        }
-
-        let (x, y) = pos;
-        let (sx, sy) = size;
-        let (sx, sy) = (sx/2.0, sy/2.0);
-        self.push_matrix();
-        self.translate(x+sx, y+sy);
-        self.scale(sx, sy);
-        {
-            let batch = self.stored_circle.as_ref().unwrap();
-            let params = gfx_integration::Params {
-                transform: *self.current_matrix(),
-                color: color
-            };
-            self.graphics.draw(batch, &params, &self.frame);
-        }
-        self.pop_matrix();
-    }
-
-    fn draw_ellipse_border(&mut self, pos: (f32, f32), size: (f32, f32),
-                           border_size: f32, color: [f32, ..4]) {
-        if self.stored_circle_border.is_none() {
-            let mut vertex_data = vec![];
-            let pi = ::std::f32::consts::PI;
-            let mut i = 0.0f32;
-            while i < 2.0 * pi {
-                let p = [i.sin(), i.cos()];
-                vertex_data.push(gfx_integration::EllipseBorderVertex{
-                    pos: p,
-                    tex: [0.0,0.0],
-                    is_outer: 0.0
+        // Look at all this awful code for handling something that should
+        // be dead simple!
+        if self.draw_cache.is_some() {
+            if self.draw_cache.as_ref().unwrap().typ != n_typ {
+                self.push_draw();
+                self.draw_cache = Some(CachedDrawCommand {
+                    typ: n_typ,
+                    points: vec![]
                 });
-                vertex_data.push(gfx_integration::EllipseBorderVertex{
-                    pos: p,
-                    tex: [0.0,0.0],
-                    is_outer: 1.0
-                });
-                i += pi / 360.0;
             }
-            let mesh = self.graphics.device.create_mesh(vertex_data.as_slice());
-            let slice = mesh.to_slice(super::TriangleStrip);
-            let batch: gfx_integration::EllipseBorderBatch =
-                self.graphics.make_batch(&self.ellipse_border_program, &mesh, slice, &self.draw_state).unwrap();
-            self.stored_circle_border = Some(batch);
+        } else {
+            self.draw_cache = Some(CachedDrawCommand {
+                typ: n_typ,
+                points: vec![]
+            });
         }
 
-        // TODO handle edge case where size is partially negative or
-        // when the border-size is too big or something.
+        let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
+        let draw_cache = self.draw_cache.as_mut().unwrap();
 
-        let pos = (pos.0 + border_size, pos.1 + border_size);
-        let size = (size.0 - border_size * 2.0, size.1 - border_size * 2.0);
-
-        self.draw_ellipse(pos, size, color);
-        let size = (size.0 / 2.0, size.1 / 2.0);
-        let (x, y) = pos;
-        let (sx, sy) = size;
-
-        self.push_matrix();
-        self.translate(x + sx, y + sy);
-        self.scale(sx, sy);
-        let mat = *self.current_matrix();
-        let params = gfx_integration::EllipseBorderParams {
-            transform: mat,
-            width: border_size,
-            ratio: [size.0, size.1],
-            color: [1.0, 0.0, 0.0, 1.0] // TODO change this
-        };
-
-        {
-            let batch = self.stored_circle_border.as_ref().unwrap();
-            self.graphics.draw(batch, &params, &self.frame);
-        }
-        self.pop_matrix();
+        // Perform the global transforms here
+        draw_cache.points.extend(n_points.iter().map(|&mut point| {
+            let res = vecmath::col_mat4_transform(
+                mat,
+                [point.pos[0], point.pos[1], 0.0, 1.0]);
+            point.pos = [res[0], res[1]];
+            point
+        }));
     }
 }
 
@@ -649,5 +424,38 @@ impl LuxExtend for Window {
 
     fn typemap_mut(&mut self) -> &mut TypeMap {
         &mut self.typemap
+    }
+}
+
+impl Colored for Window {
+    fn current_fill_color(&self) -> &[f32, ..4] {
+        let len = self.color_stack.len();
+        &self.color_stack[len - 1].0
+    }
+
+    fn current_fill_color_mut(&mut self) -> &mut[f32, ..4] {
+        let len = self.color_stack.len();
+        &mut self.color_stack[len - 1].0
+    }
+
+    fn current_stroke_color(&self) -> &[f32, ..4] {
+        let len = self.color_stack.len();
+        &self.color_stack[len - 1].1
+    }
+
+    fn current_stroke_color_mut(&mut self) -> &mut[f32, ..4] {
+        let len = self.color_stack.len();
+        &mut self.color_stack[len - 1].1
+    }
+}
+
+impl StackedColored for Window {
+    fn push_colors(&mut self) {
+        let colors = (*self.current_fill_color(), *self.current_stroke_color());
+        self.color_stack.push(colors);
+    }
+
+    fn pop_colors(&mut self) {
+        self.color_stack.pop();
     }
 }

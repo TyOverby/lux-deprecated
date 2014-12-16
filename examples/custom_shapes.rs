@@ -2,6 +2,7 @@ extern crate lux;
 use lux::{LuxWindow, Window, Vertex, TriangleList};
 
 fn main() {
+    /*
     let mut window = Window::new().unwrap();
     let vertices = &[
         Vertex{pos: [50.0, 0.0],   tex: [0.0,0.0]},
@@ -14,4 +15,5 @@ fn main() {
         window.draw_shape(&shape);
         window.render();
     }
+    */
 }

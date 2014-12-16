@@ -1,22 +1,25 @@
-#![feature(tuple_indexing)]
 extern crate lux;
 
-use lux::{LuxCanvas, LuxWindow, Vertex, TriangleList, Window, PrimitiveCanvas};
+use lux::{LuxCanvas, LuxWindow, Window, Transform};
 
 fn main() {
-    let mut window = Window::new().unwrap();
-    while window.is_open() {
-        window.clear([0.5, 0.5, 0.5]);
-        let pos = (100.0, 100.0);
-        let size = window.mouse_pos();
-        let size = (size.0 as f32, size.1 as f32);
+    let mut lux = Window::new().unwrap();
+    while lux.is_open() {
+        lux.clear([0.9, 0.9, 0.9]);
 
-        window.with_color([0.0, 0.0, 1.0], |window| {
-            window.draw_rect(pos, size, [0.0, 0.0, 1.0, 1.0]);
-        });
-        window.with_color([0.0, 1.0, 0.0], |window| {
-            //window.draw_border_ellipse(pos, size, 40.0);
-        });
-        window.render();
+        for x in range(0u, 200) {
+            for y in range(0u, 200) {
+                lux.rect((x as f32 * 10.0, y as f32 * 10.0), (10.0, 10.0))
+                   .padding(1.0)
+                   .rotate(2.0 * 3.14 / 8.0)
+                   .fill();
+            }
+        }
+
+        let pos = (lux.mouse_x() as f32, lux.mouse_y() as f32);
+        lux.rect(pos, (20.0, 20.0)).fill();
+
+        lux.render();
     }
 }
+

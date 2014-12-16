@@ -1,3 +1,4 @@
+extern crate lux;
 use lux::{LuxCanvas, LuxWindow, Window};
 
 fn bound(l: f32, v: f32, h: f32) -> (f32, bool) {
@@ -16,7 +17,7 @@ fn main() {
     let (mut x, mut y) = (20.0, 50.0);
     let (mut vx, mut vy) = (1.5, 1.5);
     while window.is_open() {
-        window.clear([0.9, 0.9, 0.9]);
+        window.clear([0.9, 0.9, 0.9, 0.001]);
         x += vx;
         y += vy;
 
@@ -32,7 +33,7 @@ fn main() {
             vy = - vy;
         }
 
-        window.draw_rect((x, y), (15.0, 25.0));
+        window.rect((x, y), (15.0, 25.0)).fill();
 
         window.render();
     }
