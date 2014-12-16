@@ -40,6 +40,11 @@ pub trait Transform {
         self.apply_matrix(prod);
         self
     }
+    fn rotate_around(&mut self, point: (f32, f32), theta: f32) -> &mut Self {
+        self.rotate(theta);
+        self.translate(-point.0, -point.1);
+        self
+    }
 }
 
 impl Transform for [[f32, ..4], ..4] {
@@ -50,7 +55,7 @@ impl Transform for [[f32, ..4], ..4] {
 pub trait StackedTransform {
     fn push_matrix(&mut self);
     fn pop_matrix(&mut self);
-    fn with_matrix(&mut self, f: |&Self|) {
+    fn with_matrix(&mut self, f: |&mut Self|) {
         self.push_matrix();
         f(self);
         self.pop_matrix();
@@ -79,9 +84,9 @@ pub trait Colored {
 pub trait StackedColored: Colored {
     fn push_colors(&mut self);
     fn pop_colors(&mut self);
-    fn with_colors(&mut self, f: ||) {
+    fn with_colors(&mut self, f: |&mut Self|) {
         self.push_colors();
-        f();
+        f(self);
         self.pop_colors();
     }
     fn with_fill_color<C: Color>(&mut self, color: C, f: |&mut Self|) {
