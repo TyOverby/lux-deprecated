@@ -28,13 +28,12 @@ fn main() {
         }
 
         let (ny, cy) = bound(0.0, y, window.height() as f32 - size);
-        if cx {
+        if cy {
             y = ny;
             vy = - vy;
         }
 
-        window.rect((x, y), (15.0, 25.0)).fill();
-
+        window.rect((x, y), (size, size)).fill();
         window.render();
     }
 }

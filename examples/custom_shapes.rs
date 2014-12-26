@@ -1,5 +1,5 @@
-extern crate lux;
-use lux::{LuxWindow, Window, Vertex, TriangleList};
+// extern crate lux;
+// use lux::{LuxWindow, Window, Vertex, TriangleList};
 
 fn main() {
     /*
