@@ -61,6 +61,10 @@ Transform + StackedTransform + PrimitiveCanvas  + Colored {
         Rectangle::new(self, pos, size)
     }
 
+    fn square<'a>(&'a mut self, pos: (f32, f32), size: f32) -> Rectangle<'a, Self> {
+        Rectangle::new(self, pos, (size, size))
+    }
+
     fn ellipse<'a>(&'a mut self, pos: (f32, f32), size: (f32, f32)) -> Ellipse<'a, Self> {
         Ellipse::new(self, pos, size)
     }
