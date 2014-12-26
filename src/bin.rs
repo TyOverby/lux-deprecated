@@ -17,7 +17,7 @@ fn main() {
         }
 
         let pos = (lux.mouse_x() as f32, lux.mouse_y() as f32);
-        lux.rect(pos, (20.0, 20.0)).fill();
+        lux.rect(pos, (20.0, 20.0)).rotate_around((10.0, 10.0), 0.2).fill();
 
         lux.render();
     }

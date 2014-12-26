@@ -1,4 +1,4 @@
-use std::vec::MoveItems;
+use std::vec::IntoIter;
 use std::collections::{HashMap, VecMap};
 use glutin;
 
@@ -371,7 +371,7 @@ impl LuxWindow for Window {
         self.mouse_down_count != 0
     }
 
-    fn events(&mut self) -> MoveItems<LuxEvent> {
+    fn events(&mut self) -> IntoIter<LuxEvent> {
         use std::mem::replace;
         self.process_events();
         replace(&mut self.event_store, vec![]).into_iter()

@@ -1,4 +1,4 @@
-use std::vec::MoveItems;
+use std::vec::IntoIter;
 use self::keycodes::*;
 
 pub mod keycodes {
@@ -49,7 +49,7 @@ pub trait LuxWindow {
     }
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool;
 
-    fn events(&mut self) -> MoveItems<LuxEvent>;
+    fn events(&mut self) -> IntoIter<LuxEvent>;
 }
 
 pub trait AbstractKey {
