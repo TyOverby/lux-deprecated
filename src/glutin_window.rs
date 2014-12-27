@@ -29,6 +29,7 @@ use gfx::{
     ToSlice,
     DeviceHelper,
     Graphics,
+    Device,
     GlCommandBuffer,
     GlDevice
 };
@@ -46,7 +47,7 @@ type BaseColor = [f32, ..4];
 struct CachedDrawCommand {
     typ: super::PrimitiveType,
     points: Vec<super::Vertex>,
-//    idxs: Vec<uint>,
+    idxs: Option<Vec<u32>>,
 }
 
 pub struct Window {
@@ -240,7 +241,6 @@ impl Window {
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
-        println!("{}, {}", wi, hi);
         self.frame = Frame::new(wi as u16 * 2, hi as u16 * 2);
     }
 
@@ -260,11 +260,18 @@ impl Window {
 
     pub fn push_draw(&mut self) {
         if let Some(ref cache_draw) = self.draw_cache {
-            let &CachedDrawCommand{ref typ, ref points} = cache_draw;
-            //panic!();
+            let &CachedDrawCommand{ref typ, ref points, ref idxs} = cache_draw;
 
             let mesh = self.graphics.device.create_mesh(points.as_slice());
-            let slice = mesh.to_slice(*typ);
+
+            let slice = match idxs {
+                &None => mesh.to_slice(*typ),
+                &Some(ref idxs) =>
+                    self.graphics.device
+                        .create_buffer_static::<u32>(idxs.as_slice())
+                        .to_slice(*typ)
+            };
+
             let batch = self.graphics.make_batch(&self.program, &mesh, slice,
                                                  &self.draw_state).unwrap();
             let params = gfx_integration::Params {
@@ -303,6 +310,7 @@ impl PrimitiveCanvas for Window {
     fn draw_shape(&mut self,
                   n_typ: super::PrimitiveType,
                   n_points: &[super::Vertex],
+                  idxs: Option<&[u32]>,
                   transform: [[f32, ..4], ..4]) {
 
         // Look at all this awful code for handling something that should
@@ -312,18 +320,25 @@ impl PrimitiveCanvas for Window {
                 self.push_draw();
                 self.draw_cache = Some(CachedDrawCommand {
                     typ: n_typ,
-                    points: vec![]
+                    points: vec![],
+                    idxs: None
                 });
             }
         } else {
             self.draw_cache = Some(CachedDrawCommand {
                 typ: n_typ,
-                points: vec![]
+                points: vec![],
+                idxs: None
+
             });
         }
 
         let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
         let draw_cache = self.draw_cache.as_mut().unwrap();
+
+        let already_in = draw_cache.points.len() as u32;
+        let adding = n_points.len() as u32;
+        let after_in = already_in + adding;
 
         // Perform the global transforms here
         draw_cache.points.extend(n_points.iter().map(|&mut point| {
@@ -333,6 +348,32 @@ impl PrimitiveCanvas for Window {
             point.pos = [res[0], res[1]];
             point
         }));
+
+        // TODO: test this
+        // TODO: replace most of this with 'extend' and 'map'.
+        match (&mut draw_cache.idxs, idxs) {
+            (&None, None) => { /* Do nothing */ }
+            (&Some(ref mut v), None) => {
+                for i in range(0, adding) {
+                    v.push(already_in + i)
+                }
+            }
+            (x@ &None, Some(l_idxs)) => {
+                let mut v = vec![];
+                for i in range(0, already_in) {
+                    v.push(i);
+                }
+                for &i in l_idxs.iter() {
+                    v.push(already_in + i);
+                }
+                *x = Some(v);
+            }
+            (&Some(ref mut v), Some(l_idxs)) => {
+                for &i in l_idxs.iter() {
+                    v.push(already_in + i);
+                }
+            }
+        }
     }
 }
 

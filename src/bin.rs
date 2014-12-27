@@ -6,20 +6,18 @@ use std::num::Float;
 
 fn main() {
     let mut lux = Window::new().unwrap();
-    let mut theta:f32 = 0.0;
-    while lux.is_open() {
-        lux.clear([0.9, 0.9, 0.9]);
-        theta += 0.01;
+    let mut delta = 0.0f32;
 
-        let size = 10.0;
-        let dist = (2.0*size*size).sqrt();
+    while lux.is_open() {
+        lux.clear([1.0, 0.0, 0.0, 0.1]);
+        delta += 0.1;
+        println!("{}", delta);
 
         for x in range(0u, 100) {
             for y in range(0u, 100) {
-                let x = x as f32 * dist;
-                let y = y as f32 * dist;
-                lux.rect((x, y), (size, size))
-                   .rotate_around((5.0, 5.0), theta)
+                let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
+                lux.rect((x, y), (30.0, 30.0))
+                   .fill_color(colors::BLUE)
                    .fill();
             }
         }

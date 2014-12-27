@@ -32,6 +32,7 @@ pub trait PrimitiveCanvas {
     fn draw_shape(&mut self,
                   typ: super::PrimitiveType,
                   vs: &[super::Vertex],
+                  idxs: Option<&[u32]>,
                   mat: [[f32, ..4], ..4]);
 }
 
@@ -228,7 +229,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         trx.scale(sx, sy);
         trx = vecmath::col_mat4_mul(trx, self.fields.transform);
 
-        self.canvas.draw_shape(super::TriangleFan, vertices.as_slice(), trx);
+        self.canvas.draw_shape(super::TriangleFan, vertices.as_slice(), None, trx);
         self
     }
 
@@ -246,10 +247,11 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
                 Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0], color: color },
                 Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0], color: color },
                 Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0], color: color },
-                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0], color: color },
-                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0], color: color },
+                //Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0], color: color },
+                //Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0], color: color },
                 Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0], color: color },
         ];
+        let idxs = [0, 1, 2, 0, 2, 3];
 
         let (mut x, mut y) = self.pos;
         x += self.fields.border + self.fields.padding.0;
@@ -267,7 +269,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         transform.scale(sx, sy);
 
         self.canvas.draw_shape(super::TriangleList,
-                               vertices.as_slice(),
+                               vertices.as_slice(), Some(idxs.as_slice()),
                                transform);
         self
     }
