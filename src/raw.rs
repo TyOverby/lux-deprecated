@@ -41,8 +41,8 @@ pub trait Transform {
         self
     }
     fn rotate_around(&mut self, point: (f32, f32), theta: f32) -> &mut Self {
-        self.translate(point.0, point.1);
         self.rotate(theta);
+        self.translate(-point.0, -point.1);
         self
     }
 }
@@ -52,10 +52,11 @@ impl Transform for [[f32, ..4], ..4] {
     fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] { self }
 }
 
-pub trait StackedTransform {
+pub trait StackedTransform: Transform {
     fn push_matrix(&mut self);
     fn pop_matrix(&mut self);
-    fn with_matrix(&mut self, f: |&mut Self|) {
+    fn with_matrix<F>(&mut self, f: F)
+    where F: FnOnce(&mut Self){
         self.push_matrix();
         f(self);
         self.pop_matrix();
@@ -84,18 +85,21 @@ pub trait Colored {
 pub trait StackedColored: Colored {
     fn push_colors(&mut self);
     fn pop_colors(&mut self);
-    fn with_colors(&mut self, f: |&mut Self|) {
+    fn with_colors<F>(&mut self, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_colors();
         f(self);
         self.pop_colors();
     }
-    fn with_fill_color<C: Color>(&mut self, color: C, f: |&mut Self|) {
+    fn with_fill_color<C: Color, F>(&mut self, color: C, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_colors();
         self.fill_color(color);
         f(self);
         self.pop_colors();
     }
-    fn with_stroke_color<C: Color>(&mut self, color: C, f: |&mut Self|) {
+    fn with_stroke_color<C: Color, F>(&mut self, color: C, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_colors();
         self.stroke_color(color);
         f(self);

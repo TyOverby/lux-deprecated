@@ -16,7 +16,7 @@ pub use gfx::PrimitiveType;
 pub use gfx::PrimitiveType::{ Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
-pub use canvas::{LuxCanvas, BasicShape, PrimitiveCanvas, Ellipse, Rectangle};
+pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
 pub use window::*;
 pub use window::LuxEvent::*;
 pub use window::LuxEvent::*;
@@ -31,6 +31,7 @@ mod raw;
 mod gfx_integration;
 mod glutin_window;
 mod color;
+pub mod colors;
 
 #[deriving(Show)]
 pub enum LuxError {

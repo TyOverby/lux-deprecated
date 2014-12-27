@@ -123,7 +123,7 @@ impl Window {
                                   .blend(BlendPreset::Alpha)
                                   .multi_sample(),
             draw_cache: None,
-            frame: Frame::new(width as u16, height as u16),
+            frame: Frame::new(width as u16 * 2, height as u16 * 2),
             matrix_stack: vec![],
             color_stack: vec![([0.0,0.0,0.0,1.0], [0.0,0.0,0.0,1.0])],
             title: "Lux".to_string(),
@@ -240,7 +240,8 @@ impl Window {
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
-        self.frame = Frame::new(wi as u16, hi as u16);
+        println!("{}, {}", wi, hi);
+        self.frame = Frame::new(wi as u16 * 2, hi as u16 * 2);
     }
 
     pub fn render(&mut self) {

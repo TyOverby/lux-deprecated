@@ -28,13 +28,6 @@ pub struct Rectangle<'a, C: 'a> {
     canvas: &'a mut C
 }
 
-pub trait BasicShape {
-    fn fill(self) -> Self;
-    fn stroke(self) -> Self;
-    fn border(self, f32) -> Self;
-    fn padding(self, f32) -> Self;
-}
-
 pub trait PrimitiveCanvas {
     fn draw_shape(&mut self,
                   typ: super::PrimitiveType,
@@ -42,8 +35,7 @@ pub trait PrimitiveCanvas {
                   mat: [[f32, ..4], ..4]);
 }
 
-pub trait LuxCanvas:
-Transform + StackedTransform + PrimitiveCanvas  + Colored {
+pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
     fn size(&self) -> (u32, u32);
     fn width(&self) -> u32 {
         match self.size() {
@@ -77,25 +69,29 @@ Transform + StackedTransform + PrimitiveCanvas  + Colored {
     fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32);
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32);
 
-    fn with_rotation(&mut self, rotation: f32, f: |&mut Self| -> ()) {
+    fn with_rotation<'a, F>(&'a mut self, rotation: f32, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_matrix();
         self.rotate(rotation);
         f(self);
         self.pop_matrix();
     }
-    fn with_translate(&mut self, dx: f32, dy: f32, f: |&mut Self| -> ()) {
+    fn with_translate<F>(&mut self, dx: f32, dy: f32, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_matrix();
         self.translate(dx, dy);
         f(self);
         self.pop_matrix();
     }
-    fn with_scale(&mut self, scale_x: f32, scale_y: f32, f: |&mut Self| -> ()) {
+    fn with_scale<F>(&mut self, scale_x: f32, scale_y: f32, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_matrix();
         self.scale(scale_x, scale_y);
         f(self);
         self.pop_matrix();
     }
-    fn with_shear(&mut self, sx: f32, sy: f32, f: |&mut Self| -> ()) {
+    fn with_shear<F>(&mut self, sx: f32, sy: f32, f: F)
+    where F: FnOnce(&mut Self) {
         self.push_matrix();
         self.shear(sx, sy);
         f(self);
@@ -263,12 +259,16 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         sx -= self.fields.border + self.fields.padding.0 + self.fields.padding.1;
         sy -= self.fields.border + self.fields.padding.2 + self.fields.padding.3;
 
-        let mut trx = vecmath::mat4_id();
-        trx.translate(x, y);
-        trx.scale(sx, sy);
-        trx = vecmath::col_mat4_mul(trx, self.fields.transform);
+        let mut local = vecmath::mat4_id();
+        local.translate(x, y);
 
-        self.canvas.draw_shape(super::TriangleList, vertices.as_slice(), trx);
+        //let transform = vecmath::col_mat4_mul(self.fields.transform, local);
+        let mut transform = vecmath::col_mat4_mul(local, self.fields.transform);
+        transform.scale(sx, sy);
+
+        self.canvas.draw_shape(super::TriangleList,
+                               vertices.as_slice(),
+                               transform);
         self
     }
 
