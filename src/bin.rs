@@ -2,6 +2,7 @@ extern crate lux;
 
 use lux::{LuxCanvas, LuxWindow, Window, StackedTransform, Colored, Transform};
 use lux::colors;
+use std::num::Float;
 
 fn main() {
     let mut lux = Window::new().unwrap();
@@ -10,14 +11,19 @@ fn main() {
         lux.clear([0.9, 0.9, 0.9]);
         theta += 0.01;
 
-        lux.rect((10.0, 20.0), (10.0, 10.0))
-            .translate(10.0, 10.0)
-            .fill_color([0.0, 0.0, 1.0, 1.0])
-            .fill();
+        let size = 10.0;
+        let dist = (2.0*size*size).sqrt();
 
-        lux.rect((20.0, 10.0), (10.0, 10.0))
-            .fill_color([1.0, 0.0, 0.0, 0.5])
-            .fill();
+        for x in range(0u, 100) {
+            for y in range(0u, 100) {
+                let x = x as f32 * dist;
+                let y = y as f32 * dist;
+                lux.rect((x, y), (size, size))
+                   .rotate_around((5.0, 5.0), theta)
+                   .fill();
+            }
+        }
+
 
         lux.render();
     }
