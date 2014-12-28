@@ -2,12 +2,12 @@ use std::vec::IntoIter;
 use std::collections::{HashMap, VecMap};
 use glutin;
 
-use super::window::keycodes::VirtualKeyCode;
+use super::interactive::keycodes::VirtualKeyCode;
 use super::{
     gfx_integration,
     LuxCanvas,
-    LuxWindow,
-    LuxEvent,
+    Interactive,
+    Event,
     LuxExtend,
     AbstractKey,
     Color,
@@ -69,7 +69,7 @@ pub struct Window {
     title: String,
 
     // EVENT
-    event_store: Vec<LuxEvent>,
+    event_store: Vec<Event>,
     mouse_pos: (i32, i32),
     window_pos: (i32, i32),
     window_size: (u32, u32),
@@ -383,7 +383,7 @@ impl PrimitiveCanvas for Window {
     }
 }
 
-impl LuxWindow for Window {
+impl Interactive for Window {
     fn is_open(&self) -> bool {
         !self.glutin_window.is_closed()
     }
@@ -419,7 +419,7 @@ impl LuxWindow for Window {
         self.mouse_down_count != 0
     }
 
-    fn events(&mut self) -> IntoIter<LuxEvent> {
+    fn events(&mut self) -> IntoIter<Event> {
         use std::mem::replace;
         self.process_events();
         replace(&mut self.event_store, vec![]).into_iter()

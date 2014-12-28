@@ -4,7 +4,7 @@ use lux::{
     LuxCanvas,
     PrimitiveCanvas,
     StackedTransform,
-    LuxWindow,
+    Interactive,
     Window,
     Colored,
     Vertex,

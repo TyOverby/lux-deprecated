@@ -17,16 +17,15 @@ pub use gfx::PrimitiveType::{ Point, Line, LineStrip,
                TriangleList, TriangleStrip, TriangleFan };
 
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
-pub use window::*;
-pub use window::LuxEvent::*;
-pub use window::LuxEvent::*;
-pub use window::MouseButton::*;
+pub use interactive::*;
+pub use interactive::Event::*;
+pub use interactive::MouseButton::*;
 pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
 pub use texture::Texture;
 
-mod window;
+mod interactive;
 mod texture;
 mod canvas;
 mod raw;

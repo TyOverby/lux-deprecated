@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::{LuxWindow, Window};
+use lux::{Interactive, Window};
 use lux::keycodes::Escape;
 
 fn main() {

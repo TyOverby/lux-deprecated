@@ -1,6 +1,6 @@
 extern crate lux;
 
-use lux::{LuxCanvas, LuxWindow, Window, StackedTransform, Colored, Transform};
+use lux::{LuxCanvas, Interactive, Window, Colored, Transform};
 use lux::colors;
 use std::num::Float;
 

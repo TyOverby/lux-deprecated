@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::{LuxCanvas, StackedColored, LuxWindow, Window};
+use lux::{LuxCanvas, StackedColored, Interactive, Window};
 
 fn main() {
     let mut window = Window::new().unwrap();
