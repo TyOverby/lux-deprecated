@@ -1,3 +1,6 @@
+/// A `Color` is any object that can be converted to a length-4 array of f32s.
+///
+/// The values of these floats range from 0.0 to 1.0 and represent [r, g, b, a].
 pub trait Color {
     fn to_rgba(self) -> [f32, ..4];
 }
