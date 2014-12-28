@@ -13,6 +13,7 @@ struct BasicFields {
     transform: [[f32, ..4], ..4]
 }
 
+/// An ellipse that can be drawn to the screen.
 pub struct Ellipse<'a, C: 'a> {
     fields: BasicFields,
     canvas: &'a mut C,
@@ -21,6 +22,7 @@ pub struct Ellipse<'a, C: 'a> {
     spokes: u8
 }
 
+/// A Rectangle that can be drawn to the screen.
 pub struct Rectangle<'a, C: 'a> {
     fields: BasicFields,
     pos: (f32, f32),
@@ -28,7 +30,16 @@ pub struct Rectangle<'a, C: 'a> {
     canvas: &'a mut C
 }
 
+/// A primitive canvas is a canvas that can be drawn to with only the
+/// `draw_shape` function.
 pub trait PrimitiveCanvas {
+    /// typ: The primitive type used to draw the vertices.
+    /// vs : A slice of vertices to be drawn.
+    /// idxs: An optional list of indices that can be used to index into
+    ///       the vertex array.  Useful if you have many points that are
+    ///       duplicates of each other.
+    /// mat: An optional transformation matrix that would be applied to the
+    ///      each point before drawing.
     fn draw_shape(&mut self,
                   typ: super::PrimitiveType,
                   vs: &[super::Vertex],
@@ -36,44 +47,60 @@ pub trait PrimitiveCanvas {
                   mat: Option<[[f32, ..4], ..4]>);
 }
 
+/// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
+/// that paint to the screen or to a buffer.
 pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
+    /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (u32, u32);
+
+    /// Returns the width of the canvas.
     fn width(&self) -> u32 {
         match self.size() {
             (w, _) => w
         }
     }
 
+    /// Returns the height of the canvas.
     fn height(&self) -> u32 {
         match self.size() {
             (_, h) => h
         }
     }
 
+    /// Returns a rectangle with the given dimensions and position.
     fn rect<'a>(&'a mut self, pos: (f32, f32), size: (f32, f32)) -> Rectangle<'a, Self> {
         Rectangle::new(self, pos, size)
     }
 
+    /// Returns a square with the given dimensions and position.
     fn square<'a>(&'a mut self, pos: (f32, f32), size: f32) -> Rectangle<'a, Self> {
         Rectangle::new(self, pos, (size, size))
     }
 
+    /// Returns an ellipse with the given dimensions and position.
     fn ellipse<'a>(&'a mut self, pos: (f32, f32), size: (f32, f32)) -> Ellipse<'a, Self> {
         Ellipse::new(self, pos, size)
     }
 
+    /// Returns an circle with the given dimensions and position.
     fn circle<'a>(&'a mut self, pos: (f32, f32), size: f32) -> Ellipse<'a, Self> {
         Ellipse::new(self, pos, (size, size))
     }
 
+    /// Draws a single line from `start` to `end` with a
+    /// thickness of `line_size`.
     fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32);
+
+    /// Draws a series of lines from each point to the next with a thickness
+    /// of `line_size`.
     fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32);
-    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32);
 
-    fn draw<T: Drawable>(&mut self, figure: &T) {
-        figure.draw(self);
-    }
+    /// Draws an arc centered at `pos` from `angle1` to `angle_2` with a
+    /// thickness of `line_size`.
+    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32,
+                angle2: f32, line_size: f32);
 
+    /// Draws text to the screen.
     fn draw_text(&mut self, pos: (f32, f32), text: &str);
 }
 
@@ -171,9 +198,12 @@ impl <'a, C> Colored for Rectangle<'a, C> where C: Colored {
 
 impl <'a, C> Ellipse<'a, C>
 where C: LuxCanvas + PrimitiveCanvas + 'a {
+
+    /// Fills in the ellipse with a solid color.
     pub fn fill(&mut self) -> &mut Ellipse<'a, C> {
         use std::f32::consts::PI;
         use std::num::FloatMath;
+
         let color = *self.current_fill_color();
         let spokes = self.spokes;
         let mut vertices = vec![];
@@ -207,6 +237,17 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         self
     }
 
+    /// Add padding to the ellipse.  Padding causes the ellipse to be drawn
+    /// constrained to the original bounding dimensions with the additional
+    /// constraints of the padding.
+    ///
+    /// Example:
+    /// ```
+    /// let padd = 5.0;
+    /// lux.circle((pos.0 + padd, pos.1 + padd), (size.0 - 2.0 * padd, size.1 - 2.0 * \
+    /// padd)).fill();
+    /// lux.circle(pos, size).padding(padd).fill(); // equivalant
+    /// ```
     pub fn padding<P: Padding>(&mut self, padding: P) -> &mut Ellipse<'a, C> {
         self.fields.padding = padding.as_padding();
         self
@@ -215,6 +256,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
 
 impl <'a, C> Rectangle<'a, C>
 where C: LuxCanvas + PrimitiveCanvas + 'a {
+    /// Fills the rectangle with a solid color.
     pub fn fill(&mut self) -> &mut Rectangle<'a, C> {
         let color = *self.current_fill_color();
         let vertices = [
@@ -246,27 +288,41 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         self
     }
 
+    /// Draws a border around the rectangle.
     pub fn stroke(&mut self) -> &mut Rectangle<'a, C> {
         self
     }
 
+    /// Sets the size of the border.  The border is drawn using the
+    /// `stroke()` function.
     pub fn border(&mut self, border_size: f32) -> &mut Rectangle<'a, C> {
         self.fields.border = border_size;
         self
     }
 
-    /// Applies padding to the rectangle.  Padding can either be
-    /// f32, (f32, f32), or (f32, f32, f32, f32) where these values correspond
-    /// to "global", "horizontal, vertical " and "left, right, top, bottom"
-
+    /// Add padding to the rectangle.
+    /// Padding causes the rectangleto be drawn
+    /// constrained to the original bounding dimensions with the additional
+    /// constraints of the padding.
+    ///
+    /// Example:
+    /// ```
+    /// let padd = 5.0;
+    /// lux.rect((pos.0 + padd, pos.1 + padd), (size.0 - 2.0 * padd, size.1 - 2.0 *
+    /// padd)).fill();
+    /// lux.rect(pos, size).padding(padd).fill(); // equivalant
+    /// ```
     pub fn padding<P: Padding>(&mut self, padding: P) -> &mut Rectangle<'a, C> {
         self.fields.padding = padding.as_padding();
         self
     }
 }
 
+/// Padding can either be /// f32, (f32, f32), or (f32, f32, f32, f32)
+/// where these values correspond
+/// to "global", "horizontal, vertical " and "left, right, top, bottom".
 pub trait Padding {
-    // (left, right, top, bottom)
+    /// -> (left, right, top, bottom)
     fn as_padding(self) -> (f32, f32, f32, f32);
 }
 

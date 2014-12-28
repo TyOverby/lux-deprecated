@@ -297,7 +297,8 @@ impl LuxCanvas for Window {
         unimplemented!();
     }
 
-    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32) {
+    fn draw_arc(&mut self, pos: (f32, f32), radius: f32,
+                angle1: f32, angle2: f32, line_size: f32) {
         unimplemented!();
     }
 
