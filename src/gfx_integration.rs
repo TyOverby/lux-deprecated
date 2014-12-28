@@ -1,4 +1,5 @@
 use gfx::ShaderSource;
+use render::shade::TextureParam;
 
 #[deriving(Copy, Show)]
 #[vertex_format]
@@ -12,10 +13,19 @@ pub struct Vertex {
 }
 
 #[shader_param(BasicBatch)]
-pub struct Params {
+pub struct ColorParams {
     #[name = "u_Transform"]
     pub transform: [[f32, ..4], ..4],
 }
+
+#[shader_param(TexBatch)]
+pub struct TexParams {
+    #[name = "u_Transform"]
+    pub transform: [[f32, ..4], ..4],
+    #[name = "u_Color"]
+    pub color: TextureParam
+}
+
 
 //
 //
@@ -57,6 +67,8 @@ GLSL_120: b"
     #version 120
     varying vec2 v_TexCoord;
     varying vec4 v_Color;
+
+    uniform sampler2D u_Color;
     void main() {
         gl_FragColor = v_Color;
     }
@@ -66,6 +78,8 @@ GLSL_150: b"
     in vec2 v_TexCoord;
     in vec4 a_Color;
     out vec4 o_Color;
+
+    uniform sampler2D u_Color;
     void main() {
         o_Color = a_Color;
     }

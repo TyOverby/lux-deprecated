@@ -33,7 +33,7 @@ pub trait PrimitiveCanvas {
                   typ: super::PrimitiveType,
                   vs: &[super::Vertex],
                   idxs: Option<&[u32]>,
-                  mat: [[f32, ..4], ..4]);
+                  mat: Option<[[f32, ..4], ..4]>);
 }
 
 pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
@@ -229,7 +229,10 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         trx.scale(sx, sy);
         trx = vecmath::col_mat4_mul(trx, self.fields.transform);
 
-        self.canvas.draw_shape(super::TriangleFan, vertices.as_slice(), None, trx);
+        self.canvas.draw_shape(super::TriangleFan,
+                               vertices.as_slice(),
+                               None,
+                               Some(trx));
         self
     }
 
@@ -247,8 +250,6 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
                 Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0], color: color },
                 Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0], color: color },
                 Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0], color: color },
-                //Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0], color: color },
-                //Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0], color: color },
                 Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0], color: color },
         ];
         let idxs = [0, 1, 2, 0, 2, 3];
@@ -270,7 +271,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
 
         self.canvas.draw_shape(super::TriangleList,
                                vertices.as_slice(), Some(idxs.as_slice()),
-                               transform);
+                               Some(transform));
         self
     }
 

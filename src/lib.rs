@@ -24,8 +24,10 @@ pub use window::MouseButton::*;
 pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
+pub use texture::Texture;
 
 mod window;
+mod texture;
 mod canvas;
 mod raw;
 mod gfx_integration;

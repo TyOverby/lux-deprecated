@@ -258,7 +258,7 @@ impl Window {
 
     }
 
-    pub fn push_draw(&mut self) {
+    fn push_draw(&mut self) {
         if let Some(ref cache_draw) = self.draw_cache {
             let &CachedDrawCommand{ref typ, ref points, ref idxs} = cache_draw;
 
@@ -274,7 +274,7 @@ impl Window {
 
             let batch = self.graphics.make_batch(&self.program, &mesh, slice,
                                                  &self.draw_state).unwrap();
-            let params = gfx_integration::Params {
+            let params = gfx_integration::ColorParams {
                 transform: vecmath::mat4_id()//*self.current_matrix()
             };
             self.graphics.draw(&batch, &params, &self.frame);
@@ -311,7 +311,7 @@ impl PrimitiveCanvas for Window {
                   n_typ: super::PrimitiveType,
                   n_points: &[super::Vertex],
                   idxs: Option<&[u32]>,
-                  transform: [[f32, ..4], ..4]) {
+                  transform: Option<[[f32, ..4], ..4]>) {
 
         // Look at all this awful code for handling something that should
         // be dead simple!
@@ -333,12 +333,17 @@ impl PrimitiveCanvas for Window {
             });
         }
 
+        if let Some(idxs) = idxs {
+            assert!(idxs.len() % 3 == 0,
+                "The length of the indexes array must be a multiple of three.");
+        }
+
+        let transform = transform.unwrap_or(vecmath::mat4_id());
         let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
         let draw_cache = self.draw_cache.as_mut().unwrap();
 
         let already_in = draw_cache.points.len() as u32;
         let adding = n_points.len() as u32;
-        let after_in = already_in + adding;
 
         // Perform the global transforms here
         draw_cache.points.extend(n_points.iter().map(|&mut point| {
