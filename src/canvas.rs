@@ -70,35 +70,6 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
     fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32);
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32, angle2: f32);
 
-    fn with_rotation<'a, F>(&'a mut self, rotation: f32, f: F)
-    where F: FnOnce(&mut Self) {
-        self.push_matrix();
-        self.rotate(rotation);
-        f(self);
-        self.pop_matrix();
-    }
-    fn with_translate<F>(&mut self, dx: f32, dy: f32, f: F)
-    where F: FnOnce(&mut Self) {
-        self.push_matrix();
-        self.translate(dx, dy);
-        f(self);
-        self.pop_matrix();
-    }
-    fn with_scale<F>(&mut self, scale_x: f32, scale_y: f32, f: F)
-    where F: FnOnce(&mut Self) {
-        self.push_matrix();
-        self.scale(scale_x, scale_y);
-        f(self);
-        self.pop_matrix();
-    }
-    fn with_shear<F>(&mut self, sx: f32, sy: f32, f: F)
-    where F: FnOnce(&mut Self) {
-        self.push_matrix();
-        self.shear(sx, sy);
-        f(self);
-        self.pop_matrix();
-    }
-
     fn draw<T: Drawable>(&mut self, figure: &T) {
         figure.draw(self);
     }

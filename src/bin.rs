@@ -3,6 +3,7 @@ extern crate lux;
 use lux::{
     LuxCanvas,
     PrimitiveCanvas,
+    StackedTransform,
     LuxWindow,
     Window,
     Colored,

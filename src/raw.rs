@@ -103,6 +103,56 @@ pub trait StackedTransform: Transform {
         f(self);
         self.pop_matrix();
     }
+
+    /// Similar to `with_matrix` but with a rotation applied
+    /// for the duration of the closure.
+    fn with_rotation<'a, F>(&'a mut self, rotation: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.rotate(rotation);
+        f(self);
+        self.pop_matrix();
+    }
+
+    /// Similar to `with_matrix` but with a translation applied
+    /// for the duration of the closure.
+    fn with_translate<F>(&mut self, dx: f32, dy: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.translate(dx, dy);
+        f(self);
+        self.pop_matrix();
+    }
+
+    /// Similar to `with_matrix` but with a scale applied
+    /// for the duration of the closure.
+    fn with_scale<F>(&mut self, scale_x: f32, scale_y: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.scale(scale_x, scale_y);
+        f(self);
+        self.pop_matrix();
+    }
+
+    /// Similar to `with_matrix` but with a shear applied
+    /// for the duration of the closure.
+    fn with_shear<F>(&mut self, sx: f32, sy: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.shear(sx, sy);
+        f(self);
+        self.pop_matrix();
+    }
+
+    /// Similar to `with_matrix` but with rotate_around applied
+    /// for the duration of the closure.
+    fn with_rotate_around<F>(&mut self, point: (f32, f32), theta: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.rotate_around(point, theta);
+        f(self);
+        self.pop_matrix();
+    }
 }
 
 /// A trait representing objects that can be colored with
