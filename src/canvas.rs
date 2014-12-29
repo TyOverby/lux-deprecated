@@ -1,8 +1,10 @@
-use super::Drawable;
-use super::Colored;
-use super::Transform;
-use super::StackedTransform;
-use super::Vertex;
+use super::{
+    Colored,
+    Transform,
+    StackedTransform,
+    Vertex
+};
+
 use vecmath;
 
 struct BasicFields {

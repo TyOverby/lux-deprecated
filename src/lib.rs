@@ -9,13 +9,18 @@ extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
 
-pub use gfx_integration::Vertex;
-
 pub use render::ProgramError;
 pub use gfx::PrimitiveType;
-pub use gfx::PrimitiveType::{ Point, Line, LineStrip,
-               TriangleList, TriangleStrip, TriangleFan };
+pub use gfx::PrimitiveType::{
+    Point,
+    Line,
+    LineStrip,
+    TriangleList,
+    TriangleStrip,
+    TriangleFan
+};
 
+pub use gfx_integration::Vertex;
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
 pub use interactive::*;
 pub use interactive::Event::*;
@@ -38,10 +43,6 @@ pub mod colors;
 pub enum LuxError {
     WindowError(String),
     ShaderError(ProgramError)
-}
-
-pub trait Drawable {
-    fn draw<C: LuxCanvas>(&self, &mut C);
 }
 
 pub trait LuxExtend {
