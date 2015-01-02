@@ -89,18 +89,23 @@ pub struct Window {
 
 impl Window {
     pub fn new() -> LuxResult<Window> {
+        use glutin::CreationError;
         let window_builder =
             WindowBuilder::new()
             .with_title("Lux".to_string())
             .with_dimensions(600, 500)
             .with_vsync()
             .with_gl_debug_flag(true)
+            .with_gl_version((3, 2))
             .with_multisampling(8)
             .with_visibility(true);
 
         let window = try!(window_builder.build().map_err(|e| {
             match e {
-                ::glutin::CreationError::OsError(s) => LuxError::WindowError(s)
+                CreationError::OsError(s) =>
+                    LuxError::WindowError(s),
+                CreationError::NotSupported  =>
+                    LuxError::WindowError("Window creation is not supported.".to_string())
             }
         }));
 
@@ -124,7 +129,7 @@ impl Window {
                                   .blend(BlendPreset::Alpha)
                                   .multi_sample(),
             draw_cache: None,
-            frame: Frame::new(width as u16 * 2, height as u16 * 2),
+            frame: Frame::new(width as u16, height as u16),
             matrix_stack: vec![],
             color_stack: vec![([0.0,0.0,0.0,1.0], [0.0,0.0,0.0,1.0])],
             title: "Lux".to_string(),
@@ -241,7 +246,7 @@ impl Window {
         let (sx, sy) = (2.0 / w, -2.0 / h);
         self.basis_matrix[0][0] = sx;
         self.basis_matrix[1][1] = sy;
-        self.frame = Frame::new(wi as u16 * 2, hi as u16 * 2);
+        self.frame = Frame::new(wi as u16, hi as u16);
     }
 
     pub fn render(&mut self) {

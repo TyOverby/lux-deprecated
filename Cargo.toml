@@ -13,7 +13,8 @@ name = "lux_demo"
 path = "src/bin.rs"
 
 [dependencies.glutin]
-git = "https://github.com/tomaka/glutin.git"
+git = "https://github.com/TyOverby/glutin.git"
+branch = "event-change"
 
 [dependencies.gfx]
 git = "https://github.com/gfx-rs/gfx-rs.git"

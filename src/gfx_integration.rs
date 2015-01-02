@@ -39,9 +39,12 @@ GLSL_120: b"
     attribute vec2 a_Pos;
     attribute vec4 a_Color;
     attribute vec2 a_TexCoord;
+
     varying vec2 v_TexCoord;
     varying vec4 v_Color;
+
     uniform mat4 u_Transform;
+
     void main() {
         v_TexCoord = a_TexCoord;
         v_Color = a_Color;
@@ -50,13 +53,19 @@ GLSL_120: b"
 "
 GLSL_150: b"
     #version 150 core
+
     in vec2 a_Pos;
     in vec4 a_Color;
     in vec2 a_TexCoord;
+
     out vec2 v_TexCoord;
+    out vec4 v_Color;
+
     uniform mat4 u_Transform;
+
     void main() {
         v_TexCoord = a_TexCoord;
+        v_Color = a_Color;
         gl_Position = u_Transform * vec4(a_Pos, 0.0, 1.0);
     }
 "
@@ -76,12 +85,13 @@ GLSL_120: b"
 GLSL_150: b"
     #version 150 core
     in vec2 v_TexCoord;
-    in vec4 a_Color;
+    in vec4 v_Color;
+
     out vec4 o_Color;
 
     uniform sampler2D u_Color;
     void main() {
-        o_Color = a_Color;
+        o_Color = v_Color;
     }
 "
 };
