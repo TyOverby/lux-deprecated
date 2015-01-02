@@ -3,7 +3,7 @@ name = "lux"
 version = "0.0.1"
 dependencies = [
  "gfx 0.1.0 (git+https://github.com/gfx-rs/gfx-rs.git)",
- "glutin 0.0.3-pre (git+https://github.com/TyOverby/glutin.git?branch=event-change)",
+ "glutin 0.0.3-pre (git+https://github.com/tomaka/glutin.git)",
  "typemap 0.0.5 (git+https://github.com/reem/rust-typemap)",
  "vecmath 0.0.1 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
@@ -114,7 +114,7 @@ dependencies = [
 [[package]]
 name = "glutin"
 version = "0.0.3-pre"
-source = "git+https://github.com/TyOverby/glutin.git?branch=event-change#6a98d81b47659ab7ac4a04c730f93af2cb930c3e"
+source = "git+https://github.com/tomaka/glutin.git#ebe32bb2d803bc22c4b309acbbd48f3dc2a12127"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.1 (git+https://github.com/servo/rust-cocoa)",
