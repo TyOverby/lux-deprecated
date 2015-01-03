@@ -23,6 +23,7 @@ use super::{
 
 use gfx::{
     DrawState,
+    BufferHandle,
     ClearData,
     COLOR,
     Frame,
@@ -95,7 +96,7 @@ impl Window {
             .with_title("Lux".to_string())
             .with_dimensions(600, 500)
             .with_vsync()
-            .with_gl_debug_flag(true)
+            .with_gl_debug_flag(false)
             .with_gl_version((3, 2))
             .with_multisampling(8)
             .with_visibility(true);
@@ -267,6 +268,7 @@ impl Window {
         if let Some(ref cache_draw) = self.draw_cache {
             let &CachedDrawCommand{ref typ, ref points, ref idxs} = cache_draw;
 
+
             let mesh = self.graphics.device.create_mesh(points.as_slice());
 
             let slice = match idxs {
@@ -280,10 +282,17 @@ impl Window {
             let batch = self.graphics.make_batch(&self.program, &mesh, slice,
                                                  &self.draw_state).unwrap();
             let params = gfx_integration::ColorParams {
-                transform: vecmath::mat4_id()//*self.current_matrix()
+                transform: vecmath::mat4_id()
             };
             self.graphics.draw(&batch, &params, &self.frame);
+
+            /*
+            for attr in mesh.attributes.into_iter() {
+                self.graphics.device.delete_buffer_raw(BufferHandle::from_raw(attr.buffer));
+            }
+            */
         }
+
         self.draw_cache = None;
     }
 }

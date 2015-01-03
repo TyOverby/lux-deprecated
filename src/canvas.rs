@@ -1,5 +1,6 @@
 use super::{
     Colored,
+    Color,
     Transform,
     StackedTransform,
     Vertex
@@ -44,7 +45,7 @@ pub trait PrimitiveCanvas {
     ///      each point before drawing.
     fn draw_shape(&mut self,
                   typ: super::PrimitiveType,
-                  vs: &[super::Vertex],
+                  vs: &[Vertex],
                   idxs: Option<&[u32]>,
                   mat: Option<[[f32, ..4], ..4]>);
 }
@@ -87,6 +88,27 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
     /// Returns an circle with the given dimensions and position.
     fn circle<'a>(&'a mut self, pos: (f32, f32), size: f32) -> Ellipse<'a, Self> {
         Ellipse::new(self, pos, (size, size))
+    }
+
+    fn draw_pixel<C: Color>(&mut self, pos: (f32, f32), color: C) {
+        let vertex = Vertex {
+            pos: [pos.0, pos.1],
+            color: color.to_rgba(),
+            tex: [0.0, 0.0]
+        };
+        self.draw_shape(super::Point, [vertex].as_slice(), None, None);
+    }
+
+    fn draw_pixels<C: Color, I: Iterator<((f32, f32), C)>>(&mut self, pixels: I) {
+        let v: Vec<_> = pixels
+            .map(|((px, py), c)|{
+                Vertex {
+                    pos: [px + 0.5, py + 0.5],
+                    color: c.to_rgba(),
+                    tex: [0.0, 0.0]
+                }
+            }) .collect();
+        self.draw_shape(super::Point, v.as_slice(), None, None);
     }
 
     /// Draws a single line from `start` to `end` with a

@@ -42,7 +42,11 @@ fn main() {
             lux.draw_shape(TriangleList, vtxs.as_slice(), Some(idxs.as_slice()), None);
         });
 
-        lux.rect((100.0, 100.0), (50.0, 50.0)).fill_color(colors::RED).fill();
+        lux.rect((100.0, 100.0), (50.0, 50.0)).fill_color(colors::GREEN).fill();
+
+//        lux.draw_pixel((100.5, 100.5), colors::RED);
+
+        lux.draw_pixels(range(100i32, 200).map(|i| ((i as f32, i as f32), colors::BLUE)));
 
         lux.render();
     }
