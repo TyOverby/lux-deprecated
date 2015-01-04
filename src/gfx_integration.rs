@@ -1,11 +1,10 @@
-#[deriving(Copy, Show)]
+#[derive(Copy, Show)]
 #[vertex_format]
 pub struct Vertex {
     pub pos: [f32; 2],
     pub color: [f32; 4],
 }
 
-#[deriving(Copy, Show)]
 #[uniforms]
 pub struct ColorParams {
     pub matrix: [[f32; 4]; 4],

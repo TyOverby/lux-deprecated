@@ -74,8 +74,6 @@ pub struct Frame<'a> {
     // Primitive Canvas
     draw_cache: Option<CachedDraw>,
 
-    buffers: Vec<glium::VertexBuffer<super::Vertex>>,
-
     // Raw
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
@@ -106,23 +104,18 @@ impl <'a> Frame<'a> {
             color_program: color_program,
             f: frm,
             draw_cache: None,
-            buffers: vec![],
             basis_matrix: basis,
             matrix_stack: vec![],
             color_stack: vec![([0.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 1.0])],
         }
     }
 
-    fn flush_draw(&mut self) {
-        if let Some(CachedDraw{typ, points, idxs}) = self.draw_cache.take() {
-            self.draw_now(typ, points, idxs);
-        }
-    }
 
     fn draw_now(&mut self,
                 typ: super::PrimitiveType,
                 points: Vec<super::Vertex>,
-                idxs: Vec<u32>) {
+                idxs: Vec<u32>,
+                base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index_buffer::*;
         use glium::index_buffer::PrimitiveType as Prim;
         use glium::Surface;
@@ -130,7 +123,7 @@ impl <'a> Frame<'a> {
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
         let (frame, color_program) = (&mut self.f, self.color_program);
         let uniform = gfx_integration::ColorParams {
-            matrix: vecmath::mat4_id()
+            matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
 
         let draw_params: glium::DrawParameters = glium::DrawParameters {
@@ -408,12 +401,25 @@ impl <'a> LuxCanvas for Frame<'a> {
 impl <'a> PrimitiveCanvas for Frame<'a> {
     fn draw_shape_no_batch(&mut self,
                            n_typ: super::PrimitiveType,
-                           n_points: &[super::Vertex],
-                           idxs: Option<&[u32]>,
+                           n_points: Vec<super::Vertex>,
+                           idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
-        unimplemented!();
+        let idxs = idxs.unwrap_or_else(||
+                               range(0u32, n_points.len() as u32).collect());
+        let transform = match transform {
+            Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
+            None => *self.current_matrix()
+        };
+        self.draw_now(n_typ, n_points, idxs, Some(transform));
     }
+
+    fn flush_draw(&mut self) {
+        if let Some(CachedDraw{typ, points, idxs}) = self.draw_cache.take() {
+            self.draw_now(typ, points, idxs, None);
+        }
+    }
+
     fn draw_shape(&mut self,
                   n_typ: super::PrimitiveType,
                   n_points: &[super::Vertex],

@@ -52,10 +52,13 @@ pub trait PrimitiveCanvas {
                   idxs: Option<&[u32]>,
                   mat: Option<[[f32; 4]; 4]>);
 
+    /// Flush all stored draw calls to the screen.
+    fn flush_draw(&mut self);
+
     fn draw_shape_no_batch(&mut self,
                            typ: super::PrimitiveType,
-                           vs: &[Vertex],
-                           idxs: Option<&[u32]>,
+                           vs: Vec<Vertex>,
+                           idxs: Option<Vec<u32>>,
                            mat: Option<[[f32; 4]; 4]>);
 }
 

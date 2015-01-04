@@ -28,7 +28,7 @@ mod glutin_window;
 mod color;
 pub mod colors;
 
-#[deriving(Show)]
+#[derive(Show)]
 pub enum LuxError {
     WindowError(String),
     OpenGlError(String),
