@@ -1,24 +1,11 @@
-#![feature(phase, globs, unboxed_closures)]
+#![feature(phase, globs, unboxed_closures, unsafe_destructor)]
 
 #[phase(plugin)]
-extern crate gfx_macros;
-extern crate gfx;
-extern crate render;
-extern crate device;
+extern crate glium_macros;
+extern crate glium;
 extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
-
-pub use render::ProgramError;
-pub use gfx::PrimitiveType;
-pub use gfx::PrimitiveType::{
-    Point,
-    Line,
-    LineStrip,
-    TriangleList,
-    TriangleStrip,
-    TriangleFan
-};
 
 pub use gfx_integration::Vertex;
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
@@ -28,7 +15,9 @@ pub use interactive::MouseButton::*;
 pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
-pub use texture::Texture;
+
+pub use glium::index_buffer::PrimitiveType;
+pub use glium::index_buffer::PrimitiveType::*;
 
 mod interactive;
 mod texture;
@@ -42,7 +31,8 @@ pub mod colors;
 #[deriving(Show)]
 pub enum LuxError {
     WindowError(String),
-    ShaderError(ProgramError)
+    OpenGlError(String),
+    ShaderError(glium::ProgramCreationError)
 }
 
 pub trait LuxExtend {

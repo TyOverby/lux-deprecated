@@ -1,4 +1,4 @@
-use device::tex::{
+/*use device::tex::{
     TextureInfo,
     TextureKind,
     RGBA8,
@@ -29,4 +29,4 @@ impl Texture {
             sampler: SamplerInfo::new(Bilinear, Tile)
         }
     }
-}
+}*/

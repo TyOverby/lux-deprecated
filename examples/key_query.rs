@@ -17,7 +17,7 @@ fn main() {
         } else {
             [0.8, 0.8, 0.8]
         };
-        window.clear(color);
-        window.render();
+
+        let frame = window.frame(color);
     }
 }

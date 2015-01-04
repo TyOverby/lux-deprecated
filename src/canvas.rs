@@ -9,11 +9,11 @@ use super::{
 use vecmath;
 
 struct BasicFields {
-    fill_color: Option<[f32, ..4]>,
-    stroke_color: Option<[f32, ..4]>,
+    fill_color: Option<[f32; 4]>,
+    stroke_color: Option<[f32; 4]>,
     padding: (f32, f32, f32, f32),
     border: f32,
-    transform: [[f32, ..4], ..4]
+    transform: [[f32; 4]; 4]
 }
 
 /// An ellipse that can be drawn to the screen.
@@ -36,6 +36,9 @@ pub struct Rectangle<'a, C: 'a> {
 /// A primitive canvas is a canvas that can be drawn to with only the
 /// `draw_shape` function.
 pub trait PrimitiveCanvas {
+    /// Draws the verteces to the canvas. This function uses caching to
+    /// batch draw calls that are similar.
+    ///
     /// typ: The primitive type used to draw the vertices.
     /// vs : A slice of vertices to be drawn.
     /// idxs: An optional list of indices that can be used to index into
@@ -47,12 +50,18 @@ pub trait PrimitiveCanvas {
                   typ: super::PrimitiveType,
                   vs: &[Vertex],
                   idxs: Option<&[u32]>,
-                  mat: Option<[[f32, ..4], ..4]>);
+                  mat: Option<[[f32; 4]; 4]>);
+
+    fn draw_shape_no_batch(&mut self,
+                           typ: super::PrimitiveType,
+                           vs: &[Vertex],
+                           idxs: Option<&[u32]>,
+                           mat: Option<[[f32; 4]; 4]>);
 }
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
+pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (u32, u32);
 
@@ -94,9 +103,8 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
         let vertex = Vertex {
             pos: [pos.0, pos.1],
             color: color.to_rgba(),
-            tex: [0.0, 0.0]
         };
-        self.draw_shape(super::Point, [vertex].as_slice(), None, None);
+        self.draw_shape(super::Points, [vertex].as_slice(), None, None);
     }
 
     fn draw_pixels<C: Color, I: Iterator<((f32, f32), C)>>(&mut self, pixels: I) {
@@ -105,10 +113,9 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas  + Colored {
                 Vertex {
                     pos: [px + 0.5, py + 0.5],
                     color: c.to_rgba(),
-                    tex: [0.0, 0.0]
                 }
             }) .collect();
-        self.draw_shape(super::Point, v.as_slice(), None, None);
+        self.draw_shape(super::Points, v.as_slice(), None, None);
     }
 
     /// Draws a single line from `start` to `end` with a
@@ -164,31 +171,31 @@ impl <'a, C> Rectangle<'a, C> {
 }
 
 impl <'a, C> Transform for Rectangle<'a, C> {
-    fn current_matrix(&self) -> &[[f32, ..4], ..4] {
+    fn current_matrix(&self) -> &[[f32; 4]; 4] {
         &self.fields.transform
     }
-    fn current_matrix_mut(&mut self) -> &mut[[f32, ..4], ..4] {
+    fn current_matrix_mut(&mut self) -> &mut[[f32; 4]; 4] {
         &mut self.fields.transform
     }
 }
 
 impl <'a, C> Colored for Ellipse<'a, C> where C: Colored {
-    fn current_fill_color(&self) -> &[f32, ..4] {
+    fn current_fill_color(&self) -> &[f32; 4] {
         self.fields.fill_color.as_ref().unwrap_or_else(
             || self.canvas.current_fill_color())
     }
-    fn current_fill_color_mut(&mut self) -> &mut[f32, ..4] {
+    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
         if self.fields.fill_color.is_none() {
             self.fields.fill_color = Some(*self.canvas.current_fill_color());
         }
         self.fields.fill_color.as_mut().unwrap()
     }
 
-    fn current_stroke_color(&self) -> &[f32, ..4] {
+    fn current_stroke_color(&self) -> &[f32; 4] {
         self.fields.stroke_color.as_ref().unwrap_or_else(
             || self.canvas.current_stroke_color())
     }
-    fn current_stroke_color_mut(&mut self) -> &mut[f32, ..4] {
+    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
         if self.fields.stroke_color.is_none() {
             self.fields.stroke_color = Some(*self.canvas.current_stroke_color());
         }
@@ -197,22 +204,22 @@ impl <'a, C> Colored for Ellipse<'a, C> where C: Colored {
 }
 
 impl <'a, C> Colored for Rectangle<'a, C> where C: Colored {
-    fn current_fill_color(&self) -> &[f32, ..4] {
+    fn current_fill_color(&self) -> &[f32; 4] {
         self.fields.fill_color.as_ref().unwrap_or_else(
             || self.canvas.current_fill_color())
     }
-    fn current_fill_color_mut(&mut self) -> &mut[f32, ..4] {
+    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
         if self.fields.fill_color.is_none() {
             self.fields.fill_color = Some(*self.canvas.current_fill_color());
         }
         self.fields.fill_color.as_mut().unwrap()
     }
 
-    fn current_stroke_color(&self) -> &[f32, ..4] {
+    fn current_stroke_color(&self) -> &[f32; 4] {
         self.fields.stroke_color.as_ref().unwrap_or_else(
             || self.canvas.current_stroke_color())
     }
-    fn current_stroke_color_mut(&mut self) -> &mut[f32, ..4] {
+    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
         if self.fields.stroke_color.is_none() {
             self.fields.stroke_color = Some(*self.canvas.current_stroke_color());
         }
@@ -235,7 +242,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         let mut theta = 0.0;
         while theta <= 2.0 * PI {
             let p = [theta.sin(), theta.cos()];
-            vertices.push(Vertex { pos: p, tex: p, color: color });
+            vertices.push(Vertex { pos: p, color: color });
             theta += (2.0 * PI) / (spokes as f32);
         }
 
@@ -284,10 +291,10 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
     pub fn fill(&mut self) -> &mut Rectangle<'a, C> {
         let color = *self.current_fill_color();
         let vertices = [
-                Vertex{ pos: [1.0, 0.0], tex: [1.0, 0.0], color: color },
-                Vertex{ pos: [0.0, 0.0], tex: [0.0, 0.0], color: color },
-                Vertex{ pos: [0.0, 1.0], tex: [0.0, 1.0], color: color },
-                Vertex{ pos: [1.0, 1.0], tex: [1.0, 1.0], color: color },
+                Vertex{ pos: [1.0, 0.0], color: color },
+                Vertex{ pos: [0.0, 0.0], color: color },
+                Vertex{ pos: [0.0, 1.0], color: color },
+                Vertex{ pos: [1.0, 1.0], color: color },
         ];
         let idxs = [0, 1, 2, 0, 2, 3];
 
@@ -306,7 +313,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         let mut transform = vecmath::col_mat4_mul(local, self.fields.transform);
         transform.scale(sx, sy);
 
-        self.canvas.draw_shape(super::TriangleList,
+        self.canvas.draw_shape(super::TrianglesList,
                                vertices.as_slice(), Some(idxs.as_slice()),
                                Some(transform));
         self

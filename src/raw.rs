@@ -6,13 +6,13 @@ use super::Color;
 /// purpose matrix application.
 pub trait Transform {
     /// Return a reference to the current matrix.
-    fn current_matrix(&self) -> &[[f32, ..4], ..4];
+    fn current_matrix(&self) -> &[[f32; 4]; 4];
     /// Return a mutible reference to the current matrix.
-    fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4];
+    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4];
 
     /// Multiplies the current matrix against another.
     /// `self = self * other`.
-    fn apply_matrix(&mut self, other: [[f32, ..4], ..4]) {
+    fn apply_matrix(&mut self, other: [[f32; 4]; 4]) {
         let current = self.current_matrix_mut();
         *current = col_mat4_mul(*current, other);
     }
@@ -68,9 +68,9 @@ pub trait Transform {
 
 /// Turns out that implementing matrix transformations on matrices is a
 /// no brainer!
-impl Transform for [[f32, ..4], ..4] {
-    fn current_matrix(&self) -> &[[f32, ..4], ..4] { self }
-    fn current_matrix_mut(&mut self) -> &mut [[f32, ..4], ..4] { self }
+impl Transform for [[f32; 4]; 4] {
+    fn current_matrix(&self) -> &[[f32; 4]; 4] { self }
+    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] { self }
 }
 
 /// Similar to opengl pushMatrix() and popMatrix(), this trait is
@@ -163,16 +163,16 @@ pub trait StackedTransform: Transform {
 /// [r, b, b, a].
 pub trait Colored {
     /// Returns a reference to the current fill color.
-    fn current_fill_color(&self) -> &[f32, ..4];
+    fn current_fill_color(&self) -> &[f32; 4];
 
     /// Returns a mutable reference to the current fill color.
-    fn current_fill_color_mut(&mut self) -> &mut[f32, ..4];
+    fn current_fill_color_mut(&mut self) -> &mut[f32; 4];
 
     /// Returns a reference to the current stroke color.
-    fn current_stroke_color(&self) -> &[f32, ..4];
+    fn current_stroke_color(&self) -> &[f32; 4];
 
     /// Returns a mutable reference to the current stroke color.
-    fn current_stroke_color_mut(&mut self) -> &mut[f32, ..4];
+    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4];
 
     /// Sets the fill color.
     fn fill_color<C: Color>(&mut self, c: C) -> &mut Self {

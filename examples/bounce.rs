@@ -17,23 +17,22 @@ fn main() {
     let (mut x, mut y) = (20.0, 50.0);
     let (mut vx, mut vy) = (1.5, 1.5);
     while window.is_open() {
-        window.clear([0.9, 0.9, 0.9, 0.001]);
+        let mut frame = window.frame([0.9, 0.9, 0.9, 0.001]);
         x += vx;
         y += vy;
 
-        let (nx, cx) = bound(0.0, x, window.width() as f32 - size);
+        let (nx, cx) = bound(0.0, x, frame.width() as f32 - size);
         if cx {
             x = nx;
             vx = - vx;
         }
 
-        let (ny, cy) = bound(0.0, y, window.height() as f32 - size);
+        let (ny, cy) = bound(0.0, y, frame.height() as f32 - size);
         if cy {
             y = ny;
             vy = - vy;
         }
 
-        window.rect((x, y), (size, size)).fill();
-        window.render();
+        frame.rect((x, y), (size, size)).fill();
     }
 }

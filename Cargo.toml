@@ -15,8 +15,14 @@ path = "src/bin.rs"
 [dependencies.glutin]
 git = "https://github.com/tomaka/glutin.git"
 
-[dependencies.gfx]
-git = "https://github.com/gfx-rs/gfx-rs.git"
+[dependencies.glium]
+git = "https://github.com/TyOverby/glium.git"
+branch = "minorfix"
+features = ["image", "gl_extensions"]
+default-features = false
+
+[dependencies.glium_macros]
+git = "https://github.com/tomaka/glium.git"
 
 [dependencies.vecmath]
 git = "https://github.com/PistonDevelopers/vecmath"

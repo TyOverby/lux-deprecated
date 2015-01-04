@@ -1,31 +1,15 @@
-use gfx::ShaderSource;
-use render::shade::TextureParam;
-
 #[deriving(Copy, Show)]
 #[vertex_format]
 pub struct Vertex {
-    #[name = "a_Pos"]
-    pub pos: [f32, ..2],
-    #[name = "a_Color"]
-    pub color: [f32, ..4],
-    #[name = "a_TexCoord"]
-    pub tex: [f32, ..2]
+    pub pos: [f32; 2],
+    pub color: [f32; 4],
 }
 
-#[shader_param(BasicBatch)]
+#[deriving(Copy, Show)]
+#[uniforms]
 pub struct ColorParams {
-    #[name = "u_Transform"]
-    pub transform: [[f32, ..4], ..4],
+    pub matrix: [[f32; 4]; 4],
 }
-
-#[shader_param(TexBatch)]
-pub struct TexParams {
-    #[name = "u_Transform"]
-    pub transform: [[f32, ..4], ..4],
-    #[name = "u_Color"]
-    pub color: TextureParam
-}
-
 
 //
 //
@@ -33,65 +17,29 @@ pub struct TexParams {
 //
 //
 
-pub static VERTEX_SRC: ShaderSource<'static> = shaders! {
-GLSL_120: b"
-    #version 120
-    attribute vec2 a_Pos;
-    attribute vec4 a_Color;
-    attribute vec2 a_TexCoord;
+pub static VERTEX_SRC: &'static str =
+"
+    #version 110
 
-    varying vec2 v_TexCoord;
-    varying vec4 v_Color;
+    uniform mat4 matrix;
 
-    uniform mat4 u_Transform;
+    attribute vec2 pos;
+    attribute vec4 color;
+
+    varying vec4 v_color;
 
     void main() {
-        v_TexCoord = a_TexCoord;
-        v_Color = a_Color;
-        gl_Position = u_Transform * vec4(a_Pos, 0.0, 1.0);
+        gl_Position = matrix * vec4(pos, 0.0, 1.0);
+        v_color = color;
     }
+";
+
+pub static FRAGMENT_SRC: &'static str =
 "
-GLSL_150: b"
-    #version 150 core
-
-    in vec2 a_Pos;
-    in vec4 a_Color;
-    in vec2 a_TexCoord;
-
-    out vec2 v_TexCoord;
-    out vec4 v_Color;
-
-    uniform mat4 u_Transform;
+    #version 110
+    varying vec4 v_color;
 
     void main() {
-        v_TexCoord = a_TexCoord;
-        v_Color = a_Color;
-        gl_Position = u_Transform * vec4(a_Pos, 0.0, 1.0);
+        gl_FragColor = v_color;
     }
-"
-};
-
-pub static FRAGMENT_SRC: ShaderSource<'static> = shaders! {
-GLSL_120: b"
-    #version 120
-    varying vec2 v_TexCoord;
-    varying vec4 v_Color;
-
-    uniform sampler2D u_Color;
-    void main() {
-        gl_FragColor = v_Color;
-    }
-"
-GLSL_150: b"
-    #version 150 core
-    in vec2 v_TexCoord;
-    in vec4 v_Color;
-
-    out vec4 o_Color;
-
-    uniform sampler2D u_Color;
-    void main() {
-        o_Color = v_Color;
-    }
-"
-};
+";
