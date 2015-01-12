@@ -5,7 +5,7 @@ extern crate nd_iter;
 use lux::{Window, LuxCanvas, Interactive, colors};
 use nd_iter::iter_2d;
 
-const DIV: f32 = 30.0;
+const DIV: f32 = 20.0;
 
 fn main() {
     let mut window = Window::new().unwrap();

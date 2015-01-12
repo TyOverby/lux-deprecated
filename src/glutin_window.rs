@@ -1,5 +1,7 @@
 use std::vec::IntoIter;
 use std::collections::{HashMap, VecMap};
+use std::rc::Rc;
+use std::ops::Deref;
 
 use glutin;
 use glium;
@@ -41,7 +43,7 @@ struct CachedDraw {
 pub struct Window {
     // CANVAS
     display: glium::Display,
-    color_program: glium::Program,
+    color_program: Rc<glium::Program>,
     closed: bool,
 
     // WINDOW
@@ -69,7 +71,7 @@ pub struct Window {
 pub struct Frame<'a> {
     display: glium::Display,
     f: glium::Frame<'a>,
-    color_program: &'a glium::Program,
+    color_program: Rc<glium::Program>,
 
     // Primitive Canvas
     draw_cache: Option<CachedDraw>,
@@ -81,7 +83,7 @@ pub struct Frame<'a> {
 }
 
 impl <'a> Frame<'a> {
-    fn new(display: &'a glium::Display, color_program: &'a glium::Program, clear_color: [f32; 4]) -> Frame<'a> {
+    fn new(display: &'a glium::Display, color_program: Rc<glium::Program>, clear_color: [f32; 4]) -> Frame<'a> {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -121,7 +123,7 @@ impl <'a> Frame<'a> {
         use glium::Surface;
 
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
-        let (frame, color_program) = (&mut self.f, self.color_program);
+        let (frame, color_program) = (&mut self.f, self.color_program.deref());
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
@@ -268,7 +270,7 @@ impl Window {
 
         let window = Window {
             display: display,
-            color_program: color_program,
+            color_program: Rc::new(color_program),
             closed: false,
             title: "Lux".to_string(),
             event_store: vec![],
@@ -369,7 +371,7 @@ impl Window {
     }
 
     pub fn frame<'a, C: Color>(&'a mut self, clear_color: C) -> Frame<'a> {
-        Frame::new(&self.display, &self.color_program, clear_color.to_rgba())
+        Frame::new(&self.display, self.color_program.clone(), clear_color.to_rgba())
     }
 }
 
