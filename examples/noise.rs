@@ -18,7 +18,7 @@ fn main() {
         let mut frame = window.frame(colors::RED);
 
         frame.draw_pixels(
-            iter_2d(range(0i32, 256), range(0i32, 245)).map(|(x, y)| {
+            iter_2d(range(0, 256), range(0, 245)).map(|(x, y)| {
                 let (x, y) = (x as f32, y as f32);
                 let value = noise::simplectic3(&seed, &[x / DIV, y / DIV, z as f32 / DIV]);
                 let value = (value + 1.0) / 2.0;

@@ -131,6 +131,7 @@ impl <'a> Frame<'a> {
             depth_range: (0.0, 1.0),
             blending_function: Some(glium::BlendingFunction::LerpBySourceAlpha),
             line_width: None,
+            dithering: true,
             backface_culling: glium::BackfaceCullingMode::CullingDisabled,
             polygon_mode: glium::PolygonMode::Fill,
             multisampling: true,
@@ -328,12 +329,12 @@ impl Window {
             glevent::KeyboardInput(glutin::ElementState::Pressed, code, virt)  => {
                 let c = virt.and_then(super::keycode_to_char)
                             .or(last_char.take())
-                            .or_else(|| self.code_to_char.get(&(code as uint))
+                            .or_else(|| self.code_to_char.get(&(code as usize))
                                                          .map(|a| *a));
                 self.event_store.push( super::KeyPressed(code, c, virt));
 
-                if c.is_some() && !self.code_to_char.contains_key(&(code as uint)) {
-                    self.code_to_char.insert(code as uint, c.unwrap());
+                if c.is_some() && !self.code_to_char.contains_key(&(code as usize)) {
+                    self.code_to_char.insert(code as usize, c.unwrap());
                 }
 
                 self.codes_pressed.insert(code, true);
@@ -346,7 +347,7 @@ impl Window {
             }
             glevent::KeyboardInput(glutin::ElementState::Released, code, virt) => {
                 let c = virt.and_then(super::keycode_to_char)
-                            .or_else(|| self.code_to_char.get(&(code as uint))
+                            .or_else(|| self.code_to_char.get(&(code as usize))
                                                          .map(|a| *a));
                 self.event_store.push(super::KeyReleased(code, c, virt));
                 self.codes_pressed.insert(code, false);
@@ -384,7 +385,7 @@ impl <'a> LuxCanvas for Frame<'a> {
         unimplemented!();
     }
 
-    fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, positions: I, line_size: f32) {
+    fn draw_lines<I: Iterator<Item = (f32, f32)>>(&mut self, positions: I, line_size: f32) {
         unimplemented!();
     }
 
@@ -459,7 +460,8 @@ impl <'a> PrimitiveCanvas for Frame<'a> {
         let adding = n_points.len() as u32;
 
         // Perform the global transforms here
-        draw_cache.points.extend(n_points.iter().map(|&mut point| {
+        draw_cache.points.extend(n_points.iter().map(|&point| {
+            let mut point = point.clone();
             let res = vecmath::col_mat4_transform(
                 mat,
                 [point.pos[0], point.pos[1], 0.0, 1.0]);

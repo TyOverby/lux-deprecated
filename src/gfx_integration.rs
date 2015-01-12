@@ -1,4 +1,4 @@
-#[derive(Copy, Show)]
+#[derive(Copy, Show, Clone)]
 #[vertex_format]
 pub struct Vertex {
     pub pos: [f32; 2],

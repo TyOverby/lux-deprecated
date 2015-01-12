@@ -107,10 +107,10 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
             pos: [pos.0, pos.1],
             color: color.to_rgba(),
         };
-        self.draw_shape(super::Points, [vertex].as_slice(), None, None);
+        self.draw_shape(super::Points, &[vertex][], None, None);
     }
 
-    fn draw_pixels<C: Color, I: Iterator<((f32, f32), C)>>(&mut self, pixels: I) {
+    fn draw_pixels<C: Color, I: Iterator<Item = ((f32, f32), C)>>(&mut self, pixels: I) {
         let v: Vec<_> = pixels
             .map(|((px, py), c)|{
                 Vertex {
@@ -118,7 +118,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
                     color: c.to_rgba(),
                 }
             }) .collect();
-        self.draw_shape(super::Points, v.as_slice(), None, None);
+        self.draw_shape(super::Points, &v[], None, None);
     }
 
     /// Draws a single line from `start` to `end` with a
@@ -127,7 +127,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
 
     /// Draws a series of lines from each point to the next with a thickness
     /// of `line_size`.
-    fn draw_lines<I: Iterator<(f32, f32)>>(&mut self, mut positions: I, line_size: f32);
+    fn draw_lines<I: Iterator<Item = (f32, f32)>>(&mut self, mut positions: I, line_size: f32);
 
     /// Draws an arc centered at `pos` from `angle1` to `angle_2` with a
     /// thickness of `line_size`.
@@ -236,7 +236,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
     /// Fills in the ellipse with a solid color.
     pub fn fill(&mut self) -> &mut Ellipse<'a, C> {
         use std::f32::consts::PI;
-        use std::num::FloatMath;
+        use std::num::Float;
 
         let color = *self.current_fill_color();
         let spokes = self.spokes;
@@ -265,7 +265,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         trx = vecmath::col_mat4_mul(trx, self.fields.transform);
 
         self.canvas.draw_shape(super::TriangleFan,
-                               vertices.as_slice(),
+                               &vertices[],
                                None,
                                Some(trx));
         self
@@ -312,12 +312,11 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         let mut local = vecmath::mat4_id();
         local.translate(x, y);
 
-        //let transform = vecmath::col_mat4_mul(self.fields.transform, local);
         let mut transform = vecmath::col_mat4_mul(local, self.fields.transform);
         transform.scale(sx, sy);
 
         self.canvas.draw_shape(super::TrianglesList,
-                               vertices.as_slice(), Some(idxs.as_slice()),
+                               &vertices[], Some(&idxs[]),
                                Some(transform));
         self
     }

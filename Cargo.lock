@@ -2,37 +2,37 @@
 name = "lux"
 version = "0.0.1"
 dependencies = [
- "glium 0.0.2 (git+https://github.com/TyOverby/glium.git?branch=minorfix)",
+ "glium 0.0.2 (git+https://github.com/tomaka/glium.git)",
  "glium_macros 0.0.1 (git+https://github.com/tomaka/glium.git)",
- "glutin 0.0.3-pre (git+https://github.com/tomaka/glutin.git)",
- "nd_iter 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
+ "nd_iter 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.0.3 (git+https://github.com/bjz/noise-rs.git)",
- "typemap 0.0.6 (git+https://github.com/reem/rust-typemap)",
+ "typemap 0.0.7 (git+https://github.com/reem/rust-typemap)",
  "vecmath 0.0.1 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
 
 [[package]]
 name = "android_glue"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/android-rs-glue#64698d2cae2ee560371d0ee729e12f3db3aa4dbd"
+source = "git+https://github.com/tomaka/android-rs-glue#a12bacab70a5992af4c617b2f7384a9144a887a8"
 dependencies = [
- "compile_msg 0.1.2 (git+https://github.com/huonw/compile_msg)",
+ "compile_msg 0.1.3 (git+https://github.com/huonw/compile_msg)",
 ]
 
 [[package]]
 name = "cocoa"
 version = "0.1.1"
-source = "git+https://github.com/servo/rust-cocoa#aeb4db571a0ca8cc722c9372fffc60482a83ae95"
+source = "git+https://github.com/servo/rust-cocoa#bf53a53ce306279fc1cae0d56fdd5e7216696420"
 
 [[package]]
 name = "compile_msg"
-version = "0.1.2"
-source = "git+https://github.com/huonw/compile_msg#ad97e4d4cd165ecd592ce75c7d1541b24f0222de"
+version = "0.1.3"
+source = "git+https://github.com/huonw/compile_msg#b19da50cacf5b11bbc065da6b449f6b4fe7c019a"
 
 [[package]]
 name = "core_foundation"
 version = "0.1.0"
-source = "git+https://github.com/servo/rust-core-foundation#81db9ab15f67e16d7a3e9705a06cad65192014fd"
+source = "git+https://github.com/servo/rust-core-foundation#ce3d852765827b64a0d5fb2aadd77da39665b0b0"
 
 [[package]]
 name = "core_graphics"
@@ -49,51 +49,51 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "gl_generator"
-version = "0.0.6"
+version = "0.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "khronos_api 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "xml-rs 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xml-rs 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "glium"
 version = "0.0.2"
-source = "git+https://github.com/TyOverby/glium.git?branch=minorfix#6b6dfeca633c88b89228f0d6fc51e29f561664b0"
+source = "git+https://github.com/tomaka/glium.git#65f5db4e67c93a7106d7f35e2487778083924bbc"
 dependencies = [
- "compile_msg 0.1.2 (git+https://github.com/huonw/compile_msg)",
+ "compile_msg 0.1.3 (git+https://github.com/huonw/compile_msg)",
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "gl_generator 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "glutin 0.0.3-pre (git+https://github.com/tomaka/glutin.git)",
+ "gl_generator 0.0.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
  "image 0.2.0-alpha.4 (git+https://github.com/PistonDevelopers/image)",
 ]
 
 [[package]]
 name = "glium_macros"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/glium.git#f004a5f814a71ea3deb6da91a35191b9a027a331"
+source = "git+https://github.com/tomaka/glium.git#65f5db4e67c93a7106d7f35e2487778083924bbc"
 
 [[package]]
 name = "glutin"
-version = "0.0.3-pre"
-source = "git+https://github.com/tomaka/glutin.git#0937d809b58472f815fd97598f379bbd13937e7f"
+version = "0.0.4-pre"
+source = "git+https://github.com/tomaka/glutin.git#5a20f0af6b8b23fbbf2ac0216b8fb2eda6c6ac48"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.1 (git+https://github.com/servo/rust-cocoa)",
  "core_graphics 0.1.0 (git+https://github.com/servo/rust-core-graphics)",
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "gl_generator 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "winapi 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gl_generator 0.0.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winapi 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "image"
 version = "0.2.0-alpha.4"
-source = "git+https://github.com/PistonDevelopers/image#e5a46a2a1de48e794ce6967362223b272269f123"
+source = "git+https://github.com/PistonDevelopers/image#7a326f24339b3a3737b66a29167beff8ca5c95a4"
 dependencies = [
- "num 0.1.4 (git+https://github.com/rust-lang/num)",
+ "num 0.1.8 (git+https://github.com/rust-lang/num)",
 ]
 
 [[package]]
@@ -103,71 +103,71 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "log"
-version = "0.1.7"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "regex 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "nd_iter"
-version = "0.0.2"
+version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "noise"
 version = "0.0.3"
-source = "git+https://github.com/bjz/noise-rs.git#fe817a9dc49555d0bdf58bb6b28f4dce1258b003"
+source = "git+https://github.com/bjz/noise-rs.git#a77e4b007840cf2d5dbdbd6de4c939bfd3d89c4d"
 
 [[package]]
 name = "num"
-version = "0.1.4"
-source = "git+https://github.com/rust-lang/num#ce93a10ed00f8724ce814536bd95ea345f386d22"
+version = "0.1.8"
+source = "git+https://github.com/rust-lang/num#cbf04cf6646f99b21e5262a99791ee85063203ba"
 dependencies = [
- "rustc-serialize 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "phantom"
-version = "0.0.2"
+version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "regex"
-version = "0.1.6"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rustc-serialize"
-version = "0.2.2"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "typemap"
-version = "0.0.6"
-source = "git+https://github.com/reem/rust-typemap#c2cc59a2a61a0023cca402f3c54e435adb533560"
+version = "0.0.7"
+source = "git+https://github.com/reem/rust-typemap#ce8a11b667aab0cdd954656aa33bde7177749d19"
 dependencies = [
- "phantom 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "unsafe-any 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "phantom 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unsafe-any 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "unsafe-any"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "vecmath"
 version = "0.0.1"
-source = "git+https://github.com/PistonDevelopers/vecmath#8d4f1a6f56afd0f34e8a77272336a90b4dcb54cd"
+source = "git+https://github.com/PistonDevelopers/vecmath#027f750922840d07737ff1a6daeabd546e0c21ab"
 
 [[package]]
 name = "winapi"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "xml-rs"
-version = "0.1.7"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 

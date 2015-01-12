@@ -16,8 +16,7 @@ path = "src/bin.rs"
 git = "https://github.com/tomaka/glutin.git"
 
 [dependencies.glium]
-git = "https://github.com/TyOverby/glium.git"
-branch = "minorfix"
+git = "https://github.com/tomaka/glium.git"
 features = ["image", "gl_extensions"]
 default-features = false
 
@@ -31,7 +30,7 @@ git = "https://github.com/PistonDevelopers/vecmath"
 git = "https://github.com/reem/rust-typemap"
 
 [dev-dependencies.nd_iter]
-version = "0.0.2"
+version = "0.0.3"
 
 [dev-dependencies.noise]
 git = "https://github.com/bjz/noise-rs.git"

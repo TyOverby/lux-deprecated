@@ -1,6 +1,7 @@
-#![feature(phase, globs, unboxed_closures, unsafe_destructor)]
+#![feature(plugin, unboxed_closures, unsafe_destructor)]
+#![allow(unstable)]
 
-#[phase(plugin)]
+#[plugin]
 extern crate glium_macros;
 extern crate glium;
 extern crate glutin;
