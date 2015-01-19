@@ -46,8 +46,16 @@ pub enum MouseButton {
 /// A trait for objects that are interactive to the user.
 /// The only known impelementation for this trait is the glutin Window.
 pub trait Interactive {
-    /// Returns true if the object is not yet closed.
-    fn is_open(&self) -> bool;
+    /// Returns true if the window is not yet closed.
+    ///
+    /// This function borrows self as &mut because it must
+    /// process events before determining if it has closed before.
+    ///
+    /// `was_open` is a similar function, but without the event processing.
+    /// However, you should prefer is_open if at all possible.
+    fn is_open(&mut self) -> bool;
+
+    fn was_open(&self) -> bool;
 
     /// Returns the title of the object.
     fn title(&self) -> &str;

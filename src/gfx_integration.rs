@@ -1,6 +1,6 @@
 #[derive(Copy, Show, Clone)]
 #[vertex_format]
-pub struct Vertex {
+pub struct ColorVertex {
     pub pos: [f32; 2],
     pub color: [f32; 4],
 }

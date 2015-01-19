@@ -8,7 +8,7 @@ extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
 
-pub use gfx_integration::Vertex;
+pub use gfx_integration::ColorVertex;
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
 pub use interactive::*;
 pub use interactive::Event::*;

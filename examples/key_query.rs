@@ -18,6 +18,6 @@ fn main() {
             [0.8, 0.8, 0.8]
         };
 
-        let _ = window.frame(color);
+        let _ = window.cleared_frame(color);
     }
 }

@@ -18,7 +18,7 @@ use super::{
     Colored,
     StackedColored,
     PrimitiveCanvas,
-    Vertex,
+    ColorVertex,
     LuxResult,
     LuxError,
     Transform,
@@ -36,7 +36,7 @@ type BaseColor = [f32; 4];
 
 struct CachedDraw {
     typ: super::PrimitiveType,
-    points: Vec<super::Vertex>,
+    points: Vec<super::ColorVertex>,
     idxs: Vec<u32>,
 }
 
@@ -68,9 +68,9 @@ pub struct Window {
     typemap: TypeMap
 }
 
-pub struct Frame<'a> {
+pub struct Frame {
     display: glium::Display,
-    f: glium::Frame<'a>,
+    f: glium::Frame<'static>, // TODO: remove 'static
     color_program: Rc<glium::Program>,
 
     // Primitive Canvas
@@ -82,13 +82,15 @@ pub struct Frame<'a> {
     color_stack: Vec<(BaseColor, BaseColor)>,
 }
 
-impl <'a> Frame<'a> {
-    fn new(display: &'a glium::Display, color_program: Rc<glium::Program>, clear_color: [f32; 4]) -> Frame<'a> {
+impl Frame {
+    fn new(display: &glium::Display, color_program: Rc<glium::Program>, clear_color: Option<[f32; 4]>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
-        let [r,g,b,a] = clear_color;
-        frm.clear_color(r,g,b,a);
+        if let Some(clear_color) = clear_color {
+            let [r,g,b,a] = clear_color;
+            frm.clear_color(r,g,b,a);
+        }
 
         let size = frm.get_dimensions();
         let (w, h) = (size.0 as f32, size.1 as f32);
@@ -115,12 +117,14 @@ impl <'a> Frame<'a> {
 
     fn draw_now(&mut self,
                 typ: super::PrimitiveType,
-                points: Vec<super::Vertex>,
+                points: Vec<super::ColorVertex>,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index_buffer::*;
         use glium::index_buffer::PrimitiveType as Prim;
         use glium::Surface;
+        use glium::LinearBlendingFactor::*;
+        use glium::BlendingFunction::Addition;
 
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
         let (frame, color_program) = (&mut self.f, self.color_program.deref());
@@ -131,13 +135,17 @@ impl <'a> Frame<'a> {
         let draw_params: glium::DrawParameters = glium::DrawParameters {
             depth_function: glium::DepthFunction::Overwrite,
             depth_range: (0.0, 1.0),
-            blending_function: Some(glium::BlendingFunction::LerpBySourceAlpha),
+            blending_function: Some(glium::BlendingFunction::Addition{
+                source: SourceAlpha,
+                destination: OneMinusDestinationAlpha
+            }),
             line_width: None,
             dithering: true,
             backface_culling: glium::BackfaceCullingMode::CullingDisabled,
             polygon_mode: glium::PolygonMode::Fill,
             multisampling: true,
             viewport: None,
+            scissor: None,
         };
 
         match typ {
@@ -147,7 +155,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::LinesList => {
                 let idx_buffer = LinesList(idxs);
@@ -155,7 +163,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::LinesListAdjacency => {
                 let idx_buffer = LinesListAdjacency(idxs);
@@ -163,7 +171,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::LineStrip => {
                 let idx_buffer = LineStrip(idxs);
@@ -171,7 +179,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::LineStripAdjacency => {
                 let idx_buffer = LineStripAdjacency(idxs);
@@ -179,7 +187,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::TrianglesList => {
                 let idx_buffer = TrianglesList(idxs);
@@ -187,7 +195,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::TrianglesListAdjacency => {
                 let idx_buffer = TrianglesListAdjacency(idxs);
@@ -195,7 +203,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::TriangleStrip => {
                 let idx_buffer = TriangleStrip(idxs);
@@ -203,7 +211,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::TriangleStripAdjacency => {
                 let idx_buffer = TriangleStripAdjacency(idxs);
@@ -211,7 +219,7 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
             }
             Prim::TriangleFan => {
                 let idx_buffer = TriangleFan(idxs);
@@ -219,14 +227,18 @@ impl <'a> Frame<'a> {
                            &idx_buffer,
                            color_program,
                            &uniform,
-                           &draw_params);
+                           &draw_params).unwrap();
+            }
+
+            Prim::Patches{..} => {
+                panic!("patches are undefined");
             }
         }
     }
 }
 
 #[unsafe_destructor]
-impl <'a> Drop for Frame<'a> {
+impl  Drop for Frame {
     fn drop(&mut self) {
         self.flush_draw();
     }
@@ -370,13 +382,17 @@ impl Window {
         }}
     }
 
-    pub fn frame<'a, C: Color>(&'a mut self, clear_color: C) -> Frame<'a> {
-        Frame::new(&self.display, self.color_program.clone(), clear_color.to_rgba())
+    pub fn cleared_frame<C: Color>(&self, clear_color: C) -> Frame {
+        Frame::new(&self.display, self.color_program.clone(), Some(clear_color.to_rgba()))
+    }
+
+    pub fn frame(&self) -> Frame {
+        Frame::new(&self.display, self.color_program.clone(), None)
     }
 }
 
 #[allow(unused_variables)]
-impl <'a> LuxCanvas for Frame<'a> {
+impl LuxCanvas for Frame {
     fn size(&self) -> (u32, u32) {
         use glium::Surface;
         let (w, h) = self.f.get_dimensions();
@@ -401,10 +417,10 @@ impl <'a> LuxCanvas for Frame<'a> {
     }
 }
 
-impl <'a> PrimitiveCanvas for Frame<'a> {
+impl PrimitiveCanvas for Frame {
     fn draw_shape_no_batch(&mut self,
                            n_typ: super::PrimitiveType,
-                           n_points: Vec<super::Vertex>,
+                           n_points: Vec<super::ColorVertex>,
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
@@ -425,14 +441,20 @@ impl <'a> PrimitiveCanvas for Frame<'a> {
 
     fn draw_shape(&mut self,
                   n_typ: super::PrimitiveType,
-                  n_points: &[super::Vertex],
+                  n_points: &[super::ColorVertex],
                   idxs: Option<&[u32]>,
                   transform: Option<[[f32; 4]; 4]>) {
+        use super::PrimitiveType::{Points, LinesList, TrianglesList};
 
         // Look at all this awful code for handling something that should
         // be dead simple!
         if self.draw_cache.is_some() {
-            if self.draw_cache.as_ref().unwrap().typ != n_typ {
+            let same_type = self.draw_cache.as_ref().unwrap().typ == n_typ;
+            let coherant_group = match n_typ {
+                Points | LinesList | TrianglesList => true,
+                _ => false
+            };
+            if !same_type || !coherant_group {
                 self.flush_draw();
                 self.draw_cache = Some(CachedDraw {
                     typ: n_typ,
@@ -490,7 +512,12 @@ impl <'a> PrimitiveCanvas for Frame<'a> {
 }
 
 impl Interactive for Window {
-    fn is_open(&self) -> bool {
+    fn is_open(&mut self) -> bool {
+        self.process_events();
+        !self.closed
+    }
+
+    fn was_open(&self) -> bool {
         !self.closed
     }
 
@@ -539,7 +566,7 @@ impl Interactive for Window {
     }
 }
 
-impl <'a> Transform for Frame<'a> {
+impl Transform for Frame {
     fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
         let len = self.matrix_stack.len();
         if len == 0 {
@@ -558,7 +585,7 @@ impl <'a> Transform for Frame<'a> {
     }
 }
 
-impl <'a> StackedTransform for Frame<'a> {
+impl StackedTransform for Frame {
     fn push_matrix(&mut self) {
         let c = *self.current_matrix();
         self.matrix_stack.push(c);
@@ -579,7 +606,7 @@ impl LuxExtend for Window {
     }
 }
 
-impl <'a> Colored for Frame<'a> {
+impl Colored for Frame {
     fn current_fill_color(&self) -> &[f32; 4] {
         let len = self.color_stack.len();
         &self.color_stack[len - 1].0
@@ -601,7 +628,7 @@ impl <'a> Colored for Frame<'a> {
     }
 }
 
-impl <'a> StackedColored for Frame<'a> {
+impl StackedColored for Frame {
     fn push_colors(&mut self) {
         let colors = (*self.current_fill_color(), *self.current_stroke_color());
         self.color_stack.push(colors);

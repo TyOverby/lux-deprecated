@@ -15,12 +15,12 @@ fn main() {
 
     while window.is_open() {
         z += 1.0;
-        let mut frame = window.frame(colors::RED);
+        let mut frame = window.cleared_frame(colors::RED);
 
         frame.draw_pixels(
-            iter_2d(range(0, 256), range(0, 245)).map(|(x, y)| {
+            iter_2d(range(0u32, 256), range(0u32, 256)).map(|(x, y)| {
                 let (x, y) = (x as f32, y as f32);
-                let value = noise::simplectic3(&seed, &[x / DIV, y / DIV, z / DIV]);
+                let value = noise::perlin3(&seed, &[x / DIV, y / DIV, z / DIV]);
                 let value = (value + 1.0) / 2.0;
 
                 ((x, y), [value, value, value])

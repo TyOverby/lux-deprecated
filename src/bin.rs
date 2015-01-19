@@ -8,7 +8,7 @@ use lux::{
     Interactive,
     Window,
     Colored,
-    Vertex,
+    ColorVertex,
     TrianglesList
 };
 
@@ -21,7 +21,7 @@ fn main() {
     while lux.is_open() {
         delta += 0.1;
 
-        let mut frame = lux.frame(colors::RED);
+        let mut frame = lux.cleared_frame(colors::RED);
 
         frame.with_rotation(delta, |frame|{
           for x in 0 .. 100 {
@@ -34,18 +34,18 @@ fn main() {
             }
 
             let vtxs = [
-                Vertex {pos: [0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0]},
-                Vertex {pos: [0.0, 200.0], color: [0.0, 0.0, 1.0, 1.0]},
-                Vertex {pos: [200.0, 0.0], color: [0.0, 1.0, 0.0, 1.0]},
+                ColorVertex {pos: [0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0]},
+                ColorVertex {pos: [0.0, 200.0], color: [0.0, 0.0, 1.0, 1.0]},
+                ColorVertex {pos: [200.0, 0.0], color: [0.0, 1.0, 0.0, 1.0]},
             ];
 
             let idxs = [0, 1, 2];
             frame.draw_shape(TrianglesList, &vtxs[], Some(&idxs[]), None);
         });
 
-        frame.rect((100.0, 100.0), (50.0, 50.0)).fill_color(colors::GREEN).fill();
+        frame.rect((101.0, 100.0), (50.0, 50.0)).fill_color(colors::GREEN).fill();
 
-        frame.draw_pixel((100.5, 100.5), colors::RED);
+        frame.draw_pixel((101.5, 100.5), colors::RED);
 
         frame.draw_pixels((0 .. 100).map(|i| ((i as f32, i as f32), colors::BLUE)));
 

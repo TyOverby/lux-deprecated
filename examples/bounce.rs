@@ -17,7 +17,7 @@ fn main() {
     let (mut x, mut y) = (20.0, 50.0);
     let (mut vx, mut vy) = (1.5, 1.5);
     while window.is_open() {
-        let mut frame = window.frame([0.9, 0.9, 0.9, 0.001]);
+        let mut frame = window.cleared_frame([0.9, 0.9, 0.9, 0.001]);
         x += vx;
         y += vy;
 

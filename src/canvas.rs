@@ -3,7 +3,7 @@ use super::{
     Color,
     Transform,
     StackedTransform,
-    Vertex
+    ColorVertex
 };
 
 use vecmath;
@@ -42,13 +42,13 @@ pub trait PrimitiveCanvas {
     /// typ: The primitive type used to draw the vertices.
     /// vs : A slice of vertices to be drawn.
     /// idxs: An optional list of indices that can be used to index into
-    ///       the vertex array.  Useful if you have many points that are
+    ///       the ColorVertex array.  Useful if you have many points that are
     ///       duplicates of each other.
     /// mat: An optional transformation matrix that would be applied to the
     ///      each point before drawing.
     fn draw_shape(&mut self,
                   typ: super::PrimitiveType,
-                  vs: &[Vertex],
+                  vs: &[ColorVertex],
                   idxs: Option<&[u32]>,
                   mat: Option<[[f32; 4]; 4]>);
 
@@ -57,7 +57,7 @@ pub trait PrimitiveCanvas {
 
     fn draw_shape_no_batch(&mut self,
                            typ: super::PrimitiveType,
-                           vs: Vec<Vertex>,
+                           vs: Vec<ColorVertex>,
                            idxs: Option<Vec<u32>>,
                            mat: Option<[[f32; 4]; 4]>);
 }
@@ -103,7 +103,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
     }
 
     fn draw_pixel<C: Color>(&mut self, pos: (f32, f32), color: C) {
-        let vertex = Vertex {
+        let vertex = ColorVertex {
             pos: [pos.0, pos.1],
             color: color.to_rgba(),
         };
@@ -113,7 +113,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
     fn draw_pixels<C: Color, I: Iterator<Item = ((f32, f32), C)>>(&mut self, pixels: I) {
         let v: Vec<_> = pixels
             .map(|((px, py), c)|{
-                Vertex {
+                ColorVertex {
                     pos: [px + 0.5, py + 0.5],
                     color: c.to_rgba(),
                 }
@@ -245,7 +245,7 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
         let mut theta = 0.0;
         while theta <= 2.0 * PI {
             let p = [theta.sin(), theta.cos()];
-            vertices.push(Vertex { pos: p, color: color });
+            vertices.push(ColorVertex { pos: p, color: color });
             theta += (2.0 * PI) / (spokes as f32);
         }
 
@@ -294,10 +294,10 @@ where C: LuxCanvas + PrimitiveCanvas + 'a {
     pub fn fill(&mut self) -> &mut Rectangle<'a, C> {
         let color = *self.current_fill_color();
         let vertices = [
-                Vertex{ pos: [1.0, 0.0], color: color },
-                Vertex{ pos: [0.0, 0.0], color: color },
-                Vertex{ pos: [0.0, 1.0], color: color },
-                Vertex{ pos: [1.0, 1.0], color: color },
+                ColorVertex{ pos: [1.0, 0.0], color: color },
+                ColorVertex{ pos: [0.0, 0.0], color: color },
+                ColorVertex{ pos: [0.0, 1.0], color: color },
+                ColorVertex{ pos: [1.0, 1.0], color: color },
         ];
         let idxs = [0, 1, 2, 0, 2, 3];
 
