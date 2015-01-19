@@ -31,6 +31,17 @@ use typemap::TypeMap;
 
 use vecmath;
 
+macro_rules! draw_cmd {
+    ($typ: path, $cons: ident, $act: ident, $frame: ident,
+     $vbuf: ident, $idx: ident, $prog: ident, $uni: ident, $params: ident) => {
+        if $act == $typ {
+            let idx_buffer = $cons($idx);
+            $frame.draw(&$vbuf, &idx_buffer, $prog, &$uni, &$params).unwrap();
+            return;
+        }
+    };
+}
+
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
 
@@ -148,92 +159,26 @@ impl Frame {
             scissor: None,
         };
 
-        match typ {
-            Prim::Points => {
-                let idx_buffer = PointsList(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::LinesList => {
-                let idx_buffer = LinesList(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::LinesListAdjacency => {
-                let idx_buffer = LinesListAdjacency(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::LineStrip => {
-                let idx_buffer = LineStrip(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::LineStripAdjacency => {
-                let idx_buffer = LineStripAdjacency(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::TrianglesList => {
-                let idx_buffer = TrianglesList(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::TrianglesListAdjacency => {
-                let idx_buffer = TrianglesListAdjacency(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::TriangleStrip => {
-                let idx_buffer = TriangleStrip(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::TriangleStripAdjacency => {
-                let idx_buffer = TriangleStripAdjacency(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-            Prim::TriangleFan => {
-                let idx_buffer = TriangleFan(idxs);
-                frame.draw(&vertex_buffer,
-                           &idx_buffer,
-                           color_program,
-                           &uniform,
-                           &draw_params).unwrap();
-            }
-
-            Prim::Patches{..} => {
-                panic!("patches are undefined");
-            }
-        }
+        draw_cmd!(Prim::Points, PointsList,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::LinesList, LinesList,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::LinesListAdjacency, LinesListAdjacency,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::LineStrip, LineStrip,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::LineStripAdjacency, LineStripAdjacency,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::TrianglesList, TrianglesList,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::TrianglesListAdjacency, TrianglesListAdjacency,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::TriangleStrip, TriangleStrip,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::TriangleStripAdjacency, TriangleStripAdjacency,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        draw_cmd!(Prim::TriangleFan, TriangleFan,
+          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
     }
 }
 
