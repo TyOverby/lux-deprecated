@@ -17,6 +17,7 @@ git = "https://github.com/tomaka/glutin.git"
 
 [dependencies.glium]
 git = "https://github.com/tomaka/glium.git"
+features = ["image"]
 
 [dependencies.glium_macros]
 git = "https://github.com/tomaka/glium.git"

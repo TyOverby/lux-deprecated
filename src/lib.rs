@@ -8,8 +8,11 @@ extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
 
-pub use gfx_integration::ColorVertex;
-pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
+pub use glium::index_buffer::PrimitiveType;
+pub use glium::index_buffer::PrimitiveType::*;
+
+pub use gfx_integration::{ColorVertex, TexVertex};
+pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle, VerticesSlice, VerticesVec};
 pub use interactive::*;
 pub use interactive::Event::*;
 pub use interactive::MouseButton::*;
@@ -17,8 +20,6 @@ pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
 
-pub use glium::index_buffer::PrimitiveType;
-pub use glium::index_buffer::PrimitiveType::*;
 
 mod interactive;
 mod texture;
