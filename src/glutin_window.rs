@@ -22,7 +22,9 @@ use super::{
     LuxResult,
     LuxError,
     Transform,
-    StackedTransform
+    StackedTransform,
+    VerticesVec,
+    VerticesSlice
 };
 
 use glutin::WindowBuilder;
@@ -55,6 +57,7 @@ pub struct Window {
     // CANVAS
     display: glium::Display,
     color_program: Rc<glium::Program>,
+    tex_program:   Rc<glium::Program>,
     closed: bool,
 
     // WINDOW
@@ -83,6 +86,7 @@ pub struct Frame {
     display: glium::Display,
     f: glium::Frame<'static>, // TODO: remove 'static
     color_program: Rc<glium::Program>,
+    tex_program: Rc<glium::Program>,
 
     // Primitive Canvas
     draw_cache: Option<CachedDraw>,
@@ -94,7 +98,10 @@ pub struct Frame {
 }
 
 impl Frame {
-    fn new(display: &glium::Display, color_program: Rc<glium::Program>, clear_color: Option<[f32; 4]>) -> Frame {
+    fn new( display: &glium::Display,
+            color_program: Rc<glium::Program>,
+            tex_program: Rc<glium::Program>,
+            clear_color: Option<[f32; 4]>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -117,6 +124,7 @@ impl Frame {
         Frame {
             display: display.clone(),
             color_program: color_program,
+            tex_program: tex_program,
             f: frm,
             draw_cache: None,
             basis_matrix: basis,
@@ -125,10 +133,9 @@ impl Frame {
         }
     }
 
-
     fn draw_now(&mut self,
                 typ: super::PrimitiveType,
-                points: Vec<super::ColorVertex>,
+                points: VerticesVec,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index_buffer::*;
@@ -138,7 +145,9 @@ impl Frame {
         use glium::BlendingFunction::Addition;
 
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
-        let (frame, color_program) = (&mut self.f, self.color_program.deref());
+        let (frame, color_program, tex_program) = (&mut self.f,
+                                                   self.color_program.deref(),
+                                                   self.tex_program.deref());
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
@@ -217,10 +226,12 @@ impl Window {
         }));
 
         let color_program = try!(glium::Program::from_source(
-                                     &display,
-                                     gfx_integration::VERTEX_SRC,
-                                     gfx_integration::FRAGMENT_SRC,
-                                     None)
+             &display, gfx_integration::COLOR_VERTEX_SRC,
+             gfx_integration::COLOR_FRAGMENT_SRC, None)
+                                 .map_err(LuxError::ShaderError));
+        let tex_program = try!(glium::Program::from_source(
+             &display, gfx_integration::TEX_VERTEX_SRC,
+             gfx_integration::TEX_FRAGMENT_SRC, None)
                                  .map_err(LuxError::ShaderError));
 
         let (width, height) = display.get_framebuffer_dimensions();
@@ -228,6 +239,7 @@ impl Window {
         let window = Window {
             display: display,
             color_program: Rc::new(color_program),
+            tex_program: Rc::new(tex_program),
             closed: false,
             title: "Lux".to_string(),
             event_store: vec![],
@@ -328,11 +340,17 @@ impl Window {
     }
 
     pub fn cleared_frame<C: Color>(&self, clear_color: C) -> Frame {
-        Frame::new(&self.display, self.color_program.clone(), Some(clear_color.to_rgba()))
+        Frame::new(&self.display,
+                   self.color_program.clone(),
+                   self.tex_program.clone(),
+                   Some(clear_color.to_rgba()))
     }
 
     pub fn frame(&self) -> Frame {
-        Frame::new(&self.display, self.color_program.clone(), None)
+        Frame::new(&self.display,
+                   self.color_program.clone(),
+                   self.tex_program.clone(),
+                   None)
     }
 }
 
@@ -365,7 +383,7 @@ impl LuxCanvas for Frame {
 impl PrimitiveCanvas for Frame {
     fn draw_shape_no_batch(&mut self,
                            n_typ: super::PrimitiveType,
-                           n_points: Vec<super::ColorVertex>,
+                           n_points: VerticesVec,
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
@@ -386,11 +404,10 @@ impl PrimitiveCanvas for Frame {
 
     fn draw_shape(&mut self,
                   n_typ: super::PrimitiveType,
-                  n_points: &[super::ColorVertex],
+                  n_points: VerticesSlice,
                   idxs: Option<&[u32]>,
                   transform: Option<[[f32; 4]; 4]>) {
         use super::PrimitiveType::{Points, LinesList, TrianglesList};
-
         // Look at all this awful code for handling something that should
         // be dead simple!
         if self.draw_cache.is_some() {

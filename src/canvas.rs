@@ -3,7 +3,8 @@ use super::{
     Color,
     Transform,
     StackedTransform,
-    ColorVertex
+    ColorVertex,
+    TexVertex,
 };
 
 use vecmath;
@@ -33,6 +34,16 @@ pub struct Rectangle<'a, C: 'a> {
     canvas: &'a mut C
 }
 
+pub enum VerticesSlice<'a> {
+    Textured(&'a [ColorVertex]),
+    Colored(&'a [TexVertex])
+}
+
+pub enum VerticesVec {
+    Textured(Vec<ColorVertex>),
+    Colored(Vec<TexVertex>)
+}
+
 /// A primitive canvas is a canvas that can be drawn to with only the
 /// `draw_shape` function.
 pub trait PrimitiveCanvas {
@@ -48,7 +59,7 @@ pub trait PrimitiveCanvas {
     ///      each point before drawing.
     fn draw_shape(&mut self,
                   typ: super::PrimitiveType,
-                  vs: &[ColorVertex],
+                  vs: VerticesSlice,
                   idxs: Option<&[u32]>,
                   mat: Option<[[f32; 4]; 4]>);
 
@@ -57,7 +68,7 @@ pub trait PrimitiveCanvas {
 
     fn draw_shape_no_batch(&mut self,
                            typ: super::PrimitiveType,
-                           vs: Vec<ColorVertex>,
+                           vs: VerticesVec,
                            idxs: Option<Vec<u32>>,
                            mat: Option<[[f32; 4]; 4]>);
 }
