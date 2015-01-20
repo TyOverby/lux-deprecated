@@ -343,7 +343,6 @@ impl Window {
         }
         let mut last_char = None;
         for event in self.display.poll_events().into_iter() {
-            //println!("{:?}", event);
             match event {
             glevent::MouseMoved((x, y)) => {
                 self.mouse_pos = (x as i32, y as i32);
@@ -703,7 +702,6 @@ impl Interactive for Window {
     }
 
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool {
-        //println!("{:?} {:?} {:?}");
         match k.to_key() {
             (Some(code), _, _) => self.codes_pressed.get(&code).map(|x| *x),
             (_, Some(chr), _) => self.chars_pressed.get(&chr).map(|x| *x),

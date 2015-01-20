@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::{Interactive, Window};
+use lux::{Interactive, Window, LuxCanvas};
 use lux::keycodes::Escape;
 
 fn main() {
@@ -18,6 +18,7 @@ fn main() {
             [0.8, 0.8, 0.8]
         };
 
-        let x = window.cleared_frame(color);
+        let mut frame = window.cleared_frame(color);
+        frame.rect((0.0, 0.0), (20.0, 20.0)).fill();
     }
 }
