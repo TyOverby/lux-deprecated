@@ -1,6 +1,5 @@
 extern crate lux;
-use lux::{ColorVertex, Interactive, Window, TrianglesList, PrimitiveCanvas};
-use lux::colors;
+use lux::*;
 
 fn main() {
     let mut window = Window::new().unwrap();

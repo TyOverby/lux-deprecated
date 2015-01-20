@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use super::{
     Colored,
+    Sprite,
     Color,
     Transform,
     StackedTransform,
@@ -37,16 +38,6 @@ pub struct Rectangle<'a, C: 'a> {
     canvas: &'a mut C
 }
 
-pub struct Sprite {
-    texture: Rc<glium::texture::Texture2d>,
-    original_size: (u32, u32),
-
-    size: (u32, u32),
-    pos: (u32, u32),
-
-    texture_size: (f32, f32),
-    texture_pos: (f32, f32),
-}
 
 /// A primitive canvas is a canvas that can be drawn to with only the
 /// `draw_shape` function.
@@ -89,10 +80,6 @@ pub trait PrimitiveCanvas {
                          idxs: Option<Vec<u32>>,
                          mat: Option<[[f32; 4]; 4]>,
                          &glium::texture::Texture2d);
-}
-
-pub trait Subject {
-    fn draw<C>(&self, canvas: &mut C) where C: LuxCanvas;
 }
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
@@ -172,14 +159,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
 
     /// Draws a sprite  to the screen.
     fn draw_sprite(&mut self, sprite: &Sprite, pos: (f32, f32), size: (f32, f32)) {
-        let top_left = [sprite.texture_pos.0,
-                        sprite.texture_pos.1];
-        let top_right = [sprite.texture_pos.0 + sprite.texture_size.0,
-                         sprite.texture_pos.1];
-        let bottom_left = [sprite.texture_pos.0,
-                           sprite.texture_pos.1 + sprite.texture_size.1];
-        let bottom_right= [sprite.texture_pos.0 + sprite.texture_size.0,
-                           sprite.texture_pos.1 + sprite.texture_size.1];
+        let [top_left, top_right, bottom_left, bottom_right] = sprite.bounds();
 
         let tex_vs = vec![
             TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
@@ -194,55 +174,9 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
         transform.translate(pos.0 as f32, pos.1 as f32);
         transform.scale(size.0 as f32, size.1 as f32);
 
-        self.draw_tex(super::TrianglesList, &tex_vs[], Some(&idxs[]), Some(transform), sprite.texture.clone());
-    }
-}
-
-impl Sprite {
-    fn new(tex: Rc<glium::texture::Texture2d>) -> Sprite {
-        use glium::Surface;
-        let size = tex.as_surface().get_dimensions();
-        Sprite {
-            texture: tex,
-            original_size: size,
-            size: size,
-            pos: (0, 0),
-
-            texture_size: (1.0, 1.0),
-            texture_pos: (0.0, 0.0)
-        }
+        self.draw_tex(super::TrianglesList, &tex_vs[], Some(&idxs[]), Some(transform), sprite.texture());
     }
 
-    pub fn sub_sprite(&self, offset: (u32, u32), size: (u32, u32)) -> Option<Sprite> {
-        if offset.0 + size.0 > self.size.0 { return None };
-        if offset.1 + size.1 > self.size.1 { return None };
-
-        let pos = (self.pos.0 + offset.0, self.pos.1 + offset.1);
-
-        Some(Sprite {
-            texture: self.texture.clone(),
-            original_size: self.original_size,
-
-            size: size,
-            pos: pos,
-
-            texture_size: (size.0 as f32 / self.original_size.0 as f32,
-                           size.1 as f32 / self.original_size.1 as f32),
-            texture_pos: (pos.0 as f32 / self.original_size.0 as f32,
-                          pos.1 as f32 / self.original_size.1 as f32)
-        })
-    }
-
-    pub fn original_sprite(&self) -> Sprite {
-        Sprite {
-            texture: self.texture.clone(),
-            original_size: self.original_size,
-            size: self.original_size,
-            pos: (0, 0),
-            texture_size: (1.0, 1.0),
-            texture_pos: (0.0, 0.0)
-        }
-    }
 }
 
 impl BasicFields {

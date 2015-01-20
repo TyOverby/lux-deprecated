@@ -5,10 +5,14 @@ use std::ops::Deref;
 
 use glutin;
 use glium;
+use image;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::{
     gfx_integration,
+    Sprite,
+    ImageError,
+    SpriteLoader,
     LuxCanvas,
     Interactive,
     Event,
@@ -293,18 +297,20 @@ impl Window {
 
         display.assert_no_error();
 
-        let color_program = try!(glium::Program::from_source(
-                                     &display,
-                                     gfx_integration::COLOR_VERTEX_SRC,
-                                     gfx_integration::COLOR_FRAGMENT_SRC,
-                                     None)
-                                 .map_err(LuxError::ShaderError));
-        let tex_program = try!(glium::Program::from_source(
-                                     &display,
-                                     gfx_integration::TEX_VERTEX_SRC,
-                                     gfx_integration::TEX_FRAGMENT_SRC,
-                                     None)
-                                 .map_err(LuxError::ShaderError));
+        let color_program = try!(
+            glium::Program::from_source(
+                 &display,
+                 gfx_integration::COLOR_VERTEX_SRC,
+                 gfx_integration::COLOR_FRAGMENT_SRC,
+                 None)
+             .map_err(LuxError::ShaderError));
+        let tex_program = try!(
+            glium::Program::from_source(
+                 &display,
+                 gfx_integration::TEX_VERTEX_SRC,
+                 gfx_integration::TEX_FRAGMENT_SRC,
+                 None)
+             .map_err(LuxError::ShaderError));
 
         let (width, height) = display.get_framebuffer_dimensions();
 
@@ -429,6 +435,18 @@ impl Window {
     pub fn load_image<I>(&self, img: I) -> Rc<glium::texture::Texture2d>
         where I: glium::texture::Texture2dData {
             Rc::new(glium::texture::Texture2d::new(&self.display, img))
+    }
+}
+
+impl SpriteLoader for Window {
+    fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError> {
+        let img = try!(image::open(path));
+        let img = glium::texture::Texture2d::new(&self.display, img);
+        Ok(Sprite::new(Rc::new(img)))
+    }
+
+    fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
+        panic!()
     }
 }
 

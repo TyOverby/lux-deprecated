@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::{LuxCanvas, Interactive, Window};
+use lux::*;
 
 fn bound(l: f32, v: f32, h: f32) -> (f32, bool) {
     if v <= l{

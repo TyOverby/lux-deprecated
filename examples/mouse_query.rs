@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::{LuxCanvas, StackedColored, Interactive, Window};
+use lux::*;
 use lux::colors::{BLUE, RED, GRAY};
 
 fn main() {

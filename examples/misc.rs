@@ -1,18 +1,5 @@
-#![allow(unstable)]
 extern crate lux;
-
-use lux::{
-    LuxCanvas,
-    PrimitiveCanvas,
-    StackedTransform,
-    Interactive,
-    Window,
-    Colored,
-    ColorVertex,
-    TrianglesList
-};
-
-use lux::colors;
+use lux::*;
 
 fn main() {
     let mut lux = Window::new().unwrap();

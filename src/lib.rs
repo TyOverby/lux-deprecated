@@ -7,18 +7,21 @@ extern crate glium;
 extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
+extern crate image;
 
 pub use gfx_integration::{ColorVertex, TexVertex};
-pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle, Sprite};
+pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
 pub use interactive::*;
 pub use interactive::Event::*;
 pub use interactive::MouseButton::*;
 pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
+pub use sprite::{Sprite, SpriteLoader};
 
 pub use glium::index_buffer::PrimitiveType;
 pub use glium::index_buffer::PrimitiveType::*;
+pub use image::ImageError;
 
 mod interactive;
 mod texture;
@@ -27,6 +30,7 @@ mod raw;
 mod gfx_integration;
 mod glutin_window;
 mod color;
+mod sprite;
 pub mod colors;
 
 #[derive(Show)]
