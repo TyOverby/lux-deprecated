@@ -1,6 +1,5 @@
 use glium;
 use std::rc::Rc;
-use std::io::IoResult;
 use std::ops::Deref;
 
 use super::ImageError;

@@ -446,7 +446,8 @@ impl SpriteLoader for Window {
     }
 
     fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
-        panic!()
+        let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
+        Sprite::new(Rc::new(glium::texture::Texture2d::new(&self.display, pixels)))
     }
 }
 
@@ -533,7 +534,7 @@ impl PrimitiveCanvas for Frame {
 
         // Look at all this awful code for handling something that should
         // be dead simple!
-        if self.color_draw_cache.is_some() {
+        if self.tex_draw_cache.is_some() {
             let same_type = self.tex_draw_cache.as_ref().unwrap().typ == n_typ;
             let coherant_group = match n_typ {
                 Points | LinesList | TrianglesList => true,

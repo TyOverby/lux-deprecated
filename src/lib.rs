@@ -24,7 +24,6 @@ pub use glium::index_buffer::PrimitiveType::*;
 pub use image::ImageError;
 
 mod interactive;
-mod texture;
 mod canvas;
 mod raw;
 mod gfx_integration;

@@ -2,6 +2,7 @@
 name = "lux"
 version = "0.0.1"
 dependencies = [
+ "freetype-rs 0.0.2 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glium 0.0.2 (git+https://github.com/tomaka/glium.git)",
  "glium_macros 0.0.1 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
@@ -54,6 +55,24 @@ version = "0.1.0"
 source = "git+https://github.com/servo/rust-core-graphics#9434e2bda65d259f825104170b5fa6cc6dbaf5a9"
 dependencies = [
  "core_foundation 0.1.0 (git+https://github.com/servo/rust-core-foundation)",
+]
+
+[[package]]
+name = "freetype-rs"
+version = "0.0.2"
+source = "git+https://github.com/PistonDevelopers/freetype-rs#10b0e72c9ae361d8e13c610d5d399827ac2692a0"
+dependencies = [
+ "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "freetype-sys 0.0.1 (git+https://github.com/PistonDevelopers/freetype-sys)",
+]
+
+[[package]]
+name = "freetype-sys"
+version = "0.0.1"
+source = "git+https://github.com/PistonDevelopers/freetype-sys#9e5271932beae7e7c285ec99809207511d463255"
+dependencies = [
+ "libz-sys 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -126,6 +145,14 @@ version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "libz-sys"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "pkg-config 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "log"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -162,6 +189,11 @@ dependencies = [
 [[package]]
 name = "phantom"
 version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "pkg-config"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

@@ -82,7 +82,8 @@ pub static TEX_FRAGMENT_SRC: &'static str = r"
 
     void main() {
         vec4 t = texture2D(texture, v_tex_coords);
-        gl_FragColor = vec4(t.r, t.g, t.b, 1.0);
+        gl_FragColor = //vec4(0.0, 0.0, 0.0, 1.0);
+                       vec4(t.r, t.g, t.b, 1.0);
     }
 ";
 
