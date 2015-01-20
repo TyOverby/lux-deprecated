@@ -1,19 +1,18 @@
-// extern crate lux;
-// use lux::{LuxWindow, Window, Vertex, TriangleList};
+extern crate lux;
+use lux::{ColorVertex, Interactive, Window, TrianglesList, PrimitiveCanvas};
+use lux::colors;
 
 fn main() {
-    /*
     let mut window = Window::new().unwrap();
-    let vertices = &[
-        Vertex{pos: [50.0, 0.0],   tex: [0.0,0.0]},
-        Vertex{pos: [0.0, 50.0],   tex: [0.0,0.0]},
-        Vertex{pos: [100.0, 50.0], tex: [0.0,0.0]},
+    let vtxs = [
+        ColorVertex {pos: [0.0, 0.0], color: colors::RED},
+        ColorVertex {pos: [0.0, 200.0], color: colors::GREEN},
+        ColorVertex {pos: [200.0, 0.0], color: colors::BLUE},
     ];
-    let shape = window.stamp_shape(vertices, TriangleList);
+    let idxs = [0, 1, 2];
+
     while window.is_open() {
-        window.clear([0.9, 0.9, 0.9]);
-        window.draw_shape(&shape);
-        window.render();
+        let mut frame = window.cleared_frame(colors::WHITE);
+        frame.draw_shape(TrianglesList, &vtxs[], Some(&idxs[]), None);
     }
-    */
 }

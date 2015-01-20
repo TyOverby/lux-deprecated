@@ -1,4 +1,4 @@
-use glium::texture::CompressedTexture2d;
+use glium::texture::Texture2d;
 
 // Colored Vertex
 #[derive(Copy, Show, Clone)]
@@ -24,7 +24,7 @@ pub struct TexVertex {
 #[uniforms]
 pub struct TexParams<'a> {
     pub matrix: [[f32; 4]; 4],
-    pub texture: &'a CompressedTexture2d
+    pub texture: &'a Texture2d
 }
 
 //
@@ -81,7 +81,8 @@ pub static TEX_FRAGMENT_SRC: &'static str = r"
     varying vec2 v_tex_coords;
 
     void main() {
-        gl_FragColor = texture2D(texture, v_tex_coords);
+        vec4 t = texture2D(texture, v_tex_coords);
+        gl_FragColor = vec4(t.r, t.g, t.b, 1.0);
     }
 ";
 

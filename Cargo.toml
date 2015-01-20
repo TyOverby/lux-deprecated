@@ -28,8 +28,12 @@ git = "https://github.com/PistonDevelopers/vecmath"
 [dependencies.typemap]
 git = "https://github.com/reem/rust-typemap"
 
+[dependencies.image]
+git = "https://github.com/PistonDevelopers/image"
+
 [dev-dependencies.nd_iter]
 version = "0.0.3"
 
 [dev-dependencies.noise]
 git = "https://github.com/bjz/noise-rs.git"
+

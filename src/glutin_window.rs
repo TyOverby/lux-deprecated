@@ -22,9 +22,7 @@ use super::{
     LuxResult,
     LuxError,
     Transform,
-    StackedTransform,
-    VerticesVec,
-    VerticesSlice
+    StackedTransform
 };
 
 use glutin::WindowBuilder;
@@ -47,9 +45,16 @@ macro_rules! draw_cmd {
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
 
-struct CachedDraw {
+struct CachedColorDraw {
     typ: super::PrimitiveType,
     points: Vec<super::ColorVertex>,
+    idxs: Vec<u32>,
+}
+
+struct CachedTexDraw {
+    typ: super::PrimitiveType,
+    points: Vec<super::TexVertex>,
+    texture: Rc<glium::texture::Texture2d>,
     idxs: Vec<u32>,
 }
 
@@ -57,7 +62,7 @@ pub struct Window {
     // CANVAS
     display: glium::Display,
     color_program: Rc<glium::Program>,
-    tex_program:   Rc<glium::Program>,
+    tex_program: Rc<glium::Program>,
     closed: bool,
 
     // WINDOW
@@ -89,7 +94,8 @@ pub struct Frame {
     tex_program: Rc<glium::Program>,
 
     // Primitive Canvas
-    draw_cache: Option<CachedDraw>,
+    color_draw_cache: Option<CachedColorDraw>,
+    tex_draw_cache: Option<CachedTexDraw>,
 
     // Raw
     basis_matrix: Mat4f,
@@ -98,10 +104,10 @@ pub struct Frame {
 }
 
 impl Frame {
-    fn new( display: &glium::Display,
-            color_program: Rc<glium::Program>,
-            tex_program: Rc<glium::Program>,
-            clear_color: Option<[f32; 4]>) -> Frame {
+    fn new(display: &glium::Display,
+           color_program: Rc<glium::Program>,
+           tex_program: Rc<glium::Program>,
+           clear_color: Option<[f32; 4]>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -126,16 +132,75 @@ impl Frame {
             color_program: color_program,
             tex_program: tex_program,
             f: frm,
-            draw_cache: None,
+            color_draw_cache: None,
+            tex_draw_cache: None,
             basis_matrix: basis,
             matrix_stack: vec![],
             color_stack: vec![([0.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 1.0])],
         }
     }
 
-    fn draw_now(&mut self,
+    fn draw_textured_now(&mut self,
                 typ: super::PrimitiveType,
-                points: VerticesVec,
+                points: Vec<super::TexVertex>,
+                idxs: Vec<u32>,
+                base_mat: Option<[[f32; 4]; 4]>,
+                texture: &glium::texture::Texture2d) {
+        use glium::index_buffer::*;
+        use glium::index_buffer::PrimitiveType as Prim;
+        use glium::Surface;
+        use glium::LinearBlendingFactor::*;
+        use glium::BlendingFunction::Addition;
+
+        let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
+        let (frame, tex_program) = (&mut self.f, self.tex_program.deref());
+
+        let uniform = gfx_integration::TexParams {
+            matrix: base_mat.unwrap_or(vecmath::mat4_id()),
+            texture: texture
+        };
+
+        let draw_params: glium::DrawParameters = glium::DrawParameters {
+            depth_function: glium::DepthFunction::Overwrite,
+            depth_range: (0.0, 1.0),
+            blending_function: Some(glium::BlendingFunction::Addition{
+                source: SourceAlpha,
+                destination: OneMinusDestinationAlpha
+            }),
+            line_width: None,
+            dithering: true,
+            backface_culling: glium::BackfaceCullingMode::CullingDisabled,
+            polygon_mode: glium::PolygonMode::Fill,
+            multisampling: true,
+            viewport: None,
+            scissor: None,
+        };
+
+        draw_cmd!(Prim::Points, PointsList,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::LinesList, LinesList,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::LinesListAdjacency, LinesListAdjacency,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::LineStrip, LineStrip,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::LineStripAdjacency, LineStripAdjacency,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::TrianglesList, TrianglesList,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::TrianglesListAdjacency, TrianglesListAdjacency,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::TriangleStrip, TriangleStrip,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::TriangleStripAdjacency, TriangleStripAdjacency,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        draw_cmd!(Prim::TriangleFan, TriangleFan,
+          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+    }
+
+    fn draw_colored_now(&mut self,
+                typ: super::PrimitiveType,
+                points: Vec<super::ColorVertex>,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index_buffer::*;
@@ -145,9 +210,7 @@ impl Frame {
         use glium::BlendingFunction::Addition;
 
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
-        let (frame, color_program, tex_program) = (&mut self.f,
-                                                   self.color_program.deref(),
-                                                   self.tex_program.deref());
+        let (frame, color_program) = (&mut self.f, self.color_program.deref());
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
@@ -192,13 +255,16 @@ impl Frame {
 }
 
 #[unsafe_destructor]
-impl  Drop for Frame {
+impl Drop for Frame {
     fn drop(&mut self) {
         self.flush_draw();
     }
 }
 
 impl Window {
+    pub fn assert_no_error(&self)  {
+        self.display.assert_no_error();
+    }
     pub fn new() -> LuxResult<Window> {
         use glium::DisplayBuild;
 
@@ -208,9 +274,9 @@ impl Window {
             .with_dimensions(600, 500)
             .with_vsync()
             .with_gl_debug_flag(false)
-            .with_gl_version((3, 2))
             .with_multisampling(8)
             .with_visibility(true);
+
 
         let display = try!(window_builder.build_glium().map_err(|e| {
             match e {
@@ -225,13 +291,19 @@ impl Window {
             }
         }));
 
+        display.assert_no_error();
+
         let color_program = try!(glium::Program::from_source(
-             &display, gfx_integration::COLOR_VERTEX_SRC,
-             gfx_integration::COLOR_FRAGMENT_SRC, None)
+                                     &display,
+                                     gfx_integration::COLOR_VERTEX_SRC,
+                                     gfx_integration::COLOR_FRAGMENT_SRC,
+                                     None)
                                  .map_err(LuxError::ShaderError));
         let tex_program = try!(glium::Program::from_source(
-             &display, gfx_integration::TEX_VERTEX_SRC,
-             gfx_integration::TEX_FRAGMENT_SRC, None)
+                                     &display,
+                                     gfx_integration::TEX_VERTEX_SRC,
+                                     gfx_integration::TEX_FRAGMENT_SRC,
+                                     None)
                                  .map_err(LuxError::ShaderError));
 
         let (width, height) = display.get_framebuffer_dimensions();
@@ -270,7 +342,9 @@ impl Window {
             }
         }
         let mut last_char = None;
-        for event in self.display.poll_events().into_iter() { match event {
+        for event in self.display.poll_events().into_iter() {
+            //println!("{:?}", event);
+            match event {
             glevent::MouseMoved((x, y)) => {
                 self.mouse_pos = (x as i32, y as i32);
                 self.event_store.push(super::MouseMoved((x as i32, y as i32)))
@@ -352,6 +426,11 @@ impl Window {
                    self.tex_program.clone(),
                    None)
     }
+
+    pub fn load_image<I>(&self, img: I) -> Rc<glium::texture::Texture2d>
+        where I: glium::texture::Texture2dData {
+            Rc::new(glium::texture::Texture2d::new(&self.display, img))
+    }
 }
 
 #[allow(unused_variables)]
@@ -383,7 +462,7 @@ impl LuxCanvas for Frame {
 impl PrimitiveCanvas for Frame {
     fn draw_shape_no_batch(&mut self,
                            n_typ: super::PrimitiveType,
-                           n_points: VerticesVec,
+                           n_points: Vec<super::ColorVertex>,
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
@@ -393,42 +472,71 @@ impl PrimitiveCanvas for Frame {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
         };
-        self.draw_now(n_typ, n_points, idxs, Some(transform));
+        self.draw_colored_now(n_typ, n_points, idxs, Some(transform));
+    }
+
+    fn draw_tex_no_batch(&mut self,
+                           n_typ: super::PrimitiveType,
+                           n_points: Vec<super::TexVertex>,
+                           idxs: Option<Vec<u32>>,
+                           transform: Option<[[f32; 4]; 4]>,
+                           texture: &glium::texture::Texture2d) {
+        self.flush_draw();
+        let idxs = idxs.unwrap_or_else(||
+                               range(0u32, n_points.len() as u32).collect());
+        let transform = match transform {
+            Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
+            None => *self.current_matrix()
+        };
+        self.draw_textured_now(n_typ, n_points, idxs, Some(transform), texture);
     }
 
     fn flush_draw(&mut self) {
-        if let Some(CachedDraw{typ, points, idxs}) = self.draw_cache.take() {
-            self.draw_now(typ, points, idxs, None);
-        }
+        if let Some(CachedColorDraw{typ, points, idxs}) =
+            self.color_draw_cache.take() {
+                self.draw_colored_now(typ, points, idxs, None);
+            }
+        if let Some(CachedTexDraw{typ, points, texture, idxs}) =
+            self.tex_draw_cache.take() {
+                self.draw_textured_now(typ, points, idxs, None, texture.deref());
+            }
     }
 
-    fn draw_shape(&mut self,
+    fn draw_tex(&mut self,
                   n_typ: super::PrimitiveType,
-                  n_points: VerticesSlice,
+                  n_points: &[super::TexVertex],
                   idxs: Option<&[u32]>,
-                  transform: Option<[[f32; 4]; 4]>) {
+                  transform: Option<[[f32; 4]; 4]>,
+                  texture: Rc<glium::texture::Texture2d>) {
         use super::PrimitiveType::{Points, LinesList, TrianglesList};
+
+        if self.color_draw_cache.is_some() {
+            self.flush_draw();
+        }
+
         // Look at all this awful code for handling something that should
         // be dead simple!
-        if self.draw_cache.is_some() {
-            let same_type = self.draw_cache.as_ref().unwrap().typ == n_typ;
+        if self.color_draw_cache.is_some() {
+            let same_type = self.tex_draw_cache.as_ref().unwrap().typ == n_typ;
             let coherant_group = match n_typ {
                 Points | LinesList | TrianglesList => true,
                 _ => false
             };
             if !same_type || !coherant_group {
                 self.flush_draw();
-                self.draw_cache = Some(CachedDraw {
+                self.tex_draw_cache = Some(CachedTexDraw {
                     typ: n_typ,
                     points: vec![],
-                    idxs: vec![]
+                    idxs: vec![],
+                    texture: texture,
                 });
             }
         } else {
-            self.draw_cache = Some(CachedDraw {
+            self.tex_draw_cache = Some(CachedTexDraw {
                 typ: n_typ,
                 points: vec![],
-                idxs: vec![]
+                idxs: vec![],
+                texture: texture,
 
             });
         }
@@ -440,7 +548,7 @@ impl PrimitiveCanvas for Frame {
 
         let transform = transform.unwrap_or(vecmath::mat4_id());
         let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
-        let draw_cache = self.draw_cache.as_mut().unwrap();
+        let draw_cache = self.tex_draw_cache.as_mut().unwrap();
 
         let already_in = draw_cache.points.len() as u32;
         let adding = n_points.len() as u32;
@@ -471,6 +579,82 @@ impl PrimitiveCanvas for Frame {
             }
         }
     }
+
+    fn draw_shape(&mut self,
+                  n_typ: super::PrimitiveType,
+                  n_points: &[super::ColorVertex],
+                  idxs: Option<&[u32]>,
+                  transform: Option<[[f32; 4]; 4]>) {
+        use super::PrimitiveType::{Points, LinesList, TrianglesList};
+
+        if self.tex_draw_cache.is_some() {
+            self.flush_draw();
+        }
+
+        // Look at all this awful code for handling something that should
+        // be dead simple!
+        if self.color_draw_cache.is_some() {
+            let same_type = self.color_draw_cache.as_ref().unwrap().typ == n_typ;
+            let coherant_group = match n_typ {
+                Points | LinesList | TrianglesList => true,
+                _ => false
+            };
+            if !same_type || !coherant_group {
+                self.flush_draw();
+                self.color_draw_cache = Some(CachedColorDraw {
+                    typ: n_typ,
+                    points: vec![],
+                    idxs: vec![]
+                });
+            }
+        } else {
+            self.color_draw_cache = Some(CachedColorDraw {
+                typ: n_typ,
+                points: vec![],
+                idxs: vec![]
+
+            });
+        }
+
+        if let Some(idxs) = idxs {
+            assert!(idxs.len() % 3 == 0,
+                "The length of the indexes array must be a multiple of three.");
+        }
+
+        let transform = transform.unwrap_or(vecmath::mat4_id());
+        let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
+        let draw_cache = self.color_draw_cache.as_mut().unwrap();
+
+        let already_in = draw_cache.points.len() as u32;
+        let adding = n_points.len() as u32;
+
+        // Perform the global transforms here
+        draw_cache.points.extend(n_points.iter().map(|&point| {
+            let mut point = point.clone();
+            let res = vecmath::col_mat4_transform(
+                mat,
+                [point.pos[0], point.pos[1], 0.0, 1.0]);
+            point.pos = [res[0], res[1]];
+            point
+        }));
+
+        // TODO: test this
+        // TODO: replace most of this with 'extend' and 'map'.
+
+        match idxs {
+            None => {
+                for i in range(0, adding) {
+                    draw_cache.idxs.push(already_in + i)
+                }
+            }
+            Some(l_idxs) => {
+                for &i in l_idxs.iter() {
+                    draw_cache.idxs.push(already_in + i);
+                }
+            }
+        }
+    }
+
 }
 
 impl Interactive for Window {
@@ -519,6 +703,7 @@ impl Interactive for Window {
     }
 
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool {
+        //println!("{:?} {:?} {:?}");
         match k.to_key() {
             (Some(code), _, _) => self.codes_pressed.get(&code).map(|x| *x),
             (_, Some(chr), _) => self.chars_pressed.get(&chr).map(|x| *x),
