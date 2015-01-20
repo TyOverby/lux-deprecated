@@ -33,6 +33,6 @@ fn main() {
             vy = - vy;
         }
 
-        frame.rect((x, y), (size, size)).fill();
+        frame.draw(&rect((x, y), (size, size)));
     }
 }

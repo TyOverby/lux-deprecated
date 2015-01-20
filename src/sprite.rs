@@ -1,8 +1,10 @@
 use glium;
+use vecmath;
+
 use std::rc::Rc;
 use std::ops::Deref;
 
-use super::ImageError;
+use super::{ImageError, Figure, LuxCanvas, PrimitiveCanvas, TexVertex};
 
 pub struct Sprite {
     texture: Rc<glium::texture::Texture2d>,
@@ -67,7 +69,7 @@ impl Sprite {
         }
     }
 
-    pub fn bounds(&self) -> [[f32; 2]; 4]{
+    fn bounds(&self) -> [[f32; 2]; 4]{
         let top_left = [self.texture_pos.0,
                         self.texture_pos.1];
         let top_right = [self.texture_pos.0 + self.texture_size.0,
@@ -86,5 +88,22 @@ impl Sprite {
 
     pub fn texture_ref(&self) -> &glium::texture::Texture2d {
         self.texture.deref()
+    }
+}
+
+impl Figure for Sprite {
+    fn draw<C: LuxCanvas>(&self, canvas: &mut C) {
+        let [top_left, top_right, bottom_left, bottom_right] = self.bounds();
+
+        let tex_vs = vec![
+            TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
+            TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
+            TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
+            TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
+        ];
+
+        let idxs = [0u32, 1, 2, 0, 2, 3];
+
+        canvas.draw_tex(super::TrianglesList, &tex_vs[], Some(&idxs[]), None, self.texture());
     }
 }

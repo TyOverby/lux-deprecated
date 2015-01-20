@@ -19,6 +19,6 @@ fn main() {
         };
 
         let mut frame = window.cleared_frame(color);
-        frame.rect((0.0, 0.0), (20.0, 20.0)).fill();
+        frame.draw(&rect((0.0, 0.0), (20.0, 20.0)));
     }
 }

@@ -13,7 +13,7 @@ fn main() {
         // mouse_down() will return true if *any* mouse buttons are down.
         let color = if window.mouse_down() { BLUE } else { RED };
         frame.with_fill_color(color, |frame| {
-            frame.rect((x as f32 - 50.0, y as f32 - 50.0), (100.0, 100.0)).fill();
+            frame.draw(&rect((x as f32 - 50.0, y as f32 - 50.0), (100.0, 100.0)));
         });
     }
 }
