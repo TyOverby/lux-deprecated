@@ -48,14 +48,16 @@ pub trait PrimitiveCanvas {
                 vs: &[TexVertex],
                 idxs: Option<&[u32]>,
                 mat: Option<[[f32; 4]; 4]>,
-                Rc<glium::texture::Texture2d>);
+                Rc<glium::texture::Texture2d>,
+                color_mult: Option<[f32; 4]>);
 
     fn draw_tex_no_batch(&mut self,
                          typ: super::PrimitiveType,
                          vs: Vec<TexVertex>,
                          idxs: Option<Vec<u32>>,
                          mat: Option<[[f32; 4]; 4]>,
-                         &glium::texture::Texture2d);
+                         &glium::texture::Texture2d,
+                         color_mult: Option<[f32; 4]>);
 }
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations

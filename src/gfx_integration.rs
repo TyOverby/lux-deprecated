@@ -24,7 +24,8 @@ pub struct TexVertex {
 #[uniforms]
 pub struct TexParams<'a> {
     pub matrix: [[f32; 4]; 4],
-    pub texture: &'a Texture2d
+    pub texture: &'a Texture2d,
+    pub color_mult: [f32; 4]
 }
 
 //
@@ -78,12 +79,12 @@ pub static TEX_FRAGMENT_SRC: &'static str = r"
     #version 110
 
     uniform sampler2D texture;
+    uniform vec4 color_mult;
     varying vec2 v_tex_coords;
 
     void main() {
         vec4 t = texture2D(texture, v_tex_coords);
-        gl_FragColor = //vec4(0.0, 0.0, 0.0, 1.0);
-                       vec4(t.r, t.g, t.b, 1.0);
+        gl_FragColor = vec4(t.r, t.g, t.b, 1.0) * color_mult;
     }
 ";
 

@@ -104,6 +104,6 @@ impl Figure for Sprite {
 
         let idxs = [0u32, 1, 2, 0, 2, 3];
 
-        canvas.draw_tex(super::TrianglesList, &tex_vs[], Some(&idxs[]), None, self.texture());
+        canvas.draw_tex(super::TrianglesList, &tex_vs[], Some(&idxs[]), None, self.texture(), None);
     }
 }

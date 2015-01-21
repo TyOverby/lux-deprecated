@@ -59,6 +59,7 @@ struct CachedTexDraw {
     points: Vec<super::TexVertex>,
     texture: Rc<glium::texture::Texture2d>,
     idxs: Vec<u32>,
+    color_mult: [f32; 4],
 }
 
 pub struct Window {
@@ -87,7 +88,7 @@ pub struct Window {
     code_to_char: VecMap<char>,
 
     // EXTEND
-    typemap: TypeMap
+    typemap: TypeMap,
 }
 
 pub struct Frame {
@@ -148,7 +149,8 @@ impl Frame {
                 points: Vec<super::TexVertex>,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>,
-                texture: &glium::texture::Texture2d) {
+                texture: &glium::texture::Texture2d,
+                color_mult: [f32; 4]) {
         use glium::index_buffer::*;
         use glium::index_buffer::PrimitiveType as Prim;
         use glium::Surface;
@@ -160,7 +162,8 @@ impl Frame {
 
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
-            texture: texture
+            texture: texture,
+            color_mult: color_mult
         };
 
         let draw_params: glium::DrawParameters = glium::DrawParameters {
@@ -498,7 +501,8 @@ impl PrimitiveCanvas for Frame {
                            n_points: Vec<super::TexVertex>,
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>,
-                           texture: &glium::texture::Texture2d) {
+                           texture: &glium::texture::Texture2d,
+                           color_mult: Option<[f32; 4]>) {
         self.flush_draw();
         let idxs = idxs.unwrap_or_else(||
                                range(0u32, n_points.len() as u32).collect());
@@ -506,7 +510,8 @@ impl PrimitiveCanvas for Frame {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
         };
-        self.draw_textured_now(n_typ, n_points, idxs, Some(transform), texture);
+        let color_mult = color_mult.unwrap_or([1.0, 1.0, 1.0, 1.0]);
+        self.draw_textured_now(n_typ, n_points, idxs, Some(transform), texture, color_mult);
     }
 
     fn flush_draw(&mut self) {
@@ -514,9 +519,9 @@ impl PrimitiveCanvas for Frame {
             self.color_draw_cache.take() {
                 self.draw_colored_now(typ, points, idxs, None);
             }
-        if let Some(CachedTexDraw{typ, points, texture, idxs}) =
+        if let Some(CachedTexDraw{typ, points, texture, idxs, color_mult}) =
             self.tex_draw_cache.take() {
-                self.draw_textured_now(typ, points, idxs, None, texture.deref());
+                self.draw_textured_now(typ, points, idxs, None, texture.deref(), color_mult);
             }
     }
 
@@ -525,28 +530,39 @@ impl PrimitiveCanvas for Frame {
                   n_points: &[super::TexVertex],
                   idxs: Option<&[u32]>,
                   transform: Option<[[f32; 4]; 4]>,
-                  texture: Rc<glium::texture::Texture2d>) {
+                  texture: Rc<glium::texture::Texture2d>,
+                  color_mult: Option<[f32; 4]>) {
         use super::PrimitiveType::{Points, LinesList, TrianglesList};
 
         if self.color_draw_cache.is_some() {
             self.flush_draw();
         }
+        let color_mult = color_mult.unwrap_or([1.0, 1.0, 1.0, 1.0]);
 
         // Look at all this awful code for handling something that should
         // be dead simple!
         if self.tex_draw_cache.is_some() {
-            let same_type = self.tex_draw_cache.as_ref().unwrap().typ == n_typ;
-            let coherant_group = match n_typ {
-                Points | LinesList | TrianglesList => true,
-                _ => false
-            };
-            if !same_type || !coherant_group {
+            let mut same_type;
+            let mut coherant_group;
+            let mut same_color_mult;
+            {
+                let draw_cache = self.tex_draw_cache.as_ref().unwrap();
+                same_type = draw_cache.typ == n_typ;
+                coherant_group = match n_typ {
+                    Points | LinesList | TrianglesList => true,
+                    _ => false
+                };
+                same_color_mult = draw_cache.color_mult == color_mult;
+            }
+
+            if !same_type || !coherant_group || !same_color_mult {
                 self.flush_draw();
                 self.tex_draw_cache = Some(CachedTexDraw {
                     typ: n_typ,
                     points: vec![],
                     idxs: vec![],
                     texture: texture,
+                    color_mult: color_mult,
                 });
             }
         } else {
@@ -555,7 +571,7 @@ impl PrimitiveCanvas for Frame {
                 points: vec![],
                 idxs: vec![],
                 texture: texture,
-
+                color_mult: color_mult
             });
         }
 
