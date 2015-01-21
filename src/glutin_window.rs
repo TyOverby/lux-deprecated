@@ -92,7 +92,7 @@ pub struct Window {
 
 pub struct Frame {
     display: glium::Display,
-    f: glium::Frame<'static>, // TODO: remove 'static
+    f: glium::Frame,
     color_program: Rc<glium::Program>,
     tex_program: Rc<glium::Program>,
 
@@ -275,6 +275,7 @@ impl Window {
             WindowBuilder::new()
             .with_title("Lux".to_string())
             .with_dimensions(600, 500)
+            //.with_gl_version((3, 2))
             .with_vsync()
             .with_gl_debug_flag(false)
             .with_multisampling(8)
@@ -294,7 +295,7 @@ impl Window {
             }
         }));
 
-        display.assert_no_error();
+        //display.assert_no_error();
 
         let color_program = try!(
             glium::Program::from_source(
