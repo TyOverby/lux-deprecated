@@ -35,6 +35,7 @@ mod glutin_window;
 mod figure;
 mod color;
 mod sprite;
+mod font;
 pub mod colors;
 
 #[derive(Show)]
