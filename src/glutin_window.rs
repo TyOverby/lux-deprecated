@@ -351,7 +351,7 @@ impl Window {
             }
         }
         let mut last_char = None;
-        for event in self.display.poll_events().into_iter() {
+        for event in self.display.poll_events() {
             match event {
             glevent::MouseMoved((x, y)) => {
                 self.mouse_pos = (x as i32, y as i32);
