@@ -24,7 +24,7 @@ fn main() {
     let mut lux = Window::new().unwrap();
 
     let freetype = freetype::Library::init().unwrap();
-    let font = Path::new("./resources/SourceCodePro-Medium.ttf");
+    let font = Path::new("./resources/SourceCodePro-Regular.ttf");
     let mut face = freetype.new_face(font.as_str().unwrap(), 0).unwrap();
     face.set_pixel_sizes(0, 48);
 

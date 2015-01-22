@@ -179,7 +179,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "noise"
 version = "0.0.3"
-source = "git+https://github.com/bjz/noise-rs.git#e8c538545352a6d20b8f36ea313ac135340205ab"
+source = "git+https://github.com/bjz/noise-rs.git#dc2ac10420fe398e0fb1896cb494dfe29f7f0437"
 
 [[package]]
 name = "num"
