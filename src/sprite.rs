@@ -6,6 +6,7 @@ use std::ops::Deref;
 
 use super::{ImageError, Figure, LuxCanvas, PrimitiveCanvas, TexVertex};
 
+#[derive(Clone)]
 pub struct Sprite {
     texture: Rc<glium::texture::Texture2d>,
     original_size: (u32, u32),
@@ -88,6 +89,19 @@ impl Sprite {
 
     pub fn texture_ref(&self) -> &glium::texture::Texture2d {
         self.texture.deref()
+    }
+
+    pub fn zeroed_vertices(&self) -> (Vec<TexVertex>, Vec<u32>) {
+        let [top_left, top_right, bottom_left, bottom_right] = self.bounds();
+        (
+            vec![
+                    TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
+                    TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
+                    TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
+                    TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
+             ],
+             vec![0u32, 1, 2, 0, 2, 3]
+        )
     }
 }
 
