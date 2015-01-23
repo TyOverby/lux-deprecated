@@ -38,7 +38,7 @@ mod sprite;
 mod font;
 pub mod colors;
 
-#[derive(Show)]
+#[derive(Debug)]
 pub enum LuxError {
     WindowError(String),
     OpenGlError(String),

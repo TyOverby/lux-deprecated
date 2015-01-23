@@ -9,6 +9,7 @@ dependencies = [
  "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
  "nd_iter 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.0.3 (git+https://github.com/bjz/noise-rs.git)",
+ "texture_packer 0.0.0 (git+https://github.com/TyOverby/texture_packer.git)",
  "typemap 0.0.8 (git+https://github.com/reem/rust-typemap)",
  "vecmath 0.0.3 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
@@ -16,7 +17,7 @@ dependencies = [
 [[package]]
 name = "android_glue"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/android-rs-glue#7e930d2822adb791a515c24dfefe6ae37493f40f"
+source = "git+https://github.com/tomaka/android-rs-glue#8fc770e4c1412293e459bc12ca4fcf57780e2186"
 dependencies = [
  "compile_msg 0.1.3 (git+https://github.com/huonw/compile_msg)",
 ]
@@ -31,7 +32,7 @@ name = "cgmath"
 version = "0.0.1"
 source = "git+https://github.com/bjz/cgmath-rs#9bb77e6a45a545fe016a2e2f60ccf156e8006a5c"
 dependencies = [
- "rustc-serialize 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -75,7 +76,7 @@ version = "0.0.2"
 source = "git+https://github.com/PistonDevelopers/freetype-sys#b0c1eaa34b0d1c5689de94cb94a3f87cd22a46db"
 dependencies = [
  "libz-sys 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -90,8 +91,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "khronos_api 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "xml-rs 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xml-rs 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -106,7 +107,7 @@ dependencies = [
  "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
  "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
  "khronos_api 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "nalgebra 0.2.0 (git+https://github.com/sebcrozet/nalgebra)",
+ "nalgebra 0.2.1 (git+https://github.com/sebcrozet/nalgebra)",
 ]
 
 [[package]]
@@ -117,7 +118,7 @@ source = "git+https://github.com/tomaka/glium.git#fe9e2b5b5a20a73c7552a5404e9aad
 [[package]]
 name = "glutin"
 version = "0.0.4-pre"
-source = "git+https://github.com/tomaka/glutin.git#13be9b2598c1fdce7af61ab05933ba687c95e64c"
+source = "git+https://github.com/tomaka/glutin.git#bd3d7513f8a8b8c58f0f0952027f7dd1f6883f59"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.1 (git+https://github.com/servo/rust-cocoa)",
@@ -132,9 +133,9 @@ dependencies = [
 [[package]]
 name = "image"
 version = "0.2.0-alpha.6"
-source = "git+https://github.com/PistonDevelopers/image#52fe43246575732cc42ba8aa66e2ab1faaab179a"
+source = "git+https://github.com/PistonDevelopers/image#013fb6daf82b336160de5f1bc691b9c7d8843b4f"
 dependencies = [
- "num 0.1.9 (git+https://github.com/rust-lang/num)",
+ "num 0.1.10 (git+https://github.com/rust-lang/num)",
 ]
 
 [[package]]
@@ -152,12 +153,12 @@ name = "libz-sys"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "pkg-config 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "log"
-version = "0.1.9"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "regex 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -165,10 +166,10 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.2.0"
-source = "git+https://github.com/sebcrozet/nalgebra#713589ff508b30a3dedc676e9f9fd26f791f2509"
+version = "0.2.1"
+source = "git+https://github.com/sebcrozet/nalgebra#1b6a44e8fbd6f2278a9f3b46cf948c964e36cc7b"
 dependencies = [
- "rustc-serialize 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -183,10 +184,10 @@ source = "git+https://github.com/bjz/noise-rs.git#dc2ac10420fe398e0fb1896cb494df
 
 [[package]]
 name = "num"
-version = "0.1.9"
-source = "git+https://github.com/rust-lang/num#51b94c5e2e00204c7159a13ba0671d8e3fed10df"
+version = "0.1.10"
+source = "git+https://github.com/rust-lang/num#c05cd530dbc1cc2e56f936524400b368e07ee5cb"
 dependencies = [
- "rustc-serialize 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -196,7 +197,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "pkg-config"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -206,8 +207,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rustc-serialize"
-version = "0.2.8"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "texture_packer"
+version = "0.0.0"
+source = "git+https://github.com/TyOverby/texture_packer.git#c8f977a7151a3ba0905e019fb06d83e923975fb6"
+dependencies = [
+ "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
+]
 
 [[package]]
 name = "typemap"
@@ -235,7 +244,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "xml-rs"
-version = "0.1.13"
+version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",

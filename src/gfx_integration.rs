@@ -1,7 +1,7 @@
 use glium::texture::Texture2d;
 
 // Colored Vertex
-#[derive(Copy, Show, Clone)]
+#[derive(Copy, Debug, Clone)]
 #[vertex_format]
 pub struct ColorVertex {
     pub pos: [f32; 2],
@@ -14,7 +14,7 @@ pub struct ColorParams {
 }
 
 // Textured Vertex
-#[derive(Copy, Show, Clone)]
+#[derive(Copy, Debug, Clone)]
 #[vertex_format]
 pub struct TexVertex {
     pub pos: [f32; 2],

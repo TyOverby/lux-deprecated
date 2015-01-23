@@ -7,7 +7,7 @@ pub mod keycodes {
 }
 
 /// An even coming from an Interactive object.
-#[derive(Show, Eq, PartialEq, Hash, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum Event {
     /// The mouse moved to this position.
     MouseMoved((i32, i32)),
@@ -31,7 +31,7 @@ pub enum Event {
 }
 
 /// A handy enumeration for the buttons on a mouse.
-#[derive(Show, Eq, PartialEq, Hash, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum MouseButton {
     /// The left mouse button.
     Left,
