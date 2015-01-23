@@ -20,7 +20,8 @@ pub struct Sprite {
 
 pub struct SpriteSheet {
     sprite: Sprite,
-    indiv_size: (u32, u32)
+    divs: (u32, u32),
+    indiv_size: (u32, u32),
 }
 
 pub trait SpriteLoader {
@@ -136,9 +137,12 @@ impl Figure for Sprite {
 }
 
 impl SpriteSheet {
-    fn new(sprite: Sprite, indiv_width: u32, indiv_height: u32) -> SpriteSheet {
+    fn new(sprite: Sprite, div_x: u32, div_y: u32) -> SpriteSheet {
+        let indiv_width = sprite.original_size.0 / div_x;
+        let indiv_height = sprite.original_size.1 / div_y;
         SpriteSheet{
             sprite: sprite,
+            divs: (div_x, div_y),
             indiv_size: (indiv_width, indiv_height)
         }
     }

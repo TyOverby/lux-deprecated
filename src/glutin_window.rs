@@ -443,7 +443,7 @@ impl Window {
 
 impl SpriteLoader for Window {
     fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError> {
-        let img = try!(image::open(path));
+        let img = try!(image::open(path)).flipv();
         let img = glium::texture::Texture2d::new(&self.display, img);
         Ok(Sprite::new(Rc::new(img)))
     }
