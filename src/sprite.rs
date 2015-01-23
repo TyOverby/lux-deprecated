@@ -3,6 +3,10 @@ use vecmath;
 
 use std::rc::Rc;
 use std::ops::Deref;
+use std::collections::hash_map::{HashMap, Hasher};
+
+use std::cmp::Eq;
+use std::hash::{Hash, SipHasher};
 
 use super::{ImageError, Figure, LuxCanvas, PrimitiveCanvas, TexVertex};
 
@@ -18,10 +22,15 @@ pub struct Sprite {
     texture_pos: (f32, f32),
 }
 
-pub struct SpriteSheet {
+pub struct UniformSpriteSheet {
     sprite: Sprite,
     divs: (u32, u32),
     indiv_size: (u32, u32),
+}
+
+pub struct NonUniformSpriteSheet<K> {
+    sprite: Sprite,
+    mapping: HashMap<K, Sprite>
 }
 
 pub trait SpriteLoader {
@@ -114,8 +123,9 @@ impl Sprite {
              vec![0u32, 1, 2, 0, 2, 3]
         )
     }
-    pub fn as_sprite_sheet(&self, indiv_width: u32, indiv_height: u32) -> SpriteSheet {
-        SpriteSheet::new(self.clone(), indiv_width, indiv_height)
+    pub fn as_uniform_sprite_sheet(&self, indiv_width: u32, indiv_height: u32)
+    -> UniformSpriteSheet {
+        UniformSpriteSheet::new(self.clone(), indiv_width, indiv_height)
     }
 }
 
@@ -136,11 +146,11 @@ impl Figure for Sprite {
     }
 }
 
-impl SpriteSheet {
-    fn new(sprite: Sprite, div_x: u32, div_y: u32) -> SpriteSheet {
+impl UniformSpriteSheet {
+    fn new(sprite: Sprite, div_x: u32, div_y: u32) -> UniformSpriteSheet {
         let indiv_width = sprite.original_size.0 / div_x;
         let indiv_height = sprite.original_size.1 / div_y;
-        SpriteSheet{
+        UniformSpriteSheet{
             sprite: sprite,
             divs: (div_x, div_y),
             indiv_size: (indiv_width, indiv_height)
@@ -150,9 +160,34 @@ impl SpriteSheet {
     /// # Failure
     /// Fails if out of bounds.
     pub fn get(&self, x: u32, y: u32) -> Sprite {
+        self.get_opt(x, y).unwrap()
+    }
+
+    pub fn get_opt(&self, x: u32, y: u32) -> Option<Sprite> {
         let x_tex = x * self.indiv_size.0;
         let y_tex = y * self.indiv_size.1;
 
-        self.sprite.sub_sprite((x_tex, y_tex), self.indiv_size).unwrap()
+        self.sprite.sub_sprite((x_tex, y_tex), self.indiv_size)
+    }
+}
+
+impl <K: Eq + Hash<Hasher>> NonUniformSpriteSheet<K> {
+    fn new(sprite: Sprite) -> NonUniformSpriteSheet<K> {
+        NonUniformSpriteSheet {
+            sprite: sprite,
+            mapping: HashMap::new()
+        }
+    }
+
+    fn associate(&mut self, key: K, pos: (u32, u32), size: (u32, u32)) {
+        self.mapping.insert(key, self.sprite.sub_sprite(pos, size).unwrap());
+    }
+
+    fn get(&mut self, key: &K) -> Sprite {
+        self.get_opt(key).unwrap()
+    }
+
+    fn get_opt(&mut self, key: &K) -> Option<Sprite> {
+        self.mapping.get(key).map(|a| a.clone())
     }
 }
