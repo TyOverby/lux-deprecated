@@ -18,6 +18,11 @@ pub struct Sprite {
     texture_pos: (f32, f32),
 }
 
+pub struct SpriteSheet {
+    sprite: Sprite,
+    indiv_size: (u32, u32)
+}
+
 pub trait SpriteLoader {
     fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError>;
 
@@ -37,6 +42,11 @@ impl Sprite {
             texture_size: (1.0, 1.0),
             texture_pos: (0.0, 0.0)
         }
+    }
+
+    pub fn ideal_size(&self) -> (f32, f32) {
+        let (w, h) = self.size;
+        (w as f32, h as f32)
     }
 
     pub fn sub_sprite(&self, offset: (u32, u32), size: (u32, u32)) -> Option<Sprite> {
@@ -103,6 +113,9 @@ impl Sprite {
              vec![0u32, 1, 2, 0, 2, 3]
         )
     }
+    pub fn as_sprite_sheet(&self, indiv_width: u32, indiv_height: u32) -> SpriteSheet {
+        SpriteSheet::new(self.clone(), indiv_width, indiv_height)
+    }
 }
 
 impl Figure for Sprite {
@@ -119,5 +132,23 @@ impl Figure for Sprite {
         let idxs = [0u32, 1, 2, 0, 2, 3];
 
         canvas.draw_tex(super::TrianglesList, &tex_vs[], Some(&idxs[]), None, self.texture(), None);
+    }
+}
+
+impl SpriteSheet {
+    fn new(sprite: Sprite, indiv_width: u32, indiv_height: u32) -> SpriteSheet {
+        SpriteSheet{
+            sprite: sprite,
+            indiv_size: (indiv_width, indiv_height)
+        }
+    }
+
+    /// # Failure
+    /// Fails if out of bounds.
+    pub fn get(&self, x: u32, y: u32) -> Sprite {
+        let x_tex = x * self.indiv_size.0;
+        let y_tex = y * self.indiv_size.1;
+
+        self.sprite.sub_sprite((x_tex, y_tex), self.indiv_size).unwrap()
     }
 }
