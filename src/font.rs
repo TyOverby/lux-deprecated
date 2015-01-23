@@ -18,6 +18,8 @@ impl FontCache {
     fn new() -> FontCache {
         let mut fc = FontCache {
             fonts: HashMap::new(),
+
+            // This is safe because current_font is set in the call to use_font.
             current_font: unsafe{::std::mem::uninitialized()},
             name_to_contents: HashMap::new(),
         };
