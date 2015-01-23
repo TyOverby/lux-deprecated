@@ -18,7 +18,7 @@ pub use interactive::MouseButton::*;
 pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::Color;
-pub use sprite::{Sprite, SpriteLoader};
+pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
 pub use shapes::{circle, square, ellipse, rect};
 
 pub use glium::index_buffer::PrimitiveType;
