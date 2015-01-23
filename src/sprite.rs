@@ -4,6 +4,7 @@ use vecmath;
 use std::rc::Rc;
 use std::ops::Deref;
 use std::collections::hash_map::{HashMap, Hasher};
+use std::borrow::BorrowFrom;
 
 use std::cmp::Eq;
 use std::hash::{Hash, SipHasher};
@@ -146,10 +147,14 @@ impl Figure for Sprite {
     }
 }
 
+/// A sprite sheet that that is laid out in a grid where every grid is the
+/// same height and width.
 impl UniformSpriteSheet {
+    /// Creates a new sprite-sheet that is divided into a `div_x` by `div_y`
+    /// grid.
     fn new(sprite: Sprite, div_x: u32, div_y: u32) -> UniformSpriteSheet {
-        let indiv_width = sprite.original_size.0 / div_x;
-        let indiv_height = sprite.original_size.1 / div_y;
+        let indiv_width = sprite.size.0 / div_x;
+        let indiv_height = sprite.size.1 / div_y;
         UniformSpriteSheet{
             sprite: sprite,
             divs: (div_x, div_y),
@@ -157,12 +162,17 @@ impl UniformSpriteSheet {
         }
     }
 
-    /// # Failure
+    /// Gets the sprite that is in the (x, y) position in the grid
+    /// defined by this sprite sheet.
+    ///
+    /// ## Failure
     /// Fails if out of bounds.
     pub fn get(&self, x: u32, y: u32) -> Sprite {
         self.get_opt(x, y).unwrap()
     }
 
+    /// Same as `get` but returns None instead of failing if
+    /// the sprite is out of bounds.
     pub fn get_opt(&self, x: u32, y: u32) -> Option<Sprite> {
         let x_tex = x * self.indiv_size.0;
         let y_tex = y * self.indiv_size.1;
@@ -171,7 +181,10 @@ impl UniformSpriteSheet {
     }
 }
 
+/// A non-uniform spritesheet is a sprite-sheet that is
+/// indexable by arbitrary keys.
 impl <K: Eq + Hash<Hasher>> NonUniformSpriteSheet<K> {
+    /// Creates a new non-uniform spritesheet based off of this sprite.
     fn new(sprite: Sprite) -> NonUniformSpriteSheet<K> {
         NonUniformSpriteSheet {
             sprite: sprite,
@@ -179,15 +192,24 @@ impl <K: Eq + Hash<Hasher>> NonUniformSpriteSheet<K> {
         }
     }
 
+    /// Associates a key with a sprite location.
     fn associate(&mut self, key: K, pos: (u32, u32), size: (u32, u32)) {
         self.mapping.insert(key, self.sprite.sub_sprite(pos, size).unwrap());
     }
 
-    fn get(&mut self, key: &K) -> Sprite {
+    /// Gets the sprite that is associated with a key.
+    ///
+    /// ## Failure
+    /// Fails if the key doesn't associate to something yet.
+    fn get<Q: ?Sized>(&mut self, key: &Q) -> Sprite
+    where Q: Hash<Hasher> + Eq + BorrowFrom<K> {
         self.get_opt(key).unwrap()
     }
 
-    fn get_opt(&mut self, key: &K) -> Option<Sprite> {
+    /// Same as `get` but returns None instead of failing if the key
+    /// doesn't associate to anything.
+    fn get_opt<Q: ?Sized>(&mut self, key: &Q) -> Option<Sprite>
+    where Q: Hash<Hasher> + Eq + BorrowFrom<K> {
         self.mapping.get(key).map(|a| a.clone())
     }
 }
