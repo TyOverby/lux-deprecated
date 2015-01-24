@@ -12,9 +12,6 @@ fn main() {
     // A sprite made from an image
     let texture = lux.load_sprite(&Path::new("./test/minecraft_fixedwidth_font.png")).unwrap();
     let sheet   = texture.as_uniform_sprite_sheet(16, 16);
-    let rgb_test = lux.sprite_from_pixels(
-        vec![vec![colors::RED, colors::BLUE],
-             vec![colors::GREEN, colors::BLACK]]);
 
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);

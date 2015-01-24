@@ -1,5 +1,7 @@
 extern crate lux;
+extern crate nd_iter;
 use lux::*;
+use nd_iter::iter_2d;
 
 fn main() {
     let mut lux = Window::new().unwrap();
@@ -11,18 +13,15 @@ fn main() {
         let mut frame = lux.cleared_frame(colors::RED);
 
         frame.with_rotation(delta, |frame|{
-          for x in 0u32 .. 100 {
-                for y in 0u32 .. 100 {
-                    let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
-                    frame.draw(rect((x, y), (30.0, 30.0))
-                               .fill_color(colors::BLUE));
-                }
+            for (x, y) in iter_2d(0u32..100, 0u32..100) {
+                let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
+                frame.draw(rect((x, y), (30.0, 30.0)).fill_color(colors::BLUE));
             }
 
             let vtxs = [
-                ColorVertex {pos: [0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0]},
-                ColorVertex {pos: [0.0, 200.0], color: [0.0, 0.0, 1.0, 1.0]},
-                ColorVertex {pos: [200.0, 0.0], color: [0.0, 1.0, 0.0, 1.0]},
+            ColorVertex {pos: [0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0]},
+            ColorVertex {pos: [0.0, 200.0], color: [0.0, 0.0, 1.0, 1.0]},
+            ColorVertex {pos: [200.0, 0.0], color: [0.0, 1.0, 0.0, 1.0]},
             ];
 
             let idxs = [0, 1, 2];
