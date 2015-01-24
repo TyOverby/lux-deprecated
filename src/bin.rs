@@ -6,7 +6,7 @@ extern crate freetype;
 
 use lux::*;
 use std::path::Path;
-
+/*
 fn glyph_to_vec(bf: &[u8], width: u32, height: u32) -> Vec<Vec<[f32; 4]>> {
     let mut v = vec![];
     for y in (0 .. height) {
@@ -33,11 +33,13 @@ fn main() {
     let vec = glyph_to_vec(g.buffer(), g.width() as u32, g.rows() as u32);
 
     let sprite = lux.sprite_from_pixels(vec);
-    let (w, h) = (g.width(), g.rows());
+    let (w, h): (u32, u32) = (g.width(), g.rows());
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
-        let (x, y) = lux.mouse_pos();
+        let (x, y): (u32, u32) = lux.mouse_pos();
 
         frame.draw_sprite(&sprite, (x as f32, y as f32), (w as f32, h as f32))
     }
-}
+}*/
+
+fn main( ){}
