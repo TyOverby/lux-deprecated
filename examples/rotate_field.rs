@@ -13,8 +13,8 @@ fn main() {
         let size = 10.0;
         let dist = (2.0*size*size).sqrt();
 
-        for x in range(0u, 100) {
-            for y in range(0u, 100) {
+        for x in 0u32..100 {
+            for y in 0u32..100 {
                 let x = x as f32 * dist;
                 let y = y as f32 * dist;
                 frame.draw(

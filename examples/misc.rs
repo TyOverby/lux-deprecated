@@ -11,8 +11,8 @@ fn main() {
         let mut frame = lux.cleared_frame(colors::RED);
 
         frame.with_rotation(delta, |frame|{
-          for x in 0 .. 100 {
-                for y in 0 .. 100 {
+          for x in 0u32 .. 100 {
+                for y in 0u32 .. 100 {
                     let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
                     frame.draw(rect((x, y), (30.0, 30.0))
                                .fill_color(colors::BLUE));
@@ -30,7 +30,7 @@ fn main() {
         });
 
         frame.draw_pixel((101.5, 100.5), colors::RED);
-        frame.draw_pixels((0 .. 100).map(|i| ((i as f32, i as f32), colors::BLUE)));
+        frame.draw_pixels((0u32..100).map(|i| ((i as f32, i as f32), colors::BLUE)));
 
     }
 }

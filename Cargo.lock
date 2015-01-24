@@ -2,7 +2,7 @@
 name = "lux"
 version = "0.0.1"
 dependencies = [
- "freetype-rs 0.0.3 (git+https://github.com/PistonDevelopers/freetype-rs)",
+ "freetype-rs 0.0.4 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glium 0.0.2 (git+https://github.com/tomaka/glium.git)",
  "glium_macros 0.0.1 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
@@ -63,8 +63,8 @@ dependencies = [
 
 [[package]]
 name = "freetype-rs"
-version = "0.0.3"
-source = "git+https://github.com/PistonDevelopers/freetype-rs#b3db542d003feb9b150fca937d700b64327a8741"
+version = "0.0.4"
+source = "git+https://github.com/PistonDevelopers/freetype-rs#43109be5616e40d76306c165b058782f799232fc"
 dependencies = [
  "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "freetype-sys 0.0.2 (git+https://github.com/PistonDevelopers/freetype-sys)",
@@ -180,7 +180,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "noise"
 version = "0.0.3"
-source = "git+https://github.com/bjz/noise-rs.git#dc2ac10420fe398e0fb1896cb494dfe29f7f0437"
+source = "git+https://github.com/bjz/noise-rs.git#8561c9160927ac3a44c28466399efa67011f7e25"
 
 [[package]]
 name = "num"

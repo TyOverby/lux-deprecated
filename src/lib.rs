@@ -45,6 +45,16 @@ pub enum LuxError {
     ShaderError(glium::ProgramCreationError)
 }
 
+impl std::fmt::Display for LuxError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        match self {
+            &LuxError::WindowError(ref s) => s.fmt(f),
+            &LuxError::OpenGlError(ref s) => s.fmt(f),
+            &LuxError::ShaderError(ref e) => e.fmt(f)
+        }
+    }
+}
+
 pub trait LuxExtend {
     fn typemap(&self) -> &typemap::TypeMap;
     fn typemap_mut(&mut self) -> &mut typemap::TypeMap;
