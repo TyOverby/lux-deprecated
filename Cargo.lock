@@ -2,6 +2,7 @@
 name = "lux"
 version = "0.0.1"
 dependencies = [
+ "color 0.0.1 (git+https://github.com/bjz/color-rs.git)",
  "freetype-rs 0.0.4 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glium 0.0.2 (git+https://github.com/tomaka/glium.git)",
  "glium_macros 0.0.1 (git+https://github.com/tomaka/glium.git)",
@@ -42,6 +43,11 @@ source = "git+https://github.com/servo/rust-cocoa#57b80f2480e94bbdc3076a67260b1e
 dependencies = [
  "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "color"
+version = "0.0.1"
+source = "git+https://github.com/bjz/color-rs.git#2fe276d11d644fb5ca4962e179d245b20bd98a9b"
 
 [[package]]
 name = "compile_msg"

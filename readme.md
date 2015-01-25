@@ -1,12 +1,12 @@
 ```rust
-lux.rect(pos, sz).draw();
-lux.rect(pos, sz).margin(4.0).draw();
-lux.rect(pos, sz).border(5.0).draw();
-lux.rect(pos, sz).border(5.0).stroke();
+frame.rect(10, 10, 50, 50).fill();
+frame.rect((10, 10), (50, 50)).fill();
+frame.draw(rect(10, 10, 50, 50).fill());
+frame.draw(rect((10, 10), (50, 50)).fill());
+
+frame.sprite(sprt, 10, 10, 50, 50);
+frame.sprite(sprt, (10, 10), (50, 50));
+
+frame.print("foo", 10, 10);
 ```
 
-NOTE: border and padding seriously screw with rotate_around.
-
-lux.draw(sprite.place((x, y), (w, h)));
-lux.draw(rect((x, y), (w, h)).margin(4.0));
-lux.rect((x,y), (w,h)).margin(4.0)

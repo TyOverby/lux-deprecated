@@ -7,7 +7,7 @@ fn main() {
     let mut window = Window::new().unwrap();
     let mut theta:f32 = 0.0;
     while window.is_open() {
-        let mut frame = window.cleared_frame([0.9, 0.9, 0.9]);
+        let mut frame = window.cleared_frame(rgb(0.9, 0.9, 0.9));
         theta += 0.01;
 
         let size = 10.0;

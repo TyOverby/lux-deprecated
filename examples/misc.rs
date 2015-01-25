@@ -19,9 +19,9 @@ fn main() {
             }
 
             let vtxs = [
-            ColorVertex {pos: [0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0]},
-            ColorVertex {pos: [0.0, 200.0], color: [0.0, 0.0, 1.0, 1.0]},
-            ColorVertex {pos: [200.0, 0.0], color: [0.0, 1.0, 0.0, 1.0]},
+            ColorVertex {pos: [0.0, 0.0], color: rgb(1.0, 0.0, 0.0)},
+            ColorVertex {pos: [0.0, 200.0], color: rgb(1.0, 0.0, 1.0)},
+            ColorVertex {pos: [200.0, 0.0], color: rgb(0.0, 1.0, 0.0)},
             ];
 
             let idxs = [0, 1, 2];

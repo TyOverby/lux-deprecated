@@ -1,4 +1,3 @@
-#![allow(unstable)]
 extern crate lux;
 extern crate glium;
 extern crate image;
