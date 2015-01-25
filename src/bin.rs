@@ -36,8 +36,8 @@ fn main() {
     let (w, h): (i32, i32) = (g.width(), g.rows());
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
-        let (x, y): (i32, i32) = lux.mouse_pos();
+        let (x, y) = lux.mouse_pos();
 
-        frame.draw_sprite(&sprite, (x as f32, y as f32), (w as f32, h as f32))
+        frame.sprite(&sprite, x, y).draw();
     }
 }

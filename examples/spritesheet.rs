@@ -18,8 +18,7 @@ fn main() {
 
         let s1 = sheet.get(1, 4);
 
-        frame.draw_sprite(&texture, (0.0, 0.0), texture.ideal_size());
-        //frame.draw_sprite(&rgb_test, (0.0, 0.0), (100.0, 100.0));
-        frame.draw_sprite(&s1, (x as f32, y as f32), s1.ideal_size());
+        frame.sprite(&texture, 0.0, 0.0).draw();
+        frame.sprite(&s1, x, y).draw();
     }
 }

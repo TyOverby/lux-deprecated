@@ -457,13 +457,13 @@ impl SpriteLoader for Window {
 
 #[allow(unused_variables)]
 impl LuxCanvas for Frame {
-    fn size(&self) -> (u32, u32) {
+    fn size(&self) -> (f32, f32) {
         use glium::Surface;
         let (w, h) = self.f.get_dimensions();
-        (w as u32, h as u32)
+        (w as f32, h as f32)
     }
 
-    fn draw_line(&mut self, start: (f32, f32), end: (f32, f32), line_size: f32) {
+    fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, line_size: f32) {
         unimplemented!();
     }
 
@@ -723,8 +723,12 @@ impl Interactive for Window {
         self.focused
     }
 
-    fn mouse_pos(&self) -> (i32, i32) {
+    fn mouse_pos_int(&self) -> (i32, i32) {
         self.mouse_pos
+    }
+
+    fn mouse_pos(&self) -> (f32, f32) {
+        (self.mouse_pos.0 as f32, self.mouse_pos.1 as f32)
     }
 
     fn mouse_down(&self) -> bool {
