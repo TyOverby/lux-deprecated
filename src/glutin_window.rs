@@ -26,6 +26,7 @@ use super::{
     LuxResult,
     LuxError,
     Transform,
+    StackedTransform
 };
 
 use glutin::WindowBuilder;
@@ -762,6 +763,17 @@ impl Transform for Frame {
         } else {
             &self.matrix_stack[self.matrix_stack.len()-1]
         }
+    }
+}
+
+impl StackedTransform for Frame {
+    fn push_matrix(&mut self) {
+        let c = *self.current_matrix();
+        self.matrix_stack.push(c);
+    }
+
+    fn pop_matrix(&mut self) {
+        self.matrix_stack.pop();
     }
 }
 

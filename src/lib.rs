@@ -1,5 +1,5 @@
 #![feature(plugin, unboxed_closures, unsafe_destructor)]
-#![allow(unstable, unused)]
+#![allow(unstable)]
 
 #[plugin]
 extern crate glium_macros;
@@ -11,8 +11,7 @@ extern crate image;
 extern crate "color" as ext_color;
 
 pub use gfx_integration::{ColorVertex, TexVertex};
-pub use figure::{Figure};
-pub use canvas::{LuxCanvas, PrimitiveCanvas};
+pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
 pub use interactive::*;
 pub use interactive::Event::*;
 pub use interactive::MouseButton::*;
@@ -20,19 +19,18 @@ pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
 pub use color::{Color, rgb, rgba, hsv, hsva};
 pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
-pub use shapes::{circle, square, ellipse, rect};
+pub use figure::Figure;
 
 pub use glium::index_buffer::PrimitiveType;
 pub use glium::index_buffer::PrimitiveType::*;
 pub use image::ImageError;
 
 mod interactive;
+mod figure;
 mod canvas;
 mod raw;
-pub mod shapes;
 mod gfx_integration;
 mod glutin_window;
-mod figure;
 mod color;
 mod sprite;
 mod font;

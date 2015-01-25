@@ -9,9 +9,8 @@ use std::path::Path;
 fn main() {
     let mut lux = Window::new().unwrap();
 
-    // A sprite made from an image
+    // A full sprite
     let sprite1 = lux.load_sprite(&Path::new("./test/test.png")).unwrap();
-
     // A sprite made by chopping off parts of the other one.
     let sprite2 = sprite1.sub_sprite((0, 0), (256 / 2, 255)).unwrap();
 

@@ -17,10 +17,10 @@ fn main() {
             for y in 0u32..100 {
                 let x = x as f32 * dist;
                 let y = y as f32 * dist;
-                frame.draw(
-                    rect((x, y), (size, size))
-                       .fill_color(colors::BLUE)
-                       .rotate_around((5.0, 5.0), theta))
+                frame.rect((x, y), (size, size))
+                   .rotate_around((5.0, 5.0), theta)
+                   .fill_color(colors::RED)
+                   .fill();
             }
         }
     }
