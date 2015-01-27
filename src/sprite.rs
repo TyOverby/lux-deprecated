@@ -1,6 +1,4 @@
 use glium;
-use vecmath;
-
 use std::rc::Rc;
 use std::ops::Deref;
 use std::collections::hash_map::{HashMap, Hasher};
@@ -9,7 +7,7 @@ use std::borrow::BorrowFrom;
 use std::cmp::Eq;
 use std::hash::{Hash, SipHasher};
 
-use super::{ImageError, Figure, LuxCanvas, PrimitiveCanvas, TexVertex};
+use super::{ImageError, TexVertex, Figure, LuxCanvas};
 
 #[derive(Clone)]
 pub struct Sprite {
@@ -91,7 +89,7 @@ impl Sprite {
         }
     }
 
-    fn bounds(&self) -> [[f32; 2]; 4]{
+    pub fn bounds(&self) -> [[f32; 2]; 4]{
         let top_left = [self.texture_pos.0,
                         self.texture_pos.1];
         let top_right = [self.texture_pos.0 + self.texture_size.0,

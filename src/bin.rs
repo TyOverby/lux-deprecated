@@ -33,11 +33,11 @@ fn main() {
     let vec = glyph_to_vec(g.buffer(), g.width() as u32, g.rows() as u32);
 
     let sprite = lux.sprite_from_pixels(vec);
-    let (w, h) = (g.width(), g.rows());
+    let (w, h): (i32, i32) = (g.width(), g.rows());
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
         let (x, y) = lux.mouse_pos();
 
-        frame.draw_sprite(&sprite, (x as f32, y as f32), (w as f32, h as f32))
+        frame.sprite(&sprite, x, y).draw();
     }
 }

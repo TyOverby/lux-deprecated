@@ -21,18 +21,18 @@ fn main() {
         x += vx;
         y += vy;
 
-        let (nx, cx) = bound(0.0, x, frame.width() as f32 - size);
+        let (nx, cx) = bound(0.0, x, frame.width() - size);
         if cx {
             x = nx;
             vx = - vx;
         }
 
-        let (ny, cy) = bound(0.0, y, frame.height() as f32 - size);
+        let (ny, cy) = bound(0.0, y, frame.height() - size);
         if cy {
             y = ny;
             vy = - vy;
         }
 
-        frame.draw(&rect((x, y), (size, size)));
+        frame.square(x, y, size).fill();
     }
 }

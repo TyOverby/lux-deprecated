@@ -81,6 +81,13 @@ impl Transform for [[f32; 4]; 4] {
 /// advised that you use with_matrix() and provide a closure that operates
 /// on a clean matrix for the duration of the closure.
 pub trait StackedTransform: Transform {
+    /// Pushes a clean matrix on to the stack that is a duplicate
+    /// of the last matrix on the stack.
+    fn push_matrix(&mut self);
+
+    /// Pops the topmost matrix from the stack.
+    fn pop_matrix(&mut self);
+
     /// Used when you want to make several successive calls to transformations
     /// on a single stacked matrix.
     ///
@@ -91,61 +98,60 @@ pub trait StackedTransform: Transform {
     ///   lux.scale(2.0, 1.0);
     ///   // do other stuff
     /// });
-    fn with_matrix<F, R>(&mut self, f: F) -> R where F: FnOnce(&mut Self) -> R{
-        let stored = *self.current_matrix();
-        let r = f(self);
-        *self.current_matrix_mut() = stored;
-        r
+    fn with_matrix<F>(&mut self, f: F) where F: FnOnce(&mut Self){
+        self.push_matrix();
+        f(self);
+        self.pop_matrix();
     }
 
     /// Similar to `with_matrix` but with a rotation applied
     /// for the duration of the closure.
-    fn with_rotation<'a, F, R>(&'a mut self, rotation: f32, f: F) -> R
-    where F: FnOnce(&mut Self) -> R {
-        self.with_matrix(move |slf| {
-            slf.rotate(rotation);
-            f(slf)
-        })
+    fn with_rotation<'a, F>(&'a mut self, rotation: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.rotate(rotation);
+        f(self);
+        self.pop_matrix();
     }
 
     /// Similar to `with_matrix` but with a translation applied
     /// for the duration of the closure.
-    fn with_translate<F, R>(&mut self, dx: f32, dy: f32, f: F) -> R
-    where F: FnOnce(&mut Self) -> R {
-        self.with_matrix(move |slf| {
-            slf.translate(dx, dy);
-            f(slf)
-        })
+    fn with_translate<F>(&mut self, dx: f32, dy: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.translate(dx, dy);
+        f(self);
+        self.pop_matrix();
     }
 
     /// Similar to `with_matrix` but with a scale applied
     /// for the duration of the closure.
-    fn with_scale<F, R>(&mut self, scale_x: f32, scale_y: f32, f: F) -> R
-    where F: FnOnce(&mut Self) -> R {
-        self.with_matrix(move |slf| {
-            slf.scale(scale_x, scale_y);
-            f(slf)
-        })
+    fn with_scale<F>(&mut self, scale_x: f32, scale_y: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.scale(scale_x, scale_y);
+        f(self);
+        self.pop_matrix();
     }
 
     /// Similar to `with_matrix` but with a shear applied
     /// for the duration of the closure.
-    fn with_shear<F, R>(&mut self, sx: f32, sy: f32, f: F) -> R
-    where F: FnOnce(&mut Self) -> R {
-        self.with_matrix(move |slf| {
-            slf.shear(sx, sy);
-            f(slf)
-        })
+    fn with_shear<F>(&mut self, sx: f32, sy: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.shear(sx, sy);
+        f(self);
+        self.pop_matrix();
     }
 
     /// Similar to `with_matrix` but with rotate_around applied
     /// for the duration of the closure.
-    fn with_rotate_around<F, R>(&mut self, point: (f32, f32), theta: f32, f: F) -> R
-    where F: FnOnce(&mut Self) -> R {
-        self.with_matrix(move |slf| {
-            slf.rotate_around(point, theta);
-            f(slf)
-        })
+    fn with_rotate_around<F>(&mut self, point: (f32, f32), theta: f32, f: F)
+    where F: FnOnce(&mut Self) {
+        self.push_matrix();
+        self.rotate_around(point, theta);
+        f(self);
+        self.pop_matrix();
     }
 }
 
@@ -227,5 +233,3 @@ pub trait StackedColored: Colored {
         self.pop_colors();
     }
 }
-
-impl <T: Transform> StackedTransform  for T {}

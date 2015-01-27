@@ -9,16 +9,16 @@ fn main() {
         // produce, the special name, and the raw key-code.
 
         let color = if window.is_key_pressed(' ') {
-            [0.5, 0.0, 0.0]
+            rgb(0.5, 0.0, 0.0)
         } else if window.is_key_pressed(Escape) {
-            [0.0, 0.0, 0.5]
+            rgb(0.0, 0.0, 0.5)
         } else if window.is_key_pressed(38 /* 'a' */) {
-            [0.0, 0.5, 0.0]
+            rgb(0.0, 0.5, 0.0)
         } else {
-            [0.8, 0.8, 0.8]
+            rgb(0.5, 0.5, 0.5)
         };
 
         let mut frame = window.cleared_frame(color);
-        frame.draw(&rect((0.0, 0.0), (20.0, 20.0)));
+        frame.rect(0.0, 0.0, 20.0, 20.0).fill();
     }
 }

@@ -79,21 +79,29 @@ pub trait Interactive {
     fn mouse_down(&self) -> bool;
 
     /// Returns the current position of the mouse.
-    fn mouse_pos(&self) -> (i32, i32);
+    ///
+    /// This function returns the position in floating point units
+    /// for usability.  Use `mouse_pos_int` if you want integer units.
+    fn mouse_pos(&self) -> (f32, f32);
+
+    /// Returns the current position of the mouse in integer units.
+    fn mouse_pos_int(&self) -> (i32, i32);
 
     /// Returns the x coordinate of the mouse.
-    fn mouse_x(&self) -> i32 {
+    fn mouse_x(&self) -> f32 {
         match self.mouse_pos() {
             (x, _) => x
         }
     }
 
     /// Returns the y coordinate of the mouse.
-    fn mouse_y(&self) -> i32 {
+    fn mouse_y(&self) -> f32 {
         match self.mouse_pos() {
             (_, y) => y
         }
     }
+
+
 
     /// Returns true if a given key is currently being pressed.
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool;
