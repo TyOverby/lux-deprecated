@@ -2,11 +2,11 @@
 name = "lux"
 version = "0.0.1"
 dependencies = [
- "freetype-rs 0.0.3 (git+https://github.com/PistonDevelopers/freetype-rs)",
+ "freetype-rs 0.0.6 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glium 0.0.2 (git+https://github.com/tomaka/glium.git)",
  "glium_macros 0.0.1 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
- "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
+ "image 0.2.0-alpha.8 (git+https://github.com/PistonDevelopers/image)",
  "nd_iter 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.0.3 (git+https://github.com/bjz/noise-rs.git)",
  "texture_packer 0.0.0 (git+https://github.com/TyOverby/texture_packer.git)",
@@ -17,7 +17,7 @@ dependencies = [
 [[package]]
 name = "android_glue"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/android-rs-glue#8fc770e4c1412293e459bc12ca4fcf57780e2186"
+source = "git+https://github.com/tomaka/android-rs-glue#ebea1a239b15fb83caf9c9749d3421650522dc99"
 dependencies = [
  "compile_msg 0.1.3 (git+https://github.com/huonw/compile_msg)",
 ]
@@ -30,7 +30,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "cgmath"
 version = "0.0.1"
-source = "git+https://github.com/bjz/cgmath-rs#9bb77e6a45a545fe016a2e2f60ccf156e8006a5c"
+source = "git+https://github.com/bjz/cgmath-rs#9bb0f78944ad1fe4ad580300502ae83ca0fc75ce"
 dependencies = [
  "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -38,7 +38,7 @@ dependencies = [
 [[package]]
 name = "cocoa"
 version = "0.1.1"
-source = "git+https://github.com/servo/rust-cocoa#57b80f2480e94bbdc3076a67260b1ebc66e541e3"
+source = "git+https://github.com/servo/rust-cocoa#6cff0d42ce0ff161940a4bcb5fece3f3e848c0f0"
 dependencies = [
  "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -51,7 +51,7 @@ source = "git+https://github.com/huonw/compile_msg#b19da50cacf5b11bbc065da6b449f
 [[package]]
 name = "core_foundation"
 version = "0.1.0"
-source = "git+https://github.com/servo/rust-core-foundation#ce3d852765827b64a0d5fb2aadd77da39665b0b0"
+source = "git+https://github.com/servo/rust-core-foundation#a26f33c9f0ceba878ce36083d5abaaf9c942edbf"
 
 [[package]]
 name = "core_graphics"
@@ -63,8 +63,8 @@ dependencies = [
 
 [[package]]
 name = "freetype-rs"
-version = "0.0.3"
-source = "git+https://github.com/PistonDevelopers/freetype-rs#b3db542d003feb9b150fca937d700b64327a8741"
+version = "0.0.6"
+source = "git+https://github.com/PistonDevelopers/freetype-rs#bba330b4d3dac6a04935f6fb27e31ad00fb07433"
 dependencies = [
  "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "freetype-sys 0.0.2 (git+https://github.com/PistonDevelopers/freetype-sys)",
@@ -80,6 +80,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "gdi32-sys"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "winapi 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "gl_common"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -91,51 +99,62 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "khronos_api 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "xml-rs 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "glium"
 version = "0.0.2"
-source = "git+https://github.com/tomaka/glium.git#fe9e2b5b5a20a73c7552a5404e9aad7e7de181b5"
+source = "git+https://github.com/tomaka/glium.git#ed3bc8f30b64b5a0d70e96119446e0812fbc512f"
 dependencies = [
  "cgmath 0.0.1 (git+https://github.com/bjz/cgmath-rs)",
  "compile_msg 0.1.3 (git+https://github.com/huonw/compile_msg)",
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl_generator 0.0.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.0.4-pre (git+https://github.com/tomaka/glutin.git)",
- "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
+ "image 0.2.0-alpha.8 (git+https://github.com/PistonDevelopers/image)",
  "khronos_api 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "nalgebra 0.2.1 (git+https://github.com/sebcrozet/nalgebra)",
+ "nalgebra 0.2.2 (git+https://github.com/sebcrozet/nalgebra)",
 ]
 
 [[package]]
 name = "glium_macros"
 version = "0.0.1"
-source = "git+https://github.com/tomaka/glium.git#fe9e2b5b5a20a73c7552a5404e9aad7e7de181b5"
+source = "git+https://github.com/tomaka/glium.git#ed3bc8f30b64b5a0d70e96119446e0812fbc512f"
 
 [[package]]
 name = "glutin"
 version = "0.0.4-pre"
-source = "git+https://github.com/tomaka/glutin.git#bd3d7513f8a8b8c58f0f0952027f7dd1f6883f59"
+source = "git+https://github.com/tomaka/glutin.git#1a9cf9bc5c6e9251c8035e8412edafe4bfa8869d"
 dependencies = [
  "android_glue 0.0.1 (git+https://github.com/tomaka/android-rs-glue)",
  "cocoa 0.1.1 (git+https://github.com/servo/rust-cocoa)",
  "core_foundation 0.1.0 (git+https://github.com/servo/rust-core-foundation)",
  "core_graphics 0.1.0 (git+https://github.com/servo/rust-core-graphics)",
+ "gdi32-sys 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl_common 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl_generator 0.0.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kernel32-sys 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "khronos_api 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "winapi 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "user32-sys 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winapi 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "image"
-version = "0.2.0-alpha.6"
-source = "git+https://github.com/PistonDevelopers/image#013fb6daf82b336160de5f1bc691b9c7d8843b4f"
+version = "0.2.0-alpha.8"
+source = "git+https://github.com/PistonDevelopers/image#da11929ddd89943c4abdc3fa3baf5d4419b841ed"
 dependencies = [
  "num 0.1.10 (git+https://github.com/rust-lang/num)",
+]
+
+[[package]]
+name = "kernel32-sys"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "winapi 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -158,16 +177,13 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.1.10"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "regex 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "nalgebra"
-version = "0.2.1"
-source = "git+https://github.com/sebcrozet/nalgebra#1b6a44e8fbd6f2278a9f3b46cf948c964e36cc7b"
+version = "0.2.2"
+source = "git+https://github.com/sebcrozet/nalgebra#14df13809f8845196f2d1a5ba5b0b418bce84545"
 dependencies = [
  "rustc-serialize 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -180,7 +196,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "noise"
 version = "0.0.3"
-source = "git+https://github.com/bjz/noise-rs.git#dc2ac10420fe398e0fb1896cb494dfe29f7f0437"
+source = "git+https://github.com/bjz/noise-rs.git#8561c9160927ac3a44c28466399efa67011f7e25"
 
 [[package]]
 name = "num"
@@ -201,11 +217,6 @@ version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "regex"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "rustc-serialize"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -213,9 +224,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "texture_packer"
 version = "0.0.0"
-source = "git+https://github.com/TyOverby/texture_packer.git#c8f977a7151a3ba0905e019fb06d83e923975fb6"
+source = "git+https://github.com/TyOverby/texture_packer.git#dd208fbd068567dfb79b8eb560e3a0892e24fe98"
 dependencies = [
- "image 0.2.0-alpha.6 (git+https://github.com/PistonDevelopers/image)",
+ "image 0.2.0-alpha.8 (git+https://github.com/PistonDevelopers/image)",
 ]
 
 [[package]]
@@ -233,13 +244,21 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "user32-sys"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "winapi 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "vecmath"
 version = "0.0.3"
 source = "git+https://github.com/PistonDevelopers/vecmath#3080ca140d4f856b7a6ca44f88208dfacce7809c"
 
 [[package]]
 name = "winapi"
-version = "0.0.5"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

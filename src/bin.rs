@@ -25,10 +25,10 @@ fn main() {
 
     let freetype = freetype::Library::init().unwrap();
     let font = Path::new("./resources/SourceCodePro-Regular.ttf");
-    let mut face = freetype.new_face(font.as_str().unwrap(), 0).unwrap();
+    let mut face = freetype.new_face(&font, 0).unwrap();
     face.set_pixel_sizes(0, 48);
 
-    face.load_char('a' as u64, freetype::face::RENDER).unwrap();
+    face.load_char('a' as usize, freetype::face::RENDER).unwrap();
     let g = face.glyph().bitmap();
     let vec = glyph_to_vec(g.buffer(), g.width() as u32, g.rows() as u32);
 
