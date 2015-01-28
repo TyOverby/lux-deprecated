@@ -6,6 +6,7 @@ extern crate freetype;
 
 use lux::*;
 use std::path::Path;
+use std::io::File;
 
 fn glyph_to_vec(bf: &[u8], width: u32, height: u32) -> Vec<Vec<[f32; 4]>> {
     let mut v = vec![];
@@ -28,12 +29,15 @@ fn main() {
     let mut face = freetype.new_face(font.as_str().unwrap(), 0).unwrap();
     face.set_pixel_sizes(0, 48);
 
+    let c = char_to_img(&mut face, 'c');
+    let d = char_to_img(&mut face, 'd');
+    let merged = merge_all(vec![c, d].into_iter());
+
     face.load_char('a' as u64, freetype::face::RENDER).unwrap();
     let g = face.glyph().bitmap();
     let vec = glyph_to_vec(g.buffer(), g.width() as u32, g.rows() as u32);
 
     let sprite = lux.sprite_from_pixels(vec);
-    let (w, h): (i32, i32) = (g.width(), g.rows());
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
         let (x, y) = lux.mouse_pos();

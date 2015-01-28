@@ -1,5 +1,6 @@
 extern crate lux;
 extern crate nd_iter;
+
 use lux::*;
 use nd_iter::iter_2d;
 

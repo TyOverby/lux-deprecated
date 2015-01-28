@@ -3,6 +3,10 @@ use std::rc::Rc;
 use std::path::Path;
 use std::io::{File, IoResult};
 
+use image;
+use freetype;
+use texture_packer;
+
 use super::{Sprite, TexVertex, NonUniformSpriteSheet};
 
 type FontSheet = NonUniformSpriteSheet<char>;
@@ -64,3 +68,48 @@ impl FontCache {
         unimplemented!()
     }
 }
+
+pub fn char_to_img(face: &mut freetype::Face, c: char) -> image::DynamicImage {
+    fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
+        let mut v = vec![];
+        for y in (0 .. height) {
+            for x in (0 .. width) {
+                let va = bf[(y * width + x) as usize];
+                v.push_all(&[va, va, va, va]);
+            }
+        }
+        image::DynamicImage::ImageRgba8(
+            image::ImageBuffer::from_vec(width, height, v).unwrap())
+    }
+
+    face.load_char(c as u64, freetype::face::RENDER).unwrap();
+    let g = face.glyph().bitmap();
+    buf_to_vec(g.buffer(), g.width() as u32, g.rows() as u32)
+}
+
+pub fn merge_all<I: Iterator<Item=image::DynamicImage>>(mut images: I) -> image::DynamicImage {
+    use texture_packer::Packer;
+    use std::mem::replace;
+
+    let mut size = 1024u32;
+    let mut packer = {
+        let bf = texture_packer::ImgBuffer::new(
+            size, size, texture_packer::ColorType::RGBA);
+        texture_packer::SkylinePacker::new(bf)
+    };
+
+    for img in images {
+        let img = texture_packer::ImgBuffer::from_image(img);
+        if packer.pack(&img).is_none() {
+            size *= 2;
+            let old_packer = replace(&mut packer,
+                texture_packer::SkylinePacker::new(texture_packer::ImgBuffer::new(
+                    size, size, texture_packer::ColorType::RGBA)));
+            packer.pack(&old_packer.into_buf());
+            packer.pack(&img);
+        }
+    }
+
+    packer.into_buf().into_image()
+}
+

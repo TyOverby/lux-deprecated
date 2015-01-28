@@ -16,6 +16,26 @@ pub trait NormalizeTo1: Sized {
     fn norm(&self) -> f32;
 }
 
+pub fn hex_rgb(mut v: u32) -> [f32; 4] {
+    let b = v & 0xff;
+    v = v << 4;
+    let g = v & 0xff;
+    v = v << 4;
+    let r = v & 0xff;
+    [r, g, b].to_rgba()
+}
+
+pub fn hex_rgba(mut v: u32) -> [f32; 4] {
+    let a = v & 0xff;
+    v = v << 4;
+    let b = v & 0xff;
+    v = v << 4;
+    let g = v & 0xff;
+    v = v << 4;
+    let r = v & 0xff;
+    [r, g, b, a].to_rgba()
+}
+
 pub fn rgb<T: NormalizeTo1>(r: T, g: T, b: T) -> [f32; 4] {
     [r, g, b].to_rgba()
 }
