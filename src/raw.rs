@@ -12,9 +12,12 @@ pub trait Transform {
 
     /// Multiplies the current matrix against another.
     /// `self = self * other`.
-    fn apply_matrix(&mut self, other: [[f32; 4]; 4]) {
-        let current = self.current_matrix_mut();
-        *current = col_mat4_mul(*current, other);
+    fn apply_matrix(&mut self, other: [[f32; 4]; 4]) -> &mut Self{
+        {
+            let current = self.current_matrix_mut();
+            *current = col_mat4_mul(*current, other);
+        }
+        self
     }
 
     /// Applies a translation transformation to the matrix.
@@ -22,8 +25,7 @@ pub trait Transform {
         let mut prod = mat4_id();
         prod[3][0] = dx;
         prod[3][1] = dy;
-        self.apply_matrix(prod);
-        self
+        self.apply_matrix(prod)
     }
 
     /// Applies a scaling transformation to the matrix.
@@ -31,8 +33,7 @@ pub trait Transform {
         let mut prod = mat4_id();
         prod[0][0] = sx;
         prod[1][1] = sy;
-        self.apply_matrix(prod);
-        self
+        self.apply_matrix(prod)
     }
 
     /// Applies a shearing transformation to the matrix.
@@ -40,8 +41,7 @@ pub trait Transform {
         let mut prod = mat4_id();
         prod[1][0] = sx;
         prod[0][1] = sy;
-        self.apply_matrix(prod);
-        self
+        self.apply_matrix(prod)
     }
 
     /// Applies a rotation transformation to the matrix.
@@ -53,8 +53,7 @@ pub trait Transform {
         prod[0][1] = s;
         prod[1][0] = -s;
         prod[1][1] = c;
-        self.apply_matrix(prod);
-        self
+        self.apply_matrix(prod)
     }
 
     /// Combines rotation with translation to effectively

@@ -8,7 +8,9 @@ extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
 extern crate image;
+extern crate freetype;
 extern crate "color" as ext_color;
+extern crate texture_packer;
 
 pub use gfx_integration::{ColorVertex, TexVertex};
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
@@ -20,6 +22,7 @@ pub use glutin_window::Window;
 pub use color::{Color, rgb, rgba, hsv, hsva};
 pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
 pub use figure::Figure;
+pub use font::{char_to_img, merge_all};
 
 pub use glium::index_buffer::PrimitiveType;
 pub use glium::index_buffer::PrimitiveType::*;

@@ -40,8 +40,8 @@ git = "https://github.com/TyOverby/texture_packer.git"
 [dependencies.color]
 git = "https://github.com/bjz/color-rs.git"
 
-[dev-dependencies.nd_iter]
+[dependencies.nd_iter]
 version = "0.0.3"
 
-[dev-dependencies.noise]
+[dependencies.noise]
 git = "https://github.com/bjz/noise-rs.git"
