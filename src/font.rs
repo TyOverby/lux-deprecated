@@ -34,8 +34,8 @@ impl FontCache {
     }
 
     fn load(&mut self, name: &str, path: &Path) -> IoResult<()> {
-        self.name_to_contents.insert(name.to_string(),
-                                     try!(File::open(path).read_to_end()));
+        self.name_to_contents.insert(
+            name.to_string(), try!(File::open(path).read_to_end()));
         Ok(())
     }
 
