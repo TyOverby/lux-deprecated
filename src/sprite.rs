@@ -1,4 +1,6 @@
 use glium;
+use image;
+
 use std::rc::Rc;
 use std::ops::Deref;
 use std::collections::hash_map::{HashMap, Hasher};
@@ -36,6 +38,7 @@ pub trait SpriteLoader {
     fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError>;
 
     fn sprite_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Sprite;
+    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite;
 }
 
 impl Sprite {

@@ -6,7 +6,7 @@ extern crate freetype;
 
 use lux::*;
 use std::path::Path;
-use std::io::File;
+use std::old_io::File;
 
 fn glyph_to_vec(bf: &[u8], width: u32, height: u32) -> Vec<Vec<[f32; 4]>> {
     let mut v = vec![];
@@ -26,18 +26,28 @@ fn main() {
 
     let freetype = freetype::Library::init().unwrap();
     let font = Path::new("./resources/SourceCodePro-Regular.ttf");
-    let mut face = freetype.new_face(font.as_str().unwrap(), 0).unwrap();
+    let mut face = freetype.new_face(&font, 0).unwrap();
     face.set_pixel_sizes(0, 48);
 
-    let c = char_to_img(&mut face, 'c');
-    let d = char_to_img(&mut face, 'd');
-    let merged = merge_all(vec![c, d].into_iter());
+    let mut v = vec![];
+    for _ in 0 .. 4 {
+        for i in ('a' as u8) .. ('z' as u8) {
+            v.push(i as char);
+        }
+        for i in ('A' as u8) .. ('Z' as u8) {
+            v.push(i as char);
+        }
+    }
 
-    face.load_char('a' as u64, freetype::face::RENDER).unwrap();
-    let g = face.glyph().bitmap();
-    let vec = glyph_to_vec(g.buffer(), g.width() as u32, g.rows() as u32);
+    let merged = merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
 
-    let sprite = lux.sprite_from_pixels(vec);
+    /*
+    merged.save(File::create(&Path::new("foo.png")), image::ImageFormat::PNG);
+    return;
+    */
+
+    let sprite = lux.sprite_from_image(merged);
+
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
         let (x, y) = lux.mouse_pos();
