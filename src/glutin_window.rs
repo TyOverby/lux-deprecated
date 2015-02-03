@@ -453,6 +453,12 @@ impl SpriteLoader for Window {
         let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
         Sprite::new(Rc::new(glium::texture::Texture2d::new(&self.display, pixels)))
     }
+
+    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite {
+        let img = img.flipv();
+        let img = glium::texture::Texture2d::new(&self.display, img);
+        Sprite::new(Rc::new(img))
+    }
 }
 
 #[allow(unused_variables)]

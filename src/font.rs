@@ -1,7 +1,7 @@
 use std::collections::hash_map::HashMap;
 use std::rc::Rc;
 use std::path::Path;
-use std::io::{File, IoResult};
+use std::old_io::{File, IoResult};
 
 use image;
 use freetype;
@@ -82,34 +82,26 @@ pub fn char_to_img(face: &mut freetype::Face, c: char) -> image::DynamicImage {
             image::ImageBuffer::from_vec(width, height, v).unwrap())
     }
 
-    face.load_char(c as u64, freetype::face::RENDER).unwrap();
+    face.load_char(c as usize, freetype::face::RENDER).unwrap();
     let g = face.glyph().bitmap();
     buf_to_vec(g.buffer(), g.width() as u32, g.rows() as u32)
 }
 
 pub fn merge_all<I: Iterator<Item=image::DynamicImage>>(mut images: I) -> image::DynamicImage {
-    use texture_packer::Packer;
+    use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
 
-    let mut size = 1024u32;
-    let mut packer = {
-        let bf = texture_packer::ImgBuffer::new(
-            size, size, texture_packer::ColorType::RGBA);
-        texture_packer::SkylinePacker::new(bf)
+    let mut size = 256u32;
+    let mut packer: texture_packer::SkylinePacker<_> = {
+        let bf = image::DynamicImage::new_rgba8(size, size);
+        Packer::new(bf)
     };
+    packer.set_margin(5);
 
     for img in images {
-        let img = texture_packer::ImgBuffer::from_image(img);
-        if packer.pack(&img).is_none() {
-            size *= 2;
-            let old_packer = replace(&mut packer,
-                texture_packer::SkylinePacker::new(texture_packer::ImgBuffer::new(
-                    size, size, texture_packer::ColorType::RGBA)));
-            packer.pack(&old_packer.into_buf());
-            packer.pack(&img);
-        }
+        packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
     }
 
-    packer.into_buf().into_image()
+    packer.into_buf()
 }
 

@@ -36,6 +36,7 @@ git = "https://github.com/PistonDevelopers/freetype-rs"
 
 [dependencies.texture_packer]
 git = "https://github.com/TyOverby/texture_packer.git"
+branch = "oldapi"
 
 [dependencies.color]
 git = "https://github.com/bjz/color-rs.git"
