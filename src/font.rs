@@ -1,4 +1,5 @@
-use std::collections::hash_map::HashMap;
+use std::collections::hash_map::{HashMap, Hasher};
+use std::hash::Hash;
 use std::rc::Rc;
 use std::old_path::Path;
 use std::old_io::{File, IoResult};
@@ -22,7 +23,7 @@ struct FontCache {
 impl FontCache {
     fn new() -> LuxResult<FontCache> {
         let mut fc = FontCache {
-            library: freetype::Library::init(),
+            library: try!(freetype::Library::init()),
             fonts: HashMap::new(),
 
             // This is safe because current_font is set in the call to use_font.
@@ -36,7 +37,7 @@ impl FontCache {
         fc.name_to_contents.insert("SourceCodePro".to_string(), font_bytes);
         fc.use_font("SourceCodePro", 16);
 
-        fc
+        Ok(fc)
     }
 
     fn load(&mut self, name: &str, path: &Path) -> IoResult<()> {
@@ -91,7 +92,8 @@ pub fn char_to_img(face: &mut freetype::Face, c: char) -> LuxResult<image::Dynam
 
 pub fn merge_all<A, I>(mut images: I) ->
 (image::DynamicImage, HashMap<A, texture_packer::Rect>)
-where I: Iterator<Item=(A, image::DynamicImage)> {
+where I: Iterator<Item=(A, image::DynamicImage)>,
+      A: Eq + Hash<Hasher> {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
 
@@ -112,7 +114,7 @@ where I: Iterator<Item=(A, image::DynamicImage)> {
     (packer.into_buf(), mapping)
 }
 
-
+/*
 pub fn load_face(lib: &freetype::Library,contents: &[u8], size: u32) ->
 LuxResult<image::DynamicImage> {
     let mut face = try!(lib.new_memory_face(contents, 0));
@@ -120,9 +122,9 @@ LuxResult<image::DynamicImage> {
 
     let ascii = (0u8 .. 255).map(|c| char_to_img(&mut face, c as char));
 
-    //merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
+    merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
 }
-
+*/
 
 
 // Iterator<Result<T, E>> -> Result<Iterator<T>, E>
