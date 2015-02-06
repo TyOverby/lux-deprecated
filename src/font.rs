@@ -12,15 +12,17 @@ use super::{Sprite, TexVertex, NonUniformSpriteSheet};
 type FontSheet = NonUniformSpriteSheet<char>;
 
 struct FontCache {
+    library: freetype::Library,
     fonts: HashMap<(String, u32), Rc<FontSheet>>,
     current_font: Rc<FontSheet>,
-    name_to_contents: HashMap<String, Vec<u8>>
+    name_to_contents: HashMap<String, Vec<u8>>,
 }
 
 
 impl FontCache {
-    fn new() -> FontCache {
+    fn new() -> LuxResult<FontCache> {
         let mut fc = FontCache {
+            library: freetype::Library::init(),
             fonts: HashMap::new(),
 
             // This is safe because current_font is set in the call to use_font.
@@ -87,7 +89,9 @@ pub fn char_to_img(face: &mut freetype::Face, c: char) -> image::DynamicImage {
     buf_to_vec(g.buffer(), g.width() as u32, g.rows() as u32)
 }
 
-pub fn merge_all<I: Iterator<Item=image::DynamicImage>>(mut images: I) -> image::DynamicImage {
+pub fn merge_all<A, I>(mut images: I) ->
+(image::DynamicImage, HashMap<A, texture_packer::Rect>)
+where I: Iterator<Item=(A, image::DynamicImage)> {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
 
@@ -96,12 +100,15 @@ pub fn merge_all<I: Iterator<Item=image::DynamicImage>>(mut images: I) -> image:
         let bf = image::DynamicImage::new_rgba8(size, size);
         Packer::new(bf)
     };
+
+    let mut mapping = HashMap::new();
     packer.set_margin(5);
 
-    for img in images {
-        packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
+    for (a, img) in images {
+        let rect = packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
+        mapping.insert(a, rect);
     }
 
-    packer.into_buf()
+    (packer.into_buf(), mapping)
 }
 
