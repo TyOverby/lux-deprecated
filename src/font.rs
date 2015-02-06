@@ -7,7 +7,7 @@ use image;
 use freetype;
 use texture_packer;
 
-use super::{Sprite, TexVertex, NonUniformSpriteSheet};
+use super::{Sprite, TexVertex, NonUniformSpriteSheet, LuxResult};
 
 type FontSheet = NonUniformSpriteSheet<char>;
 
@@ -69,7 +69,7 @@ impl FontCache {
     }
 }
 
-pub fn char_to_img(face: &mut freetype::Face, c: char) -> image::DynamicImage {
+pub fn char_to_img(face: &mut freetype::Face, c: char) -> LuxResult<image::DynamicImage> {
     fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
         let mut v = vec![];
         for y in (0 .. height) {
@@ -82,9 +82,9 @@ pub fn char_to_img(face: &mut freetype::Face, c: char) -> image::DynamicImage {
             image::ImageBuffer::from_vec(width, height, v).unwrap())
     }
 
-    face.load_char(c as usize, freetype::face::RENDER).unwrap();
+    try!(face.load_char(c as usize, freetype::face::RENDER));
     let g = face.glyph().bitmap();
-    buf_to_vec(g.buffer(), g.width() as u32, g.rows() as u32)
+    Ok(buf_to_vec(g.buffer(), g.width() as u32, g.rows() as u32))
 }
 
 pub fn merge_all<I: Iterator<Item=image::DynamicImage>>(mut images: I) -> image::DynamicImage {
@@ -105,3 +105,17 @@ pub fn merge_all<I: Iterator<Item=image::DynamicImage>>(mut images: I) -> image:
     packer.into_buf()
 }
 
+
+pub fn load_face(lib: &freetype::Library,contents: &[u8], size: u32) ->
+LuxResult<image::DynamicImage> {
+    let mut face = try!(lib.new_memory_face(contents, 0));
+    face.set_pixel_sizes(0, size);
+
+    let ascii = (0u8 .. 255).map(|c| char_to_img(&mut face, c as char));
+
+    //merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
+}
+
+
+
+// Iterator<Result<T, E>> -> Result<Iterator<T>, E>
