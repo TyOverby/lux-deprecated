@@ -5,7 +5,7 @@ extern crate image;
 extern crate freetype;
 
 use lux::*;
-use std::path::Path;
+use std::old_path::Path;
 use std::old_io::File;
 
 fn glyph_to_vec(bf: &[u8], width: u32, height: u32) -> Vec<Vec<[f32; 4]>> {

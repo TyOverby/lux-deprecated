@@ -345,10 +345,10 @@ impl Window {
         self.events_since_last_render = true;
         fn t_mouse(button: glutin::MouseButton) -> super::MouseButton {
             match button {
-                glutin::MouseButton::LeftMouseButton => super::Left,
-                glutin::MouseButton::RightMouseButton => super::Right,
-                glutin::MouseButton::MiddleMouseButton => super::Middle,
-                glutin::MouseButton::OtherMouseButton(a) => super::OtherMouseButton(a)
+                glutin::MouseButton::Left=> super::Left,
+                glutin::MouseButton::Right=> super::Right,
+                glutin::MouseButton::Middle=> super::Middle,
+                glutin::MouseButton::Other(a) => super::OtherMouseButton(a)
             }
         }
         let mut last_char = None;
@@ -437,13 +437,13 @@ impl Window {
     }
 
     pub fn load_image<I>(&self, img: I) -> Rc<glium::texture::Texture2d>
-        where I: glium::texture::Texture2dData {
+        where I: glium::texture::Texture2dDataSource<'static> {
             Rc::new(glium::texture::Texture2d::new(&self.display, img))
     }
 }
 
 impl SpriteLoader for Window {
-    fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError> {
+    fn load_sprite(&mut self, path: &::std::old_path::Path) -> Result<Sprite, ImageError> {
         let img = try!(image::open(path)).flipv();
         let img = glium::texture::Texture2d::new(&self.display, img);
         Ok(Sprite::new(Rc::new(img)))

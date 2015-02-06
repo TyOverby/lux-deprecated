@@ -1,6 +1,6 @@
 use std::collections::hash_map::HashMap;
 use std::rc::Rc;
-use std::path::Path;
+use std::old_path::Path;
 use std::old_io::{File, IoResult};
 
 use image;
