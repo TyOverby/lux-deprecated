@@ -35,7 +35,7 @@ pub struct NonUniformSpriteSheet<K> {
 }
 
 pub trait SpriteLoader {
-    fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError>;
+    fn load_sprite(&mut self, path: &::std::old_path::Path) -> Result<Sprite, ImageError>;
 
     fn sprite_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Sprite;
     fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite;
