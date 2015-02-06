@@ -17,13 +17,8 @@ fn main() {
     face.set_pixel_sizes(0, 48);
 
     let mut v = vec![];
-    for _ in 0 .. 4 {
-        for i in ('a' as u8) .. ('z' as u8) {
-            v.push(i as char);
-        }
-        for i in ('A' as u8) .. ('Z' as u8) {
-            v.push(i as char);
-        }
+    for i in 1u8 .. 255 {
+        v.push(i as char);
     }
 
     let merged = merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));

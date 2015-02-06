@@ -306,15 +306,14 @@ impl Window {
                  &display,
                  gfx_integration::COLOR_VERTEX_SRC,
                  gfx_integration::COLOR_FRAGMENT_SRC,
-                 None)
-             .map_err(LuxError::ShaderError));
+                 None));
+
         let tex_program = try!(
             glium::Program::from_source(
                  &display,
                  gfx_integration::TEX_VERTEX_SRC,
                  gfx_integration::TEX_FRAGMENT_SRC,
-                 None)
-             .map_err(LuxError::ShaderError));
+                 None));
 
         let (width, height) = display.get_framebuffer_dimensions();
 
