@@ -1,4 +1,5 @@
-#![allow(unstable)]
+#![feature(io, path, core)]
+
 extern crate lux;
 extern crate glium;
 extern crate image;
@@ -21,6 +22,7 @@ fn main() {
         v.push(i as char);
     }
 
+    /*
     let merged = merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
 
     /*
@@ -36,4 +38,5 @@ fn main() {
 
         frame.sprite(&sprite, x, y).draw();
     }
+    */
 }
