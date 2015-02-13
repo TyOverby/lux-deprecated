@@ -22,7 +22,7 @@ fn main() {
         v.push(i as char);
     }
 
-    let cache = FontCache::new(&mut lux).unwrap();
+    let mut cache = FontCache::new(&mut lux).unwrap();
 
 
     /*

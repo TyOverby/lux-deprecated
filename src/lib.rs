@@ -1,4 +1,5 @@
 #![feature(plugin, unboxed_closures, unsafe_destructor, collections, core, hash, io)]
+#![feature(std_misc, path)]
 
 #![plugin(glium_macros)]
 extern crate glium_macros;

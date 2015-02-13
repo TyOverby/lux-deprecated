@@ -14,50 +14,63 @@ use super::{LuxCanvas, Sprite, SpriteLoader, TexVertex, NonUniformSpriteSheet, L
 
 pub type FontSheet = NonUniformSpriteSheet<char>;
 
+type Advance = (i64, i64);
+
 pub struct FontCache {
     library: freetype::Library,
-    fonts: HashMap<(String, u32), Rc<FontSheet>>,
-    current_font: Rc<FontSheet>,
-    current_face: Rc<freetype::Face>,
-    name_to_face: HashMap<String, Rc<freetype::Face>>,
+    faces: HashMap<String, freetype::Face>,
+    rendered: HashMap<(String, u32), Rc<RenderedFont>>,
+    current: Rc<RenderedFont>
 }
 
+pub struct RenderedFont {
+    name: String,
+    size: u32,
+    font_sheet: NonUniformSpriteSheet<char>,
+    advances: HashMap<char, Advance>
+}
 
 impl FontCache {
     pub fn new<S>(loader: &mut S) -> LuxResult<FontCache> where S: SpriteLoader {
-        let mut fc = FontCache {
-            library: try!(freetype::Library::init()),
-            fonts: HashMap::new(),
+        // Load the default font.
+        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
+        let lib = try!(freetype::Library::init());
+        let mut face = try!(lib.new_memory_face(bytes, 0));
+        let name = "SourceCodePro".to_string();
+        let size = 32;
 
-            // This is safe because current_font is set in the call to use_font.
-            current_font: unsafe{::std::mem::uninitialized()},
-            current_face: unsafe{::std::mem::uninitialized()},
-            name_to_face: HashMap::new(),
+        let rendered = RenderedFont::new(loader, &mut face, name.clone(), size);
+        let rendered = Rc::new(try!(rendered));
+
+        let mut fc = FontCache {
+            library: lib,
+            faces: HashMap::new(),
+            rendered: HashMap::new(),
+            current: rendered.clone()
         };
 
-        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
-
-        let face = try!(fc.library.new_memory_face(bytes, 0));
-        fc.name_to_face.insert("SourceCodePro".to_string(), Rc::new(face));
-        fc.use_font(loader, "SourceCodePro", 32);
+        fc.faces.insert(name.clone(), face);
+        fc.rendered.insert((name, size), rendered);
 
         Ok(fc)
     }
 
     pub fn load(&mut self, name: &str, path: &Path) -> LuxResult<()> {
-        if self.name_to_face.contains_key(name) {
+        if self.faces.contains_key(name) {
             return Ok(());
         }
 
         let bytes = try!(File::open(path).read_to_end());
         let face = try!(self.library.new_memory_face(&bytes[], 0));
         try!(face.set_pixel_sizes(0, 48));
-        self.name_to_face.insert(name.to_string(), Rc::new(face));
+        self.faces.insert(name.to_string(), face);
+
         Ok(())
     }
 
     pub fn use_font<S>(&mut self, loader: &mut S, name: &str, size: u32) -> LuxResult<()>
     where S: SpriteLoader {
+        /*
         let key = (name.to_string(), size);
         if let Some(font_sheet) = self.fonts.get(&key) {
             self.current_font = font_sheet.clone();
@@ -74,19 +87,34 @@ impl FontCache {
         self.fonts.insert(key, sheet.clone());
         self.current_font = sheet;
         self.current_face = face;
-
+*/
         Ok(())
     }
 
-    // TODO: rename this
-    pub fn current_face(&self) -> Rc<FontSheet> {
-        self.current_font.clone()
+    pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str) -> LuxResult<()>
+    where S: LuxCanvas {
+        let face = self.faces.get_mut(&self.current.name).unwrap();
+        self.current.render_string(canvas, text, face)
+    }
+}
+
+impl RenderedFont {
+    fn new<S>(loader: &mut S, face: &mut freetype::Face, name: String, size: u32)
+    -> LuxResult<RenderedFont> where S: SpriteLoader {
+        let (sheet, advs) = try!(gen_sheet(loader, face, size));
+        Ok(RenderedFont {
+            name: name,
+            size: size,
+            font_sheet: sheet,
+            advances: advs
+        })
     }
 
-    pub fn draw_onto<S>(&self, canvas: &mut S, text: &str) -> LuxResult<()>
-    where S: LuxCanvas {
-        let face = &self.current_face;
-        let sheet = &self.current_font;
+    fn render_string<C>(&self, canvas: &mut C, text: &str, face: &mut freetype::Face)
+    -> LuxResult<()> where C: LuxCanvas {
+        let sheet = &self.font_sheet;
+
+        face.set_pixel_sizes(0, self.size);
 
         let mut prev: Option<char> = None;
         let mut x = 0.0;
@@ -98,6 +126,8 @@ impl FontCache {
                 let delta = try!(delta);
                 x += (delta.x >> 6) as f32;
             }
+            let adv = self.advances.get(&current).cloned().unwrap_or((0, 0));
+            x += adv.0 as f32;
             canvas.sprite(&sheet.get(&current), x, 0.0).draw();
 
             prev = Some(current);
@@ -107,7 +137,7 @@ impl FontCache {
 }
 
 pub fn gen_sheet<S>(loader: &mut S, face: &freetype::Face, size: u32)
--> LuxResult<Rc<FontSheet>> where S: SpriteLoader {
+-> LuxResult<(FontSheet, HashMap<char, Advance>)> where S: SpriteLoader {
     let mut v = vec![];
     for i in 1u8 .. 255 {
         v.push(i as char);
@@ -116,13 +146,15 @@ pub fn gen_sheet<S>(loader: &mut S, face: &freetype::Face, size: u32)
     let (texture, map) = merge_all(v.into_iter().map(|c| (c, char_to_img(face, c))));
     let sprite = loader.sprite_from_image(texture);
     let mut sprite = sprite.as_nonuniform_sprite_sheet();
-    for (k, (rect, offset)) in map {
-        sprite.associate(k, (v.x, v.y), (v.w, v.h));
+    let mut advances = HashMap::new();
+    for (k, (r, offset)) in map {
+        sprite.associate(k, (r.x, r.y), (r.w, r.h));
+        advances.insert(k, offset);
     }
-    Ok(Rc::new(sprite))
+    Ok((sprite, advances))
 }
 
-pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, (isize, isize))> {
+pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, Advance)> {
     fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
         let mut v = vec![];
         for y in (0 .. height) {
@@ -138,13 +170,13 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
     try!(face.load_char(c as usize, freetype::face::RENDER));
     let glyph = face.glyph();
     let bit = glyph.bitmap();
-    let offset = (glyph.advance_x(), glyph.advance_y());
-    Ok((buf_to_vec(glyph.buffer(), glyph.width() as u32, glyph.rows() as u32), offset))
+    let offset = glyph.advance();
+    Ok((buf_to_vec(bit.buffer(), bit.width() as u32, bit.rows() as u32), (offset.x, offset.y)))
 }
 
 pub fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
-(image::DynamicImage, HashMap<A, (texture_packer::Rect, (isize, isize))>)
-where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, (isize, isize))>)>,
+(image::DynamicImage, HashMap<A, (texture_packer::Rect, Advance)>)
+where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, Advance)>)>,
       A: Eq + Hash<Hasher> {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
@@ -158,12 +190,11 @@ where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, (isize, isize))>)>,
     let mut mapping = HashMap::new();
     packer.set_margin(5);
 
-    //while let Some((a, Ok(img))) = images.next() {
-    for (a, (img, offset)) in images {
-        match img {
-            Ok(img) => {
+    for (a, comp) in images {
+        match comp {
+            Ok((img, adv)) => {
                 let rect = packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
-                mapping.insert(a, rect);
+                mapping.insert(a, (rect, adv));
             }
             Err(_) => { }
         }
