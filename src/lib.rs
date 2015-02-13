@@ -1,7 +1,7 @@
 #![feature(plugin, unboxed_closures, unsafe_destructor)]
 #![allow(unstable)]
 
-#[plugin]
+#![plugin(glium_macros)]
 extern crate glium_macros;
 extern crate glium;
 extern crate glutin;
