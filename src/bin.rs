@@ -22,6 +22,10 @@ fn main() {
         v.push(i as char);
     }
 
+    let cache = FontCache::new(&mut lux).unwrap();
+
+    let ff = cache.current_face();
+
     /*
     let merged = merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
 
@@ -31,9 +35,10 @@ fn main() {
     */
 
     let sprite = lux.sprite_from_image(merged);
+    */
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::BLACK);
+        let mut frame = lux.cleared_frame(colors::BLUE);
+        frame.sprite(&ff.get(&'a'), 0.0, 0.0).draw();
     }
-    */
 }

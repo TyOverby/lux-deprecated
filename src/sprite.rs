@@ -24,14 +24,14 @@ pub struct Sprite {
 }
 
 pub struct UniformSpriteSheet {
-    sprite: Sprite,
+    pub sprite: Sprite,
     divs: (u32, u32),
     indiv_size: (u32, u32),
 }
 
 pub struct NonUniformSpriteSheet<K> {
-    sprite: Sprite,
-    mapping: HashMap<K, Sprite>
+    pub sprite: Sprite,
+    pub mapping: HashMap<K, Sprite>
 }
 
 pub trait SpriteLoader {
@@ -213,14 +213,14 @@ impl <K: Eq + Hash<Hasher>> NonUniformSpriteSheet<K> {
     ///
     /// ## Failure
     /// Fails if the key doesn't associate to something yet.
-    pub fn get<Q: ?Sized>(&mut self, key: &Q) -> Sprite
+    pub fn get<Q: ?Sized>(&self, key: &Q) -> Sprite
     where Q: Hash<Hasher> + Eq + BorrowFrom<K> {
         self.get_opt(key).unwrap()
     }
 
     /// Same as `get` but returns None instead of failing if the key
     /// doesn't associate to anything.
-    pub fn get_opt<Q: ?Sized>(&mut self, key: &Q) -> Option<Sprite>
+    pub fn get_opt<Q: ?Sized>(&self, key: &Q) -> Option<Sprite>
     where Q: Hash<Hasher> + Eq + BorrowFrom<K> {
         self.mapping.get(key).map(|a| a.clone())
     }
