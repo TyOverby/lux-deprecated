@@ -7,7 +7,7 @@ use std::collections::hash_map::{HashMap, Hasher};
 use std::borrow::BorrowFrom;
 
 use std::cmp::Eq;
-use std::hash::{Hash, SipHasher};
+use std::hash::Hash;
 
 use super::{ImageError, TexVertex, Figure, LuxCanvas};
 
@@ -125,9 +125,15 @@ impl Sprite {
              vec![0u32, 1, 2, 0, 2, 3]
         )
     }
+
     pub fn as_uniform_sprite_sheet(&self, indiv_width: u32, indiv_height: u32)
     -> UniformSpriteSheet {
         UniformSpriteSheet::new(self.clone(), indiv_width, indiv_height)
+    }
+
+    pub fn as_nonuniform_sprite_sheet<T>(&self) -> NonUniformSpriteSheet<T>
+    where T: Eq + Hash<Hasher> {
+        NonUniformSpriteSheet::new(self.clone())
     }
 }
 
@@ -163,6 +169,11 @@ impl UniformSpriteSheet {
         }
     }
 
+    /// Returns the number of divisions made in the x and y direction.
+    pub fn num_divs(&self) -> (u32, u32) {
+        self.divs
+    }
+
     /// Gets the sprite that is in the (x, y) position in the grid
     /// defined by this sprite sheet.
     ///
@@ -194,7 +205,7 @@ impl <K: Eq + Hash<Hasher>> NonUniformSpriteSheet<K> {
     }
 
     /// Associates a key with a sprite location.
-    fn associate(&mut self, key: K, pos: (u32, u32), size: (u32, u32)) {
+    pub fn associate(&mut self, key: K, pos: (u32, u32), size: (u32, u32)) {
         self.mapping.insert(key, self.sprite.sub_sprite(pos, size).unwrap());
     }
 
@@ -202,14 +213,14 @@ impl <K: Eq + Hash<Hasher>> NonUniformSpriteSheet<K> {
     ///
     /// ## Failure
     /// Fails if the key doesn't associate to something yet.
-    fn get<Q: ?Sized>(&mut self, key: &Q) -> Sprite
+    pub fn get<Q: ?Sized>(&mut self, key: &Q) -> Sprite
     where Q: Hash<Hasher> + Eq + BorrowFrom<K> {
         self.get_opt(key).unwrap()
     }
 
     /// Same as `get` but returns None instead of failing if the key
     /// doesn't associate to anything.
-    fn get_opt<Q: ?Sized>(&mut self, key: &Q) -> Option<Sprite>
+    pub fn get_opt<Q: ?Sized>(&mut self, key: &Q) -> Option<Sprite>
     where Q: Hash<Hasher> + Eq + BorrowFrom<K> {
         self.mapping.get(key).map(|a| a.clone())
     }

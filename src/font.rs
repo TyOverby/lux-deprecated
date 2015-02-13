@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::collections::hash_map::{HashMap, Hasher};
 use std::hash::Hash;
 use std::rc::Rc;
@@ -8,7 +10,7 @@ use image;
 use freetype;
 use texture_packer;
 
-use super::{Sprite, TexVertex, NonUniformSpriteSheet, LuxResult};
+use super::{Sprite, SpriteLoader, TexVertex, NonUniformSpriteSheet, LuxResult};
 
 type FontSheet = NonUniformSpriteSheet<char>;
 
@@ -16,37 +18,39 @@ struct FontCache {
     library: freetype::Library,
     fonts: HashMap<(String, u32), Rc<FontSheet>>,
     current_font: Rc<FontSheet>,
-    name_to_contents: HashMap<String, Vec<u8>>,
+    name_to_face: HashMap<String, freetype::Face>,
 }
 
 
 impl FontCache {
-    fn new() -> LuxResult<FontCache> {
+    fn new<S>(loader: &mut S) -> LuxResult<FontCache> where S: SpriteLoader {
         let mut fc = FontCache {
             library: try!(freetype::Library::init()),
             fonts: HashMap::new(),
 
             // This is safe because current_font is set in the call to use_font.
             current_font: unsafe{::std::mem::uninitialized()},
-            name_to_contents: HashMap::new(),
+            name_to_face: HashMap::new(),
         };
 
-        let mut font_bytes = Vec::new();
-        font_bytes.push_all(include_bytes!("../resources/SourceCodePro-Regular.ttf"));
+        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
 
-        fc.name_to_contents.insert("SourceCodePro".to_string(), font_bytes);
-        fc.use_font("SourceCodePro", 16);
+        let face = try!(fc.library.new_memory_face(bytes, 0));
+        fc.name_to_face.insert("SourceCodePro".to_string(), face);
+        fc.use_font(loader, "SourceCodePro", 16);
 
         Ok(fc)
     }
 
-    fn load(&mut self, name: &str, path: &Path) -> IoResult<()> {
-        self.name_to_contents.insert(
-            name.to_string(), try!(File::open(path).read_to_end()));
+    fn load(&mut self, name: &str, path: &Path) -> LuxResult<()> {
+        let bytes = try!(File::open(path).read_to_end());
+        let face = try!(self.library.new_memory_face(&bytes[], 0));
+        self.name_to_face.insert(name.to_string(), face);
         Ok(())
     }
 
-    fn use_font(&mut self, name: &str, size: u32) {
+    fn use_font<S>(&mut self, loader: &mut S, name: &str, size: u32) -> LuxResult<()>
+    where S: SpriteLoader {
         let key = (name.to_string(), size);
 
         let todo = match self.fonts.get(&key) {
@@ -56,20 +60,34 @@ impl FontCache {
             }
             None => {
                 let error = format!("The font '{}' has not been loaded", name);
-                let contents = self.name_to_contents.get(name).expect(&error[]);
-                let ff = FontCache::load_ttf(&contents[], size);
-                Some(ff)
+                let face = self.name_to_face.get_mut(name).expect(&error[]);
+                let sheet = try!(gen_sheet(loader, face, size));
+                Some(sheet)
             }
         };
 
         if let Some(ff) = todo {
             self.fonts.insert(key, ff);
         }
+        Ok(())
     }
 
-    fn load_ttf(contents: &[u8], size: u32) -> Rc<FontSheet> {
-        unimplemented!()
+}
+
+fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
+-> LuxResult<Rc<FontSheet>> where S: SpriteLoader {
+    let mut v = vec![];
+    for i in 1u8 .. 255 {
+        v.push(i as char);
     }
+
+    let (texture, map) = merge_all(v.into_iter().map(|c| (c, char_to_img(face, c))));
+    let sprite = loader.sprite_from_image(texture);
+    let mut sprite = sprite.as_nonuniform_sprite_sheet();
+    for (k, v) in map {
+        sprite.associate(k, (v.x, v.y), (v.w, v.h));
+    }
+    Ok(Rc::new(sprite))
 }
 
 pub fn char_to_img(face: &mut freetype::Face, c: char) -> LuxResult<image::DynamicImage> {
@@ -92,7 +110,7 @@ pub fn char_to_img(face: &mut freetype::Face, c: char) -> LuxResult<image::Dynam
 
 pub fn merge_all<A, I>(mut images: I) ->
 (image::DynamicImage, HashMap<A, texture_packer::Rect>)
-where I: Iterator<Item=(A, image::DynamicImage)>,
+where I: Iterator<Item=(A, LuxResult<image::DynamicImage>)>,
       A: Eq + Hash<Hasher> {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
@@ -106,7 +124,7 @@ where I: Iterator<Item=(A, image::DynamicImage)>,
     let mut mapping = HashMap::new();
     packer.set_margin(5);
 
-    for (a, img) in images {
+    while let Some((a, Ok(img))) = images.next() {
         let rect = packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
         mapping.insert(a, rect);
     }

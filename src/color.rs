@@ -1,5 +1,3 @@
-use std::num::{Float, Int, NumCast};
-
 use ext_color::Hsv;
 use ext_color::ToRgb;
 use ext_color::Color3;

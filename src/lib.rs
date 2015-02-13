@@ -1,5 +1,4 @@
-#![feature(plugin, unboxed_closures, unsafe_destructor)]
-#![allow(unstable)]
+#![feature(plugin, unboxed_closures, unsafe_destructor, collections, core, hash, io)]
 
 #![plugin(glium_macros)]
 extern crate glium_macros;
@@ -13,15 +12,16 @@ extern crate "color" as ext_color;
 extern crate texture_packer;
 
 use std::error::{Error, FromError};
+use std::old_io::IoError;
 
 pub use gfx_integration::{ColorVertex, TexVertex};
-pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle};
+pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle, ContainedSprite};
 pub use interactive::*;
 pub use interactive::Event::*;
 pub use interactive::MouseButton::*;
 pub use raw::{Colored, StackedColored, Transform, StackedTransform};
 pub use glutin_window::Window;
-pub use color::{Color, rgb, rgba, hsv, hsva};
+pub use color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
 pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
 pub use figure::Figure;
 pub use font::{char_to_img, merge_all};
@@ -48,7 +48,8 @@ pub enum LuxError {
     WindowError(String),
     OpenGlError(String),
     ShaderError(glium::ProgramCreationError),
-    FontError(FreetypeError, String)
+    FontError(FreetypeError, String),
+    IoError(IoError),
 }
 
 impl Error for LuxError {
@@ -58,6 +59,7 @@ impl Error for LuxError {
             &LuxError::OpenGlError(ref s) => &s[],
             &LuxError::ShaderError(ref e) => e.description(),
             &LuxError::FontError(_, ref s) => &s[],
+            &LuxError::IoError(ref ioe) => ioe.description(),
         }
     }
 }
@@ -66,7 +68,7 @@ impl FromError<FreetypeError> for LuxError {
     fn from_error(e: FreetypeError) -> LuxError {
         use std::fmt::Writer;
         let mut bf = String::new();
-        write!(&mut bf, "{}", e);
+        write!(&mut bf, "{}", e).unwrap();
         LuxError::FontError(e, bf)
     }
 }
@@ -77,6 +79,12 @@ impl FromError<glium::ProgramCreationError> for LuxError {
     }
 }
 
+impl FromError<IoError> for LuxError {
+    fn from_error(ioe: IoError) -> LuxError {
+        LuxError::IoError(ioe)
+    }
+}
+
 impl std::fmt::Display for LuxError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         match self {
@@ -84,6 +92,7 @@ impl std::fmt::Display for LuxError {
             &LuxError::OpenGlError(ref s) => s.fmt(f),
             &LuxError::ShaderError(ref e) => e.fmt(f),
             &LuxError::FontError(ref e, _) => e.fmt(f),
+            &LuxError::IoError(ref e) => e.fmt(f),
         }
     }
 }
