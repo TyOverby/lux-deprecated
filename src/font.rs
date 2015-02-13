@@ -10,7 +10,7 @@ use image;
 use freetype;
 use texture_packer;
 
-use super::{Sprite, SpriteLoader, TexVertex, NonUniformSpriteSheet, LuxResult};
+use super::{LuxCanvas, Sprite, SpriteLoader, TexVertex, NonUniformSpriteSheet, LuxResult};
 
 pub type FontSheet = NonUniformSpriteSheet<char>;
 
@@ -78,8 +78,31 @@ impl FontCache {
         Ok(())
     }
 
+    // TODO: rename this
     pub fn current_face(&self) -> Rc<FontSheet> {
         self.current_font.clone()
+    }
+
+    pub fn draw_onto<S>(&self, canvas: &mut S, text: &str) -> LuxResult<()>
+    where S: LuxCanvas {
+        let face = &self.current_face;
+        let sheet = &self.current_font;
+
+        let mut prev: Option<char> = None;
+        let mut x = 0.0;
+        for current in text.chars() {
+            if let Some(prev) = prev {
+                let delta = face.get_kerning(face.get_char_index(prev as usize),
+                                             face.get_char_index(current as usize),
+                                             freetype::face::KerningMode::KerningDefault);
+                let delta = try!(delta);
+                x += (delta.x >> 6) as f32;
+            }
+            canvas.sprite(&sheet.get(&current), x, 0.0).draw();
+
+            prev = Some(current);
+        }
+        Ok(())
     }
 }
 
@@ -93,13 +116,13 @@ pub fn gen_sheet<S>(loader: &mut S, face: &freetype::Face, size: u32)
     let (texture, map) = merge_all(v.into_iter().map(|c| (c, char_to_img(face, c))));
     let sprite = loader.sprite_from_image(texture);
     let mut sprite = sprite.as_nonuniform_sprite_sheet();
-    for (k, v) in map {
+    for (k, (rect, offset)) in map {
         sprite.associate(k, (v.x, v.y), (v.w, v.h));
     }
     Ok(Rc::new(sprite))
 }
 
-pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<image::DynamicImage> {
+pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, (isize, isize))> {
     fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
         let mut v = vec![];
         for y in (0 .. height) {
@@ -113,13 +136,15 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<image::DynamicIm
     }
 
     try!(face.load_char(c as usize, freetype::face::RENDER));
-    let g = face.glyph().bitmap();
-    Ok(buf_to_vec(g.buffer(), g.width() as u32, g.rows() as u32))
+    let glyph = face.glyph();
+    let bit = glyph.bitmap();
+    let offset = (glyph.advance_x(), glyph.advance_y());
+    Ok((buf_to_vec(glyph.buffer(), glyph.width() as u32, glyph.rows() as u32), offset))
 }
 
 pub fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
-(image::DynamicImage, HashMap<A, texture_packer::Rect>)
-where I: Iterator<Item=(A, LuxResult<image::DynamicImage>)>,
+(image::DynamicImage, HashMap<A, (texture_packer::Rect, (isize, isize))>)
+where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, (isize, isize))>)>,
       A: Eq + Hash<Hasher> {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
@@ -134,7 +159,7 @@ where I: Iterator<Item=(A, LuxResult<image::DynamicImage>)>,
     packer.set_margin(5);
 
     //while let Some((a, Ok(img))) = images.next() {
-    for (a, img) in images {
+    for (a, (img, offset)) in images {
         match img {
             Ok(img) => {
                 let rect = packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
