@@ -1,6 +1,7 @@
 #![feature(plugin, unboxed_closures, unsafe_destructor, collections, core, hash, io)]
+#![feature(std_misc, path)]
 
-#[plugin]
+#![plugin(glium_macros)]
 extern crate glium_macros;
 extern crate glium;
 extern crate glutin;
@@ -24,7 +25,7 @@ pub use glutin_window::Window;
 pub use color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
 pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
 pub use figure::Figure;
-pub use font::{char_to_img, merge_all};
+pub use font::{FontCache};
 
 pub use glium::index_buffer::PrimitiveType;
 pub use glium::index_buffer::PrimitiveType::*;
@@ -101,4 +102,3 @@ pub trait LuxExtend {
     fn typemap(&self) -> &typemap::TypeMap;
     fn typemap_mut(&mut self) -> &mut typemap::TypeMap;
 }
-
