@@ -325,6 +325,11 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
         self
     }
 
+    pub fn color<O: Color>(&mut self, color: O) -> &mut ContainedSprite<'a, C> {
+        self.fields.fill_color = Some(color.to_rgba());
+        self
+    }
+
     pub fn draw(&mut self) {
         let pos = self.fields.pos;
         let size = self.fields.size;
@@ -348,7 +353,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
                       Some(&idxs[]),
                       Some(transform),
                       self.sprite.texture(),
-                      None);
+                      self.fields.fill_color);
     }
 }
 

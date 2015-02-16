@@ -256,7 +256,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "texture_packer"
 version = "0.0.0"
-source = "git+https://github.com/TyOverby/texture_packer.git?branch=oldapi#ad924d76f39c653daca78aad6e88a1358709730f"
+source = "git+https://github.com/TyOverby/texture_packer.git?branch=oldapi#439d2d8377eacd0692ffa5800837e8ddc3e0158b"
 dependencies = [
  "image 0.2.0-alpha.10 (git+https://github.com/PistonDevelopers/image)",
 ]

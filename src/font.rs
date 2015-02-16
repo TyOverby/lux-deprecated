@@ -14,30 +14,37 @@ use super::{LuxCanvas, Sprite, SpriteLoader, TexVertex, NonUniformSpriteSheet, L
 
 pub type FontSheet = NonUniformSpriteSheet<char>;
 
-type Advance = (i64, i64);
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+struct CharOffset {
+    advance: (i64, i64),
+    bitmap_offset: (i64, i64)
+}
 
 pub struct FontCache {
     library: freetype::Library,
     faces: HashMap<String, freetype::Face>,
     rendered: HashMap<(String, u32), Rc<RenderedFont>>,
-    current: Rc<RenderedFont>
+    pub current: Rc<RenderedFont>
 }
 
 pub struct RenderedFont {
-    name: String,
-    size: u32,
-    font_sheet: NonUniformSpriteSheet<char>,
-    advances: HashMap<char, Advance>
+    pub name: String,
+    pub size: u32,
+    pub font_sheet: NonUniformSpriteSheet<char>,
+    pub offsets: HashMap<char, CharOffset>
 }
 
 impl FontCache {
     pub fn new<S>(loader: &mut S) -> LuxResult<FontCache> where S: SpriteLoader {
         // Load the default font.
-        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
+        //let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
+        //let bytes = include_bytes!("../resources/Saint-Andrews Queen.ttf");
+        let bytes = include_bytes!("../resources/clarendonbt.ttf");
         let lib = try!(freetype::Library::init());
         let mut face = try!(lib.new_memory_face(bytes, 0));
         let name = "SourceCodePro".to_string();
-        let size = 32;
+        //let size = 32;
+        let size = 64;
 
         let rendered = RenderedFont::new(loader, &mut face, name.clone(), size);
         let rendered = Rc::new(try!(rendered));
@@ -91,33 +98,35 @@ impl FontCache {
         Ok(())
     }
 
-    pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str) -> LuxResult<()>
+    pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str, x: f32, y: f32) -> LuxResult<()>
     where S: LuxCanvas {
         let face = self.faces.get_mut(&self.current.name).unwrap();
-        self.current.render_string(canvas, text, face)
+        self.current.render_string(canvas, text, face, x, y)
     }
 }
 
 impl RenderedFont {
     fn new<S>(loader: &mut S, face: &mut freetype::Face, name: String, size: u32)
     -> LuxResult<RenderedFont> where S: SpriteLoader {
-        let (sheet, advs) = try!(gen_sheet(loader, face, size));
+        let (sheet, offsets) = try!(gen_sheet(loader, face, size));
         Ok(RenderedFont {
             name: name,
             size: size,
             font_sheet: sheet,
-            advances: advs
+            offsets: offsets
         })
     }
 
-    fn render_string<C>(&self, canvas: &mut C, text: &str, face: &mut freetype::Face)
+    fn render_string<C>(&self, canvas: &mut C, text: &str,
+                        face: &mut freetype::Face, x: f32, y: f32)
     -> LuxResult<()> where C: LuxCanvas {
         let sheet = &self.font_sheet;
 
         face.set_pixel_sizes(0, self.size);
 
         let mut prev: Option<char> = None;
-        let mut x = 0.0;
+        let mut x = x + 0.5;
+        let mut y = y + 0.5;
         for current in text.chars() {
             if let Some(prev) = prev {
                 let delta = face.get_kerning(face.get_char_index(prev as usize),
@@ -126,9 +135,16 @@ impl RenderedFont {
                 let delta = try!(delta);
                 x += (delta.x >> 6) as f32;
             }
-            let adv = self.advances.get(&current).cloned().unwrap_or((0, 0));
-            x += adv.0 as f32;
-            canvas.sprite(&sheet.get(&current), x, 0.0).draw();
+
+            let offset = self.offsets.get(&current).cloned().unwrap_or(CharOffset {
+                advance: (0, 0),
+                bitmap_offset: (0, 0)
+            });
+            canvas.sprite(&sheet.get(&current),
+                          x + offset.bitmap_offset.0 as f32,
+                          y - offset.bitmap_offset.1 as f32).color([0.0, 0.0, 0.0]).draw();
+
+            x += (offset.advance.0 >> 6) as f32;
 
             prev = Some(current);
         }
@@ -136,8 +152,9 @@ impl RenderedFont {
     }
 }
 
-pub fn gen_sheet<S>(loader: &mut S, face: &freetype::Face, size: u32)
--> LuxResult<(FontSheet, HashMap<char, Advance>)> where S: SpriteLoader {
+pub fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
+-> LuxResult<(FontSheet, HashMap<char, CharOffset>)> where S: SpriteLoader {
+    try!(face.set_pixel_sizes(0, size));
     let mut v = vec![];
     for i in 1u8 .. 255 {
         v.push(i as char);
@@ -146,15 +163,15 @@ pub fn gen_sheet<S>(loader: &mut S, face: &freetype::Face, size: u32)
     let (texture, map) = merge_all(v.into_iter().map(|c| (c, char_to_img(face, c))));
     let sprite = loader.sprite_from_image(texture);
     let mut sprite = sprite.as_nonuniform_sprite_sheet();
-    let mut advances = HashMap::new();
+    let mut offsets = HashMap::new();
     for (k, (r, offset)) in map {
         sprite.associate(k, (r.x, r.y), (r.w, r.h));
-        advances.insert(k, offset);
+        offsets.insert(k, offset);
     }
-    Ok((sprite, advances))
+    Ok((sprite, offsets))
 }
 
-pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, Advance)> {
+pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, CharOffset)> {
     fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
         let mut v = vec![];
         for y in (0 .. height) {
@@ -168,15 +185,23 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
     }
 
     try!(face.load_char(c as usize, freetype::face::RENDER));
+
     let glyph = face.glyph();
     let bit = glyph.bitmap();
-    let offset = glyph.advance();
-    Ok((buf_to_vec(bit.buffer(), bit.width() as u32, bit.rows() as u32), (offset.x, offset.y)))
+
+    let advance = glyph.advance();
+    let advance = (advance.x, advance.y);
+    let offset = (glyph.bitmap_left() as i64, glyph.bitmap_top() as i64);
+    let char_offsets = CharOffset {
+        advance: advance,
+        bitmap_offset: offset
+    };
+    Ok((buf_to_vec(bit.buffer(), bit.width() as u32, bit.rows() as u32), char_offsets))
 }
 
 pub fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
-(image::DynamicImage, HashMap<A, (texture_packer::Rect, Advance)>)
-where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, Advance)>)>,
+(image::DynamicImage, HashMap<A, (texture_packer::Rect, CharOffset)>)
+where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, CharOffset)>)>,
       A: Eq + Hash<Hasher> {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
@@ -196,7 +221,8 @@ where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, Advance)>)>,
                 let rect = packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
                 mapping.insert(a, (rect, adv));
             }
-            Err(_) => { }
+            Err(e) => {
+            }
         }
     }
 

@@ -172,7 +172,7 @@ impl Frame {
             depth_range: (0.0, 1.0),
             blending_function: Some(glium::BlendingFunction::Addition{
                 source: SourceAlpha,
-                destination: OneMinusDestinationAlpha
+                destination: OneMinusSourceAlpha
             }),
             line_width: None,
             dithering: true,

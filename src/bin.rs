@@ -24,20 +24,17 @@ fn main() {
 
     let mut cache = FontCache::new(&mut lux).unwrap();
 
-
     /*
-    let merged = merge_all(v.into_iter().map(|c| char_to_img(&mut face, c)));
-
-    /*
-    merged.save(File::create(&Path::new("foo.png")), image::ImageFormat::PNG);
-    return;
-    */
-
-    let sprite = lux.sprite_from_image(merged);
+    let sprite_sheet = &cache.current.font_sheet;
+    let letter_a = sprite_sheet.get(&'a');
+    let whole = sprite_sheet.sprite.clone();
     */
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::BLUE);
-        cache.draw_onto(&mut frame, "o");
+        let mut frame = lux.cleared_frame(colors::WHITE);
+        cache.draw_onto(&mut frame, "Hello World", 0.0, 100.0);
+
+//        frame.sprite(&whole, 0.0, 0.0).draw();
+ //       frame.sprite(&letter_a, lux.mouse_x(), lux.mouse_y()).draw();
     }
 }
