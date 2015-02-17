@@ -11,7 +11,7 @@ use std::hash::Hash;
 
 use super::{ImageError, TexVertex, Figure, LuxCanvas};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Sprite {
     texture: Rc<glium::texture::Texture2d>,
     original_size: (u32, u32),
@@ -23,12 +23,14 @@ pub struct Sprite {
     texture_pos: (f32, f32),
 }
 
+#[derive(Clone, Debug)]
 pub struct UniformSpriteSheet {
     pub sprite: Sprite,
     divs: (u32, u32),
     indiv_size: (u32, u32),
 }
 
+#[derive(Clone)]
 pub struct NonUniformSpriteSheet<K> {
     pub sprite: Sprite,
     pub mapping: HashMap<K, Sprite>

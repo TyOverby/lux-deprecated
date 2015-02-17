@@ -162,9 +162,6 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32,
                 angle2: f32, line_size: f32);
 
-    /// Draws text to the screen.
-    fn draw_text(&mut self, pos: (f32, f32), text: &str);
-
     /// Draws a sprite  to the screen.
     fn sprite(&mut self, sprite: &Sprite, x: f32, y: f32) -> ContainedSprite<Self> {
         ContainedSprite {

@@ -10,16 +10,26 @@ use image;
 use freetype;
 use texture_packer;
 
-use super::{LuxCanvas, Sprite, SpriteLoader, TexVertex, NonUniformSpriteSheet, LuxResult};
+use super::{
+    LuxError,
+    LuxCanvas,
+    Sprite,
+    SpriteLoader,
+    TexVertex,
+    NonUniformSpriteSheet,
+    LuxResult
+};
 
 pub type FontSheet = NonUniformSpriteSheet<char>;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
-struct CharOffset {
+#[doc(hidden)]
+pub struct CharOffset {
     advance: (i64, i64),
     bitmap_offset: (i64, i64)
 }
 
+#[doc(hidden)]
 pub struct FontCache {
     library: freetype::Library,
     faces: HashMap<String, freetype::Face>,
@@ -27,6 +37,7 @@ pub struct FontCache {
     pub current: Rc<RenderedFont>
 }
 
+#[doc(hidden)]
 pub struct RenderedFont {
     pub name: String,
     pub size: u32,
@@ -34,80 +45,97 @@ pub struct RenderedFont {
     pub offsets: HashMap<char, CharOffset>
 }
 
-impl FontCache {
-    pub fn new<S>(loader: &mut S) -> LuxResult<FontCache> where S: SpriteLoader {
-        // Load the default font.
-        //let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
-        //let bytes = include_bytes!("../resources/Saint-Andrews Queen.ttf");
-        let bytes = include_bytes!("../resources/clarendonbt.ttf");
-        let lib = try!(freetype::Library::init());
-        let mut face = try!(lib.new_memory_face(bytes, 0));
-        let name = "SourceCodePro".to_string();
-        //let size = 32;
-        let size = 64;
+pub trait FontLoad {
+    fn load_font(&mut self, name: &str, path: &Path) -> LuxResult<()>;
+    fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
+}
 
-        let rendered = RenderedFont::new(loader, &mut face, name.clone(), size);
-        let rendered = Rc::new(try!(rendered));
+pub trait TextDraw {
+    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()>;
+    fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
+    fn get_font(&self) -> (String, u32);
+}
+
+pub trait TextDrawStack: TextDraw {
+    fn with_font<F>(&mut self, name: &str, size: u32, f: F) -> LuxResult<()>
+    where F: FnOnce(&mut Self) {
+        let current = self.get_font();
+        try!(self.set_font(name, size));
+        f(self);
+        try!(self.set_font(&current.0[], current.1));
+        Ok(())
+    }
+}
+
+impl <T: TextDraw> TextDrawStack for T {}
+
+impl FontCache {
+    pub fn new<S>(loader: S) -> LuxResult<FontCache> where S: FnOnce(image::DynamicImage) -> Sprite {
+        // Load the default font.
+        let lib = try!(freetype::Library::init());
 
         let mut fc = FontCache {
             library: lib,
             faces: HashMap::new(),
             rendered: HashMap::new(),
-            current: rendered.clone()
+            current: unsafe {::std::mem::uninitialized() } //rendered.clone()
         };
 
-        fc.faces.insert(name.clone(), face);
-        fc.rendered.insert((name, size), rendered);
+        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
+        fc.load_bytes("SourceCodePro", bytes);
+        fc.use_font(loader, "SourceCodePro", 16);
 
         Ok(fc)
     }
 
     pub fn load(&mut self, name: &str, path: &Path) -> LuxResult<()> {
-        if self.faces.contains_key(name) {
+        let bytes = try!(File::open(path).read_to_end());
+        self.load_bytes(name, &bytes[])
+    }
+
+    pub fn load_bytes(&mut self, name: &str, bytes: &[u8]) -> LuxResult<()> {
+        let face = try!(self.library.new_memory_face(&bytes[], 0));
+        self.faces.insert(name.to_string(), face);
+        Ok(())
+    }
+
+    pub fn use_font<S>(&mut self, loader: S, name: &str, size: u32) -> LuxResult<()>
+    where S: FnOnce(image::DynamicImage) -> Sprite {
+        use std::fmt::Writer;
+
+        let key = (name.to_string(), size);
+        if let Some(font_sheet) = self.rendered.get(&key) {
+            self.current = font_sheet.clone();
+            //println!("found sheet.");
             return Ok(());
         }
 
-        let bytes = try!(File::open(path).read_to_end());
-        let face = try!(self.library.new_memory_face(&bytes[], 0));
-        try!(face.set_pixel_sizes(0, 48));
-        self.faces.insert(name.to_string(), face);
-
-        Ok(())
-    }
-
-    pub fn use_font<S>(&mut self, loader: &mut S, name: &str, size: u32) -> LuxResult<()>
-    where S: SpriteLoader {
-        /*
-        let key = (name.to_string(), size);
-        if let Some(font_sheet) = self.fonts.get(&key) {
-            self.current_font = font_sheet.clone();
-            self.current_face = self.name_to_face[name.to_string()].clone();
-
-            return Ok(())
+        if let Some(face) = self.faces.get_mut(name) {
+            let sheet = RenderedFont::new(loader, face, name.to_string(), size);
+            let sheet = Rc::new(try!(sheet));
+            self.rendered.insert(key, sheet.clone());
+            self.current = sheet;
+            //println!("found facee made sheet.");
+            return Ok(());
         }
 
-        let error = format!("The font '{}' has not been loaded", name);
-        let face = self.name_to_face.get(name).expect(&error[]).clone();
-        try!(face.set_pixel_sizes(0, size));
-        let sheet = try!(gen_sheet(loader, &*face, size));
+        let mut bf = String::new();
+        write!(&mut bf, "Font not loaded: {}", name).unwrap();
 
-        self.fonts.insert(key, sheet.clone());
-        self.current_font = sheet;
-        self.current_face = face;
-*/
-        Ok(())
+        Err(LuxError::FontNotLoaded(bf))
     }
 
-    pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str, x: f32, y: f32) -> LuxResult<()>
+    pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str,
+                        x: f32, y: f32, color: [f32; 4]) -> LuxResult<()>
     where S: LuxCanvas {
         let face = self.faces.get_mut(&self.current.name).unwrap();
-        self.current.render_string(canvas, text, face, x, y)
+        self.current.render_string(canvas, text, face, x, y, color)
     }
 }
 
 impl RenderedFont {
-    fn new<S>(loader: &mut S, face: &mut freetype::Face, name: String, size: u32)
-    -> LuxResult<RenderedFont> where S: SpriteLoader {
+    fn new<S>(loader: S, face: &mut freetype::Face, name: String, size: u32)
+    -> LuxResult<RenderedFont> where S: FnOnce(image::DynamicImage) -> Sprite {
         let (sheet, offsets) = try!(gen_sheet(loader, face, size));
         Ok(RenderedFont {
             name: name,
@@ -118,7 +146,7 @@ impl RenderedFont {
     }
 
     fn render_string<C>(&self, canvas: &mut C, text: &str,
-                        face: &mut freetype::Face, x: f32, y: f32)
+                        face: &mut freetype::Face, x: f32, y: f32, color: [f32; 4])
     -> LuxResult<()> where C: LuxCanvas {
         let sheet = &self.font_sheet;
 
@@ -142,7 +170,7 @@ impl RenderedFont {
             });
             canvas.sprite(&sheet.get(&current),
                           x + offset.bitmap_offset.0 as f32,
-                          y - offset.bitmap_offset.1 as f32).color([0.0, 0.0, 0.0]).draw();
+                          y - offset.bitmap_offset.1 as f32).color(color).draw();
 
             x += (offset.advance.0 >> 6) as f32;
 
@@ -152,8 +180,8 @@ impl RenderedFont {
     }
 }
 
-pub fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
--> LuxResult<(FontSheet, HashMap<char, CharOffset>)> where S: SpriteLoader {
+pub fn gen_sheet<S>(loader: S, face: &mut freetype::Face, size: u32)
+-> LuxResult<(FontSheet, HashMap<char, CharOffset>)> where S: FnOnce(image::DynamicImage) -> Sprite {
     try!(face.set_pixel_sizes(0, size));
     let mut v = vec![];
     for i in 1u8 .. 255 {
@@ -161,7 +189,7 @@ pub fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
     }
 
     let (texture, map) = merge_all(v.into_iter().map(|c| (c, char_to_img(face, c))));
-    let sprite = loader.sprite_from_image(texture);
+    let sprite = loader(texture);
     let mut sprite = sprite.as_nonuniform_sprite_sheet();
     let mut offsets = HashMap::new();
     for (k, (r, offset)) in map {
@@ -177,6 +205,7 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
         for y in (0 .. height) {
             for x in (0 .. width) {
                 let va = bf[(y * width + x) as usize];
+                //print!("{}", va);
                 v.push_all(&[va, va, va, va]);
             }
         }

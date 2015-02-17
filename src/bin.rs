@@ -12,29 +12,56 @@ use std::old_io::File;
 fn main() {
     let mut lux = Window::new().unwrap();
 
-    let freetype = freetype::Library::init().unwrap();
-    let font = Path::new("./resources/SourceCodePro-Regular.ttf");
-    let mut face = freetype.new_face(&font, 0).unwrap();
-    face.set_pixel_sizes(0, 48);
 
-    let mut v = vec![];
-    for i in 1u8 .. 255 {
-        v.push(i as char);
+    let freetype = freetype::Library::init().unwrap();
+
+    let font1 = Path::new("./resources/SourceCodePro-Regular.ttf");
+    let font2 = Path::new("./resources/cbt.ttf");
+
+    let mut face1 = freetype.new_face(&font1, 0).unwrap();
+    face1.set_pixel_sizes(0, 48);
+
+    let mut face2 = freetype.new_face(&font2, 0).unwrap();
+    face2.set_pixel_sizes(0, 48);
+
+    let (s1, _) = gen_sheet(|img: image::DynamicImage | {
+            let img = img.flipv();
+            let img = img.fliph();
+            img.save(&mut File::create(&Path::new("out1.png")), ::image::ImageFormat::PNG);
+            lux.sprite_from_image(img)
+    }, &mut face1, 30).unwrap();
+
+    {
+        let mut frame = lux.cleared_frame(colors::BLACK);
+        frame.rect(0.0, 0.0, 50.0, 50.0).fill();
     }
 
-    let mut cache = FontCache::new(&mut lux).unwrap();
+    let (s2, _) = gen_sheet(|img: image::DynamicImage | {
+            let img = img.flipv();
+            img.save(&mut File::create(&Path::new("out2.png")), ::image::ImageFormat::PNG);
+            lux.sprite_from_image(img)
+    }, &mut face2, 50).unwrap();
 
-    /*
-    let sprite_sheet = &cache.current.font_sheet;
-    let letter_a = sprite_sheet.get(&'a');
-    let whole = sprite_sheet.sprite.clone();
-    */
+    println!("{:?}, {:?}", s1.sprite, s2.sprite);
+
+
+    while lux.is_open() {
+        let mut frame = lux.cleared_frame(colors::BLACK);
+        frame.sprite(&s1.sprite, 0.0, 0.0).draw();
+        frame.sprite(&s2.sprite, 500.0, 500.0).draw();
+    }
+}
+
+/*
+fn main() {
+    let mut lux = Window::new().unwrap();
+//    lux.load_font("SourceCodePro", &Path::new("./resources/SourceCodePro-Regular.ttf")).unwrap();
 
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::WHITE);
-        cache.draw_onto(&mut frame, "Hello World", 0.0, 100.0);
-
-//        frame.sprite(&whole, 0.0, 0.0).draw();
- //       frame.sprite(&letter_a, lux.mouse_x(), lux.mouse_y()).draw();
+        println!("\n\n next \n\n");
+        frame.set_font("SourceCodePro", 10).unwrap();
+        frame.draw_text("foo", lux.mouse_x(), lux.mouse_y()).unwrap();
     }
 }
+*/

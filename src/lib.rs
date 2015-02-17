@@ -25,7 +25,7 @@ pub use glutin_window::Window;
 pub use color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
 pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
 pub use figure::Figure;
-pub use font::{FontCache};
+pub use font::{FontCache, TextDraw, FontLoad, gen_sheet};
 
 pub use glium::index_buffer::PrimitiveType;
 pub use glium::index_buffer::PrimitiveType::*;
@@ -51,6 +51,7 @@ pub enum LuxError {
     ShaderError(glium::ProgramCreationError),
     FontError(FreetypeError, String),
     IoError(IoError),
+    FontNotLoaded(String)
 }
 
 impl Error for LuxError {
@@ -61,6 +62,7 @@ impl Error for LuxError {
             &LuxError::ShaderError(ref e) => e.description(),
             &LuxError::FontError(_, ref s) => &s[],
             &LuxError::IoError(ref ioe) => ioe.description(),
+            &LuxError::FontNotLoaded(ref s) => &s[],
         }
     }
 }
@@ -94,6 +96,7 @@ impl std::fmt::Display for LuxError {
             &LuxError::ShaderError(ref e) => e.fmt(f),
             &LuxError::FontError(ref e, _) => e.fmt(f),
             &LuxError::IoError(ref e) => e.fmt(f),
+            &LuxError::FontNotLoaded(ref s) => s.fmt(f),
         }
     }
 }

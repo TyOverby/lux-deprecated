@@ -2,6 +2,7 @@ use std::vec::IntoIter;
 use std::collections::{HashMap, VecMap};
 use std::rc::Rc;
 use std::ops::Deref;
+use std::cell::RefCell;
 
 use glutin;
 use glium;
@@ -9,10 +10,13 @@ use image;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::{
+    FontCache,
+    TextDraw,
     gfx_integration,
     Sprite,
     ImageError,
     SpriteLoader,
+    FontLoad,
     LuxCanvas,
     Interactive,
     Event,
@@ -88,6 +92,9 @@ pub struct Window {
     virtual_keys_pressed: HashMap<VirtualKeyCode, bool>,
     code_to_char: VecMap<char>,
 
+    // FONT
+    font_cache: Rc<RefCell<FontCache>>,
+
     // EXTEND
     typemap: TypeMap,
 }
@@ -106,13 +113,16 @@ pub struct Frame {
     basis_matrix: Mat4f,
     matrix_stack: Vec<Mat4f>,
     color_stack: Vec<(BaseColor, BaseColor)>,
+
+    font_cache: Rc<RefCell<FontCache>>,
 }
 
 impl Frame {
     fn new(display: &glium::Display,
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
-           clear_color: Option<[f32; 4]>) -> Frame {
+           clear_color: Option<[f32; 4]>,
+           font_cache: Rc<RefCell<FontCache>>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -142,6 +152,7 @@ impl Frame {
             basis_matrix: basis,
             matrix_stack: vec![],
             color_stack: vec![([0.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 1.0])],
+            font_cache: font_cache
         }
     }
 
@@ -317,7 +328,7 @@ impl Window {
 
         let (width, height) = display.get_framebuffer_dimensions();
 
-        let window = Window {
+        let mut window = Window {
             display: display,
             color_program: Rc::new(color_program),
             tex_program: Rc::new(tex_program),
@@ -335,7 +346,17 @@ impl Window {
             virtual_keys_pressed: HashMap::new(),
             code_to_char: VecMap::new(),
             typemap: TypeMap::new(),
+            font_cache: unsafe { ::std::mem::uninitialized() }
         };
+
+        /*
+        let window_c = window.display.clone();
+        window.font_cache = Rc::new(RefCell::new(try!(FontCache::new(|img: image::DynamicImage| {
+            let img = img.flipv();
+            let img = glium::texture::Texture2d::new(&window_c, img);
+            Sprite::new(Rc::new(img))
+        }))));*/
+
         Ok(window)
     }
 
@@ -350,6 +371,7 @@ impl Window {
                 glutin::MouseButton::Other(a) => super::OtherMouseButton(a)
             }
         }
+
         let mut last_char = None;
         for event in self.display.poll_events() {
             match event {
@@ -421,18 +443,20 @@ impl Window {
         }}
     }
 
-    pub fn cleared_frame<C: Color>(&self, clear_color: C) -> Frame {
+    pub fn cleared_frame<C: Color>(&mut self, clear_color: C) -> Frame {
         Frame::new(&self.display,
                    self.color_program.clone(),
                    self.tex_program.clone(),
-                   Some(clear_color.to_rgba()))
+                   Some(clear_color.to_rgba()),
+                   self.font_cache.clone())
     }
 
-    pub fn frame(&self) -> Frame {
+    pub fn frame(&mut self) -> Frame {
         Frame::new(&self.display,
                    self.color_program.clone(),
                    self.tex_program.clone(),
-                   None)
+                   None,
+                   self.font_cache.clone())
     }
 
     pub fn load_image<I>(&self, img: I) -> Rc<glium::texture::Texture2d>
@@ -478,10 +502,6 @@ impl LuxCanvas for Frame {
 
     fn draw_arc(&mut self, pos: (f32, f32), radius: f32,
                 angle1: f32, angle2: f32, line_size: f32) {
-        unimplemented!();
-    }
-
-    fn draw_text(&mut self, pos: (f32, f32), text: &str) {
         unimplemented!();
     }
 }
@@ -539,6 +559,7 @@ impl PrimitiveCanvas for Frame {
                   texture: Rc<glium::texture::Texture2d>,
                   color_mult: Option<[f32; 4]>) {
         use super::PrimitiveType::{Points, LinesList, TrianglesList};
+        use std::mem::transmute;
 
         if self.color_draw_cache.is_some() {
             self.flush_draw();
@@ -551,6 +572,7 @@ impl PrimitiveCanvas for Frame {
             let mut same_type;
             let mut coherant_group;
             let mut same_color_mult;
+            let mut same_tex;
             {
                 let draw_cache = self.tex_draw_cache.as_ref().unwrap();
                 same_type = draw_cache.typ == n_typ;
@@ -559,9 +581,13 @@ impl PrimitiveCanvas for Frame {
                     _ => false
                 };
                 same_color_mult = draw_cache.color_mult == color_mult;
+
+                let our_ptr: *mut () = unsafe {transmute(draw_cache.texture.deref())};
+                let otr_ptr: *mut () = unsafe {transmute(texture.deref())};
+                same_tex = our_ptr == otr_ptr;
             }
 
-            if !same_type || !coherant_group || !same_color_mult {
+            if !same_type || !coherant_group || !same_color_mult || !same_tex {
                 self.flush_draw();
                 self.tex_draw_cache = Some(CachedTexDraw {
                     typ: n_typ,
@@ -826,5 +852,69 @@ impl StackedColored for Frame {
 
     fn pop_colors(&mut self) {
         self.color_stack.pop();
+    }
+}
+
+
+impl FontLoad for Window {
+    fn load_font(&mut self, name: &str, path: &Path) -> LuxResult<()> {
+        let mut font_cache = self.font_cache.borrow_mut();
+        font_cache.load(name, path)
+    }
+
+    fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
+        let window_c = self.display.clone();
+
+        let mut font_cache = self.font_cache.borrow_mut();
+        let res = font_cache.use_font(|img: image::DynamicImage| {
+            let img = img.flipv();
+            let img = glium::texture::Texture2d::new(&window_c, img);
+            Sprite::new(Rc::new(img))
+        }, name, size);
+        self.display.synchronize();
+        res
+    }
+}
+
+
+impl TextDraw for Frame {
+    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
+        use std::mem::transmute;
+        let c =  *self.current_fill_color();
+        /*
+        unsafe {
+            let s: *mut Frame = transmute(self);
+            let mut font_cache = (*s).font_cache.borrow_mut();
+            let s: &mut Frame = transmute(s);
+            font_cache.draw_onto(s, text, x, y, c)
+        }*/
+
+        Ok(())
+    }
+
+    fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
+        use std::old_io::File;
+        use std::old_path::Path;
+
+        let window_c = self.display.clone();
+
+        let mut font_cache = self.font_cache.borrow_mut();
+        let res = font_cache.use_font(|img: image::DynamicImage| {
+            let img = img.flipv();
+
+            img.save(&mut File::create(&Path::new("out.png")), ::image::ImageFormat::PNG);
+            panic!();
+
+
+            let img = glium::texture::Texture2d::new(&window_c, img);
+            Sprite::new(Rc::new(img))
+        }, name, size);
+        self.display.synchronize();
+        res
+    }
+
+    fn get_font(&self) -> (String, u32) {
+        let font_cache = self.font_cache.borrow();
+        (font_cache.current.name.clone(), font_cache.current.size)
     }
 }
