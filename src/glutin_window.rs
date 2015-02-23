@@ -179,7 +179,8 @@ impl Frame {
         };
 
         let draw_params: glium::DrawParameters = glium::DrawParameters {
-            depth_function: glium::DepthFunction::Overwrite,
+            depth_test: glium::DepthTest::Overwrite,
+            depth_write: false,
             depth_range: (0.0, 1.0),
             blending_function: Some(glium::BlendingFunction::Addition{
                 source: SourceAlpha,
@@ -192,6 +193,7 @@ impl Frame {
             multisampling: true,
             viewport: None,
             scissor: None,
+            draw_primitives: true,
         };
 
         draw_cmd!(Prim::Points, PointsList,
@@ -234,7 +236,8 @@ impl Frame {
         };
 
         let draw_params: glium::DrawParameters = glium::DrawParameters {
-            depth_function: glium::DepthFunction::Overwrite,
+            depth_test: glium::DepthTest::Overwrite,
+            depth_write: false,
             depth_range: (0.0, 1.0),
             blending_function: Some(glium::BlendingFunction::Addition{
                 source: SourceAlpha,
@@ -247,6 +250,7 @@ impl Frame {
             multisampling: true,
             viewport: None,
             scissor: None,
+            draw_primitives: true,
         };
 
         draw_cmd!(Prim::Points, PointsList,

@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::collections::hash_map::{HashMap, Hasher};
+use std::collections::HashMap;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::old_path::Path;
@@ -101,7 +101,7 @@ impl FontCache {
 
     pub fn use_font<S>(&mut self, loader: S, name: &str, size: u32) -> LuxResult<()>
     where S: FnOnce(image::DynamicImage) -> Sprite {
-        use std::fmt::Writer;
+        use std::fmt::Write;
 
         let key = (name.to_string(), size);
         if let Some(font_sheet) = self.rendered.get(&key) {
@@ -231,7 +231,7 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
 pub fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
 (image::DynamicImage, HashMap<A, (texture_packer::Rect, CharOffset)>)
 where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, CharOffset)>)>,
-      A: Eq + Hash<Hasher> {
+      A: Eq + Hash {
     use texture_packer::{Packer, GrowingPacker};
     use std::mem::replace;
 

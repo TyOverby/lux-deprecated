@@ -69,7 +69,7 @@ impl Error for LuxError {
 
 impl FromError<FreetypeError> for LuxError {
     fn from_error(e: FreetypeError) -> LuxError {
-        use std::fmt::Writer;
+        use std::fmt::Write;
         let mut bf = String::new();
         write!(&mut bf, "{}", e).unwrap();
         LuxError::FontError(e, bf)
