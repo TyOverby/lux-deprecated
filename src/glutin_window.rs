@@ -332,7 +332,7 @@ impl Window {
 
         let (width, height) = display.get_framebuffer_dimensions();
 
-        let mut window = Window {
+        let window = Window {
             display: display,
             color_program: Rc::new(color_program),
             tex_program: Rc::new(tex_program),
@@ -778,9 +778,9 @@ impl Interactive for Window {
 
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool {
         match k.to_key() {
-            (Some(code), _, _) => self.codes_pressed.get(&code).map(|x| *x),
-            (_, Some(chr), _) => self.chars_pressed.get(&chr).map(|x| *x),
-            (_, _, Some(key)) => self.virtual_keys_pressed.get(&key).map(|x| *x),
+            (Some(code), _, _) => self.codes_pressed.get(&code).cloned(),
+            (_, Some(chr), _) => self.chars_pressed.get(&chr).cloned(),
+            (_, _, Some(key)) => self.virtual_keys_pressed.get(&key).cloned(),
             (None, None, None) => None
         }.unwrap_or(false)
     }
@@ -882,9 +882,8 @@ impl FontLoad for Window {
 
 
 impl TextDraw for Frame {
-    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
-        use std::mem::transmute;
-        let c =  *self.current_fill_color();
+    fn draw_text(&mut self, _text: &str, _x: f32, _y: f32) -> LuxResult<()> {
+        let _c =  *self.current_fill_color();
         /*
         unsafe {
             let s: *mut Frame = transmute(self);
@@ -906,9 +905,8 @@ impl TextDraw for Frame {
         let res = font_cache.use_font(|img: image::DynamicImage| {
             let img = img.flipv();
 
-            img.save(&mut File::create(&Path::new("out.png")), ::image::ImageFormat::PNG);
-            panic!();
-
+            let _ = img.save(&mut File::create(&Path::new("out.png")),
+                             ::image::ImageFormat::PNG).unwrap();
 
             let img = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(img))

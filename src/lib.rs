@@ -1,8 +1,8 @@
-#![feature(plugin, unboxed_closures, unsafe_destructor, collections, core, hash, io)]
-#![feature(std_misc, path)]
+#![feature(plugin, unboxed_closures, unsafe_destructor, collections, core)]
+#![feature(old_path, old_io)]
 
 #![plugin(glium_macros)]
-extern crate glium_macros;
+//extern crate glium_macros;
 extern crate glium;
 extern crate glutin;
 extern crate vecmath;
@@ -57,12 +57,12 @@ pub enum LuxError {
 impl Error for LuxError {
     fn description(&self) -> &str {
         match self {
-            &LuxError::WindowError(ref s) => &s[],
-            &LuxError::OpenGlError(ref s) => &s[],
+            &LuxError::WindowError(ref s) => &s[..],
+            &LuxError::OpenGlError(ref s) => &s[..],
             &LuxError::ShaderError(ref e) => e.description(),
-            &LuxError::FontError(_, ref s) => &s[],
+            &LuxError::FontError(_, ref s) => &s[..],
             &LuxError::IoError(ref ioe) => ioe.description(),
-            &LuxError::FontNotLoaded(ref s) => &s[],
+            &LuxError::FontNotLoaded(ref s) => &s[..],
         }
     }
 }

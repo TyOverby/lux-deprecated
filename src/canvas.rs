@@ -135,7 +135,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
             pos: [x, y],
             color: color.to_rgba(),
         };
-        self.draw_shape(super::Points, &[vertex][], None, None);
+        self.draw_shape(super::Points, &[vertex][..], None, None);
     }
 
     fn draw_pixels<C: Color, I: Iterator<Item = ((f32, f32), C)>>(&mut self, pixels: I) {
@@ -146,7 +146,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
                     color: c.to_rgba(),
                 }
             }) .collect();
-        self.draw_shape(super::Points, &v[], None, None);
+        self.draw_shape(super::Points, &v[..], None, None);
     }
 
     /// Draws a single line from `start` to `end` with a
@@ -294,7 +294,7 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
         trx = vecmath::col_mat4_mul(trx, self.fields.transform);
 
         self.fields.canvas.draw_shape(super::TriangleFan,
-                               &vertices[],
+                               &vertices[..],
                                None,
                                Some(trx));
     }
@@ -346,8 +346,8 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
         transform.scale(size.0 as f32, size.1 as f32);
 
         self.fields.canvas.draw_tex(super::TrianglesList,
-                      &tex_vs[],
-                      Some(&idxs[]),
+                      &tex_vs[..],
+                      Some(&idxs[..]),
                       Some(transform),
                       self.sprite.texture(),
                       self.fields.fill_color);
@@ -381,7 +381,7 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         transform.scale(sx, sy);
 
         self.fields.canvas.draw_shape(super::TrianglesList,
-                               &vertices[], Some(&idxs[]),
+                               &vertices[..], Some(&idxs[..]),
                                Some(transform));
     }
 
