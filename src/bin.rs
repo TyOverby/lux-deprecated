@@ -12,6 +12,10 @@ use std::old_io::File;
 fn main() {
     let mut lux = Window::new().unwrap();
 
+    let mut f1 = File::create(&Path::new("out1.png"));
+    let mut f2 = File::create(&Path::new("out2.png"));
+    let png = ::image::ImageFormat::PNG;
+
 
     let freetype = freetype::Library::init().unwrap();
 
@@ -27,8 +31,7 @@ fn main() {
     let (s1, _) = gen_sheet(|img: image::DynamicImage | {
             let img = img.flipv();
             let img = img.fliph();
-            img.save(&mut File::create(&Path::new("out1.png")),
-                     ::image::ImageFormat::PNG).ok();
+            img.save(&mut f1, png).ok();
             lux.sprite_from_image(img)
     }, &mut face1, 30).unwrap();
 
@@ -39,8 +42,7 @@ fn main() {
 
     let (s2, _) = gen_sheet(|img: image::DynamicImage | {
             let img = img.flipv();
-            img.save(&mut File::create(&Path::new("out2.png")),
-                     ::image::ImageFormat::PNG).ok();
+            img.save(&mut f2, png).ok();
             lux.sprite_from_image(img)
     }, &mut face2, 50).unwrap();
 
