@@ -62,7 +62,7 @@ pub trait TextDrawStack: TextDraw {
         let current = self.get_font();
         try!(self.set_font(name, size));
         f(self);
-        try!(self.set_font(&current.0[], current.1));
+        try!(self.set_font(&current.0[..], current.1));
         Ok(())
     }
 }
@@ -90,11 +90,11 @@ impl FontCache {
 
     pub fn load(&mut self, name: &str, path: &Path) -> LuxResult<()> {
         let bytes = try!(File::open(path).read_to_end());
-        self.load_bytes(name, &bytes[])
+        self.load_bytes(name, &bytes[..])
     }
 
     pub fn load_bytes(&mut self, name: &str, bytes: &[u8]) -> LuxResult<()> {
-        let face = try!(self.library.new_memory_face(&bytes[], 0));
+        let face = try!(self.library.new_memory_face(&bytes[..], 0));
         self.faces.insert(name.to_string(), face);
         Ok(())
     }

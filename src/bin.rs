@@ -1,4 +1,4 @@
-#![feature(io, path, core)]
+#![feature(old_io, old_path)]
 
 extern crate lux;
 extern crate glium;
@@ -12,6 +12,10 @@ use std::old_io::File;
 fn main() {
     let mut lux = Window::new().unwrap();
 
+    let mut f1 = File::create(&Path::new("out1.png"));
+    let mut f2 = File::create(&Path::new("out2.png"));
+    let png = ::image::ImageFormat::PNG;
+
 
     let freetype = freetype::Library::init().unwrap();
 
@@ -19,15 +23,15 @@ fn main() {
     let font2 = Path::new("./resources/cbt.ttf");
 
     let mut face1 = freetype.new_face(&font1, 0).unwrap();
-    face1.set_pixel_sizes(0, 48);
+    face1.set_pixel_sizes(0, 48).unwrap();
 
     let mut face2 = freetype.new_face(&font2, 0).unwrap();
-    face2.set_pixel_sizes(0, 48);
+    face2.set_pixel_sizes(0, 48).unwrap();
 
     let (s1, _) = gen_sheet(|img: image::DynamicImage | {
             let img = img.flipv();
             let img = img.fliph();
-            img.save(&mut File::create(&Path::new("out1.png")), ::image::ImageFormat::PNG);
+            img.save(&mut f1, png).ok();
             lux.sprite_from_image(img)
     }, &mut face1, 30).unwrap();
 
@@ -38,7 +42,7 @@ fn main() {
 
     let (s2, _) = gen_sheet(|img: image::DynamicImage | {
             let img = img.flipv();
-            img.save(&mut File::create(&Path::new("out2.png")), ::image::ImageFormat::PNG);
+            img.save(&mut f2, png).ok();
             lux.sprite_from_image(img)
     }, &mut face2, 50).unwrap();
 
@@ -65,3 +69,4 @@ fn main() {
     }
 }
 */
+
