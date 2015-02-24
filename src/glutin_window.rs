@@ -389,7 +389,11 @@ impl Window {
             }
             glevent::MouseInput(glutin::ElementState::Released, button) => {
                 self.event_store.push(super::MouseUp(t_mouse(button)));
-                self.mouse_down_count -= 1;
+
+                // Don't underflow!
+                if self.mouse_down_count != 0 {
+                    self.mouse_down_count -= 1;
+                }
             }
             glevent::Resized(w, h) => {
                 self.window_size = (w as u32, h as u32);
@@ -461,11 +465,6 @@ impl Window {
                    self.tex_program.clone(),
                    None,
                    self.font_cache.clone())
-    }
-
-    pub fn load_image<I>(&self, img: I) -> Rc<glium::texture::Texture2d>
-        where I: glium::texture::Texture2dDataSource<'static> {
-            Rc::new(glium::texture::Texture2d::new(&self.display, img))
     }
 }
 
