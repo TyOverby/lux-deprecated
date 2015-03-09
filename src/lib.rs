@@ -1,16 +1,14 @@
 #![feature(plugin, unboxed_closures, unsafe_destructor, collections, core)]
 #![feature(old_path, old_io)]
 
-#![plugin(glium_macros)]
-//extern crate glium_macros;
-extern crate glium;
+#[macro_use] extern crate glium;
 extern crate glutin;
 extern crate vecmath;
 extern crate typemap;
 extern crate image;
 extern crate freetype;
 extern crate "color" as ext_color;
-extern crate texture_packer;
+extern crate glyph_packer;
 
 use std::error::{Error, FromError};
 use std::old_io::IoError;

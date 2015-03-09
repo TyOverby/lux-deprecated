@@ -12,15 +12,9 @@ path = "src/lib.rs"
 name = "lux_demo"
 path = "src/bin.rs"
 
-[dependencies.glutin]
-git = "https://github.com/tomaka/glutin.git"
-
 [dependencies.glium]
 git = "https://github.com/tomaka/glium.git"
 features = ["image"]
-
-[dependencies.glium_macros]
-git = "https://github.com/tomaka/glium.git"
 
 [dependencies.vecmath]
 git = "https://github.com/PistonDevelopers/vecmath"
@@ -28,20 +22,17 @@ git = "https://github.com/PistonDevelopers/vecmath"
 [dependencies.typemap]
 git = "https://github.com/reem/rust-typemap"
 
-[dependencies.image]
-git = "https://github.com/PistonDevelopers/image"
-
 [dependencies.freetype-rs]
 git = "https://github.com/PistonDevelopers/freetype-rs"
-
-[dependencies.texture_packer]
-git = "https://github.com/TyOverby/texture_packer.git"
-branch = "oldapi"
 
 [dependencies.color]
 git = "https://github.com/bjz/color-rs.git"
 
-[dependencies.nd_iter]
-
 [dependencies.noise]
 git = "https://github.com/bjz/noise-rs.git"
+
+[dependencies]
+glyph_packer = "*"
+glutin = "*"
+nd_iter = "*"
+image = "~0.2.0"

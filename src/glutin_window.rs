@@ -44,7 +44,7 @@ macro_rules! draw_cmd {
      $vbuf: ident, $idx: ident, $prog: ident, $uni: ident, $params: ident) => {
         if $act == $typ {
             let idx_buffer = $cons($idx);
-            $frame.draw(&$vbuf, &idx_buffer, $prog, &$uni, &$params).unwrap();
+            $frame.draw(&$vbuf, &idx_buffer, $prog, $uni, &$params).unwrap();
             return;
         }
     };
@@ -194,6 +194,7 @@ impl Frame {
             viewport: None,
             scissor: None,
             draw_primitives: true,
+            point_size: None,
         };
 
         draw_cmd!(Prim::Points, PointsList,
@@ -251,6 +252,7 @@ impl Frame {
             viewport: None,
             scissor: None,
             draw_primitives: true,
+            point_size: None
         };
 
         draw_cmd!(Prim::Points, PointsList,
@@ -332,7 +334,7 @@ impl Window {
 
         let (width, height) = display.get_framebuffer_dimensions();
 
-        let window = Window {
+        let mut window = Window {
             display: display,
             color_program: Rc::new(color_program),
             tex_program: Rc::new(tex_program),
@@ -350,16 +352,16 @@ impl Window {
             virtual_keys_pressed: HashMap::new(),
             code_to_char: VecMap::new(),
             typemap: TypeMap::new(),
+            // Safe because font_cache is set immediately after this.
             font_cache: unsafe { ::std::mem::uninitialized() }
         };
 
-        /*
         let window_c = window.display.clone();
         window.font_cache = Rc::new(RefCell::new(try!(FontCache::new(|img: image::DynamicImage| {
             let img = img.flipv();
             let img = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(img))
-        }))));*/
+        }))));
 
         Ok(window)
     }
@@ -916,6 +918,7 @@ impl TextDraw for Frame {
 
     fn get_font(&self) -> (String, u32) {
         let font_cache = self.font_cache.borrow();
-        (font_cache.current.name.clone(), font_cache.current.size)
+        let current = font_cache.current.as_ref().unwrap();
+        (current.name.clone(), current.size)
     }
 }

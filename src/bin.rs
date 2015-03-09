@@ -30,8 +30,8 @@ fn main() {
 
     let (s1, _) = gen_sheet(|img: image::DynamicImage | {
             let img = img.flipv();
-            let img = img.fliph();
             img.save(&mut f1, png).ok();
+            let img = img.flipv();
             lux.sprite_from_image(img)
     }, &mut face1, 30).unwrap();
 
@@ -43,6 +43,7 @@ fn main() {
     let (s2, _) = gen_sheet(|img: image::DynamicImage | {
             let img = img.flipv();
             img.save(&mut f2, png).ok();
+            let img = img.flipv();
             lux.sprite_from_image(img)
     }, &mut face2, 50).unwrap();
 
@@ -52,7 +53,7 @@ fn main() {
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
         frame.sprite(&s1.sprite, 0.0, 0.0).draw();
-        frame.sprite(&s2.sprite, 500.0, 500.0).draw();
+        frame.sprite(&s2.sprite, lux.mouse_x(), lux.mouse_y()).draw();
     }
 }
 

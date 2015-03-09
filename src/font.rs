@@ -8,7 +8,7 @@ use std::old_io::{File, IoResult};
 
 use image;
 use freetype;
-use texture_packer;
+use glyph_packer;
 
 use super::{
     LuxError,
@@ -34,7 +34,7 @@ pub struct FontCache {
     library: freetype::Library,
     faces: HashMap<String, freetype::Face>,
     rendered: HashMap<(String, u32), Rc<RenderedFont>>,
-    pub current: Rc<RenderedFont>
+    pub current: Option<Rc<RenderedFont>>
 }
 
 #[doc(hidden)]
@@ -78,7 +78,7 @@ impl FontCache {
             library: lib,
             faces: HashMap::new(),
             rendered: HashMap::new(),
-            current: unsafe {::std::mem::uninitialized() } //rendered.clone()
+            current: None
         };
 
         let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
@@ -105,7 +105,7 @@ impl FontCache {
 
         let key = (name.to_string(), size);
         if let Some(font_sheet) = self.rendered.get(&key) {
-            self.current = font_sheet.clone();
+            self.current = Some(font_sheet.clone());
             //println!("found sheet.");
             return Ok(());
         }
@@ -114,7 +114,7 @@ impl FontCache {
             let sheet = RenderedFont::new(loader, face, name.to_string(), size);
             let sheet = Rc::new(try!(sheet));
             self.rendered.insert(key, sheet.clone());
-            self.current = sheet;
+            self.current = Some(sheet);
             //println!("found facee made sheet.");
             return Ok(());
         }
@@ -128,8 +128,8 @@ impl FontCache {
     pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str,
                         x: f32, y: f32, color: [f32; 4]) -> LuxResult<()>
     where S: LuxCanvas {
-        let face = self.faces.get_mut(&self.current.name).unwrap();
-        self.current.render_string(canvas, text, face, x, y, color)
+        let face = self.faces.get_mut(&self.current.as_ref().unwrap().name).unwrap();
+        self.current.as_ref().unwrap().render_string(canvas, text, face, x, y, color)
     }
 }
 
@@ -229,14 +229,14 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
 }
 
 pub fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
-(image::DynamicImage, HashMap<A, (texture_packer::Rect, CharOffset)>)
+(image::DynamicImage, HashMap<A, (glyph_packer::Rect, CharOffset)>)
 where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, CharOffset)>)>,
       A: Eq + Hash {
-    use texture_packer::{Packer, GrowingPacker};
+    use glyph_packer::{Packer, GrowingPacker};
     use std::mem::replace;
 
     let mut size = 256u32;
-    let mut packer: texture_packer::SkylinePacker<_> = {
+    let mut packer: glyph_packer::SkylinePacker<_> = {
         let bf = image::DynamicImage::new_rgba8(size, size);
         Packer::new(bf)
     };
