@@ -3,6 +3,7 @@ use std::collections::{HashMap, VecMap};
 use std::rc::Rc;
 use std::ops::Deref;
 use std::cell::RefCell;
+use std::path::Path;
 
 use glutin;
 use glium;
@@ -518,8 +519,7 @@ impl PrimitiveCanvas for Frame {
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
-        let idxs = idxs.unwrap_or_else(||
-                               range(0u32, n_points.len() as u32).collect());
+        let idxs = idxs.unwrap_or_else(|| (0u32 .. n_points.len() as u32).collect());
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
@@ -536,7 +536,7 @@ impl PrimitiveCanvas for Frame {
                            color_mult: Option<[f32; 4]>) {
         self.flush_draw();
         let idxs = idxs.unwrap_or_else(||
-                               range(0u32, n_points.len() as u32).collect());
+                               (0u32 .. n_points.len() as u32).collect());
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
@@ -639,7 +639,7 @@ impl PrimitiveCanvas for Frame {
 
         match idxs {
             None => {
-                for i in range(0, adding) {
+                for i in 0 .. adding {
                     draw_cache.idxs.push(already_in + i)
                 }
             }
@@ -714,7 +714,7 @@ impl PrimitiveCanvas for Frame {
 
         match idxs {
             None => {
-                for i in range(0, adding) {
+                for i in 0 .. adding {
                     draw_cache.idxs.push(already_in + i)
                 }
             }

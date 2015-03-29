@@ -16,8 +16,14 @@ path = "src/bin.rs"
 git = "https://github.com/tomaka/glium.git"
 features = ["image"]
 
+[dependencies.glutin]
+git = "https://github.com/tomaka/glutin.git"
+
 [dependencies.vecmath]
 git = "https://github.com/PistonDevelopers/vecmath"
+
+[dependencies.image]
+git = "https://github.com/PistonDevelopers/image"
 
 [dependencies.typemap]
 git = "https://github.com/reem/rust-typemap"
@@ -28,11 +34,11 @@ git = "https://github.com/PistonDevelopers/freetype-rs"
 [dependencies.color]
 git = "https://github.com/bjz/color-rs.git"
 
-[dependencies.noise]
-git = "https://github.com/bjz/noise-rs.git"
+#[dependencies.noise]
+#git = "https://github.com/TyOverby/noise-rs.git"
+
+[dependencies.glyph_packer]
+git = "https://github.com/TyOverby/glyph_packer.git"
 
 [dependencies]
-glyph_packer = "*"
-glutin = "*"
 nd_iter = "*"
-image = "~0.2.0"

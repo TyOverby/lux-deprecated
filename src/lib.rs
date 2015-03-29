@@ -7,7 +7,7 @@ extern crate vecmath;
 extern crate typemap;
 extern crate image;
 extern crate freetype;
-extern crate "color" as ext_color;
+extern crate color as ext_color;
 extern crate glyph_packer;
 
 use std::error::{Error, FromError};
