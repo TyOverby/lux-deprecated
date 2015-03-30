@@ -164,8 +164,8 @@ impl Frame {
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
                 color_mult: [f32; 4]) {
-        use glium::index_buffer::*;
-        use glium::index_buffer::PrimitiveType as Prim;
+        use glium::index::*;
+        use glium::index::PrimitiveType as Prim;
         use glium::Surface;
         use glium::LinearBlendingFactor::*;
         use glium::BlendingFunction::Addition;
@@ -225,8 +225,8 @@ impl Frame {
                 points: Vec<super::ColorVertex>,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>) {
-        use glium::index_buffer::*;
-        use glium::index_buffer::PrimitiveType as Prim;
+        use glium::index::*;
+        use glium::index::PrimitiveType as Prim;
         use glium::Surface;
         use glium::LinearBlendingFactor::*;
         use glium::BlendingFunction::Addition;
@@ -333,7 +333,7 @@ impl Window {
                  gfx_integration::TEX_FRAGMENT_SRC,
                  None));
 
-        let (width, height) = display.get_framebuffer_dimensions();
+        let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
         let mut window = Window {
             display: display,
@@ -344,7 +344,7 @@ impl Window {
             event_store: vec![],
             mouse_pos: (0, 0),
             window_pos: (0, 0),
-            window_size: (width as u32, height as u32),
+            window_size: (width, height),
             focused: true,
             mouse_down_count: 0,
             events_since_last_render: false,
@@ -472,7 +472,7 @@ impl Window {
 }
 
 impl SpriteLoader for Window {
-    fn load_sprite(&mut self, path: &::std::old_path::Path) -> Result<Sprite, ImageError> {
+    fn load_sprite(&mut self, path: &Path) -> Result<Sprite, ImageError> {
         let img = try!(image::open(path)).flipv();
         let img = glium::texture::Texture2d::new(&self.display, img);
         Ok(Sprite::new(Rc::new(img)))
@@ -739,7 +739,7 @@ impl Interactive for Window {
     }
 
     fn title(&self) -> &str {
-        self.title.as_slice()
+        &self.title[..]
     }
 
     fn set_title(&mut self, _title: &str) {
@@ -897,8 +897,7 @@ impl TextDraw for Frame {
     }
 
     fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
-        use std::old_io::File;
-        use std::old_path::Path;
+        use std::fs::File;
 
         let window_c = self.display.clone();
 
@@ -906,8 +905,8 @@ impl TextDraw for Frame {
         let res = font_cache.use_font(|img: image::DynamicImage| {
             let img = img.flipv();
 
-            let _ = img.save(&mut File::create(&Path::new("out.png")),
-                             ::image::ImageFormat::PNG).unwrap();
+            let mut out_path = File::create("out.png").unwrap();
+            let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
 
             let img = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(img))

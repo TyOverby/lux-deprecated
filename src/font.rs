@@ -3,8 +3,9 @@
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::rc::Rc;
-use std::old_path::Path;
-use std::old_io::{File, IoResult};
+use std::path::Path;
+use std::io::Result as IoResult;
+use std::fs::File;
 
 use image;
 use freetype;
@@ -89,8 +90,10 @@ impl FontCache {
     }
 
     pub fn load(&mut self, name: &str, path: &Path) -> LuxResult<()> {
-        let bytes = try!(File::open(path).read_to_end());
-        self.load_bytes(name, &bytes[..])
+        use std::io::Read;
+        let mut buf = Vec::new();
+        let bytes = try!(try!(File::open(path)).read_to_end(&mut buf));
+        self.load_bytes(name, &buf[..])
     }
 
     pub fn load_bytes(&mut self, name: &str, bytes: &[u8]) -> LuxResult<()> {

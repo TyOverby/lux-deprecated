@@ -1,19 +1,17 @@
-#![feature(old_io, old_path)]
-
 extern crate lux;
 extern crate glium;
 extern crate image;
 extern crate freetype;
 
 use lux::*;
-use std::old_path::Path;
-use std::old_io::File;
+use std::path::Path;
+use std::fs::File;
 
 fn main() {
     let mut lux = Window::new().unwrap();
 
-    let mut f1 = File::create(&Path::new("out1.png"));
-    let mut f2 = File::create(&Path::new("out2.png"));
+    let mut f1 = File::create("out1.png").unwrap();
+    let mut f2 = File::create("out2.png").unwrap();
     let png = ::image::ImageFormat::PNG;
 
 

@@ -1,5 +1,5 @@
 #![feature(plugin, unboxed_closures, unsafe_destructor, collections, core)]
-#![feature(old_path, old_io)]
+#![feature(slice_patterns)]
 
 #[macro_use] extern crate glium;
 extern crate glutin;
@@ -11,7 +11,7 @@ extern crate color as ext_color;
 extern crate glyph_packer;
 
 use std::error::{Error, FromError};
-use std::old_io::IoError;
+use std::io::Error as IoError;
 
 pub use gfx_integration::{ColorVertex, TexVertex};
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle, ContainedSprite};
@@ -25,8 +25,8 @@ pub use sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet
 pub use figure::Figure;
 pub use font::{FontCache, TextDraw, FontLoad, gen_sheet};
 
-pub use glium::index_buffer::PrimitiveType;
-pub use glium::index_buffer::PrimitiveType::*;
+pub use glium::index::PrimitiveType;
+pub use glium::index::PrimitiveType::*;
 pub use image::ImageError;
 pub use freetype::error::Error as FreetypeError;
 
@@ -42,6 +42,7 @@ mod font;
 pub mod colors;
 
 pub type LuxResult<A> = Result<A, LuxError>;
+
 #[derive(Debug)]
 pub enum LuxError {
     WindowError(String),
@@ -59,7 +60,7 @@ impl Error for LuxError {
             &LuxError::OpenGlError(ref s) => &s[..],
             &LuxError::ShaderError(ref e) => e.description(),
             &LuxError::FontError(_, ref s) => &s[..],
-            &LuxError::IoError(ref ioe) => ioe.description(),
+            &LuxError::IoError(ref ioe) => Error::description(ioe),
             &LuxError::FontNotLoaded(ref s) => &s[..],
         }
     }
