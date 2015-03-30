@@ -109,7 +109,6 @@ impl FontCache {
         let key = (name.to_string(), size);
         if let Some(font_sheet) = self.rendered.get(&key) {
             self.current = Some(font_sheet.clone());
-            //println!("found sheet.");
             return Ok(());
         }
 
@@ -118,7 +117,6 @@ impl FontCache {
             let sheet = Rc::new(try!(sheet));
             self.rendered.insert(key, sheet.clone());
             self.current = Some(sheet);
-            //println!("found facee made sheet.");
             return Ok(());
         }
 
@@ -208,7 +206,6 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
         for y in (0 .. height) {
             for x in (0 .. width) {
                 let va = bf[(y * width + x) as usize];
-                //print!("{}", va);
                 v.push_all(&[va, va, va, va]);
             }
         }

@@ -6,7 +6,7 @@ extern crate freetype;
 use lux::*;
 use std::path::Path;
 use std::fs::File;
-
+/*
 fn main() {
     let mut lux = Window::new().unwrap();
 
@@ -54,18 +54,16 @@ fn main() {
         frame.sprite(&s2.sprite, lux.mouse_x(), lux.mouse_y()).draw();
     }
 }
-
-/*
+*/
 fn main() {
     let mut lux = Window::new().unwrap();
-//    lux.load_font("SourceCodePro", &Path::new("./resources/SourceCodePro-Regular.ttf")).unwrap();
+    //lux.load_font("SourceCodePro", &Path::new("./resources/SourceCodePro-Regular.ttf")).unwrap();
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::WHITE);
+        let mut frame = lux.cleared_frame(colors::RED);
         println!("\n\n next \n\n");
         frame.set_font("SourceCodePro", 10).unwrap();
         frame.draw_text("foo", lux.mouse_x(), lux.mouse_y()).unwrap();
+        frame.draw_text("foo", lux.mouse_x()+0.5, lux.mouse_y() + 200.5).unwrap();
     }
 }
-*/
-

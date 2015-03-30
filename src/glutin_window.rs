@@ -94,7 +94,7 @@ pub struct Window {
     code_to_char: VecMap<char>,
 
     // FONT
-    font_cache: Rc<RefCell<FontCache>>,
+    font_cache: Rc<RefCell<Option<FontCache>>>,
 
     // EXTEND
     typemap: TypeMap,
@@ -115,7 +115,7 @@ pub struct Frame {
     matrix_stack: Vec<Mat4f>,
     color_stack: Vec<(BaseColor, BaseColor)>,
 
-    font_cache: Rc<RefCell<FontCache>>,
+    font_cache: Rc<RefCell<Option<FontCache>>>,
 }
 
 impl Frame {
@@ -123,7 +123,7 @@ impl Frame {
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
            clear_color: Option<[f32; 4]>,
-           font_cache: Rc<RefCell<FontCache>>) -> Frame {
+           font_cache: Rc<RefCell<Option<FontCache>>>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -335,7 +335,7 @@ impl Window {
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
-        let mut window = Window {
+        let window = Window {
             display: display,
             color_program: Rc::new(color_program),
             tex_program: Rc::new(tex_program),
@@ -353,16 +353,15 @@ impl Window {
             virtual_keys_pressed: HashMap::new(),
             code_to_char: VecMap::new(),
             typemap: TypeMap::new(),
-            // Safe because font_cache is set immediately after this.
-            font_cache: unsafe { ::std::mem::uninitialized() }
+            font_cache: Rc::new(RefCell::new(None))
         };
 
         let window_c = window.display.clone();
-        window.font_cache = Rc::new(RefCell::new(try!(FontCache::new(|img: image::DynamicImage| {
+        *window.font_cache.borrow_mut() = Some(try!(FontCache::new(|img: image::DynamicImage| {
             let img = img.flipv();
             let img = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(img))
-        }))));
+        })));
 
         Ok(window)
     }
@@ -864,13 +863,14 @@ impl StackedColored for Frame {
 impl FontLoad for Window {
     fn load_font(&mut self, name: &str, path: &Path) -> LuxResult<()> {
         let mut font_cache = self.font_cache.borrow_mut();
-        font_cache.load(name, path)
+        font_cache.as_mut().unwrap().load(name, path)
     }
 
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
         let window_c = self.display.clone();
 
         let mut font_cache = self.font_cache.borrow_mut();
+        let mut font_cache = font_cache.as_mut().unwrap();
         let res = font_cache.use_font(|img: image::DynamicImage| {
             let img = img.flipv();
             let img = glium::texture::Texture2d::new(&window_c, img);
@@ -883,16 +883,13 @@ impl FontLoad for Window {
 
 
 impl TextDraw for Frame {
-    fn draw_text(&mut self, _text: &str, _x: f32, _y: f32) -> LuxResult<()> {
-        let _c =  *self.current_fill_color();
-        /*
-        unsafe {
-            let s: *mut Frame = transmute(self);
-            let mut font_cache = (*s).font_cache.borrow_mut();
-            let s: &mut Frame = transmute(s);
-            font_cache.draw_onto(s, text, x, y, c)
-        }*/
+    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
+        let c =  *self.current_fill_color();
 
+        // Take the font cache, then put it back when we're done.
+        let mut font_cache = self.font_cache.borrow_mut().take().unwrap();
+        try!(font_cache.draw_onto(self, text, x, y, c));
+        *self.font_cache.borrow_mut() = Some(font_cache);
         Ok(())
     }
 
@@ -902,6 +899,7 @@ impl TextDraw for Frame {
         let window_c = self.display.clone();
 
         let mut font_cache = self.font_cache.borrow_mut();
+        let mut font_cache = font_cache.as_mut().unwrap();
         let res = font_cache.use_font(|img: image::DynamicImage| {
             let img = img.flipv();
 
@@ -917,6 +915,7 @@ impl TextDraw for Frame {
 
     fn get_font(&self) -> (String, u32) {
         let font_cache = self.font_cache.borrow();
+        let font_cache = font_cache.as_ref().unwrap();
         let current = font_cache.current.as_ref().unwrap();
         (current.name.clone(), current.size)
     }
