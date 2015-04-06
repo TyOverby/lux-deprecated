@@ -80,8 +80,6 @@ impl ::std::fmt::Debug for FontCache {
 
 impl ::std::fmt::Debug for RenderedFont {
     fn fmt(&self, form: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        //try!(form.write_str(&self.name[..]));
-        //form.write_str(" at")
         write!(form, "{} at {}pt", &self.name[..], self.size)
     }
 }
