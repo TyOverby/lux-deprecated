@@ -29,7 +29,7 @@ git = "https://github.com/PistonDevelopers/vecmath"
 git = "https://github.com/reem/rust-typemap"
 
 [dependencies.freetype-rs]
-git = "https://github.com/PistonDevelopers/freetype-rs"
+git = "https://github.com/TyOverby/freetype-rs"
 
 [dependencies.color]
 git = "https://github.com/TyOverby/color-rs.git"

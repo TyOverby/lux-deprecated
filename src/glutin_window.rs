@@ -848,7 +848,7 @@ impl FontLoad for Window {
 
         let mut font_cache = self.font_cache.borrow_mut();
         let mut font_cache = font_cache.as_mut().unwrap();
-        let res = font_cache.use_font(|img: image::DynamicImage| {
+        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
             let img = img.flipv();
 
             let mut out_path = File::create("out_foo.png").unwrap();
@@ -881,7 +881,7 @@ impl TextDraw for Frame {
 
         let mut font_cache = self.font_cache.borrow_mut();
         let mut font_cache = font_cache.as_mut().unwrap();
-        let res = font_cache.use_font(|img: image::DynamicImage| {
+        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
             let img = img.flipv();
 
             let mut out_path = File::create("out.png").unwrap();

@@ -3,7 +3,7 @@ name = "lux"
 version = "0.0.1"
 dependencies = [
  "color 0.0.1 (git+https://github.com/TyOverby/color-rs.git)",
- "freetype-rs 0.0.7 (git+https://github.com/PistonDevelopers/freetype-rs)",
+ "freetype-rs 0.0.7 (git+https://github.com/TyOverby/freetype-rs)",
  "glium 0.2.1 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.0.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "glyph_packer 0.0.0 (git+https://github.com/TyOverby/glyph_packer.git)",
@@ -37,7 +37,7 @@ source = "git+https://github.com/TyOverby/color-rs.git#2a4dfd4b198aa0705c4c32537
 [[package]]
 name = "freetype-rs"
 version = "0.0.7"
-source = "git+https://github.com/PistonDevelopers/freetype-rs#d0022ff8e5203446ae1ecf5160e599adb77ba552"
+source = "git+https://github.com/TyOverby/freetype-rs#d4beef1dd18cbe37312c479c464f45fd9aac7b42"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "freetype-sys 0.0.5 (git+https://github.com/PistonDevelopers/freetype-sys)",
