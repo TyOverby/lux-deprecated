@@ -94,7 +94,7 @@ pub struct Window {
     code_to_char: VecMap<char>,
 
     // FONT
-    font_cache: Rc<RefCell<Option<FontCache>>>,
+    pub font_cache: Rc<RefCell<Option<FontCache>>>,
 
     // EXTEND
     typemap: TypeMap,
@@ -115,7 +115,22 @@ pub struct Frame {
     matrix_stack: Vec<Mat4f>,
     color_stack: Vec<(BaseColor, BaseColor)>,
 
-    font_cache: Rc<RefCell<Option<FontCache>>>,
+    pub font_cache: Rc<RefCell<Option<FontCache>>>,
+}
+
+fn draw_params() -> glium::DrawParameters {
+        use glium::LinearBlendingFactor::*;
+        let defaults: glium::DrawParameters = ::std::default::Default::default();
+        glium::DrawParameters {
+            depth_test: glium::DepthTest::Overwrite,
+            blending_function: Some(glium::BlendingFunction::Addition{
+                source: SourceAlpha,
+                destination: OneMinusSourceAlpha
+            }),
+            backface_culling: glium::BackfaceCullingMode::CullingDisabled,
+            multisampling: true,
+            ..defaults
+        }
 }
 
 impl Frame {
@@ -164,11 +179,10 @@ impl Frame {
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
                 color_mult: [f32; 4]) {
+
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
         use glium::Surface;
-        use glium::LinearBlendingFactor::*;
-        use glium::BlendingFunction::Addition;
 
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
         let (frame, tex_program) = (&mut self.f, self.tex_program.deref());
@@ -179,24 +193,7 @@ impl Frame {
             color_mult: color_mult
         };
 
-        let draw_params: glium::DrawParameters = glium::DrawParameters {
-            depth_test: glium::DepthTest::Overwrite,
-            depth_write: false,
-            depth_range: (0.0, 1.0),
-            blending_function: Some(glium::BlendingFunction::Addition{
-                source: SourceAlpha,
-                destination: OneMinusSourceAlpha
-            }),
-            line_width: None,
-            dithering: true,
-            backface_culling: glium::BackfaceCullingMode::CullingDisabled,
-            polygon_mode: glium::PolygonMode::Fill,
-            multisampling: true,
-            viewport: None,
-            scissor: None,
-            draw_primitives: true,
-            point_size: None,
-        };
+        let draw_params = draw_params();
 
         draw_cmd!(Prim::Points, PointsList,
           typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
@@ -228,8 +225,6 @@ impl Frame {
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
         use glium::Surface;
-        use glium::LinearBlendingFactor::*;
-        use glium::BlendingFunction::Addition;
 
         let vertex_buffer = glium::VertexBuffer::new(&self.display, points);
         let (frame, color_program) = (&mut self.f, self.color_program.deref());
@@ -237,24 +232,7 @@ impl Frame {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
 
-        let draw_params: glium::DrawParameters = glium::DrawParameters {
-            depth_test: glium::DepthTest::Overwrite,
-            depth_write: false,
-            depth_range: (0.0, 1.0),
-            blending_function: Some(glium::BlendingFunction::Addition{
-                source: SourceAlpha,
-                destination: OneMinusDestinationAlpha
-            }),
-            line_width: None,
-            dithering: true,
-            backface_culling: glium::BackfaceCullingMode::CullingDisabled,
-            polygon_mode: glium::PolygonMode::Fill,
-            multisampling: true,
-            viewport: None,
-            scissor: None,
-            draw_primitives: true,
-            point_size: None
-        };
+        let draw_params = draw_params();
 
         draw_cmd!(Prim::Points, PointsList,
           typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
@@ -316,8 +294,6 @@ impl Window {
                     LuxError::OpenGlError(m)
             }
         }));
-
-        //display.assert_no_error();
 
         let color_program = try!(
             glium::Program::from_source(
@@ -867,14 +843,19 @@ impl FontLoad for Window {
     }
 
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
+        use std::fs::File;
         let window_c = self.display.clone();
 
         let mut font_cache = self.font_cache.borrow_mut();
         let mut font_cache = font_cache.as_mut().unwrap();
         let res = font_cache.use_font(|img: image::DynamicImage| {
             let img = img.flipv();
-            let img = glium::texture::Texture2d::new(&window_c, img);
-            Sprite::new(Rc::new(img))
+
+            let mut out_path = File::create("out_foo.png").unwrap();
+            let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
+
+            let tex = glium::texture::Texture2d::new(&window_c, img);
+            Sprite::new(Rc::new(tex))
         }, name, size);
         self.display.synchronize();
         res
@@ -906,10 +887,10 @@ impl TextDraw for Frame {
             let mut out_path = File::create("out.png").unwrap();
             let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
 
+
             let img = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(img))
         }, name, size);
-        self.display.synchronize();
         res
     }
 

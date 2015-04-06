@@ -30,8 +30,8 @@ pub struct UniformSpriteSheet {
     indiv_size: (u32, u32),
 }
 
-#[derive(Clone)]
-pub struct NonUniformSpriteSheet<K> {
+#[derive(Clone, Debug)]
+pub struct NonUniformSpriteSheet<K: Hash + Eq> {
     pub sprite: Sprite,
     pub mapping: HashMap<K, Sprite>
 }
@@ -221,8 +221,11 @@ impl <K: Eq + Hash> NonUniformSpriteSheet<K> {
     /// ## Failure
     /// Fails if the key doesn't associate to something yet.
     pub fn get<Q: ?Sized>(&self, key: &Q) -> Sprite
-    where Q: Hash + Eq, K: Borrow<Q> {
-        self.get_opt(key).unwrap()
+    where Q: Hash + Eq + ::std::fmt::Debug, K: Borrow<Q> {
+        match self.get_opt(key) {
+            Some(v) => v,
+            None => panic!("No Key found for {:?}", key)
+        }
     }
 
     /// Same as `get` but returns None instead of failing if the key

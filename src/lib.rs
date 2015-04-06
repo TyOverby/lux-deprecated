@@ -1,5 +1,5 @@
-#![feature(plugin, unboxed_closures, unsafe_destructor, collections, core)]
-#![feature(slice_patterns)]
+#![feature(plugin, unboxed_closures, unsafe_destructor, collections)]
+#![feature(slice_patterns, debug_builders)]
 
 #[macro_use] extern crate glium;
 extern crate glutin;
@@ -9,9 +9,11 @@ extern crate image;
 extern crate freetype;
 extern crate color as ext_color;
 extern crate glyph_packer;
+extern crate num;
 
-use std::error::{Error, FromError};
+use std::error::Error;
 use std::io::Error as IoError;
+use std::convert::From;
 
 pub use gfx_integration::{ColorVertex, TexVertex};
 pub use canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle, ContainedSprite};
@@ -66,8 +68,8 @@ impl Error for LuxError {
     }
 }
 
-impl FromError<FreetypeError> for LuxError {
-    fn from_error(e: FreetypeError) -> LuxError {
+impl From<FreetypeError> for LuxError {
+    fn from(e: FreetypeError) -> LuxError {
         use std::fmt::Write;
         let mut bf = String::new();
         write!(&mut bf, "{}", e).unwrap();
@@ -75,14 +77,14 @@ impl FromError<FreetypeError> for LuxError {
     }
 }
 
-impl FromError<glium::ProgramCreationError> for LuxError {
-    fn from_error(e: glium::ProgramCreationError) -> LuxError {
+impl From<glium::ProgramCreationError> for LuxError {
+    fn from(e: glium::ProgramCreationError) -> LuxError {
         LuxError::ShaderError(e)
     }
 }
 
-impl FromError<IoError> for LuxError {
-    fn from_error(ioe: IoError) -> LuxError {
+impl From<IoError> for LuxError {
+    fn from(ioe: IoError) -> LuxError {
         LuxError::IoError(ioe)
     }
 }

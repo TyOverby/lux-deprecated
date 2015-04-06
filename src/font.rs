@@ -68,6 +68,24 @@ pub trait TextDrawStack: TextDraw {
     }
 }
 
+impl ::std::fmt::Debug for FontCache {
+    fn fmt(&self, form: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        form.debug_struct("FontCache")
+            .field("faces", &self.faces)
+            .field("rendered", &self.rendered)
+            .field("current", &self.current)
+            .finish()
+    }
+}
+
+impl ::std::fmt::Debug for RenderedFont {
+    fn fmt(&self, form: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        //try!(form.write_str(&self.name[..]));
+        //form.write_str(" at")
+        write!(form, "{} at {}pt", &self.name[..], self.size)
+    }
+}
+
 impl <T: TextDraw> TextDrawStack for T {}
 
 impl FontCache {
@@ -82,7 +100,8 @@ impl FontCache {
             current: None
         };
 
-        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
+//        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
+        let bytes = include_bytes!("../resources/Pacifico.ttf");
         fc.load_bytes("SourceCodePro", bytes);
         fc.use_font(loader, "SourceCodePro", 16);
 
@@ -105,10 +124,13 @@ impl FontCache {
     pub fn use_font<S>(&mut self, loader: S, name: &str, size: u32) -> LuxResult<()>
     where S: FnOnce(image::DynamicImage) -> Sprite {
         use std::fmt::Write;
+        println!("before 'use_font' of {}: {:?}", name, self);
 
         let key = (name.to_string(), size);
         if let Some(font_sheet) = self.rendered.get(&key) {
             self.current = Some(font_sheet.clone());
+
+            println!("after found : {:?}", self);
             return Ok(());
         }
 
@@ -117,13 +139,15 @@ impl FontCache {
             let sheet = Rc::new(try!(sheet));
             self.rendered.insert(key, sheet.clone());
             self.current = Some(sheet);
-            return Ok(());
+        } else {
+            let mut bf = String::new();
+            write!(&mut bf, "Font not loaded: {}", name).unwrap();
+
+            return Err(LuxError::FontNotLoaded(bf))
         }
 
-        let mut bf = String::new();
-        write!(&mut bf, "Font not loaded: {}", name).unwrap();
-
-        Err(LuxError::FontNotLoaded(bf))
+        println!("after loaded of {}: {:?}", name, self);
+        return Ok(());
     }
 
     pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str,
@@ -183,6 +207,8 @@ impl RenderedFont {
 
 pub fn gen_sheet<S>(loader: S, face: &mut freetype::Face, size: u32)
 -> LuxResult<(FontSheet, HashMap<char, CharOffset>)> where S: FnOnce(image::DynamicImage) -> Sprite {
+
+    println!("trying to generate a sheet at size {}", size);
     try!(face.set_pixel_sizes(0, size));
     let mut v = vec![];
     for i in 1u8 .. 255 {
@@ -194,9 +220,12 @@ pub fn gen_sheet<S>(loader: S, face: &mut freetype::Face, size: u32)
     let mut sprite = sprite.as_nonuniform_sprite_sheet();
     let mut offsets = HashMap::new();
     for (k, (r, offset)) in map {
+        println!("wheee");
         sprite.associate(k, (r.x, r.y), (r.w, r.h));
         offsets.insert(k, offset);
     }
+
+    println!("finished generating sheet");
     Ok((sprite, offsets))
 }
 
@@ -207,6 +236,7 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
             for x in (0 .. width) {
                 let va = bf[(y * width + x) as usize];
                 v.push_all(&[va, va, va, va]);
+                println!("{}", va);
             }
         }
         image::DynamicImage::ImageRgba8(
@@ -225,6 +255,7 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
         advance: advance,
         bitmap_offset: offset
     };
+
     Ok((buf_to_vec(bit.buffer(), bit.width() as u32, bit.rows() as u32), char_offsets))
 }
 
@@ -247,10 +278,12 @@ where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, CharOffset)>)>,
     for (a, comp) in images {
         match comp {
             Ok((img, adv)) => {
+                //println!("Success for {:?}", a);
                 let rect = packer.pack_resize(&img, |(x, y)| (x * 2, y * 2));
                 mapping.insert(a, (rect, adv));
             }
             Err(e) => {
+                println!("Failed for {:?}", a);
             }
         }
     }

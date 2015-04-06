@@ -6,6 +6,7 @@ extern crate freetype;
 use lux::*;
 use std::path::Path;
 use std::fs::File;
+
 /*
 fn main() {
     let mut lux = Window::new().unwrap();
@@ -47,23 +48,39 @@ fn main() {
 
     println!("{:?}, {:?}", s1.sprite, s2.sprite);
 
-
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::BLACK);
         frame.sprite(&s1.sprite, 0.0, 0.0).draw();
         frame.sprite(&s2.sprite, lux.mouse_x(), lux.mouse_y()).draw();
     }
-}
-*/
+}*/
+
+
+
 fn main() {
+    use std::ops::Deref;
     let mut lux = Window::new().unwrap();
-    //lux.load_font("SourceCodePro", &Path::new("./resources/SourceCodePro-Regular.ttf")).unwrap();
+    lux.load_font("cbt", &Path::new("./resources/cbt.ttf")).unwrap();
+    lux.preload_font("cbt", 10).unwrap();
+
+    let mut sprite = None;
 
     while lux.is_open() {
         let mut frame = lux.cleared_frame(colors::RED);
-        println!("\n\n next \n\n");
-        frame.set_font("SourceCodePro", 10).unwrap();
+        if sprite.is_none() {
+            let b = frame.font_cache.borrow();
+            //let _: () = b;
+            let cur = b.deref().as_ref().unwrap(); //.unwrap().current.unwrap().font_sheet.sprite.clone();
+            let sp = cur.current.as_ref().unwrap().font_sheet.sprite.clone();
+            sprite = Some(sp);
+        }
+
+        frame.sprite(sprite.as_ref().unwrap(), 0.0, 0.0).draw();
+
+//        println!("\n\n next \n\n");
         frame.draw_text("foo", lux.mouse_x(), lux.mouse_y()).unwrap();
-        frame.draw_text("foo", lux.mouse_x()+0.5, lux.mouse_y() + 200.5).unwrap();
+//       frame.set_font("cbt", 30).unwrap();
+        frame.draw_text("foo", lux.mouse_x() + 0.5, lux.mouse_y() + 200.5).unwrap();
     }
+
 }

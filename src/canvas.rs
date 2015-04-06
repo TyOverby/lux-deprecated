@@ -265,7 +265,7 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
     /// Fills in the ellipse with a solid color.
     pub fn fill(&mut self) {
         use std::f32::consts::PI;
-        use std::num::Float;
+        use num::traits::Float;
 
         let color = *self.current_fill_color();
         let spokes = self.spokes;

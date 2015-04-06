@@ -46,7 +46,7 @@ pub trait Transform {
 
     /// Applies a rotation transformation to the matrix.
     fn rotate(&mut self, theta: f32) -> &mut Self {
-        use std::num::Float;
+        use num::traits::Float;
         let mut prod = mat4_id();
         let (c, s) = (theta.cos(), theta.sin());
         prod[0][0] = c;
