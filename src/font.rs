@@ -227,14 +227,12 @@ pub fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
 
 pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, CharOffset)> {
     fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
-        let mut v = vec![];
-        for y in (0 .. height) {
-            for x in (0 .. width) {
-                let va = bf[(y * width + x) as usize];
-                v.push_all(&[va, va, va, va]);
-            }
+        let mut v = Vec::with_capacity((width * height * 2) as usize);
+        for &p in bf {
+            v.push(p);
+            v.push(p);
         }
-        image::DynamicImage::ImageRgba8(
+        image::DynamicImage::ImageLumaA8(
             image::ImageBuffer::from_vec(width, height, v).unwrap())
     }
 
