@@ -1,5 +1,5 @@
 use vecmath::{mat4_id, col_mat4_mul};
-use super::Color;
+use super::prelude::Color;
 
 /// A trait for objects that can be "transformed".  Transformations
 /// include scaling, translation, shearing, rotating, and general

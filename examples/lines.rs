@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::*;
+use lux::prelude::*;
 
 fn main() {
     let mut window = Window::new().unwrap();

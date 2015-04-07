@@ -1,6 +1,6 @@
 extern crate lux;
 extern crate num;
-use lux::*;
+use lux::prelude::*;
 
 use num::Float;
 

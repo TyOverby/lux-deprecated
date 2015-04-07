@@ -2,7 +2,7 @@ extern crate lux;
 extern crate noise;
 extern crate nd_iter;
 
-use lux::*;
+use lux::prelude::*;
 use nd_iter::iter_2d;
 
 const DIV: f32 = 20.0;

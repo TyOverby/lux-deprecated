@@ -11,7 +11,7 @@ use image;
 use freetype;
 use glyph_packer;
 
-use super::{
+use super::prelude::{
     LuxError,
     LuxCanvas,
     Sprite,

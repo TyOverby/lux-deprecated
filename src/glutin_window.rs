@@ -10,10 +10,12 @@ use glium;
 use image;
 
 use super::interactive::keycodes::VirtualKeyCode;
-use super::{
+use super::gfx_integration;
+use super::prelude::{
     FontCache,
+    PrimitiveType,
+    TexVertex,
     TextDraw,
-    gfx_integration,
     Sprite,
     ImageError,
     SpriteLoader,
@@ -33,6 +35,7 @@ use super::{
     Transform,
     StackedTransform
 };
+
 
 use glutin::WindowBuilder;
 
@@ -55,14 +58,14 @@ type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
 
 struct CachedColorDraw {
-    typ: super::PrimitiveType,
-    points: Vec<super::ColorVertex>,
+    typ: PrimitiveType,
+    points: Vec<ColorVertex>,
     idxs: Vec<u32>,
 }
 
 struct CachedTexDraw {
-    typ: super::PrimitiveType,
-    points: Vec<super::TexVertex>,
+    typ: PrimitiveType,
+    points: Vec<TexVertex>,
     texture: Rc<glium::texture::Texture2d>,
     idxs: Vec<u32>,
     color_mult: [f32; 4],
@@ -173,8 +176,8 @@ impl Frame {
     }
 
     fn draw_textured_now(&mut self,
-                typ: super::PrimitiveType,
-                points: Vec<super::TexVertex>,
+                typ: PrimitiveType,
+                points: Vec<TexVertex>,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
@@ -218,8 +221,8 @@ impl Frame {
     }
 
     fn draw_colored_now(&mut self,
-                typ: super::PrimitiveType,
-                points: Vec<super::ColorVertex>,
+                typ: PrimitiveType,
+                points: Vec<ColorVertex>,
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index::*;
@@ -344,13 +347,17 @@ impl Window {
 
     pub fn process_events(&mut self) {
         use glutin::Event as glevent;
+        use super::interactive::*;
+        use super::interactive::Event::*;
+        use super::interactive::MouseButton::*;
+
         self.events_since_last_render = true;
-        fn t_mouse(button: glutin::MouseButton) -> super::MouseButton {
+        fn t_mouse(button: glutin::MouseButton) -> MouseButton {
             match button {
-                glutin::MouseButton::Left=> super::Left,
-                glutin::MouseButton::Right=> super::Right,
-                glutin::MouseButton::Middle=> super::Middle,
-                glutin::MouseButton::Other(a) => super::OtherMouseButton(a)
+                glutin::MouseButton::Left=> Left,
+                glutin::MouseButton::Right=> Right,
+                glutin::MouseButton::Middle=> Middle,
+                glutin::MouseButton::Other(a) => OtherMouseButton(a)
             }
         }
 
@@ -359,14 +366,14 @@ impl Window {
             match event {
             glevent::MouseMoved((x, y)) => {
                 self.mouse_pos = (x as i32, y as i32);
-                self.event_store.push(super::MouseMoved((x as i32, y as i32)))
+                self.event_store.push(MouseMoved((x as i32, y as i32)))
             }
             glevent::MouseInput(glutin::ElementState::Pressed, button) => {
-                self.event_store.push(super::MouseDown(t_mouse(button)));
+                self.event_store.push(MouseDown(t_mouse(button)));
                 self.mouse_down_count += 1;
             }
             glevent::MouseInput(glutin::ElementState::Released, button) => {
-                self.event_store.push(super::MouseUp(t_mouse(button)));
+                self.event_store.push(MouseUp(t_mouse(button)));
 
                 // Don't underflow!
                 if self.mouse_down_count != 0 {
@@ -375,24 +382,24 @@ impl Window {
             }
             glevent::Resized(w, h) => {
                 self.window_size = (w as u32, h as u32);
-                self.event_store.push(super::WindowResized(self.window_size));
+                self.event_store.push(WindowResized(self.window_size));
             }
             glevent::Moved(x, y) => {
                 self.window_pos = (x as i32, y as i32);
-                self.event_store.push(super::WindowMoved(self.window_pos));
+                self.event_store.push(WindowMoved(self.window_pos));
             }
             glevent::MouseWheel(i) => {
-                self.event_store.push(super::MouseWheel(i as i32));
+                self.event_store.push(MouseWheel(i as i32));
             }
             glevent::ReceivedCharacter(c) => {
                 last_char = Some(c);
             }
             glevent::KeyboardInput(glutin::ElementState::Pressed, code, virt)  => {
-                let c = virt.and_then(super::keycode_to_char)
+                let c = virt.and_then(keycode_to_char)
                             .or(last_char.take())
                             .or_else(|| self.code_to_char.get(&(code as usize))
                                                          .map(|a| *a));
-                self.event_store.push( super::KeyPressed(code, c, virt));
+                self.event_store.push(KeyPressed(code, c, virt));
 
                 if c.is_some() && !self.code_to_char.contains_key(&(code as usize)) {
                     self.code_to_char.insert(code as usize, c.unwrap());
@@ -407,10 +414,10 @@ impl Window {
                 }
             }
             glevent::KeyboardInput(glutin::ElementState::Released, code, virt) => {
-                let c = virt.and_then(super::keycode_to_char)
+                let c = virt.and_then(keycode_to_char)
                             .or_else(|| self.code_to_char.get(&(code as usize))
                                                          .map(|a| *a));
-                self.event_store.push(super::KeyReleased(code, c, virt));
+                self.event_store.push(KeyReleased(code, c, virt));
                 self.codes_pressed.insert(code, false);
                 if let Some(chr) = c {
                     self.chars_pressed.insert(chr, false);
@@ -489,8 +496,8 @@ impl LuxCanvas for Frame {
 
 impl PrimitiveCanvas for Frame {
     fn draw_shape_no_batch(&mut self,
-                           n_typ: super::PrimitiveType,
-                           n_points: Vec<super::ColorVertex>,
+                           n_typ: PrimitiveType,
+                           n_points: Vec<ColorVertex>,
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
@@ -503,8 +510,8 @@ impl PrimitiveCanvas for Frame {
     }
 
     fn draw_tex_no_batch(&mut self,
-                           n_typ: super::PrimitiveType,
-                           n_points: Vec<super::TexVertex>,
+                           n_typ: PrimitiveType,
+                           n_points: Vec<TexVertex>,
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>,
                            texture: &glium::texture::Texture2d,
@@ -532,13 +539,13 @@ impl PrimitiveCanvas for Frame {
     }
 
     fn draw_tex(&mut self,
-                  n_typ: super::PrimitiveType,
-                  n_points: &[super::TexVertex],
+                  n_typ: PrimitiveType,
+                  n_points: &[TexVertex],
                   idxs: Option<&[u32]>,
                   transform: Option<[[f32; 4]; 4]>,
                   texture: Rc<glium::texture::Texture2d>,
                   color_mult: Option<[f32; 4]>) {
-        use super::PrimitiveType::{Points, LinesList, TrianglesList};
+        use super::prelude::PrimitiveType::{Points, LinesList, TrianglesList};
         use std::mem::transmute;
 
         if self.color_draw_cache.is_some() {
@@ -627,11 +634,11 @@ impl PrimitiveCanvas for Frame {
     }
 
     fn draw_shape(&mut self,
-                  n_typ: super::PrimitiveType,
-                  n_points: &[super::ColorVertex],
+                  n_typ: PrimitiveType,
+                  n_points: &[ColorVertex],
                   idxs: Option<&[u32]>,
                   transform: Option<[[f32; 4]; 4]>) {
-        use super::PrimitiveType::{Points, LinesList, TrianglesList};
+        use super::prelude::PrimitiveType::{Points, LinesList, TrianglesList};
 
         if self.tex_draw_cache.is_some() {
             self.flush_draw();

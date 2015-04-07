@@ -1,9 +1,8 @@
-use super::{
+use ::prelude::{
+    LuxCanvas,
+    PrimitiveType,
     ColorVertex,
     TexVertex,
-    LuxCanvas,
-    PrimitiveCanvas,
-    PrimitiveType,
     Sprite
 };
 

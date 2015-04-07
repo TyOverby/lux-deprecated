@@ -1,5 +1,5 @@
 extern crate lux;
-use lux::*;
+use lux::prelude::*;
 use lux::colors::{BLUE, RED, GRAY};
 
 fn main() {

@@ -9,7 +9,9 @@ use std::borrow::Borrow;
 use std::cmp::Eq;
 use std::hash::Hash;
 
-use super::{ImageError, TexVertex, Figure, LuxCanvas};
+use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList};
+
+use image::ImageError;
 
 #[derive(Clone, Debug)]
 pub struct Sprite {
@@ -152,7 +154,7 @@ impl Figure for Sprite {
 
         let idxs = [0u32, 1, 2, 0, 2, 3];
 
-        canvas.draw_tex(super::TrianglesList,
+        canvas.draw_tex(TrianglesList,
                         &tex_vs[..],
                         Some(&idxs[..]),
                         None,

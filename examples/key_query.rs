@@ -1,6 +1,6 @@
 extern crate lux;
-use lux::*;
-use lux::keycodes::Escape;
+use lux::prelude::*;
+use lux::interactive::keycodes::Escape;
 
 fn main() {
     let mut window = Window::new().unwrap();

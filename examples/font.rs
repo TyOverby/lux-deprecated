@@ -3,7 +3,7 @@ extern crate glium;
 extern crate image;
 extern crate freetype;
 
-use lux::*;
+use lux::prelude::*;
 use std::path::Path;
 
 fn main() {
