@@ -16,6 +16,6 @@ fn main() {
             frame.rect(x - 50.0, y - 50.0, 100.0, 100.0).fill();
         });
 
-        frame.draw_text("Click the mouse to change the color!", 0.5, 50.5);
+        frame.draw_text("Click the mouse to change the color!", 0.5, 50.5).unwrap();
     }
 }
