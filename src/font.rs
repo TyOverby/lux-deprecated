@@ -100,7 +100,7 @@ impl FontCache {
 
         let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
         fc.load_bytes("SourceCodePro", bytes);
-        fc.use_font(&mut loader, "SourceCodePro", 16);
+        fc.use_font(&mut loader, "SourceCodePro", 20);
 
         Ok(fc)
     }
@@ -141,9 +141,8 @@ impl FontCache {
             self.rendered.insert(key, sheet.clone());
             self.current = Some(sheet);
         } else {
-            let mut bf = String::new();
-            write!(&mut bf, "Font not loaded: {}", name).unwrap();
-            return Err(LuxError::FontNotLoaded(bf))
+            let err = format!("Font not loaded: {}", name);
+            return Err(LuxError::FontNotLoaded(err))
         }
 
         return Ok(());

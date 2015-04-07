@@ -24,8 +24,8 @@ pub mod sprite;
 pub mod font;
 pub mod error;
 pub mod colors;
-
 pub mod extend;
+pub mod loader;
 
 pub mod prelude {
     pub use ::gfx_integration::{ColorVertex, TexVertex};
