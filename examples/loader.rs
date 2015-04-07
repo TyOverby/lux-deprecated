@@ -8,7 +8,7 @@ use lux::loader::*;
 use std::path::Path;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let lux = Window::new().unwrap();
 
     let mut loader = GraphicalLoader::new(lux, ());
 
@@ -22,7 +22,7 @@ fn main() {
 
     for font in vec!["Pacifico", "cbt", "SourceCodePro"] {
         for size in 1 ..6 {
-            let mp = format!("Rendering font {} at size {}", font, size);
+            let mp = format!("Rendering font {} at size {}", font, size * 10);
             loader.load(mp, move |window, _| {
                 window.preload_font(font, size * 10).unwrap();
             });

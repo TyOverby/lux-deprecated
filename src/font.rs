@@ -261,7 +261,7 @@ where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, CharOffset)>)>,
 
     let mut size = 256u32;
     let mut packer: glyph_packer::SkylinePacker<_> = {
-        let bf = image::DynamicImage::new_rgba8(size, size);
+        let bf = image::DynamicImage::new_luma_a8(size, size);
         Packer::new(bf)
     };
 

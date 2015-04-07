@@ -60,6 +60,8 @@ impl <S> GraphicalLoader<S> {
             frame.rect(0.0, 0.0,
                        aw * (numer as f32 / max as f32), ah).fill();
             frame.fill_color(rgb(0.0, 0.0, 0.0));
+
+            frame.draw_text("LOADING", 0.5, text_height - 30.0).unwrap();
             frame.draw_text(&text[..], 0.5, text_height).unwrap();
         });
     }
