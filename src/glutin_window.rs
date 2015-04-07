@@ -571,8 +571,8 @@ impl PrimitiveCanvas for Frame {
                 self.flush_draw();
                 self.tex_draw_cache = Some(CachedTexDraw {
                     typ: n_typ,
-                    points: vec![],
-                    idxs: vec![],
+                    points: Vec::with_capacity(1024),
+                    idxs: Vec::with_capacity(1024),
                     texture: texture,
                     color_mult: color_mult,
                 });
@@ -580,8 +580,8 @@ impl PrimitiveCanvas for Frame {
         } else {
             self.tex_draw_cache = Some(CachedTexDraw {
                 typ: n_typ,
-                points: vec![],
-                idxs: vec![],
+                points: Vec::with_capacity(1024),
+                idxs: Vec::with_capacity(1024),
                 texture: texture,
                 color_mult: color_mult
             });
@@ -649,15 +649,15 @@ impl PrimitiveCanvas for Frame {
                 self.flush_draw();
                 self.color_draw_cache = Some(CachedColorDraw {
                     typ: n_typ,
-                    points: vec![],
-                    idxs: vec![]
+                    points: Vec::with_capacity(1024),
+                    idxs: Vec::with_capacity(1024),
                 });
             }
         } else {
             self.color_draw_cache = Some(CachedColorDraw {
                 typ: n_typ,
-                points: vec![],
-                idxs: vec![]
+                points: Vec::with_capacity(1024),
+                idxs: Vec::with_capacity(1024),
 
             });
         }

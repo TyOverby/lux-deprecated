@@ -19,6 +19,9 @@ fn main() {
         };
 
         let mut frame = window.cleared_frame(color);
-        frame.rect(0.0, 0.0, 20.0, 20.0).fill();
+        frame.set_font("SourceCodePro", 20).unwrap();
+        frame.draw_text(
+            "Press [space] [esc] or [a] to change the background color",
+            0.5, 50.5).unwrap();
     }
 }

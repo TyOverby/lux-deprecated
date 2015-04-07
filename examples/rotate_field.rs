@@ -1,7 +1,8 @@
 extern crate lux;
+extern crate num;
 use lux::*;
 
-use std::num::Float;
+use num::Float;
 
 fn main() {
     let mut window = Window::new().unwrap();
@@ -13,12 +14,12 @@ fn main() {
         let size = 10.0;
         let dist = (2.0*size*size).sqrt();
 
-        for x in 0u32..100 {
-            for y in 0u32..100 {
+        for x in 0 .. 100 {
+            for y in 0 .. 100 {
                 let x = x as f32 * dist;
                 let y = y as f32 * dist;
                 frame.rect(x, y, size, size)
-                   .rotate_around((5.0, 5.0), theta)
+                   .rotate_around((size / 2.0, size / 2.0), theta)
                    .fill_color(colors::RED)
                    .fill();
             }

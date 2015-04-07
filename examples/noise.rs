@@ -15,7 +15,7 @@ fn main() {
 
     while window.is_open() {
         z += 1.0;
-        let mut frame = window.cleared_frame(colors::RED);
+        let mut frame = window.cleared_frame(colors::WHITE);
 
         frame.draw_pixels(
             iter_2d(0u32..256, 0u32..256).map(|(x, y)| {
@@ -23,7 +23,7 @@ fn main() {
                 let value = noise::perlin3(&seed, &[x / DIV, y / DIV, z / DIV]);
                 let value = (value + 1.0) / 2.0;
 
-                ((x, y), [value, value, value])
+                ((x, y), rgb(value, value, value))
             })
         );
     }

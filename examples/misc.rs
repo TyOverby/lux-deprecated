@@ -16,20 +16,19 @@ fn main() {
         frame.with_rotation(delta, |frame|{
             for (x, y) in iter_2d(0u32..100, 0u32..100) {
                 let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
-                    let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
-                    frame.rect(x, y, 30.0, 30.0)
-                       .fill_color(colors::BLUE)
-                       .fill();
+                frame.rect(x, y, 30.0, 30.0)
+                   .fill_color(colors::BLUE)
+                   .fill();
             }
 
             let vtxs = [
-            ColorVertex {pos: [0.0, 0.0], color: rgb(1.0, 0.0, 0.0)},
-            ColorVertex {pos: [0.0, 200.0], color: rgb(1.0, 0.0, 1.0)},
-            ColorVertex {pos: [200.0, 0.0], color: rgb(0.0, 1.0, 0.0)},
+                ColorVertex {pos: [0.0, 0.0], color: rgb(1.0, 0.0, 0.0)},
+                ColorVertex {pos: [0.0, 200.0], color: rgb(1.0, 0.0, 1.0)},
+                ColorVertex {pos: [200.0, 0.0], color: rgb(0.0, 1.0, 0.0)},
             ];
 
             let idxs = [0, 1, 2];
-            frame.draw_shape(TrianglesList, &vtxs[], Some(&idxs[]), None);
+            frame.draw_shape(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
         });
 
         frame.rect(101.0, 100.0, 50.0, 50.0).fill_color(colors::GREEN).fill();

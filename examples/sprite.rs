@@ -1,4 +1,3 @@
-#![allow(unstable)]
 extern crate lux;
 extern crate glium;
 extern crate image;
@@ -20,7 +19,6 @@ fn main() {
 
         frame.sprite(&sprite1, 0.0, 0.0).draw();
         frame.sprite(&sprite2, x, y).draw();
-
 
         // Set a special size
         frame.sprite(&sprite1, x - 32.0, y-32.0).size(32.0, 32.0).draw();
