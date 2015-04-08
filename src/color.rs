@@ -54,17 +54,13 @@ pub fn hsva<T: NormalizeTo1>(h: T, s: T, v: T, a: T) -> [f32; 4] {
 
 impl <T: NormalizeTo1> Color for [T; 4] {
     fn to_rgba(self) -> [f32; 4] {
-        match self {
-            [ref r, ref g, ref b, ref a] => [r.norm(), g.norm(), b.norm(), a.norm()]
-        }
+        [self[0].norm(), self[1].norm(), self[2].norm(), self[3].norm()]
     }
 }
 
 impl <T: NormalizeTo1> Color for [T; 3] {
     fn to_rgba(self) -> [f32; 4] {
-        match self {
-            [ref r, ref g, ref b] => [r.norm(), g.norm(), b.norm(), 1.0]
-        }
+        [self[0].norm(), self[1].norm(), self[2].norm(), 1.0]
     }
 }
 

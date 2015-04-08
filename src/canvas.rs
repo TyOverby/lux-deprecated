@@ -336,7 +336,12 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
     pub fn draw(&mut self) {
         let pos = self.fields.pos;
         let size = self.fields.size;
-        let [top_left, top_right, bottom_left, bottom_right] = self.sprite.bounds();
+        let bounds = self.sprite.bounds();
+
+        let top_left = bounds[0];
+        let top_right = bounds[1];
+        let bottom_left = bounds[2];
+        let bottom_right = bounds[3];
 
         let tex_vs = vec![
             TexVertex {pos: [1.0, 0.0], tex_coords: top_right},

@@ -68,22 +68,6 @@ pub trait TextDrawStack: TextDraw {
     }
 }
 
-impl ::std::fmt::Debug for FontCache {
-    fn fmt(&self, form: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        form.debug_struct("FontCache")
-            .field("faces", &self.faces)
-            .field("rendered", &self.rendered)
-            .field("current", &self.current)
-            .finish()
-    }
-}
-
-impl ::std::fmt::Debug for RenderedFont {
-    fn fmt(&self, form: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write!(form, "{} at {}pt", &self.name[..], self.size)
-    }
-}
-
 impl <T: TextDraw> TextDrawStack for T {}
 
 impl FontCache {

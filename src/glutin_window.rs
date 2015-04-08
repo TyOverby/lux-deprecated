@@ -145,9 +145,8 @@ impl Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
-        if let Some(clear_color) = clear_color {
-            let [r,g,b,a] = clear_color;
-            frm.clear_color(r,g,b,a);
+        if let Some(c) = clear_color {
+            frm.clear_color(c[0],c[1],c[2],c[3]);
         }
 
         let size = frm.get_dimensions();
@@ -260,7 +259,6 @@ impl Frame {
     }
 }
 
-#[unsafe_destructor]
 impl Drop for Frame {
     fn drop(&mut self) {
         self.flush_draw();
@@ -491,8 +489,8 @@ impl LuxCanvas for Frame {
 
     fn clear<C: Color>(&mut self, color: C) {
         use glium::Surface;
-        let [r,g,b,a] = color.to_rgba();
-        self.f.clear_color(r,g,b,a);
+        let c = color.to_rgba();
+        self.f.clear_color(c[0], c[1], c[2], c[3]);
     }
 
     fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, line_size: f32) {

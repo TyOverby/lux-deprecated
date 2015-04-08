@@ -118,13 +118,18 @@ impl Sprite {
     }
 
     pub fn zeroed_vertices(&self) -> (Vec<TexVertex>, Vec<u32>) {
-        let [top_left, top_right, bottom_left, bottom_right] = self.bounds();
-        (
-            vec![
-                    TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
-                    TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
-                    TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
-                    TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
+        let bounds = self.bounds();
+
+        let top_left = bounds[0];
+        let top_right = bounds[1];
+        let bottom_left = bounds[2];
+        let bottom_right = bounds[3];
+
+        (vec![
+                TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
+                TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
+                TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
+                TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
              ],
              vec![0u32, 1, 2, 0, 2, 3]
         )
@@ -143,7 +148,12 @@ impl Sprite {
 
 impl Figure for Sprite {
     fn draw<C: LuxCanvas>(&self, canvas: &mut C) {
-        let [top_left, top_right, bottom_left, bottom_right] = self.bounds();
+        let bounds = self.bounds();
+
+        let top_left = bounds[0];
+        let top_right = bounds[1];
+        let bottom_left = bounds[2];
+        let bottom_right = bounds[3];
 
         let tex_vs = vec![
             TexVertex {pos: [1.0, 0.0], tex_coords: top_right},

@@ -1,5 +1,4 @@
-#![feature(plugin, unboxed_closures, unsafe_destructor, collections)]
-#![feature(slice_patterns, debug_builders)]
+#![feature(collections)]
 
 #[macro_use]
 extern crate glium;
