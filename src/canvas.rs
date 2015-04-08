@@ -114,6 +114,8 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
         }
     }
 
+    fn clear<C: Color>(&mut self, color: C);
+
     /// Returns a rectangle with the given dimensions and position.
     fn rect<'a>(&'a mut self, x: f32, y: f32, w: f32, h: f32) -> Rectangle<'a, Self> {
         Rectangle::new(self, (x, y), (w, h))

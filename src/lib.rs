@@ -12,6 +12,7 @@ extern crate freetype;
 extern crate color as ext_color;
 extern crate glyph_packer;
 extern crate num;
+extern crate time;
 
 pub mod interactive;
 pub mod figure;
@@ -26,6 +27,7 @@ pub mod error;
 pub mod colors;
 pub mod extend;
 pub mod loader;
+pub mod game;
 
 pub mod prelude {
     pub use ::gfx_integration::{ColorVertex, TexVertex};
@@ -35,7 +37,7 @@ pub mod prelude {
     pub use ::interactive::Event::*;
     pub use ::interactive::MouseButton::*;
     pub use ::raw::{Colored, StackedColored, Transform, StackedTransform};
-    pub use ::glutin_window::Window;
+    pub use ::glutin_window::{Window, Frame};
     pub use ::color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
     pub use ::sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
     pub use ::figure::Figure;

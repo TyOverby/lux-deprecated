@@ -1,9 +1,13 @@
-use std::vec::IntoIter;
+use std::collections::VecDeque;
 use self::keycodes::*;
 
 pub mod keycodes {
     pub use glutin::VirtualKeyCode;
     pub use glutin::VirtualKeyCode::{Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Key0, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Escape, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, Snapshot, Scroll, Pause, Insert, Home, Delete, End, PageDown, PageUp, Left, Up, Right, Down, Back, Return, Space, Numlock, Numpad0, Numpad1, Numpad2, Numpad3, Numpad4, Numpad5, Numpad6, Numpad7, Numpad8, Numpad9, AbntC1, AbntC2, Add, Apostrophe, Apps, At, Ax, Backslash, Calculator, Capital, Colon, Comma, Convert, Decimal, Divide, Equals, Grave, Kana, Kanji, LAlt, LBracket, LControl, LMenu, LShift, LWin, Mail, MediaSelect, MediaStop, Minus, Multiply, Mute, MyComputer, NextTrack, NoConvert, NumpadComma, NumpadEnter, NumpadEquals, OEM102, Period, Playpause, Power, Prevtrack, RAlt, RBracket, RControl, RMenu, RShift, RWin, Semicolon, Slash, Sleep, Stop, Subtract, Sysrq, Tab, Underline, Unlabeled, VolumeDown, VolumeUp, Wake, Webback, WebFavorites, WebForward, WebHome, WebRefresh, WebSearch, WebStop, Yen };
+}
+
+pub struct EventIterator {
+    pub backing: VecDeque<Event>
 }
 
 /// An even coming from an Interactive object.
@@ -70,6 +74,18 @@ pub trait Interactive {
     /// Returns the size of the window.
     fn get_size(&self) -> (u32, u32);
 
+    fn width(&self) -> f32 {
+        match self.get_size() {
+            (w, _) => w as f32
+        }
+    }
+
+    fn height(&self) -> f32 {
+        match self.get_size() {
+            (_, h) => h as f32
+        }
+    }
+
     // Events
 
     /// Returns true if the operating system has given this object focus.
@@ -107,7 +123,36 @@ pub trait Interactive {
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool;
 
     /// Consumes all unseen events and returns them in an iterator.
-    fn events(&mut self) -> IntoIter<Event>;
+    fn events(&mut self) -> EventIterator;
+}
+
+impl EventIterator {
+    pub fn from_deque(v: VecDeque<Event>) -> EventIterator {
+        EventIterator {
+            backing: v
+        }
+    }
+
+    pub fn into_deque(self) -> VecDeque<Event> {
+        self.backing
+    }
+}
+
+impl Iterator for EventIterator {
+    type Item = Event;
+    fn next(&mut self) -> Option<Event> {
+        self.backing.pop_front()
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.backing.iter().size_hint()
+    }
+}
+
+impl DoubleEndedIterator for EventIterator {
+    fn next_back(&mut self)  -> Option<Event> {
+        self.backing.pop_back()
+    }
 }
 
 /// A conversion trait for representing the different ways that a key

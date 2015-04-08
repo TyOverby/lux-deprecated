@@ -1,6 +1,4 @@
 use std::collections::VecDeque;
-
-use super::glutin_window::Frame;
 use super::prelude::*;
 
 trait Loadable<S> {

@@ -1,5 +1,4 @@
-use std::vec::IntoIter;
-use std::collections::{HashMap, VecMap};
+use std::collections::{HashMap, VecMap, VecDeque};
 use std::rc::Rc;
 use std::ops::Deref;
 use std::cell::RefCell;
@@ -12,6 +11,7 @@ use image;
 use super::interactive::keycodes::VirtualKeyCode;
 use super::gfx_integration;
 use super::prelude::{
+    EventIterator,
     FontCache,
     PrimitiveType,
     TexVertex,
@@ -82,7 +82,7 @@ pub struct Window {
     title: String,
 
     // EVENT
-    event_store: Vec<Event>,
+    event_store: VecDeque<Event>,
     mouse_pos: (i32, i32),
     window_pos: (i32, i32),
     window_size: (u32, u32),
@@ -271,6 +271,7 @@ impl Window {
     pub fn assert_no_error(&self)  {
         self.display.assert_no_error();
     }
+
     pub fn new() -> LuxResult<Window> {
         use glium::DisplayBuild;
 
@@ -320,7 +321,7 @@ impl Window {
             tex_program: Rc::new(tex_program),
             closed: false,
             title: "Lux".to_string(),
-            event_store: vec![],
+            event_store: VecDeque::new(),
             mouse_pos: (0, 0),
             window_pos: (0, 0),
             window_size: (width, height),
@@ -345,6 +346,14 @@ impl Window {
         Ok(window)
     }
 
+    // TODO: hide from docs
+    pub fn restock_events<I: DoubleEndedIterator<Item=Event>>(&mut self, mut i: I) {
+        while let Some(e) = i.next_back() {
+            self.event_store.push_front(e);
+        }
+    }
+
+    // TODO: hide from docs
     pub fn process_events(&mut self) {
         use glutin::Event as glevent;
         use super::interactive::*;
@@ -366,14 +375,14 @@ impl Window {
             match event {
             glevent::MouseMoved((x, y)) => {
                 self.mouse_pos = (x as i32, y as i32);
-                self.event_store.push(MouseMoved((x as i32, y as i32)))
+                self.event_store.push_back(MouseMoved((x as i32, y as i32)))
             }
             glevent::MouseInput(glutin::ElementState::Pressed, button) => {
-                self.event_store.push(MouseDown(t_mouse(button)));
+                self.event_store.push_back(MouseDown(t_mouse(button)));
                 self.mouse_down_count += 1;
             }
             glevent::MouseInput(glutin::ElementState::Released, button) => {
-                self.event_store.push(MouseUp(t_mouse(button)));
+                self.event_store.push_back(MouseUp(t_mouse(button)));
 
                 // Don't underflow!
                 if self.mouse_down_count != 0 {
@@ -382,14 +391,14 @@ impl Window {
             }
             glevent::Resized(w, h) => {
                 self.window_size = (w as u32, h as u32);
-                self.event_store.push(WindowResized(self.window_size));
+                self.event_store.push_back(WindowResized(self.window_size));
             }
             glevent::Moved(x, y) => {
                 self.window_pos = (x as i32, y as i32);
-                self.event_store.push(WindowMoved(self.window_pos));
+                self.event_store.push_back(WindowMoved(self.window_pos));
             }
             glevent::MouseWheel(i) => {
-                self.event_store.push(MouseWheel(i as i32));
+                self.event_store.push_back(MouseWheel(i as i32));
             }
             glevent::ReceivedCharacter(c) => {
                 last_char = Some(c);
@@ -399,7 +408,7 @@ impl Window {
                             .or(last_char.take())
                             .or_else(|| self.code_to_char.get(&(code as usize))
                                                          .map(|a| *a));
-                self.event_store.push(KeyPressed(code, c, virt));
+                self.event_store.push_back(KeyPressed(code, c, virt));
 
                 if c.is_some() && !self.code_to_char.contains_key(&(code as usize)) {
                     self.code_to_char.insert(code as usize, c.unwrap());
@@ -417,7 +426,7 @@ impl Window {
                 let c = virt.and_then(keycode_to_char)
                             .or_else(|| self.code_to_char.get(&(code as usize))
                                                          .map(|a| *a));
-                self.event_store.push(KeyReleased(code, c, virt));
+                self.event_store.push_back(KeyReleased(code, c, virt));
                 self.codes_pressed.insert(code, false);
                 if let Some(chr) = c {
                     self.chars_pressed.insert(chr, false);
@@ -478,6 +487,12 @@ impl LuxCanvas for Frame {
         use glium::Surface;
         let (w, h) = self.f.get_dimensions();
         (w as f32, h as f32)
+    }
+
+    fn clear<C: Color>(&mut self, color: C) {
+        use glium::Surface;
+        let [r,g,b,a] = color.to_rgba();
+        self.f.clear_color(r,g,b,a);
     }
 
     fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, line_size: f32) {
@@ -753,10 +768,10 @@ impl Interactive for Window {
         self.mouse_down_count != 0
     }
 
-    fn events(&mut self) -> IntoIter<Event> {
+    fn events(&mut self) -> EventIterator {
         use std::mem::replace;
         self.process_events();
-        replace(&mut self.event_store, vec![]).into_iter()
+        EventIterator::from_deque(replace(&mut self.event_store, VecDeque::new()))
     }
 
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool {
