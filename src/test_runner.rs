@@ -57,7 +57,7 @@ fn main() {
     let mut runner = TestRunner::new();
 
     runner.add_test("indiv_rotated_squares", |frame| {
-        frame.fill_color(rgb(255, 0, 0));
+        frame.fill_color(rgb(255, 100, 0));
         frame.stroke_color(rgba(0, 0, 255, 100));
 
         for i in (0 .. 5) {

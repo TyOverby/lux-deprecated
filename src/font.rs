@@ -10,6 +10,7 @@ use std::fs::File;
 use image;
 use freetype;
 use glyph_packer;
+use lux_constants::*;
 
 use super::prelude::{
     LuxError,
@@ -82,8 +83,7 @@ impl FontCache {
             current: None
         };
 
-        let bytes = include_bytes!("../resources/SourceCodePro-Regular.ttf");
-        fc.load_bytes("SourceCodePro", bytes);
+        fc.load_bytes("SourceCodePro", SOURCE_CODE_PRO_REGULAR);
         fc.use_font(&mut loader, "SourceCodePro", 20);
 
         Ok(fc)

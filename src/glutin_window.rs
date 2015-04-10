@@ -7,6 +7,7 @@ use std::path::Path;
 use glutin;
 use glium;
 use image;
+use lux_constants::*;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::gfx_integration;
@@ -299,18 +300,10 @@ impl Window {
         }));
 
         let color_program = try!(
-            glium::Program::from_source(
-                 &display,
-                 gfx_integration::COLOR_VERTEX_SRC,
-                 gfx_integration::COLOR_FRAGMENT_SRC,
-                 None));
+            glium::Program::from_source( &display, COLOR_VERT, COLOR_FRAG, None));
 
         let tex_program = try!(
-            glium::Program::from_source(
-                 &display,
-                 gfx_integration::TEX_VERTEX_SRC,
-                 gfx_integration::TEX_FRAGMENT_SRC,
-                 None));
+            glium::Program::from_source( &display, TEX_VERT, TEX_FRAG, None));
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 

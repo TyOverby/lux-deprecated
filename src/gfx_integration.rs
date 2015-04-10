@@ -21,6 +21,7 @@ pub struct ColorParams {
     pub matrix: [[f32; 4]; 4],
 }
 
+// TODO: use implement_uniforms!() here instead.
 impl uniforms::Uniforms for ColorParams {
     fn visit_values<F>(self, mut f: F) where F: FnMut(&str, &uniforms::UniformValue) {
         use glium::uniforms::IntoUniformValue;
@@ -34,6 +35,7 @@ pub struct TexParams<'a> {
     pub color_mult: [f32; 4]
 }
 
+// TODO: use implement_uniforms!() here instead.
 impl <'a> uniforms::Uniforms for TexParams<'a> {
     fn visit_values<F>(self, mut f: F) where F: FnMut(&str, &uniforms::UniformValue) {
         use glium::uniforms::IntoUniformValue;
@@ -42,66 +44,3 @@ impl <'a> uniforms::Uniforms for TexParams<'a> {
         f("color_mult", &self.color_mult.into_uniform_value());
     }
 }
-
-//
-//
-// BASIC
-//
-//
-
-pub static COLOR_VERTEX_SRC: &'static str = r"
-    #version 110
-
-    uniform mat4 matrix;
-
-    attribute vec2 pos;
-    attribute vec4 color;
-
-    varying vec4 v_color;
-
-    void main() {
-        gl_Position = matrix * vec4(pos, 0.0, 1.0);
-        v_color = color;
-    }
-";
-
-pub static COLOR_FRAGMENT_SRC: &'static str = r"
-    #version 110
-
-    varying vec4 v_color;
-
-    void main() {
-        gl_FragColor = v_color;
-    }
-";
-
-pub static TEX_VERTEX_SRC: &'static str = r"
-    #version 110
-
-    uniform mat4 matrix;
-
-    attribute vec2 pos;
-    attribute vec2 tex_coords;
-
-    varying vec2 v_tex_coords;
-    void main() {
-        gl_Position = matrix * vec4(pos, 0.0, 1.0);
-        v_tex_coords = tex_coords;
-    }
-";
-
-pub static TEX_FRAGMENT_SRC: &'static str = r"
-    #version 110
-
-    uniform sampler2D texture;
-    uniform vec4 color_mult;
-    varying vec2 v_tex_coords;
-
-    void main() {
-        vec4 t = texture2D(texture, v_tex_coords);
-        gl_FragColor = vec4(t.r, t.g, t.b, t.a) * color_mult;
-    }
-";
-
-
-

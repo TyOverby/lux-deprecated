@@ -44,6 +44,9 @@ git = "https://github.com/bjz/noise-rs.git"
 [dependencies.glyph_packer]
 git = "https://github.com/TyOverby/glyph_packer.git"
 
+[dependencies.lux-constants]
+path = "./constants"
+
 [dependencies]
 nd_iter = "*"
 glutin = "*"
