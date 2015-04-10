@@ -50,8 +50,48 @@ impl TestRunner {
     }
 }
 
+const PI: f32 = 3.14159;
+const PI_4: f32 = PI / 4.0;
+
 fn main() {
     let mut runner = TestRunner::new();
+
+    runner.add_test("indiv_rotated_squares", |frame| {
+        frame.fill_color(rgb(255, 0, 0));
+        frame.stroke_color(rgba(0, 0, 255, 100));
+
+        for i in (0 .. 5) {
+            let border = i as f32 * 10.0;
+            let pos = i as f32 * 100.0;
+            frame.square(pos, 0.0, 50.0)
+                 .border(border / 2.0)
+                 .rotate_around((12.5, 12.5), PI_4 + 0.2)
+                 .fill_and_stroke();
+        }
+    });
+
+    runner.add_test("squares", |frame| {
+        frame.fill_color(rgb(255, 0, 0));
+        frame.stroke_color(rgba(0, 0, 255, 100));
+
+        for i in (0 .. 5) {
+            let border = i as f32 * 10.0;
+            let pos = i as f32 * 100.0;
+            frame.square(pos, 0.0, 50.0).border(border / 2.0).fill_and_stroke();
+        }
+    });
+
+    runner.add_test("rotated_squares", |frame| {
+        frame.rotate(0.5);
+        frame.fill_color(rgb(255, 0, 0));
+        frame.stroke_color(rgba(0, 0, 255, 100));
+
+        for i in (0 .. 5) {
+            let border = i as f32 * 10.0;
+            let pos = i as f32 * 100.0;
+            frame.square(pos, 0.0, 50.0).border(border / 2.0).fill_and_stroke();
+        }
+    });
 
     runner.add_test("red_square_rotated_frame", |frame| {
         frame.fill_color(rgb(255, 0, 0));
@@ -112,8 +152,8 @@ fn main() {
         for y in 0 .. 50 {
             let y = y as f32;
             frame.draw_pixel(0.5, y + 0.5, rgb(255, 0, 0));
-            frame.draw_pixel(1.5, y + 0.5, rgb(0, 255, 0));
-            frame.draw_pixel(2.5, y + 0.5, rgb(0, 0, 255));
+            frame.draw_pixel(y + 0.5, 0.5, rgb(0, 255, 0));
+            frame.draw_pixel(y + 0.5, y + 0.5, rgb(0, 0, 255));
         }
     });
 

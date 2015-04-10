@@ -7,6 +7,7 @@ use super::prelude::{
     TrianglesList,
     PrimitiveType,
     Colored,
+    StackedColored,
     Color,
     Points,
     StackedTransform,
@@ -96,7 +97,8 @@ pub trait PrimitiveCanvas {
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + Sized {
+pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas +
+                     Colored + StackedColored + Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (f32, f32);
 
@@ -323,6 +325,26 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
     }
 }
 
+fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[f32; 4]; 4] {
+        let (mut x, mut y) = fields.pos;
+//        x += fields.border + fields.padding.0;
+//        y += fields.border + fields.padding.2;
+
+        let (mut sx, mut sy) = fields.size;
+        sx -= fields.border * 2.0; // + fields.padding.0 + fields.padding.1;
+        sy -= fields.border * 2.0; // + fields.padding.2 + fields.padding.3;
+
+        if sx < 0.0 { sx = 0.0 }
+        if sy < 0.0 { sy = 0.0 }
+
+        let mut trx = vecmath::mat4_id();
+        trx.translate(x, y);
+        let mut trx = vecmath::col_mat4_mul(trx, fields.transform);
+        trx.translate(fields.border, fields.border);
+        trx.scale(sx, sy);
+        trx
+}
+
 impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
     pub fn size(&mut self, w: f32, h: f32) -> &mut ContainedSprite<'a, C> {
         self.fields.size = (w, h);
@@ -353,9 +375,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
 
         let idxs = [0u32, 1, 2, 0, 2, 3];
 
-        let mut transform = vecmath::mat4_id();
-        transform.translate(pos.0 as f32, pos.1 as f32);
-        transform.scale(size.0 as f32, size.1 as f32);
+        let mut transform = generate_transform(&self.fields);
 
         self.fields.canvas.draw_tex(TrianglesList,
                       &tex_vs[..],
@@ -379,27 +399,47 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
 
         let idxs = [0, 1, 2, 0, 2, 3];
 
-        let (mut x, mut y) = self.fields.pos;
-        x += self.fields.border + self.fields.padding.0;
-        y += self.fields.border + self.fields.padding.2;
-
-        let (mut sx, mut sy) = self.fields.size;
-        sx -= self.fields.border + self.fields.padding.0 + self.fields.padding.1;
-        sy -= self.fields.border + self.fields.padding.2 + self.fields.padding.3;
-
-        let mut trx = vecmath::mat4_id();
-        trx.translate(x, y);
-        let mut trx = vecmath::col_mat4_mul(trx, self.fields.transform);
-        trx.scale(sx, sy);
+        let transform = generate_transform(&self.fields);
 
         self.fields.canvas.draw_shape(TrianglesList,
                                &vertices[..], Some(&idxs[..]),
-                               Some(trx));
+                               Some(transform));
     }
 
     /// Draws a border around the rectangle.
     pub fn stroke(&mut self) -> &mut Rectangle<'a, C> {
+        let offset_pos = self.fields.pos;
+        let size = self.fields.size;
+        let border = self.fields.border;
+        let transform = self.fields.transform;
+        let color = *self.current_stroke_color();
+
+        let pos = (0.0, 0.0);
+
+
+        self.fields.border = 0.0;
+
+        self.fields.canvas.with_matrix(|canvas| {
+            canvas.translate(offset_pos.0, offset_pos.1);
+            canvas.apply_matrix(transform);
+            canvas.with_fill_color(color, |canvas| {
+                // TOP
+                canvas.rect(0.0, 0.0, size.0, border)
+                      .fill();
+                canvas.rect(0.0, size.1 - border, size.0, border)
+                      .fill();
+                canvas.rect(0.0, border, border, size.1 - border * 2.0)
+                      .fill();
+                canvas.rect(size.0 - border, border, border, size.1 - border * 2.0)
+                      .fill();
+            });
+        });
         self
+    }
+
+    pub fn fill_and_stroke(&mut self) {
+        self.fill();
+        self.stroke();
     }
 
     /// Sets the size of the border.  The border is drawn using the
@@ -409,6 +449,7 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         self
     }
 
+    /*
     /// Add padding to the rectangle.
     /// Padding causes the rectangleto be drawn
     /// constrained to the original bounding dimensions with the additional
@@ -424,7 +465,7 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
     pub fn padding<P: Padding>(&mut self, padding: P) -> &mut Rectangle<'a, C> {
         self.fields.padding = padding.as_padding();
         self
-    }
+    }*/
 }
 
 /// Padding can either be /// f32, (f32, f32), or (f32, f32, f32, f32)
