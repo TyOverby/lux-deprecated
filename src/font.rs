@@ -47,7 +47,7 @@ pub struct RenderedFont {
 }
 
 pub trait FontLoad {
-    fn load_font(&mut self, name: &str, path: &Path) -> LuxResult<()>;
+    fn load_font<P: AsRef<Path>>(&mut self, name: &str, path: &P) -> LuxResult<()>;
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
 }
 

@@ -11,7 +11,7 @@ extern crate freetype;
 extern crate color as ext_color;
 extern crate glyph_packer;
 extern crate num;
-extern crate time;
+extern crate clock_ticks;
 
 pub mod interactive;
 pub mod figure;

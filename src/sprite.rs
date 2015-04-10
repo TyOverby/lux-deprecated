@@ -5,6 +5,8 @@ use std::rc::Rc;
 use std::ops::Deref;
 use std::collections::HashMap;
 use std::borrow::Borrow;
+use std::convert::AsRef;
+use std::path::Path;
 
 use std::cmp::Eq;
 use std::hash::Hash;
@@ -39,7 +41,7 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
 }
 
 pub trait SpriteLoader {
-    fn load_sprite(&mut self, path: &::std::path::Path) -> Result<Sprite, ImageError>;
+    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError>;
 
     fn sprite_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Sprite;
     fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite;

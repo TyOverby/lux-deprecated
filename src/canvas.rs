@@ -136,6 +136,7 @@ pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas + Colored + 
         Ellipse::new(self, (x, y), (size, size))
     }
 
+    // TODO: unify this and draw_pixels.
     fn draw_pixel<C: Color>(&mut self, x: f32, y: f32, color: C) {
         let vertex = ColorVertex {
             pos: [x, y],
@@ -370,11 +371,12 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
     pub fn fill(&mut self) {
         let color = *self.current_fill_color();
         let vertices = [
-                ColorVertex{ pos: [1.0, 0.0], color: color },
-                ColorVertex{ pos: [0.0, 0.0], color: color },
-                ColorVertex{ pos: [0.0, 1.0], color: color },
-                ColorVertex{ pos: [1.0, 1.0], color: color },
+            ColorVertex{ pos: [1.0, 0.0], color: color },
+            ColorVertex{ pos: [0.0, 0.0], color: color },
+            ColorVertex{ pos: [0.0, 1.0], color: color },
+            ColorVertex{ pos: [1.0, 1.0], color: color },
         ];
+
         let idxs = [0, 1, 2, 0, 2, 3];
 
         let (mut x, mut y) = self.fields.pos;
@@ -385,15 +387,14 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         sx -= self.fields.border + self.fields.padding.0 + self.fields.padding.1;
         sy -= self.fields.border + self.fields.padding.2 + self.fields.padding.3;
 
-        let mut local = vecmath::mat4_id();
-        local.translate(x, y);
-
-        let mut transform = vecmath::col_mat4_mul(local, self.fields.transform);
-        transform.scale(sx, sy);
+        let mut trx = vecmath::mat4_id();
+        trx.translate(x, y);
+        let mut trx = vecmath::col_mat4_mul(trx, self.fields.transform);
+        trx.scale(sx, sy);
 
         self.fields.canvas.draw_shape(TrianglesList,
                                &vertices[..], Some(&idxs[..]),
-                               Some(transform));
+                               Some(trx));
     }
 
     /// Draws a border around the rectangle.

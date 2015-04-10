@@ -261,6 +261,7 @@ impl Frame {
 
 impl Drop for Frame {
     fn drop(&mut self) {
+        let _ = self.set_font("SourceCodePro", 20);
         self.flush_draw();
     }
 }
@@ -461,7 +462,26 @@ impl Window {
 }
 
 impl SpriteLoader for Window {
-    fn load_sprite(&mut self, path: &Path) -> Result<Sprite, ImageError> {
+    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError> {
+        let img = try!(image::open(path)).flipv();
+        let img = glium::texture::Texture2d::new(&self.display, img);
+        Ok(Sprite::new(Rc::new(img)))
+    }
+
+    fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
+        let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
+        Sprite::new(Rc::new(glium::texture::Texture2d::new(&self.display, pixels)))
+    }
+
+    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite {
+        let img = img.flipv();
+        let img = glium::texture::Texture2d::new(&self.display, img);
+        Sprite::new(Rc::new(img))
+    }
+}
+
+impl SpriteLoader for Frame {
+    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError> {
         let img = try!(image::open(path)).flipv();
         let img = glium::texture::Texture2d::new(&self.display, img);
         Ok(Sprite::new(Rc::new(img)))
@@ -857,9 +877,9 @@ impl StackedColored for Frame {
 
 
 impl FontLoad for Window {
-    fn load_font(&mut self, name: &str, path: &Path) -> LuxResult<()> {
+    fn load_font<P: AsRef<Path> + ?Sized>(&mut self, name: &str, path: &P) -> LuxResult<()> {
         let mut font_cache = self.font_cache.borrow_mut();
-        font_cache.as_mut().unwrap().load(name, path)
+        font_cache.as_mut().unwrap().load(name, path.as_ref())
     }
 
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
@@ -877,7 +897,6 @@ impl FontLoad for Window {
             let tex = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(tex))
         }, name, size);
-        self.display.synchronize();
         res
     }
 }

@@ -59,6 +59,7 @@ pub trait Transform {
     /// Combines rotation with translation to effectively
     /// rotate around a given point.
     fn rotate_around(&mut self, point: (f32, f32), theta: f32) -> &mut Self {
+        self.translate(point.0, point.1);
         self.rotate(theta);
         self.translate(-point.0, -point.1);
         self

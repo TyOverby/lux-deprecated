@@ -45,12 +45,16 @@ impl Game for MyGame {
         } else if window.is_key_pressed('j') {
             self.speed.1 = MOVEMENT_SPEED;
         }
+
+        println!("update: {}", dt);
     }
 
-    fn render(&mut self, dt: f32, window: &mut Window, frame: &mut Frame) {
+    fn render(&mut self, window: &mut Window, frame: &mut Frame) {
         let (x, y) = self.pos;
         frame.draw_text("Use the [hjkl] keys to move around", 3.5, 20.5);
         frame.circle(x, y, PLAYER_SIZE).fill();
+
+        println!("render");
     }
 }
 

@@ -12,6 +12,10 @@ path = "src/lib.rs"
 name = "lux_demo"
 path = "src/bin.rs"
 
+[[bin]]
+name = "test_runner"
+path = "src/test_runner.rs"
+
 [dependencies.glium]
 git = "https://github.com/tomaka/glium.git"
 features = ["image"]
@@ -45,4 +49,4 @@ nd_iter = "*"
 glutin = "*"
 image = "*"
 num = "*"
-time = "*"
+clock_ticks = "*"
