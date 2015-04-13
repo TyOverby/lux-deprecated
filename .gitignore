@@ -1,4 +1,5 @@
 /target
+/constants/target
 *.swp
 *.swo
 .DS_Store

@@ -1,4 +1,5 @@
 use super::prelude::*;
+use std::collections::VecDeque;
 use clock_ticks;
 
 pub trait Game {
@@ -22,12 +23,15 @@ pub trait Game {
 
 pub struct GameRunner<G: Game> {
     pub window: Window,
-    pub game: G
+    pub game: G,
+    frame_timings: VecDeque<FrameTiming>
 }
 
 struct FrameTiming {
-    updates: Vec<u64>,
-    render: u64
+    update_durations: Vec<u64>,
+    render_duration: u64,
+    timestamp_start: u64,
+    timestamp_end: u64
 }
 
 fn time<F: FnOnce()>(f: F) -> u64 {
@@ -39,9 +43,11 @@ fn time<F: FnOnce()>(f: F) -> u64 {
 
 impl <G: Game> GameRunner<G> {
     pub fn new(game: G) -> LuxResult<GameRunner<G>> {
+        let amnt = game.draw_fps().unwrap_or(10);
         Ok(GameRunner {
             game: game,
-            window: try!(Window::new())
+            window: try!(Window::new()),
+            frame_timings: VecDeque::with_capacity(amnt + 1)
         })
     }
 
@@ -50,6 +56,9 @@ impl <G: Game> GameRunner<G> {
         let mut lag = 0.0;
 
         while self.window.is_open() && !self.game.should_close() {
+            //
+            // Preframe setup
+            //
             let mut events = self.window.events();
             let mut frame = if let Some(c) = self.game.clear_color() {
                 self.window.cleared_frame(c)
@@ -57,23 +66,72 @@ impl <G: Game> GameRunner<G> {
                 self.window.frame()
             };
 
+            //
+            // Core loop.
+            //
             let current = clock_ticks::precise_time_s();
+            let current_ns = clock_ticks::precise_time_ns();
             let elapsed = current - previous;
             previous = current;
             lag += elapsed;
 
             let s_p_u = self.game.s_per_update();
 
+            let mut update_durations = vec![];
             while lag >= s_p_u {
                 let tu = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
+                update_durations.push(tu);
                 lag -= s_p_u;
             }
 
             let tr = time(|| self.game.render(&mut self.window, &mut frame));
 
+            //
+            // Postframe cleanup and recording
+            //
             if !events.backing.is_empty() {
                 self.window.restock_events(events);
             }
+
+            if let Some(max_timings) = self.game.draw_fps() {
+                let now = clock_ticks::precise_time_ns();
+                let timing = FrameTiming {
+                    update_durations: update_durations,
+                    render_duration: tr,
+                    timestamp_start: current_ns,
+                    timestamp_end: now
+                };
+
+                self.frame_timings.push_front(timing);
+                self.frame_timings.truncate(max_timings);
+                self.draw_timings(&mut frame);
+            }
         }
+    }
+
+    fn calc_fps(&self) -> (f64, f64) {
+        match (self.frame_timings.back(), self.frame_timings.front()) {
+            (Some(oldest), Some(most_recent)) => {
+                let time_elapsed = most_recent.timestamp_end -
+                                   oldest.timestamp_start;
+                let time_elapsed = time_elapsed as f64 / 1_000_000_000.0;
+
+                let num_frames = self.frame_timings.len() as f64;
+
+                let num_updates =
+                    self.frame_timings
+                        .iter()
+                        .map(|timing| timing.update_durations.len())
+                        .fold(0, |a, b| a + b) as f64;
+
+
+                ((num_frames / time_elapsed).round(), (num_updates / time_elapsed).round())
+            }
+            _ => (0.0, 0.0)
+        }
+    }
+
+    fn draw_timings(&self, frame: &mut Frame) {
+        frame.draw_text(&format!("FPS: {:?}", self.calc_fps())[..], 100.5, 100.5);
     }
 }

@@ -2,7 +2,6 @@ extern crate lux;
 use lux::prelude::*;
 use lux::game::*;
 
-const DAMPENING: f32 = 0.99;
 const MOVEMENT_SPEED: f32 = 200.0;
 const PLAYER_SIZE: f32 = 20.0;
 
@@ -21,7 +20,7 @@ impl MyGame {
 }
 
 impl Game for MyGame {
-    fn update(&mut self, dt: f32, window: &mut Window, events: &mut EventIterator) {
+    fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) {
         // position
         self.pos.0 += self.speed.0 * dt;
         self.pos.1 += self.speed.1 * dt;
@@ -34,28 +33,27 @@ impl Game for MyGame {
 
         // events
         // x
-        if window.is_key_pressed('h') {
+        if window.is_key_pressed('a') {
             self.speed.0 = -MOVEMENT_SPEED;
-        } else if window.is_key_pressed('l') {
+        } else if window.is_key_pressed('d') {
             self.speed.0 = MOVEMENT_SPEED;
         }
         // y
-        if window.is_key_pressed('k') {
+        if window.is_key_pressed('w') {
             self.speed.1 = -MOVEMENT_SPEED;
-        } else if window.is_key_pressed('j') {
+        } else if window.is_key_pressed('s') {
             self.speed.1 = MOVEMENT_SPEED;
         }
-
-        println!("update: {}", dt);
     }
 
-    fn render(&mut self, window: &mut Window, frame: &mut Frame) {
+    fn render(&mut self, _window: &mut Window, frame: &mut Frame) {
         let (x, y) = self.pos;
-        frame.draw_text("Use the [hjkl] keys to move around", 3.5, 20.5);
+        frame.draw_text("Use the [w][a][s][d] keys to move around", 3.5, 20.5)
+             .unwrap();
         frame.circle(x, y, PLAYER_SIZE).fill();
-
-        println!("render");
     }
+
+    fn updates_per_s(&self) -> f64 { 120.0 }
 }
 
 fn clamp(low: f32, value: f32, high: f32) -> f32 {

@@ -326,7 +326,7 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
 }
 
 fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[f32; 4]; 4] {
-        let (mut x, mut y) = fields.pos;
+        let (x, y) = fields.pos;
 //        x += fields.border + fields.padding.0;
 //        y += fields.border + fields.padding.2;
 
@@ -357,8 +357,6 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
     }
 
     pub fn draw(&mut self) {
-        let pos = self.fields.pos;
-        let size = self.fields.size;
         let bounds = self.sprite.bounds();
 
         let top_left = bounds[0];
@@ -375,7 +373,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
 
         let idxs = [0u32, 1, 2, 0, 2, 3];
 
-        let mut transform = generate_transform(&self.fields);
+        let transform = generate_transform(&self.fields);
 
         self.fields.canvas.draw_tex(TrianglesList,
                       &tex_vs[..],
@@ -413,9 +411,6 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         let border = self.fields.border;
         let transform = self.fields.transform;
         let color = *self.current_stroke_color();
-
-        let pos = (0.0, 0.0);
-
 
         self.fields.border = 0.0;
 
