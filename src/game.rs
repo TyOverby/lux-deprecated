@@ -3,7 +3,7 @@ use clock_ticks;
 
 pub trait Game {
     fn update(&mut self, dt: f32, window: &mut Window, events: &mut EventIterator);
-    fn render(&mut self, window: &mut Window, frame: &mut Frame);
+    fn render(&mut self, lag: f32, window: &mut Window, frame: &mut Frame);
 
     fn clear_color(&self) -> Option<[f32; 4]> {Some([1.0, 1.0, 1.0, 1.0])}
     fn draw_fps(&self) -> Option<usize> { Some(100) }
@@ -65,11 +65,12 @@ impl <G: Game> GameRunner<G> {
             let s_p_u = self.game.s_per_update();
 
             while lag >= s_p_u {
-                let tu = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
+                println!("  lag: {}, spu: {}", lag, s_p_u);
+                let _tu = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
                 lag -= s_p_u;
             }
 
-            let tr = time(|| self.game.render(&mut self.window, &mut frame));
+            let _tr = time(|| self.game.render(lag as f32, &mut self.window, &mut frame));
 
             if !events.backing.is_empty() {
                 self.window.restock_events(events);
