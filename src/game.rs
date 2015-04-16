@@ -109,7 +109,7 @@ impl <G: Game> GameRunner<G> {
         }
     }
 
-    fn calc_fps(&self) -> (f64, f64) {
+    fn calc_fps(&self) -> (u32, u32) {
         match (self.frame_timings.back(), self.frame_timings.front()) {
             (Some(oldest), Some(most_recent)) => {
                 let time_elapsed = most_recent.timestamp_end -
@@ -125,9 +125,10 @@ impl <G: Game> GameRunner<G> {
                         .fold(0, |a, b| a + b) as f64;
 
 
-                ((num_frames / time_elapsed).round(), (num_updates / time_elapsed).round())
+                ((num_frames / time_elapsed).round() as u32,
+                 (num_updates / time_elapsed).round() as u32)
             }
-            _ => (0.0, 0.0)
+            _ => (0, 0)
         }
     }
 
