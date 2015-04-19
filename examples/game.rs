@@ -21,15 +21,15 @@ impl MyGame {
 
 impl Game for MyGame {
     fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) {
+        // dampening
+        self.speed.0 *= 1.0 - dt;
+        self.speed.1 *= 1.0 - dt;
         // position
         self.pos.0 += self.speed.0 * dt;
         self.pos.1 += self.speed.1 * dt;
         // Keep the player from moving off the edge
         self.pos.0 = clamp(0.0, self.pos.0, window.width() - PLAYER_SIZE);
         self.pos.1 = clamp(0.0, self.pos.1, window.height() - PLAYER_SIZE);
-        // dampening
-        self.speed.0 *= 1.0 - dt;
-        self.speed.1 *= 1.0 - dt;
 
         // events
         // x
@@ -46,14 +46,16 @@ impl Game for MyGame {
         }
     }
 
-    fn render(&mut self, _window: &mut Window, frame: &mut Frame) {
+    fn render(&mut self, lag: f32, window: &mut Window, frame: &mut Frame) {
         let (x, y) = self.pos;
-        frame.draw_text("Use the [w][a][s][d] keys to move around", 3.5, 20.5)
-             .unwrap();
-        frame.circle(x, y, PLAYER_SIZE).fill();
+        let (x, y) = self.pos;
+        let (vx, vy) = self.speed;
+
+        frame.draw_text("Use the [w][a][s][d] keys to move around", 3.5, 20.5).unwrap();
+        frame.circle(x + vx * lag, y + vy * lag, PLAYER_SIZE).fill();
     }
 
-    fn updates_per_s(&self) -> f64 { 120.0 }
+    //fn updates_per_s(&self) -> f64 { 120.0 }
 }
 
 fn clamp(low: f32, value: f32, high: f32) -> f32 {
