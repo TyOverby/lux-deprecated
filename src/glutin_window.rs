@@ -49,7 +49,7 @@ macro_rules! draw_cmd {
      $vbuf: ident, $idx: ident, $prog: ident, $uni: ident, $params: ident) => {
         if $act == $typ {
             let idx_buffer = $cons($idx);
-            $frame.draw(&$vbuf, &idx_buffer, $prog, $uni, &$params).unwrap();
+            $frame.draw(&$vbuf, &idx_buffer, $prog, &$uni, &$params).unwrap();
             return;
         }
     };

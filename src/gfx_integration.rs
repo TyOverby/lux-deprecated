@@ -23,9 +23,9 @@ pub struct ColorParams {
 
 // TODO: use implement_uniforms!() here instead.
 impl uniforms::Uniforms for ColorParams {
-    fn visit_values<F>(self, mut f: F) where F: FnMut(&str, &uniforms::UniformValue) {
-        use glium::uniforms::IntoUniformValue;
-        f("matrix", &self.matrix.into_uniform_value());
+    fn visit_values<'b, F>(&'b self, mut f: F) where F: FnMut(&str, uniforms::UniformValue<'b>) {
+        use glium::uniforms::AsUniformValue;
+        f("matrix", self.matrix.as_uniform_value());
     }
 }
 
@@ -37,10 +37,10 @@ pub struct TexParams<'a> {
 
 // TODO: use implement_uniforms!() here instead.
 impl <'a> uniforms::Uniforms for TexParams<'a> {
-    fn visit_values<F>(self, mut f: F) where F: FnMut(&str, &uniforms::UniformValue) {
-        use glium::uniforms::IntoUniformValue;
-        f("matrix", &self.matrix.into_uniform_value());
-        f("texture", &self.texture.into_uniform_value());
-        f("color_mult", &self.color_mult.into_uniform_value());
+    fn visit_values<'b, F>(&'b self, mut f: F) where F: FnMut(&str, uniforms::UniformValue<'b>) {
+        use glium::uniforms::AsUniformValue;
+        f("matrix", self.matrix.as_uniform_value());
+        f("texture", self.texture.as_uniform_value());
+        f("color_mult", self.color_mult.as_uniform_value());
     }
 }
