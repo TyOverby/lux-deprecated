@@ -31,19 +31,19 @@ struct BasicFields<'a, C: 'a>  {
 }
 
 /// An ellipse that can be drawn to the screen.
-#[must_use]
+#[must_use = "shapes contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
 pub struct Ellipse<'a, C: 'a> {
     fields: BasicFields<'a, C>,
     spokes: u8
 }
 
 /// A Rectangle that can be drawn to the screen.
-#[must_use]
+#[must_use = "shapes contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
 pub struct Rectangle<'a, C: 'a> {
     fields: BasicFields<'a, C>,
 }
 
-#[must_use]
+#[must_use = "shapes contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
 pub struct ContainedSprite<'a, C: 'a>  {
     fields: BasicFields<'a, C>,
     sprite: Sprite
