@@ -136,6 +136,30 @@ impl <G: Game> GameRunner<G> {
     }
 
     fn draw_timings(&self, frame: &mut Frame) {
-        frame.draw_text(&format!("FPS: {:?}", self.calc_fps())[..], 100.5, 100.5);
+        fn percentage_time(span: u64) -> f32 {
+            span as f32 / (16000000.0 )
+        }
+
+        const HEIGHT: f32 = 100.0;
+        const WIDTH:  f32 = 161.0;
+        frame.rect(0.0, 0.0, WIDTH, HEIGHT).fill_color([255,0,0]).fill();
+
+        let line_width = WIDTH / self.game.draw_fps().unwrap_or(100) as f32;
+        for (i, frame_calc) in self.frame_timings.iter().enumerate() {
+            let mut pos = 0.0;
+            for update_time in frame_calc.update_durations.iter() {
+                let size = percentage_time(*update_time) * HEIGHT;
+                frame.rect(i as f32 * line_width, 0.0, line_width, size)
+                     .fill_color([0,0,255])
+                     .fill();
+                pos += size;
+            }
+            let size = percentage_time(frame_calc.render_duration) * HEIGHT;
+            frame.rect(i as f32 * line_width, 0.0, line_width, size)
+                 .fill_color([0,255,0])
+                 .fill();
+        }
+
+        //frame.draw_text(&format!("FPS,UPS: {:?}", self.calc_fps())[..], 100.5, 100.5);
     }
 }
