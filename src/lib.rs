@@ -29,12 +29,13 @@ pub mod extend;
 pub mod loader;
 pub mod game;
 pub mod accessors;
+pub mod primitive_canvas;
 
 pub mod prelude {
     pub use ::gfx_integration::{ColorVertex, TexVertex};
-    pub use ::canvas::{LuxCanvas, PrimitiveCanvas, Ellipse, Rectangle, ContainedSprite};
+    pub use ::canvas::{LuxCanvas, Ellipse, Rectangle, ContainedSprite};
     pub use ::error::{LuxError, ImageError, FreetypeError, LuxResult};
-    pub use ::interactive::*;
+    pub use ::interactive::{Event, MouseButton, Interactive, EventIterator, AbstractKey};
     pub use ::interactive::Event::*;
     pub use ::interactive::MouseButton::*;
     pub use ::raw::{Colored, Transform};

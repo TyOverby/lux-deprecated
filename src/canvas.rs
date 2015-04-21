@@ -1,11 +1,9 @@
-use std::rc::Rc;
-
+use super::primitive_canvas::PrimitiveCanvas;
 use super::prelude::{
     ColorVertex,
     TexVertex,
     TriangleFan,
     TrianglesList,
-    PrimitiveType,
     Colored,
     Color,
     Points,
@@ -14,7 +12,6 @@ use super::prelude::{
 };
 
 use vecmath;
-use glium;
 
 struct BasicFields<'a, C: 'a>  {
     fill_color: Option<[f32; 4]>,
@@ -48,50 +45,6 @@ pub struct ContainedSprite<'a, C: 'a>  {
 }
 
 
-/// A primitive canvas is a canvas that can be drawn to with only the
-/// `draw_shape` function.
-pub trait PrimitiveCanvas {
-    /// Draws the verteces to the canvas. This function uses caching to
-    /// batch draw calls that are similar.
-    ///
-    /// typ: The primitive type used to draw the vertices.
-    /// vs : A slice of vertices to be drawn.
-    /// idxs: An optional list of indices that can be used to index into
-    ///       the ColorVertex array.  Useful if you have many points that are
-    ///       duplicates of each other.
-    /// mat: An optional transformation matrix that would be applied to the
-    ///      each point before drawing.
-    fn draw_shape(&mut self,
-                  typ: PrimitiveType,
-                  vs: &[ColorVertex],
-                  idxs: Option<&[u32]>,
-                  mat: Option<[[f32; 4]; 4]>);
-
-    /// Flush all stored draw calls to the screen.
-    fn flush_draw(&mut self);
-
-    fn draw_shape_no_batch(&mut self,
-                           typ: PrimitiveType,
-                           vs: Vec<ColorVertex>,
-                           idxs: Option<Vec<u32>>,
-                           mat: Option<[[f32; 4]; 4]>);
-
-    fn draw_tex(&mut self,
-                typ: PrimitiveType,
-                vs: &[TexVertex],
-                idxs: Option<&[u32]>,
-                mat: Option<[[f32; 4]; 4]>,
-                Rc<glium::texture::Texture2d>,
-                color_mult: Option<[f32; 4]>);
-
-    fn draw_tex_no_batch(&mut self,
-                         typ: PrimitiveType,
-                         vs: Vec<TexVertex>,
-                         idxs: Option<Vec<u32>>,
-                         mat: Option<[[f32; 4]; 4]>,
-                         &glium::texture::Texture2d,
-                         color_mult: Option<[f32; 4]>);
-}
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
@@ -114,7 +67,9 @@ pub trait LuxCanvas: Transform + PrimitiveCanvas +
         }
     }
 
-    fn clear<C: Color>(&mut self, color: C);
+    fn clear<C: Color>(&mut self, color: C) {
+        PrimitiveCanvas::clear(self, color);
+    }
 
     /// Returns a rectangle with the given dimensions and position.
     fn rect<'a>(&'a mut self, x: f32, y: f32, w: f32, h: f32) -> Rectangle<'a, Self> {
