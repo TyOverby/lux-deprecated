@@ -30,6 +30,7 @@ pub struct GameRunner<G: Game> {
 struct FrameTiming {
     update_durations: Vec<u64>,
     render_duration: u64,
+    render_publish: u64,
     timestamp_start: u64,
     timestamp_end: u64
 }
@@ -77,10 +78,6 @@ impl <G: Game> GameRunner<G> {
 
             let s_p_u = self.game.s_per_update();
 
-            /*println!("elapsed: {}
-                      s_p_u  : {}", elapsed, s_p_u);
-                      */
-
             let mut update_durations = vec![];
             while lag >= s_p_u {
                 let tu = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
@@ -89,6 +86,10 @@ impl <G: Game> GameRunner<G> {
             }
 
             let tr = time(|| self.game.render(lag as f32, &mut self.window, &mut frame));
+
+            self.draw_timings(&mut frame);
+
+            let tpublish = time(|| ::std::mem::drop(frame));
 
             //
             // Postframe cleanup and recording
@@ -102,13 +103,13 @@ impl <G: Game> GameRunner<G> {
                 let timing = FrameTiming {
                     update_durations: update_durations,
                     render_duration: tr,
+                    render_publish: tpublish,
                     timestamp_start: current_ns,
                     timestamp_end: now
                 };
 
                 self.frame_timings.push_front(timing);
                 self.frame_timings.truncate(max_timings);
-                self.draw_timings(&mut frame);
             }
         }
     }
@@ -143,24 +144,51 @@ impl <G: Game> GameRunner<G> {
 
         const HEIGHT: f32 = 100.0;
         const WIDTH:  f32 = 161.0;
-        frame.rect(0.0, 0.0, WIDTH, HEIGHT).fill_color([255,0,0]).fill();
-
-        let line_width = WIDTH / self.game.draw_fps().unwrap_or(100) as f32;
-        for (i, frame_calc) in self.frame_timings.iter().enumerate() {
-            let mut pos = 0.0;
-            for update_time in frame_calc.update_durations.iter() {
-                let size = percentage_time(*update_time) * HEIGHT;
-                frame.rect(i as f32 * line_width, 0.0, line_width, size)
-                     .fill_color([0,0,255])
-                     .fill();
-                pos += size;
-            }
-            let size = percentage_time(frame_calc.render_duration) * HEIGHT;
-            frame.rect(i as f32 * line_width, 0.0, line_width, size)
-                 .fill_color([0,255,0])
+        let h = frame.height();
+        frame.with_translate(WIDTH, h, |frame| {
+        frame.with_scale(-1.0, -1.0, |frame| {
+            frame.rect(0.0, 0.0, WIDTH, HEIGHT)
+                 .fill_color(rgba(1.0, 1.0, 1.0, 0.8))
                  .fill();
-        }
 
-        //frame.draw_text(&format!("FPS,UPS: {:?}", self.calc_fps())[..], 100.5, 100.5);
+            let line_width = WIDTH / self.game.draw_fps().unwrap_or(100) as f32;
+            let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
+            for (i, frame_calc) in self.frame_timings.iter().enumerate() {
+                let mut pos = 0.0;
+                for (u, update_time) in frame_calc.update_durations.iter().enumerate() {
+                    let size = percentage_time(*update_time) * HEIGHT;
+                    frame.rect(i as f32 * line_width, pos, line_width, size)
+                         .fill_color(update_colors[u % 2])
+                         .fill();
+                    pos += size;
+                }
+                {
+                    let size = percentage_time(frame_calc.render_duration) * HEIGHT;
+                    frame.rect(i as f32 * line_width, pos, line_width, size)
+                         .fill_color(rgb(0.0, 0.9, 0.0))
+                         .fill();
+                    pos += size;
+                }
+                {
+                    let size = percentage_time(frame_calc.render_publish) * HEIGHT;
+                    frame.rect(i as f32 * line_width, pos, line_width, size)
+                         .fill_color(rgb(0.0, 0.5, 0.0))
+                         .fill();
+                }
+            }
+            frame.rect(0.0, HEIGHT, WIDTH, 1.0).fill_color(rgb(0, 0, 0)).fill();
+        });
+        });
+
+        let (fps, ups) = self.calc_fps();
+        frame.set_font("SourceCodePro", 12).unwrap();
+        frame.with_translate(WIDTH + 10.1, h, |frame| {
+        frame.with_rotation(-3.1415 / 2.0, |frame| {
+            frame.draw_text(
+                &format!("FPS {} UPS {}", fps, ups)[..],
+                0.5,
+                0.5).unwrap();
+        });
+        });
     }
 }

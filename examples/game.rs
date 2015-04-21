@@ -1,7 +1,6 @@
 extern crate lux;
 use lux::prelude::*;
 use lux::game::*;
-use std::thread::sleep_ms;
 
 const MOVEMENT_SPEED: f32 = 200.0;
 const PLAYER_SIZE: f32 = 20.0;
@@ -45,11 +44,9 @@ impl Game for MyGame {
         } else if window.is_key_pressed('s') {
             self.speed.1 = MOVEMENT_SPEED;
         }
-        sleep_ms(10);
     }
 
-    fn render(&mut self, lag: f32, window: &mut Window, frame: &mut Frame) {
-        let (x, y) = self.pos;
+    fn render(&mut self, lag: f32, _window: &mut Window, frame: &mut Frame) {
         let (x, y) = self.pos;
         let (vx, vy) = self.speed;
 
@@ -57,7 +54,7 @@ impl Game for MyGame {
         frame.circle(x + vx * lag, y + vy * lag, PLAYER_SIZE).fill();
     }
 
-    //fn updates_per_s(&self) -> f64 { 120.0 }
+    fn updates_per_s(&self) -> f64 { 120.0 }
 }
 
 fn clamp(low: f32, value: f32, high: f32) -> f32 {
