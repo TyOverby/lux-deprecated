@@ -25,13 +25,11 @@ use super::prelude::{
     AbstractKey,
     Color,
     Colored,
-    StackedColored,
     PrimitiveCanvas,
     ColorVertex,
     LuxResult,
     LuxError,
     Transform,
-    StackedTransform
 };
 
 
@@ -113,8 +111,8 @@ pub struct Frame {
 
     // Raw
     basis_matrix: Mat4f,
-    matrix_stack: Vec<Mat4f>,
-    color_stack: Vec<(BaseColor, BaseColor)>,
+    fill_color: [f32; 4],
+    stroke_color: [f32; 4],
 
     pub font_cache: Rc<RefCell<Option<FontCache>>>,
 }
@@ -166,8 +164,8 @@ impl Frame {
             color_draw_cache: None,
             tex_draw_cache: None,
             basis_matrix: basis,
-            matrix_stack: vec![],
-            color_stack: vec![([0.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 1.0])],
+            fill_color: [0.0, 0.0, 0.0, 1.0],
+            stroke_color: [0.0, 0.0, 0.0, 1.0],
             font_cache: font_cache
         }
     }
@@ -756,31 +754,11 @@ impl Interactive for Window {
 
 impl Transform for Frame {
     fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
-        let len = self.matrix_stack.len();
-        if len == 0 {
-            &mut self.basis_matrix
-        } else {
-            &mut self.matrix_stack[len - 1]
-        }
+        &mut self.basis_matrix
     }
 
     fn current_matrix(&self) -> &[[f32; 4]; 4] {
-        if self.matrix_stack.len() == 0 {
-            &self.basis_matrix
-        } else {
-            &self.matrix_stack[self.matrix_stack.len()-1]
-        }
-    }
-}
-
-impl StackedTransform for Frame {
-    fn push_matrix(&mut self) {
-        let c = *self.current_matrix();
-        self.matrix_stack.push(c);
-    }
-
-    fn pop_matrix(&mut self) {
-        self.matrix_stack.pop();
+        &self.basis_matrix
     }
 }
 
@@ -796,34 +774,19 @@ impl LuxExtend for Window {
 
 impl Colored for Frame {
     fn current_fill_color(&self) -> &[f32; 4] {
-        let len = self.color_stack.len();
-        &self.color_stack[len - 1].0
+        &self.fill_color
     }
 
     fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
-        let len = self.color_stack.len();
-        &mut self.color_stack[len - 1].0
+        &mut self.fill_color
     }
 
     fn current_stroke_color(&self) -> &[f32; 4] {
-        let len = self.color_stack.len();
-        &self.color_stack[len - 1].1
+        &self.stroke_color
     }
 
     fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
-        let len = self.color_stack.len();
-        &mut self.color_stack[len - 1].1
-    }
-}
-
-impl StackedColored for Frame {
-    fn push_colors(&mut self) {
-        let colors = (*self.current_fill_color(), *self.current_stroke_color());
-        self.color_stack.push(colors);
-    }
-
-    fn pop_colors(&mut self) {
-        self.color_stack.pop();
+        &mut self.stroke_color
     }
 }
 

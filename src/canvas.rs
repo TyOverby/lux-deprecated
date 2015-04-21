@@ -7,10 +7,8 @@ use super::prelude::{
     TrianglesList,
     PrimitiveType,
     Colored,
-    StackedColored,
     Color,
     Points,
-    StackedTransform,
     Sprite,
     Transform
 };
@@ -97,8 +95,8 @@ pub trait PrimitiveCanvas {
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: Transform + StackedTransform + PrimitiveCanvas +
-                     Colored + StackedColored + Sized {
+pub trait LuxCanvas: Transform + PrimitiveCanvas +
+                     Colored + Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (f32, f32);
 

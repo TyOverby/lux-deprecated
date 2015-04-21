@@ -64,29 +64,6 @@ pub trait Transform {
         self.translate(-point.0, -point.1);
         self
     }
-}
-
-/// Turns out that implementing matrix transformations on matrices is a
-/// no brainer!
-impl Transform for [[f32; 4]; 4] {
-    fn current_matrix(&self) -> &[[f32; 4]; 4] { self }
-    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] { self }
-}
-
-/// Similar to opengl pushMatrix() and popMatrix(), this trait is
-/// implemented on objects that will have a stack of operations
-/// applied to it.
-///
-/// Instead of using push_matrix() and pop_matrix() manually, it is
-/// advised that you use with_matrix() and provide a closure that operates
-/// on a clean matrix for the duration of the closure.
-pub trait StackedTransform: Transform {
-    /// Pushes a clean matrix on to the stack that is a duplicate
-    /// of the last matrix on the stack.
-    fn push_matrix(&mut self);
-
-    /// Pops the topmost matrix from the stack.
-    fn pop_matrix(&mut self);
 
     /// Used when you want to make several successive calls to transformations
     /// on a single stacked matrix.
@@ -99,60 +76,67 @@ pub trait StackedTransform: Transform {
     ///   // do other stuff
     /// });
     fn with_matrix<F>(&mut self, f: F) where F: FnOnce(&mut Self){
-        self.push_matrix();
+        let prev = *self.current_matrix();
         f(self);
-        self.pop_matrix();
+        *self.current_matrix_mut() = prev;
     }
 
     /// Similar to `with_matrix` but with a rotation applied
     /// for the duration of the closure.
     fn with_rotation<'a, F>(&'a mut self, rotation: f32, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_matrix();
+        let prev = *self.current_matrix();
         self.rotate(rotation);
         f(self);
-        self.pop_matrix();
+        *self.current_matrix_mut() = prev;
     }
 
     /// Similar to `with_matrix` but with a translation applied
     /// for the duration of the closure.
     fn with_translate<F>(&mut self, dx: f32, dy: f32, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_matrix();
+        let prev = *self.current_matrix();
         self.translate(dx, dy);
         f(self);
-        self.pop_matrix();
+        *self.current_matrix_mut() = prev;
     }
 
     /// Similar to `with_matrix` but with a scale applied
     /// for the duration of the closure.
     fn with_scale<F>(&mut self, scale_x: f32, scale_y: f32, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_matrix();
+        let prev = *self.current_matrix();
         self.scale(scale_x, scale_y);
         f(self);
-        self.pop_matrix();
+        *self.current_matrix_mut() = prev;
     }
 
     /// Similar to `with_matrix` but with a shear applied
     /// for the duration of the closure.
     fn with_shear<F>(&mut self, sx: f32, sy: f32, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_matrix();
+        let prev = *self.current_matrix();
         self.shear(sx, sy);
         f(self);
-        self.pop_matrix();
+        *self.current_matrix_mut() = prev;
     }
 
     /// Similar to `with_matrix` but with rotate_around applied
     /// for the duration of the closure.
     fn with_rotate_around<F>(&mut self, point: (f32, f32), theta: f32, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_matrix();
+        let prev = *self.current_matrix();
         self.rotate_around(point, theta);
         f(self);
-        self.pop_matrix();
+        *self.current_matrix_mut() = prev;
     }
+}
+
+/// Turns out that implementing matrix transformations on matrices is a
+/// no brainer!
+impl Transform for [[f32; 4]; 4] {
+    fn current_matrix(&self) -> &[[f32; 4]; 4] { self }
+    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] { self }
 }
 
 /// A trait representing objects that can be colored with
@@ -185,17 +169,6 @@ pub trait Colored {
         *self.current_stroke_color_mut() = c.to_rgba();
         self
     }
-}
-
-/// For objects that maintain a stack of colors for making drawing
-/// commands easier.
-pub trait StackedColored: Colored {
-    /// Pushes a set (fill, stroke) of colors onto the stack as a clone
-    /// of the previous colors.
-    fn push_colors(&mut self);
-
-    /// Pops a set (fill, stroke) of colors from the stack.
-    fn pop_colors(&mut self);
 
     /// Executes a closure inside a pair of `push_colors()`, `pop_colors()`
     /// in order to provide a clean area for modifying the colors of the object
@@ -208,28 +181,30 @@ pub trait StackedColored: Colored {
     ///   // Draw some things.
     /// });
     fn with_colors<F>(&mut self, f: F) where F: FnOnce(&mut Self) {
-        self.push_colors();
+        let cur_fill = *self.current_fill_color();
+        let cur_stroke = *self.current_stroke_color();
         f(self);
-        self.pop_colors();
+        *self.current_fill_color_mut() = cur_fill;
+        *self.current_stroke_color_mut() = cur_stroke;
     }
 
     /// Same as `with_colors` but automatically sets the fill color for the
     /// duration of the closure.
     fn with_fill_color<C: Color, F>(&mut self, color: C, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_colors();
+        let cur_fill = *self.current_fill_color();
         self.fill_color(color);
         f(self);
-        self.pop_colors();
+        *self.current_fill_color_mut() = cur_fill;
     }
 
     /// Same as `with_colors` but automatically sets the stroke color for the
     /// duration of the closure.
     fn with_stroke_color<C: Color, F>(&mut self, color: C, f: F)
     where F: FnOnce(&mut Self) {
-        self.push_colors();
+        let cur_stroke = *self.current_stroke_color();
         self.stroke_color(color);
         f(self);
-        self.pop_colors();
+        *self.current_stroke_color_mut() = cur_stroke;
     }
 }

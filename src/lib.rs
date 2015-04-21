@@ -37,7 +37,7 @@ pub mod prelude {
     pub use ::interactive::*;
     pub use ::interactive::Event::*;
     pub use ::interactive::MouseButton::*;
-    pub use ::raw::{Colored, StackedColored, Transform, StackedTransform};
+    pub use ::raw::{Colored, Transform};
     pub use ::glutin_window::{Window, Frame};
     pub use ::color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
     pub use ::sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
