@@ -20,7 +20,7 @@ use super::prelude::{
     LuxError,
     LuxCanvas,
     Sprite,
-    SpriteLoader,
+    TextureLoader,
     TexVertex,
     NonUniformSpriteSheet,
     LuxResult

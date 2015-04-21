@@ -9,7 +9,10 @@ fn main() {
     let mut lux = Window::new().unwrap();
 
     // A sprite made from an image
-    let texture = lux.load_sprite(&Path::new("./test/minecraft_fixedwidth_font.png")).unwrap();
+    let texture =
+        lux.load_texture_file(&Path::new("./test/minecraft_fixedwidth_font.png"))
+           .unwrap()
+           .into_sprite();
     let sheet   = texture.as_uniform_sprite_sheet(16, 16);
 
     while lux.is_open() {

@@ -2,6 +2,7 @@ extern crate lux;
 extern crate nd_iter;
 
 use lux::prelude::*;
+use lux::primitive_canvas::PrimitiveCanvas;
 use nd_iter::iter_2d;
 
 fn main() {

@@ -10,11 +10,10 @@ use lux_constants::*;
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
     HasDrawCache,
+    HasPrograms,
     HasDisplay,
     HasFontCache,
     HasSurface,
-    CachedColorDraw,
-    CachedTexDraw
 };
 
 use super::prelude::{
@@ -34,7 +33,11 @@ use super::prelude::{
     Transform,
 };
 
-use super::primitive_canvas::PrimitiveCanvas;
+use super::primitive_canvas::{
+    PrimitiveCanvas,
+    CachedColorDraw,
+    CachedTexDraw
+};
 
 use glutin::WindowBuilder;
 
@@ -138,6 +141,7 @@ impl Frame {
 
 impl Drop for Frame {
     fn drop(&mut self) {
+        //TODO: why is this here?
         let _ = self.set_font("SourceCodePro", 20);
         self.flush_draw();
     }
@@ -337,19 +341,6 @@ impl LuxCanvas for Frame {
         let (w, h) = self.f.get_dimensions();
         (w as f32, h as f32)
     }
-
-    fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, line_size: f32) {
-        unimplemented!();
-    }
-
-    fn draw_lines<I: Iterator<Item = (f32, f32)>>(&mut self, positions: I, line_size: f32) {
-        unimplemented!();
-    }
-
-    fn draw_arc(&mut self, pos: (f32, f32), radius: f32,
-                angle1: f32, angle2: f32, line_size: f32) {
-        unimplemented!();
-    }
 }
 
 impl Interactive for Window {
@@ -502,5 +493,25 @@ impl HasDrawCache for Frame {
     }
     fn tex_draw_cache_mut(&mut self) -> &mut Option<CachedTexDraw> {
         &mut self.tex_draw_cache
+    }
+}
+
+impl HasPrograms for Window {
+    fn texture_shader(&self) -> &glium::Program {
+        &*self.tex_program
+    }
+
+    fn color_shader(&self) -> &glium::Program {
+        &*self.color_program
+    }
+}
+
+impl HasPrograms for Frame {
+    fn texture_shader(&self) -> &glium::Program {
+        &*self.tex_program
+    }
+
+    fn color_shader(&self) -> &glium::Program {
+        &*self.color_program
     }
 }

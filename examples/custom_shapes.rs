@@ -1,5 +1,6 @@
 extern crate lux;
 use lux::prelude::*;
+use lux::primitive_canvas::PrimitiveCanvas;
 
 fn main() {
     let mut window = Window::new().unwrap();

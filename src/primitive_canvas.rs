@@ -2,8 +2,6 @@ use std::rc::Rc;
 use super::accessors::{
     HasDisplay,
     HasSurface,
-    CachedColorDraw,
-    CachedTexDraw,
     HasDrawCache
 };
 
@@ -29,6 +27,20 @@ macro_rules! draw_cmd {
             return;
         }
     };
+}
+
+pub struct CachedColorDraw {
+    pub typ: PrimitiveType,
+    pub points: Vec<ColorVertex>,
+    pub idxs: Vec<u32>,
+}
+
+pub struct CachedTexDraw {
+    pub typ: PrimitiveType,
+    pub points: Vec<TexVertex>,
+    pub texture: Rc<glium::texture::Texture2d>,
+    pub idxs: Vec<u32>,
+    pub color_mult: [f32; 4],
 }
 
 
@@ -123,9 +135,11 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
         use glium::Surface;
+        println!("drawing colored now!");
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
         let (frame, color_program) = self.surface_and_color_shader();
+
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
@@ -165,6 +179,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
         use glium::Surface;
+        println!("drawing textured now!");
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
         let (frame, tex_program) = self.surface_and_texture_shader();

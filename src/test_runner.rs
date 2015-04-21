@@ -134,8 +134,8 @@ fn main() {
     });
 
     runner.add_test("sprite_sheet", |frame| {
-        let sp = frame.load_sprite("test/test.png").unwrap();
-        let mc = frame.load_sprite("test/minecraft_fixedwidth_font.png").unwrap();
+        let sp = frame.load_texture_file("test/test.png").unwrap().into_sprite();
+        let mc = frame.load_texture_file("test/minecraft_fixedwidth_font.png").unwrap().into_sprite();
         let mc = mc.sub_sprite((0, 0), (200, 200)).unwrap();
         frame.sprite(&sp, 0.0, 0.0).draw();
         frame.sprite(&mc, 50.0, 50.0).size(100.0, 100.0).draw();

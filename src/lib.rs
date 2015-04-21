@@ -41,7 +41,8 @@ pub mod prelude {
     pub use ::raw::{Colored, Transform};
     pub use ::glutin_window::{Window, Frame};
     pub use ::color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
-    pub use ::sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
+    pub use ::sprite::{Sprite, Texture, DrawableTexture, TextureLoader,
+        NonUniformSpriteSheet, UniformSpriteSheet};
     pub use ::figure::Figure;
     pub use ::font::{FontCache, TextDraw, FontLoad};
 

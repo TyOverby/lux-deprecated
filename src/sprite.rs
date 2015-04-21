@@ -11,10 +11,20 @@ use std::path::Path;
 use std::cmp::Eq;
 use std::hash::Hash;
 
-use ::accessors::HasDisplay;
-use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList};
+use ::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache};
+use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList, Transform, Colored};
+use ::primitive_canvas::{CachedColorDraw, CachedTexDraw};
+
+use vecmath;
 
 use image::ImageError;
+
+/// An owned texture on the hardware.
+///
+/// Only one Texture can be used at a time.
+pub struct Texture {
+    backing: glium::texture::Texture2d,
+}
 
 #[derive(Clone, Debug)]
 pub struct Sprite {
@@ -26,6 +36,18 @@ pub struct Sprite {
 
     texture_size: (f32, f32),
     texture_pos: (f32, f32),
+}
+
+pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
+    texture: glium::texture::TextureSurface<'a>,
+    d: &'a D,
+    matrix: [[f32; 4]; 4],
+
+    color_draw_cache: Option<CachedColorDraw>,
+    tex_draw_cache: Option<CachedTexDraw>,
+
+    fill_color: [f32; 4],
+    stroke_color: [f32; 4],
 }
 
 #[derive(Clone, Debug)]
@@ -41,33 +63,160 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
     pub mapping: HashMap<K, Sprite>
 }
 
-pub trait SpriteLoader {
-    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError>;
+pub trait TextureLoader {
+    fn load_texture_file<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Texture, ImageError>;
 
-    fn sprite_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Sprite;
-    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite;
+    fn texture_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Texture;
+    fn texture_from_image(&mut self, img: image::DynamicImage) -> Texture;
 }
 
-impl <T> SpriteLoader for T where T: HasDisplay {
-    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError> {
+impl <T> TextureLoader for T where T: HasDisplay {
+    fn load_texture_file<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Texture, ImageError> {
         let img = try!(image::open(path)).flipv();
         let img = glium::texture::Texture2d::new(self.borrow_display(), img);
-        Ok(Sprite::new(Rc::new(img)))
+        Ok(Texture::new(img))
     }
 
-    fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
+    fn texture_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Texture {
         let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
-        Sprite::new(Rc::new(glium::texture::Texture2d::new(self.borrow_display(), pixels)))
+        Texture::new(glium::texture::Texture2d::new(self.borrow_display(), pixels))
     }
 
-    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite {
+    fn texture_from_image(&mut self, img: image::DynamicImage) -> Texture {
         let img = img.flipv();
         let img = glium::texture::Texture2d::new(self.borrow_display(), img);
-        Sprite::new(Rc::new(img))
+        Texture::new(img)
+    }
+}
+
+impl Texture {
+    pub fn empty<D: HasDisplay>(d: &D, width: u32, height: u32) -> Texture {
+        use glium::Surface;
+        let backing = glium::texture::Texture2d::empty(d.borrow_display(), width, height);
+        {
+            let mut s = backing.as_surface();
+            s.clear_all((1.0, 1.0, 0.0, 1.0), 0.0, 0);
+        }
+        Texture {
+            backing: backing
+        }
+    }
+
+    fn new(texture: glium::texture::Texture2d) -> Texture {
+        Texture {
+            backing: texture
+        }
+    }
+
+    pub fn into_sprite(self) -> Sprite {
+        Sprite::new(Rc::new(self.backing))
+    }
+
+    pub fn as_drawable_texture<'a, D>(&'a mut self, d: &'a D) -> DrawableTexture<'a, D>
+    where D: HasDisplay + HasPrograms {
+        DrawableTexture::new(self.backing.as_surface(), d)
+    }
+}
+
+impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
+    fn new(texture: glium::texture::TextureSurface<'a>, d: &'a D)
+    -> DrawableTexture<'a, D> {
+        DrawableTexture {
+            texture: texture,
+            d: d,
+            matrix: vecmath::mat4_id(),
+            color_draw_cache: None,
+            tex_draw_cache: None,
+            fill_color: [0.0, 0.0, 0.0, 1.0],
+            stroke_color: [0.0, 0.0, 0.0, 1.0],
+        }
+    }
+}
+
+impl <'a, D> Colored for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms{
+    fn current_fill_color(&self) -> &[f32; 4] {
+        &self.fill_color
+    }
+
+    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
+        &mut self.fill_color
+    }
+
+    fn current_stroke_color(&self) -> &[f32; 4] {
+        &self.stroke_color
+    }
+
+    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
+        &mut self.stroke_color
+    }
+}
+
+impl <'a, D> Transform for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+    fn current_matrix(&self) -> &[[f32; 4]; 4] {
+        &self.matrix
+    }
+    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
+        &mut self.matrix
+    }
+}
+
+impl <'a, D> HasDisplay for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+    fn borrow_display(&self) -> &glium::Display {
+        &self.d.borrow_display()
+    }
+}
+
+impl <'a, D> HasSurface for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+    type Out = glium::texture::TextureSurface<'a>;
+
+    fn surface(&mut self) -> &mut Self::Out {
+        &mut self.texture
+    }
+
+    fn surface_and_texture_shader(&mut self) -> (&mut Self::Out, &glium::Program) {
+        (&mut self.texture, self.d.texture_shader())
+    }
+    fn surface_and_color_shader(&mut self) -> (&mut Self::Out, &glium::Program) {
+        (&mut self.texture, self.d.color_shader())
+    }
+}
+
+impl <'a, D> HasDrawCache for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+    fn color_draw_cache(&self) -> &Option<CachedColorDraw> {
+        &self.color_draw_cache
+    }
+
+    fn tex_draw_cache(&self) -> &Option<CachedTexDraw> {
+        &self.tex_draw_cache
+    }
+
+    fn color_draw_cache_mut(&mut self) -> &mut Option<CachedColorDraw> {
+        &mut self.color_draw_cache
+    }
+
+    fn tex_draw_cache_mut(&mut self) -> &mut Option<CachedTexDraw> {
+        &mut self.tex_draw_cache
+    }
+}
+
+impl <'a, D> LuxCanvas for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+    fn size(&self) -> (f32, f32) {
+        use glium::Surface;
+        let (w, h) = self.texture.get_dimensions();
+        (w as f32, h as f32)
+    }
+}
+
+impl <'a, D> Drop for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+    fn drop (&mut self) {
+        use primitive_canvas::PrimitiveCanvas;
+        println!("dropping!");
+        self.flush_draw();
     }
 }
 
 impl Sprite {
+    // TODO: hide from docs
     pub fn new(tex: Rc<glium::texture::Texture2d>) -> Sprite {
         use glium::Surface;
         let size = tex.as_surface().get_dimensions();

@@ -48,8 +48,7 @@ pub struct ContainedSprite<'a, C: 'a>  {
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: Transform + PrimitiveCanvas +
-                     Colored + Sized {
+pub trait LuxCanvas: PrimitiveCanvas + Colored + Sized + Transform {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (f32, f32);
 
@@ -113,16 +112,22 @@ pub trait LuxCanvas: Transform + PrimitiveCanvas +
 
     /// Draws a single line from `start` to `end` with a
     /// thickness of `line_size`.
-    fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, line_size: f32);
+    fn draw_line(&mut self, _x1: f32, _y1: f32, _x2: f32, _y2: f32, _line_size: f32) {
+        unimplemented!();
+    }
 
     /// Draws a series of lines from each point to the next with a thickness
     /// of `line_size`.
-    fn draw_lines<I: Iterator<Item = (f32, f32)>>(&mut self, mut positions: I, line_size: f32);
+    fn draw_lines<I: Iterator<Item = (f32, f32)>>(&mut self, mut _positions: I, _line_size: f32) {
+        unimplemented!();
+    }
 
     /// Draws an arc centered at `pos` from `angle1` to `angle_2` with a
     /// thickness of `line_size`.
-    fn draw_arc(&mut self, pos: (f32, f32), radius: f32, angle1: f32,
-                angle2: f32, line_size: f32);
+    fn draw_arc(&mut self, _pos: (f32, f32), _radius: f32, _angle1: f32,
+                _angle2: f32, _line_size: f32) {
+        unimplemented!();
+    }
 
     /// Draws a sprite  to the screen.
     fn sprite(&mut self, sprite: &Sprite, x: f32, y: f32) -> ContainedSprite<Self> {
