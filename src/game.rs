@@ -77,8 +77,9 @@ impl <G: Game> GameRunner<G> {
 
             let s_p_u = self.game.s_per_update();
 
-            println!("elapsed: {}
+            /*println!("elapsed: {}
                       s_p_u  : {}", elapsed, s_p_u);
+                      */
 
             let mut update_durations = vec![];
             while lag >= s_p_u {
