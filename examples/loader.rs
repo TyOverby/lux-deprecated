@@ -38,19 +38,19 @@ fn main() {
 
         for pt in 1 .. 6 {
             frame.set_font("Pacifico", pt * 10).unwrap();
-            frame.draw_text("Hello World", 0.5, y + 0.5).unwrap();
+            frame.draw_text("Hello World", 0.0, y).unwrap();
             y += (pt * 15) as f32;
         }
 
         for pt in 1 .. 6 {
             frame.set_font("cbt", pt * 10).unwrap();
-            frame.draw_text("Hello World", 0.5, y + 0.5).unwrap();
+            frame.draw_text("Hello World", 0.0, y).unwrap();
             y += (pt * 15) as f32;
         }
 
         for pt in 1 .. 6 {
             frame.set_font("SourceCodePro", pt * 10).unwrap();
-            frame.draw_text("Hello World", 0.5, y + 0.5).unwrap();
+            frame.draw_text("Hello World", 0.0, y).unwrap();
             y += (pt * 15) as f32;
         }
 

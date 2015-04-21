@@ -185,9 +185,7 @@ impl <G: Game> GameRunner<G> {
         frame.with_translate(WIDTH + 10.1, h, |frame| {
         frame.with_rotation(-3.1415 / 2.0, |frame| {
             frame.draw_text(
-                &format!("FPS {} UPS {}", fps, ups)[..],
-                0.5,
-                0.5).unwrap();
+                &format!("FPS {} UPS {}", fps, ups)[..], 0.0, 0.0).unwrap();
         });
         });
     }

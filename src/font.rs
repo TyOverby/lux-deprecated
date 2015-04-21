@@ -160,8 +160,8 @@ impl RenderedFont {
         try!(face.set_pixel_sizes(0, self.size));
 
         let mut prev: Option<char> = None;
-        let mut x = x + 0.5;
-        let mut y = y + 0.5;
+        let mut x = x;
+        let mut y = y;
         for current in text.chars() {
             if let Some(prev) = prev {
                 let delta = face.get_kerning(

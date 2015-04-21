@@ -51,7 +51,7 @@ impl <S> GraphicalLoader<S> {
 
         let max = self.max;
         let (aw, ah) = frame.size();
-        let text_height = (frame.height() / 2.0).ceil() + 0.5;
+        let text_height = (frame.height() / 2.0).ceil();
 
         frame.set_font("SourceCodePro", 20).unwrap();
         frame.with_fill_color(rgb(0.9, 0.9, 0.9), |frame| {
@@ -59,8 +59,8 @@ impl <S> GraphicalLoader<S> {
                        aw * (numer as f32 / max as f32), ah).fill();
             frame.fill_color(rgb(0.0, 0.0, 0.0));
 
-            frame.draw_text("LOADING", 0.5, text_height - 30.0).unwrap();
-            frame.draw_text(&text[..], 0.5, text_height).unwrap();
+            frame.draw_text("LOADING", 0.0, text_height - 30.0).unwrap();
+            frame.draw_text(&text[..], 0.0, text_height).unwrap();
         });
     }
 

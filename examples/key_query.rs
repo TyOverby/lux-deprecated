@@ -22,6 +22,6 @@ fn main() {
         frame.set_font("SourceCodePro", 20).unwrap();
         frame.draw_text(
             "Press [space] [esc] or [a] to change the background color",
-            0.5, 50.5).unwrap();
+            0.0, 50.0).unwrap();
     }
 }
