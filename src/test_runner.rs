@@ -25,7 +25,7 @@ impl TestRunner {
                 let cur = current.as_mut().unwrap();
                 let mut frame = window.cleared_frame(rgb(255, 255, 255));
 
-                frame.draw_text(&cur.0[..], 0.0, 20.0).unwrap();
+                frame.draw_text(&cur.0[..], 0.0, 0.0).unwrap();
                 frame.with_translate(0.0, 50.0, |frame| cur.1(frame));
             }
 
