@@ -182,7 +182,7 @@ impl <G: Game> GameRunner<G> {
 
         let (fps, ups) = self.calc_fps();
         frame.set_font("SourceCodePro", 12).unwrap();
-        frame.with_translate(WIDTH + 10.1, h, |frame| {
+        frame.with_translate(WIDTH, h, |frame| {
         frame.with_rotation(-3.1415 / 2.0, |frame| {
             frame.draw_text(
                 &format!("FPS {} UPS {}", fps, ups)[..], 0.0, 0.0).unwrap();

@@ -50,7 +50,7 @@ impl Game for MyGame {
         let (x, y) = self.pos;
         let (vx, vy) = self.speed;
 
-        frame.draw_text("Use the [w][a][s][d] keys to move around", 3.0, 20.0).unwrap();
+        frame.draw_text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).unwrap();
         frame.circle(x + vx * lag, y + vy * lag, PLAYER_SIZE).fill();
     }
 

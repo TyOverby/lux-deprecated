@@ -11,6 +11,7 @@ use std::path::Path;
 use std::cmp::Eq;
 use std::hash::Hash;
 
+use ::accessors::HasDisplay;
 use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList};
 
 use image::ImageError;
@@ -45,6 +46,25 @@ pub trait SpriteLoader {
 
     fn sprite_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Sprite;
     fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite;
+}
+
+impl <T> SpriteLoader for T where T: HasDisplay {
+    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError> {
+        let img = try!(image::open(path)).flipv();
+        let img = glium::texture::Texture2d::new(self.borrow_display(), img);
+        Ok(Sprite::new(Rc::new(img)))
+    }
+
+    fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
+        let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
+        Sprite::new(Rc::new(glium::texture::Texture2d::new(self.borrow_display(), pixels)))
+    }
+
+    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite {
+        let img = img.flipv();
+        let img = glium::texture::Texture2d::new(self.borrow_display(), img);
+        Sprite::new(Rc::new(img))
+    }
 }
 
 impl Sprite {

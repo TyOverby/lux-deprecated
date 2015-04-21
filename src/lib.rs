@@ -28,6 +28,7 @@ pub mod colors;
 pub mod extend;
 pub mod loader;
 pub mod game;
+pub mod accessors;
 
 pub mod prelude {
     pub use ::gfx_integration::{ColorVertex, TexVertex};
@@ -41,7 +42,7 @@ pub mod prelude {
     pub use ::color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
     pub use ::sprite::{Sprite, SpriteLoader, NonUniformSpriteSheet, UniformSpriteSheet};
     pub use ::figure::Figure;
-    pub use ::font::{FontCache, TextDraw, FontLoad, gen_sheet};
+    pub use ::font::{FontCache, TextDraw, FontLoad};
 
     pub use glium::index::PrimitiveType;
     pub use glium::index::PrimitiveType::*;

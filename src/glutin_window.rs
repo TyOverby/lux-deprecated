@@ -1,8 +1,7 @@
 use std::collections::{HashMap, VecMap, VecDeque};
 use std::rc::Rc;
 use std::ops::Deref;
-use std::cell::RefCell;
-use std::path::Path;
+use std::cell::{RefCell, RefMut};
 
 use glutin;
 use glium;
@@ -11,6 +10,7 @@ use lux_constants::*;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::gfx_integration;
+use super::accessors::*;
 use super::prelude::{
     EventIterator,
     FontCache,
@@ -18,9 +18,6 @@ use super::prelude::{
     TexVertex,
     TextDraw,
     Sprite,
-    ImageError,
-    SpriteLoader,
-    FontLoad,
     LuxCanvas,
     Interactive,
     Event,
@@ -454,44 +451,6 @@ impl Window {
     }
 }
 
-impl SpriteLoader for Window {
-    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError> {
-        let img = try!(image::open(path)).flipv();
-        let img = glium::texture::Texture2d::new(&self.display, img);
-        Ok(Sprite::new(Rc::new(img)))
-    }
-
-    fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
-        let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
-        Sprite::new(Rc::new(glium::texture::Texture2d::new(&self.display, pixels)))
-    }
-
-    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite {
-        let img = img.flipv();
-        let img = glium::texture::Texture2d::new(&self.display, img);
-        Sprite::new(Rc::new(img))
-    }
-}
-
-impl SpriteLoader for Frame {
-    fn load_sprite<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Sprite, ImageError> {
-        let img = try!(image::open(path)).flipv();
-        let img = glium::texture::Texture2d::new(&self.display, img);
-        Ok(Sprite::new(Rc::new(img)))
-    }
-
-    fn sprite_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Sprite {
-        let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
-        Sprite::new(Rc::new(glium::texture::Texture2d::new(&self.display, pixels)))
-    }
-
-    fn sprite_from_image(&mut self, img: image::DynamicImage) -> Sprite {
-        let img = img.flipv();
-        let img = glium::texture::Texture2d::new(&self.display, img);
-        Sprite::new(Rc::new(img))
-    }
-}
-
 #[allow(unused_variables)]
 impl LuxCanvas for Frame {
     fn size(&self) -> (f32, f32) {
@@ -868,68 +827,26 @@ impl StackedColored for Frame {
     }
 }
 
-
-impl FontLoad for Window {
-    fn load_font<P: AsRef<Path> + ?Sized>(&mut self, name: &str, path: &P) -> LuxResult<()> {
-        let mut font_cache = self.font_cache.borrow_mut();
-        font_cache.as_mut().unwrap().load(name, path.as_ref())
-    }
-
-    fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
-        use std::fs::File;
-        let window_c = self.display.clone();
-
-        let mut font_cache = self.font_cache.borrow_mut();
-        let mut font_cache = font_cache.as_mut().unwrap();
-        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
-            let img = img.flipv();
-
-            let mut out_path = File::create("out_foo.png").unwrap();
-            let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
-
-            let tex = glium::texture::Texture2d::new(&window_c, img);
-            Sprite::new(Rc::new(tex))
-        }, name, size);
-        res
+impl HasDisplay for Window {
+    fn borrow_display(&self) -> &glium::Display {
+        &self.display
     }
 }
 
-
-impl TextDraw for Frame {
-    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
-        let c =  *self.current_fill_color();
-
-        // Take the font cache, then put it back when we're done.
-        let mut font_cache = self.font_cache.borrow_mut().take().unwrap();
-        try!(font_cache.draw_onto(self, text, x, y, c));
-        *self.font_cache.borrow_mut() = Some(font_cache);
-        Ok(())
+impl HasFontCache for Window {
+    fn font_cache(&self) -> RefMut<Option<FontCache>> {
+        self.font_cache.borrow_mut()
     }
+}
 
-    fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
-        use std::fs::File;
-
-        let window_c = self.display.clone();
-
-        let mut font_cache = self.font_cache.borrow_mut();
-        let mut font_cache = font_cache.as_mut().unwrap();
-        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
-            let img = img.flipv();
-
-            let mut out_path = File::create("out.png").unwrap();
-            let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
-
-
-            let img = glium::texture::Texture2d::new(&window_c, img);
-            Sprite::new(Rc::new(img))
-        }, name, size);
-        res
+impl HasDisplay for Frame {
+    fn borrow_display(&self) -> &glium::Display {
+        &self.display
     }
+}
 
-    fn get_font(&self) -> (String, u32) {
-        let font_cache = self.font_cache.borrow();
-        let font_cache = font_cache.as_ref().unwrap();
-        let current = font_cache.current.as_ref().unwrap();
-        (current.name.clone(), current.size)
+impl HasFontCache for Frame {
+    fn font_cache(&self) -> RefMut<Option<FontCache>> {
+        self.font_cache.borrow_mut()
     }
 }

@@ -6,12 +6,16 @@ use std::rc::Rc;
 use std::path::Path;
 use std::io::Result as IoResult;
 use std::fs::File;
+use std::convert::{Into, AsRef};
+use std::cell::{RefMut, Ref};
 
 use image;
 use freetype;
+use glium;
 use glyph_packer;
 use lux_constants::*;
 
+use super::accessors::{HasDisplay, HasFontCache};
 use super::prelude::{
     LuxError,
     LuxCanvas,
@@ -55,21 +59,60 @@ pub trait FontLoad {
 pub trait TextDraw {
     fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()>;
     fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
-    fn get_font(&self) -> (String, u32);
 }
 
-pub trait TextDrawStack: TextDraw {
-    fn with_font<F>(&mut self, name: &str, size: u32, f: F) -> LuxResult<()>
-    where F: FnOnce(&mut Self) {
-        let current = self.get_font();
-        try!(self.set_font(name, size));
-        f(self);
-        try!(self.set_font(&current.0[..], current.1));
-        Ok(())
+impl <T> FontLoad for T where T: HasDisplay + HasFontCache {
+    fn load_font<P: AsRef<Path> + ?Sized>(&mut self, name: &str, path: &P) -> LuxResult<()> {
+        let mut font_cache: RefMut<Option<FontCache>> = self.font_cache();
+        font_cache.as_mut().unwrap().load(name, path.as_ref())
+    }
+
+    fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
+        use std::fs::File;
+        let window_c: glium::Display = self.clone_display();
+
+        let mut font_cache = self.font_cache();
+        let mut font_cache = font_cache.as_mut().unwrap();
+        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
+            let img = img.flipv();
+            let tex = glium::texture::Texture2d::new(&window_c, img);
+            Sprite::new(Rc::new(tex))
+        }, name, size);
+        res
     }
 }
 
-impl <T: TextDraw> TextDrawStack for T {}
+impl <T> TextDraw for T where T: HasDisplay + HasFontCache + LuxCanvas {
+    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
+        let c =  *self.current_fill_color();
+
+        // Take the font cache, then put it back when we're done.
+        let mut font_cache = self.font_cache().take().unwrap();
+        try!(font_cache.draw_onto(self, text, x, y, c));
+        *self.font_cache() = Some(font_cache);
+        Ok(())
+    }
+
+    fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
+        use std::fs::File;
+
+        let window_c: glium::Display = self.clone_display();
+
+        let mut font_cache = self.font_cache();
+        let mut font_cache = font_cache.as_mut().unwrap();
+        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
+            let img = img.flipv();
+
+            let mut out_path = File::create("out.png").unwrap();
+            let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
+
+
+            let img = glium::texture::Texture2d::new(&window_c, img);
+            Sprite::new(Rc::new(img))
+        }, name, size);
+        res
+    }
+}
 
 impl FontCache {
     pub fn new<S>(mut loader: S) -> LuxResult<FontCache> where S: FnMut(image::DynamicImage) -> Sprite {
@@ -200,7 +243,7 @@ impl RenderedFont {
     }
 }
 
-pub fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
+fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
 -> LuxResult<(FontSheet, HashMap<char, CharOffset>)> where S: FnMut(image::DynamicImage) -> Sprite {
     try!(face.set_pixel_sizes(0, size));
 
@@ -221,7 +264,7 @@ pub fn gen_sheet<S>(loader: &mut S, face: &mut freetype::Face, size: u32)
     Ok((sprite, offsets))
 }
 
-pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, CharOffset)> {
+fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicImage, CharOffset)> {
     fn buf_to_vec(bf: &[u8], width: u32, height: u32) -> image::DynamicImage {
         let mut v = Vec::with_capacity((width * height * 2) as usize);
         for &p in bf {
@@ -248,7 +291,7 @@ pub fn char_to_img(face: &freetype::Face, c: char) -> LuxResult<(image::DynamicI
     Ok((buf_to_vec(bit.buffer(), bit.width() as u32, bit.rows() as u32), char_offsets))
 }
 
-pub fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
+fn merge_all<A: ::std::fmt::Debug, I>(mut images: I) ->
 (image::DynamicImage, HashMap<A, (glyph_packer::Rect, CharOffset)>)
 where I: Iterator<Item=(A, LuxResult<(image::DynamicImage, CharOffset)>)>,
       A: Eq + Hash {
