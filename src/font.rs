@@ -161,7 +161,9 @@ impl RenderedFont {
 
         let mut prev: Option<char> = None;
         let mut x = x;
-        let mut y = y;
+        let height_offset = face.size_metrics().map(|m| m.height / 64).unwrap_or(0);
+        println!("height {}", height_offset);
+        let mut y = y + height_offset as f32;
         for current in text.chars() {
             if let Some(prev) = prev {
                 let delta = face.get_kerning(
@@ -169,7 +171,7 @@ impl RenderedFont {
                         face.get_char_index(current as usize),
                         freetype::face::KerningMode::KerningDefault);
                 let delta = try!(delta);
-                x += (delta.x >> 6) as f32;
+                x += (delta.x / 64) as f32;
             }
 
             let offset = self.offsets.get(&current).cloned().unwrap_or(CharOffset {
@@ -180,7 +182,7 @@ impl RenderedFont {
                           x + offset.bitmap_offset.0 as f32,
                           y - offset.bitmap_offset.1 as f32).color(color).draw();
 
-            x += (offset.advance.0 >> 6) as f32;
+            x += (offset.advance.0 / 64) as f32;
 
             prev = Some(current);
         }
