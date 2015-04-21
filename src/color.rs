@@ -64,6 +64,18 @@ impl <T: NormalizeTo1> Color for [T; 3] {
     }
 }
 
+impl <T: NormalizeTo1> Color for (T, T, T, T) {
+    fn to_rgba(self) -> [f32; 4] {
+        [self.0.norm(), self.1.norm(), self.2.norm(), self.3.norm()]
+    }
+}
+
+impl <T: NormalizeTo1> Color for (T, T, T) {
+    fn to_rgba(self) -> [f32; 4] {
+        [self.0.norm(), self.1.norm(), self.2.norm(), 1.0]
+    }
+}
+
 impl NormalizeTo1 for u8 {
     fn norm(&self) -> f32 {
         *self as f32 / 255.0
