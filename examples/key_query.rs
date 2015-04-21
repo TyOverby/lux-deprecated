@@ -12,7 +12,8 @@ fn main() {
             rgb(0.5, 0.0, 0.0)
         } else if window.is_key_pressed(Escape) {
             rgb(0.0, 0.0, 0.5)
-        } else if window.is_key_pressed(38 /* 'a' */) {
+        } else if window.is_key_pressed(38) {
+            // 38 is the char code for `a`.
             rgb(0.0, 0.5, 0.0)
         } else {
             rgb(0.5, 0.5, 0.5)
