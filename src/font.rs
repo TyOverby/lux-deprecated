@@ -156,15 +156,24 @@ impl RenderedFont {
                         face: &mut freetype::Face, x: f32, y: f32, color: [f32; 4])
     -> LuxResult<()> where C: LuxCanvas {
         let sheet = &self.font_sheet;
+        let original_x = x;
+        let original_y = y;
 
         try!(face.set_pixel_sizes(0, self.size));
 
         let mut prev: Option<char> = None;
-        let mut x = x;
         let height_offset = face.size_metrics().map(|m| m.height / 64).unwrap_or(0);
-        println!("height {}", height_offset);
+
+        let mut x = x;
         let mut y = y + height_offset as f32;
         for current in text.chars() {
+            if current == '\n' {
+                x = original_x;
+                y += height_offset as f32;
+                prev = None;
+                continue;
+            }
+
             if let Some(prev) = prev {
                 let delta = face.get_kerning(
                         face.get_char_index(prev as usize),
@@ -183,6 +192,7 @@ impl RenderedFont {
                           y - offset.bitmap_offset.1 as f32).color(color).draw();
 
             x += (offset.advance.0 / 64) as f32;
+            y += (offset.advance.1 / 64) as f32;
 
             prev = Some(current);
         }

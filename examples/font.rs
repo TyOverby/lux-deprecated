@@ -1,7 +1,4 @@
 extern crate lux;
-extern crate glium;
-extern crate image;
-extern crate freetype;
 
 use lux::prelude::*;
 use std::path::Path;

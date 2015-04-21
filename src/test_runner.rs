@@ -56,6 +56,11 @@ const PI_4: f32 = PI / 4.0;
 fn main() {
     let mut runner = TestRunner::new();
 
+
+    runner.add_test("text_with_newline", |frame| {
+        frame.draw_text("Hello\nWorld", 0.0, 0.0).unwrap();
+    });
+
     runner.add_test("indiv_rotated_squares", |frame| {
         frame.fill_color(rgb(255, 100, 0));
         frame.stroke_color(rgba(0, 0, 255, 100));
