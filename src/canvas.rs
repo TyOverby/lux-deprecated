@@ -14,7 +14,7 @@ use super::prelude::{
 use vecmath;
 
 struct BasicFields<'a, C: 'a>  {
-    fill_color: Option<[f32; 4]>,
+    fill_color: [f32; 4],
     stroke_color: Option<[f32; 4]>,
     padding: (f32, f32, f32, f32),
     border: f32,
@@ -44,8 +44,6 @@ pub struct ContainedSprite<'a, C: 'a>  {
     sprite: Sprite
 }
 
-
-
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
 pub trait LuxCanvas: PrimitiveCanvas + Colored + Sized + Transform {
@@ -72,22 +70,26 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored + Sized + Transform {
 
     /// Returns a rectangle with the given dimensions and position.
     fn rect<'a>(&'a mut self, x: f32, y: f32, w: f32, h: f32) -> Rectangle<'a, Self> {
-        Rectangle::new(self, (x, y), (w, h))
+        let c = self.color();
+        Rectangle::new(self, (x, y), (w, h), c)
     }
 
     /// Returns a square with the given dimensions and position.
     fn square<'a>(&'a mut self, x: f32, y: f32, size: f32) -> Rectangle<'a, Self> {
-        Rectangle::new(self, (x, y), (size, size))
+        let c = self.color();
+        Rectangle::new(self, (x, y), (size, size), c)
     }
 
     /// Returns an ellipse with the given dimensions and position.
     fn ellipse<'a>(&'a mut self, x: f32, y: f32, w: f32, h: f32) -> Ellipse<'a, Self> {
-        Ellipse::new(self, (x, y), (w, h))
+        let c = self.color();
+        Ellipse::new(self, (x, y), (w, h), c)
     }
 
     /// Returns an circle with the given dimensions and position.
     fn circle<'a>(&'a mut self, x: f32, y: f32, size: f32) -> Ellipse<'a, Self> {
-        Ellipse::new(self, (x, y), (size, size))
+        let c = self.color();
+        Ellipse::new(self, (x, y), (size, size), c)
     }
 
     // TODO: unify this and draw_pixels.
@@ -132,16 +134,16 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored + Sized + Transform {
     /// Draws a sprite  to the screen.
     fn sprite(&mut self, sprite: &Sprite, x: f32, y: f32) -> ContainedSprite<Self> {
         ContainedSprite {
-            fields: BasicFields::new((x, y), sprite.ideal_size(), self),
+            fields: BasicFields::new((x, y), sprite.ideal_size(), self, [1.0, 1.0, 1.0, 1.0]),
             sprite: sprite.clone()
         }
     }
 }
 
 impl <'a, C: 'a> BasicFields<'a, C> {
-    fn new(pos: (f32, f32), size: (f32, f32), c: &'a mut C) -> BasicFields<'a, C> {
+    fn new(pos: (f32, f32), size: (f32, f32), c: &'a mut C, color: [f32; 4]) -> BasicFields<'a, C> {
         BasicFields {
-            fill_color: None,
+            fill_color: color,
             stroke_color: None,
             padding: (0.0, 0.0, 0.0, 0.0),
             border: 0.0,
@@ -155,18 +157,18 @@ impl <'a, C: 'a> BasicFields<'a, C> {
 }
 
 impl <'a, C> Ellipse<'a, C> {
-    fn new(c: &'a mut C, pos: (f32, f32), size: (f32, f32)) -> Ellipse<'a, C> {
+    fn new(c: &'a mut C, pos: (f32, f32), size: (f32, f32), color: [f32; 4]) -> Ellipse<'a, C> {
         Ellipse {
-            fields: BasicFields::new(pos, size, c),
+            fields: BasicFields::new(pos, size, c, color),
             spokes: 90
         }
     }
 }
 
 impl <'a, C> Rectangle<'a, C> {
-    fn new(c: &'a mut C, pos: (f32, f32), size: (f32, f32)) -> Rectangle<'a, C> {
+    fn new(c: &'a mut C, pos: (f32, f32), size: (f32, f32), color: [f32; 4]) -> Rectangle<'a, C> {
         Rectangle {
-            fields: BasicFields::new(pos, size, c),
+            fields: BasicFields::new(pos, size, c, color),
         }
     }
 }
@@ -180,51 +182,36 @@ impl <'a, C> Transform for Rectangle<'a, C> {
     }
 }
 
-impl <'a, C> Colored for Ellipse<'a, C> where C: Colored {
-    fn current_fill_color(&self) -> &[f32; 4] {
-        self.fields.fill_color.as_ref().unwrap_or_else(
-            || self.fields.canvas.current_fill_color())
-    }
-    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
-        if self.fields.fill_color.is_none() {
-            self.fields.fill_color = Some(*self.fields.canvas.current_fill_color());
-        }
-        self.fields.fill_color.as_mut().unwrap()
+impl <'a, C> Colored for Ellipse<'a, C> {
+    fn color(&self) -> [f32; 4] {
+        self.fields.fill_color
     }
 
-    fn current_stroke_color(&self) -> &[f32; 4] {
-        self.fields.stroke_color.as_ref().unwrap_or_else(
-            || self.fields.canvas.current_stroke_color())
-    }
-    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
-        if self.fields.stroke_color.is_none() {
-            self.fields.stroke_color = Some(*self.fields.canvas.current_stroke_color());
-        }
-        self.fields.stroke_color.as_mut().unwrap()
+    fn set_color<A: Color>(&mut self, color: A) -> &mut Self {
+        self.fields.fill_color = color.to_rgba();
+        self
     }
 }
 
-impl <'a, C> Colored for Rectangle<'a, C> where C: Colored {
-    fn current_fill_color(&self) -> &[f32; 4] {
-        self.fields.fill_color.as_ref().unwrap_or_else(
-            || self.fields.canvas.current_fill_color())
-    }
-    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
-        if self.fields.fill_color.is_none() {
-            self.fields.fill_color = Some(*self.fields.canvas.current_fill_color());
-        }
-        self.fields.fill_color.as_mut().unwrap()
+impl <'a, C> Colored for Rectangle<'a, C> {
+    fn color(&self) -> [f32; 4] {
+        self.fields.fill_color
     }
 
-    fn current_stroke_color(&self) -> &[f32; 4] {
-        self.fields.stroke_color.as_ref().unwrap_or_else(
-            || self.fields.canvas.current_stroke_color())
+    fn set_color<A: Color>(&mut self, color: A) -> &mut Self{
+        self.fields.fill_color = color.to_rgba();
+        self
     }
-    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
-        if self.fields.stroke_color.is_none() {
-            self.fields.stroke_color = Some(*self.fields.canvas.current_stroke_color());
-        }
-        self.fields.stroke_color.as_mut().unwrap()
+}
+
+impl <'a, C> Colored for ContainedSprite<'a, C> {
+    fn color(&self) -> [f32; 4] {
+        self.fields.fill_color
+    }
+
+    fn set_color<A: Color>(&mut self, color: A) -> &mut Self{
+        self.fields.fill_color = color.to_rgba();
+        self
     }
 }
 
@@ -234,7 +221,7 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
         use std::f32::consts::PI;
         use num::traits::Float;
 
-        let color = *self.current_fill_color();
+        let color = self.color();
         let spokes = self.spokes;
         let mut vertices = vec![];
 
@@ -309,11 +296,6 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
         self
     }
 
-    pub fn color<O: Color>(&mut self, color: O) -> &mut ContainedSprite<'a, C> {
-        self.fields.fill_color = Some(color.to_rgba());
-        self
-    }
-
     pub fn draw(&mut self) {
         let bounds = self.sprite.bounds();
 
@@ -338,14 +320,14 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
                       Some(&idxs[..]),
                       Some(transform),
                       self.sprite.texture(),
-                      self.fields.fill_color);
+                      Some(self.fields.fill_color));
     }
 }
 
 impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
     /// Fills the rectangle with a solid color.
     pub fn fill(&mut self) {
-        let color = *self.current_fill_color();
+        let color = self.color();
         let vertices = [
             ColorVertex{ pos: [1.0, 0.0], color: color },
             ColorVertex{ pos: [0.0, 0.0], color: color },
@@ -368,14 +350,14 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         let size = self.fields.size;
         let border = self.fields.border;
         let transform = self.fields.transform;
-        let color = *self.current_stroke_color();
+        let color = self.fields.stroke_color.unwrap_or(self.color());
 
         self.fields.border = 0.0;
 
         self.fields.canvas.with_matrix(|canvas| {
             canvas.translate(offset_pos.0, offset_pos.1);
             canvas.apply_matrix(transform);
-            canvas.with_fill_color(color, |canvas| {
+            canvas.with_color(color, |canvas| {
                 // TOP
                 canvas.rect(0.0, 0.0, size.0, border)
                       .fill();
@@ -397,8 +379,9 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
 
     /// Sets the size of the border.  The border is drawn using the
     /// `stroke()` function.
-    pub fn border(&mut self, border_size: f32) -> &mut Rectangle<'a, C> {
+    pub fn border<A: Color>(&mut self, border_size: f32, color: A) -> &mut Rectangle<'a, C> {
         self.fields.border = border_size;
+        self.fields.stroke_color = Some(color.to_rgba());
         self
     }
 

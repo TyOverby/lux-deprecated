@@ -12,7 +12,7 @@ use std::cmp::Eq;
 use std::hash::Hash;
 
 use ::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache};
-use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList, Transform, Colored};
+use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList, Transform, Colored, Color};
 use ::primitive_canvas::{CachedColorDraw, CachedTexDraw};
 
 use vecmath;
@@ -46,8 +46,7 @@ pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
 
-    fill_color: [f32; 4],
-    stroke_color: [f32; 4],
+    color: [f32; 4],
 }
 
 #[derive(Clone, Debug)]
@@ -127,27 +126,19 @@ impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
             matrix: vecmath::mat4_id(),
             color_draw_cache: None,
             tex_draw_cache: None,
-            fill_color: [0.0, 0.0, 0.0, 1.0],
-            stroke_color: [0.0, 0.0, 0.0, 1.0],
+            color: [0.0, 0.0, 0.0, 1.0],
         }
     }
 }
 
 impl <'a, D> Colored for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms{
-    fn current_fill_color(&self) -> &[f32; 4] {
-        &self.fill_color
+    fn color(&self) -> [f32; 4] {
+        self.color
     }
 
-    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
-        &mut self.fill_color
-    }
-
-    fn current_stroke_color(&self) -> &[f32; 4] {
-        &self.stroke_color
-    }
-
-    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
-        &mut self.stroke_color
+    fn set_color<C: Color>(&mut self, color: C) -> &mut DrawableTexture<'a, D> {
+        self.color = color.to_rgba();
+        self
     }
 }
 

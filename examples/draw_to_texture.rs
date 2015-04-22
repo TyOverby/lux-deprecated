@@ -12,7 +12,7 @@ fn main() {
         {
             let mut tex = tex.as_drawable_texture(&lux);
             tex.draw_pixel(5.0, 5.0, rgb(255, 0, 0));
-            tex.square(5.0, 5.0, 50.0).border(5.0).fill_and_stroke();
+            tex.square(5.0, 5.0, 50.0).border(5.0, rgb(50,50,50)).fill_and_stroke();
         }
         tex.into_sprite()
     };

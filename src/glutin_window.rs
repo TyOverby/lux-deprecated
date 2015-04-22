@@ -92,8 +92,7 @@ pub struct Frame {
 
     // Raw
     basis_matrix: Mat4f,
-    fill_color: [f32; 4],
-    stroke_color: [f32; 4],
+    color: [f32; 4],
 
     pub font_cache: Rc<RefCell<Option<FontCache>>>,
 }
@@ -131,8 +130,7 @@ impl Frame {
             color_draw_cache: None,
             tex_draw_cache: None,
             basis_matrix: basis,
-            fill_color: [0.0, 0.0, 0.0, 1.0],
-            stroke_color: [0.0, 0.0, 0.0, 1.0],
+            color: [0.0, 0.0, 0.0, 1.0],
             font_cache: font_cache
         }
     }
@@ -423,20 +421,13 @@ impl LuxExtend for Window {
 }
 
 impl Colored for Frame {
-    fn current_fill_color(&self) -> &[f32; 4] {
-        &self.fill_color
+    fn color(&self) -> [f32; 4] {
+        self.color
     }
 
-    fn current_fill_color_mut(&mut self) -> &mut[f32; 4] {
-        &mut self.fill_color
-    }
-
-    fn current_stroke_color(&self) -> &[f32; 4] {
-        &self.stroke_color
-    }
-
-    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4] {
-        &mut self.stroke_color
+    fn set_color<C: Color>(&mut self, color: C) -> &mut Frame {
+        self.color = color.to_rgba();
+        self
     }
 }
 

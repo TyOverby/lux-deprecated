@@ -148,7 +148,7 @@ impl <G: Game> GameRunner<G> {
         frame.with_translate(WIDTH, h, |frame| {
         frame.with_scale(-1.0, -1.0, |frame| {
             frame.rect(0.0, 0.0, WIDTH, HEIGHT)
-                 .fill_color(rgba(1.0, 1.0, 1.0, 0.8))
+                 .set_color(rgba(1.0, 1.0, 1.0, 0.8))
                  .fill();
 
             let line_width = WIDTH / self.game.draw_fps().unwrap_or(100) as f32;
@@ -158,25 +158,25 @@ impl <G: Game> GameRunner<G> {
                 for (u, update_time) in frame_calc.update_durations.iter().enumerate() {
                     let size = percentage_time(*update_time) * HEIGHT;
                     frame.rect(i as f32 * line_width, pos, line_width, size)
-                         .fill_color(update_colors[u % 2])
+                         .set_color(update_colors[u % 2])
                          .fill();
                     pos += size;
                 }
                 {
                     let size = percentage_time(frame_calc.render_duration) * HEIGHT;
                     frame.rect(i as f32 * line_width, pos, line_width, size)
-                         .fill_color(rgb(0.0, 0.9, 0.0))
+                         .set_color(rgb(0.0, 0.9, 0.0))
                          .fill();
                     pos += size;
                 }
                 {
                     let size = percentage_time(frame_calc.render_publish) * HEIGHT;
                     frame.rect(i as f32 * line_width, pos, line_width, size)
-                         .fill_color(rgb(0.0, 0.5, 0.0))
+                         .set_color(rgb(0.0, 0.5, 0.0))
                          .fill();
                 }
             }
-            frame.rect(0.0, HEIGHT, WIDTH, 1.0).fill_color(rgb(0, 0, 0)).fill();
+            frame.rect(0.0, HEIGHT, WIDTH, 1.0).set_color(rgb(0, 0, 0)).fill();
         });
         });
 

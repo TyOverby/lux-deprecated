@@ -18,6 +18,8 @@ use lux_constants::*;
 use super::accessors::{HasDisplay, HasFontCache};
 use super::prelude::{
     LuxError,
+    Colored,
+    Transform,
     LuxCanvas,
     Sprite,
     TextureLoader,
@@ -51,6 +53,14 @@ pub struct RenderedFont {
     pub offsets: HashMap<char, CharOffset>
 }
 
+pub struct ContainedText<'a, C: 'a, S: 'a + AsRef<str>> {
+    canvas: &'a mut C,
+    text: &'a S,
+    pos: (f32, f32),
+    transform: [[f32; 4]; 4],
+    color: [f32; 4]
+}
+
 pub trait FontLoad {
     fn load_font<P: AsRef<Path>>(&mut self, name: &str, path: &P) -> LuxResult<()>;
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
@@ -59,6 +69,20 @@ pub trait FontLoad {
 pub trait TextDraw {
     fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()>;
     fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
+}
+
+pub trait TextDraw2 {
+
+}
+
+impl <'a, A, B: AsRef<str>> Transform for ContainedText<'a, A, B> {
+    fn current_matrix(&self) -> &[[f32; 4]; 4] {
+        &self.transform
+    }
+
+    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
+        &mut self.transform
+    }
 }
 
 impl <T> FontLoad for T where T: HasDisplay + HasFontCache {
@@ -84,7 +108,7 @@ impl <T> FontLoad for T where T: HasDisplay + HasFontCache {
 
 impl <T> TextDraw for T where T: HasDisplay + HasFontCache + LuxCanvas {
     fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
-        let c =  *self.current_fill_color();
+        let c =  self.color();
 
         // Take the font cache, then put it back when we're done.
         let mut font_cache = self.font_cache().take().unwrap();
@@ -232,7 +256,7 @@ impl RenderedFont {
             });
             canvas.sprite(&sheet.get(&current),
                           x + offset.bitmap_offset.0 as f32,
-                          y - offset.bitmap_offset.1 as f32).color(color).draw();
+                          y - offset.bitmap_offset.1 as f32).set_color(color).draw();
 
             x += (offset.advance.0 / 64) as f32;
             y += (offset.advance.1 / 64) as f32;

@@ -20,7 +20,7 @@ fn main() {
                 let y = y as f32 * dist;
                 frame.rect(x, y, size, size)
                    .rotate_around((size / 2.0, size / 2.0), theta)
-                   .fill_color(colors::RED)
+                   .set_color(colors::RED)
                    .fill();
             }
         }

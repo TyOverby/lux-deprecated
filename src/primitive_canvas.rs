@@ -135,7 +135,6 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
         use glium::Surface;
-        println!("drawing colored now!");
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
         let (frame, color_program) = self.surface_and_color_shader();
@@ -179,7 +178,6 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
         use glium::Surface;
-        println!("drawing textured now!");
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
         let (frame, tex_program) = self.surface_and_texture_shader();

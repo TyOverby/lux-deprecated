@@ -147,64 +147,13 @@ impl Transform for [[f32; 4]; 4] {
 /// [r, b, b, a].
 pub trait Colored {
     /// Returns a reference to the current fill color.
-    fn current_fill_color(&self) -> &[f32; 4];
+    fn color(&self) -> [f32; 4];
+    fn set_color<C: Color>(&mut self, color: C) -> &mut Self;
 
-    /// Returns a mutable reference to the current fill color.
-    fn current_fill_color_mut(&mut self) -> &mut[f32; 4];
-
-    /// Returns a reference to the current stroke color.
-    fn current_stroke_color(&self) -> &[f32; 4];
-
-    /// Returns a mutable reference to the current stroke color.
-    fn current_stroke_color_mut(&mut self) -> &mut[f32; 4];
-
-    /// Sets the fill color.
-    fn fill_color<C: Color>(&mut self, c: C) -> &mut Self {
-        *self.current_fill_color_mut() = c.to_rgba();
-        self
-    }
-
-    /// Sets the stroke color.
-    fn stroke_color<C: Color>(&mut self, c: C) -> &mut Self {
-        *self.current_stroke_color_mut() = c.to_rgba();
-        self
-    }
-
-    /// Executes a closure inside a pair of `push_colors()`, `pop_colors()`
-    /// in order to provide a clean area for modifying the colors of the object
-    /// without effecting things further down the line.
-    ///
-    /// Example:
-    /// lux.with_colors(|lux| {
-    ///   lux.fill_color(RED);
-    ///   lux.stroke_color(BLUE);
-    ///   // Draw some things.
-    /// });
-    fn with_colors<F>(&mut self, f: F) where F: FnOnce(&mut Self) {
-        let cur_fill = *self.current_fill_color();
-        let cur_stroke = *self.current_stroke_color();
+    fn with_color<F, C: Color>(&mut self, color: C, f: F) where F: FnOnce(&mut Self) {
+        let prev = self.color();
+        self.set_color(color);
         f(self);
-        *self.current_fill_color_mut() = cur_fill;
-        *self.current_stroke_color_mut() = cur_stroke;
-    }
-
-    /// Same as `with_colors` but automatically sets the fill color for the
-    /// duration of the closure.
-    fn with_fill_color<C: Color, F>(&mut self, color: C, f: F)
-    where F: FnOnce(&mut Self) {
-        let cur_fill = *self.current_fill_color();
-        self.fill_color(color);
-        f(self);
-        *self.current_fill_color_mut() = cur_fill;
-    }
-
-    /// Same as `with_colors` but automatically sets the stroke color for the
-    /// duration of the closure.
-    fn with_stroke_color<C: Color, F>(&mut self, color: C, f: F)
-    where F: FnOnce(&mut Self) {
-        let cur_stroke = *self.current_stroke_color();
-        self.stroke_color(color);
-        f(self);
-        *self.current_stroke_color_mut() = cur_stroke;
+        self.set_color(prev);
     }
 }

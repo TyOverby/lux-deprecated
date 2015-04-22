@@ -62,62 +62,63 @@ fn main() {
     });
 
     runner.add_test("indiv_rotated_squares", |frame| {
-        frame.fill_color(rgb(255, 100, 0));
-        frame.stroke_color(rgba(0, 0, 255, 100));
+        frame.set_color(rgb(255, 100, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
             let pos = i as f32 * 100.0;
             frame.square(pos, 0.0, 50.0)
-                 .border(border / 2.0)
+                 .border(border / 2.0, rgb(255, 100, 50))
                  .rotate_around((12.5, 12.5), PI_4 + 0.2)
                  .fill_and_stroke();
         }
     });
 
     runner.add_test("squares", |frame| {
-        frame.fill_color(rgb(255, 0, 0));
-        frame.stroke_color(rgba(0, 0, 255, 100));
+        frame.set_color(rgb(255, 0, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
             let pos = i as f32 * 100.0;
-            frame.square(pos, 0.0, 50.0).border(border / 2.0).fill_and_stroke();
+            frame.square(pos, 0.0, 50.0)
+                 .border(border / 2.0, rgba(0, 0, 255, 100))
+                 .fill_and_stroke();
         }
     });
 
     runner.add_test("rotated_squares", |frame| {
         frame.rotate(0.5);
-        frame.fill_color(rgb(255, 0, 0));
-        frame.stroke_color(rgba(0, 0, 255, 100));
+        frame.set_color(rgb(255, 0, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
             let pos = i as f32 * 100.0;
-            frame.square(pos, 0.0, 50.0).border(border / 2.0).fill_and_stroke();
+            frame.square(pos, 0.0, 50.0)
+                 .border(border / 2.0, rgba(0, 0, 255, 100))
+                 .fill_and_stroke();
         }
     });
 
     runner.add_test("red_square_rotated_frame", |frame| {
-        frame.fill_color(rgb(255, 0, 0));
+        frame.set_color(rgb(255, 0, 0));
         frame.with_rotate_around((12.5, 12.5), 0.5, |frame| {
             frame.square(0.0, 0.0, 25.0).fill();
         });
     });
 
     runner.add_test("red_square_rotated_self", |frame| {
-        frame.fill_color(rgb(255, 0, 0));
+        frame.set_color(rgb(255, 0, 0));
         frame.square(0.0, 0.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill();
-        frame.fill_color(rgb(0, 0, 255));
+        frame.set_color(rgb(0, 0, 255));
         frame.square(50.0, 50.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill();
     });
 
     runner.add_test("alpha_blending", |frame| {
-        frame.fill_color(rgba(1.0, 0.0, 0.0, 1.0));
+        frame.set_color(rgba(1.0, 0.0, 0.0, 1.0));
         frame.square(0.0, 0.0, 25.0).fill();
 
         frame.rotate(0.5);
-        frame.fill_color(rgba(0.0, 0.0, 1.0, 0.5));
+        frame.set_color(rgba(0.0, 0.0, 1.0, 0.5));
         frame.square(12.0, 12.0, 25.0).fill();
     });
 
@@ -125,11 +126,11 @@ fn main() {
         frame.draw_text("abcdefg", 0.0, 25.0).unwrap();
 
         frame.set_font("SourceCodePro", 30).unwrap();
-        frame.fill_color(rgba(1.0, 0.0, 0.0, 1.0));
+        frame.set_color(rgba(1.0, 0.0, 0.0, 1.0));
         frame.draw_text("hijklmnop", 0.0, 25.0).unwrap();
 
         frame.set_font("SourceCodePro", 10).unwrap();
-        frame.fill_color(rgba(0.0, 0.0, 1.0, 0.5));
+        frame.set_color(rgba(0.0, 0.0, 1.0, 0.5));
         frame.draw_text("hijklmnop", 0.0, 25.0).unwrap();
     });
 
