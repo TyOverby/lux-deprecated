@@ -38,7 +38,7 @@ pub struct Rectangle<'a, C: 'a> {
     fields: BasicFields<'a, C>,
 }
 
-#[must_use = "shapes contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
+#[must_use = "sprite references contain context, and must be drawn with `draw()`"]
 pub struct ContainedSprite<'a, C: 'a>  {
     fields: BasicFields<'a, C>,
     sprite: Sprite
@@ -252,22 +252,11 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
                                None,
                                Some(trx));
     }
-
-    /// Add padding to the ellipse.  Padding causes the ellipse to be drawn
-    /// constrained to the original bounding dimensions with the additional
-    /// constraints of the padding.
-    ///
-    /// Example:
-    /// ```
-    /// let padd = 5.0;
-    /// lux.circle((pos.0 + padd, pos.1 + padd), (size.0 - 2.0 * padd, size.1 - 2.0 * \
-    /// padd)).fill();
-    /// lux.circle(pos, size).padding(padd).fill(); // equivalant
-    /// ```
+    /*
     pub fn padding<P: Padding>(&mut self, padding: P) -> &mut Ellipse<'a, C> {
         self.fields.padding = padding.as_padding();
         self
-    }
+    }*/
 }
 
 fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[f32; 4]; 4] {
@@ -382,51 +371,6 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
     pub fn border<A: Color>(&mut self, border_size: f32, color: A) -> &mut Rectangle<'a, C> {
         self.fields.border = border_size;
         self.fields.stroke_color = Some(color.to_rgba());
-        self
-    }
-
-    /*
-    /// Add padding to the rectangle.
-    /// Padding causes the rectangleto be drawn
-    /// constrained to the original bounding dimensions with the additional
-    /// constraints of the padding.
-    ///
-    /// Example:
-    /// ```
-    /// let padd = 5.0;
-    /// lux.rect((pos.0 + padd, pos.1 + padd), (size.0 - 2.0 * padd, size.1 - 2.0 *
-    /// padd)).fill();
-    /// lux.rect(pos, size).padding(padd).fill(); // equivalant
-    /// ```
-    pub fn padding<P: Padding>(&mut self, padding: P) -> &mut Rectangle<'a, C> {
-        self.fields.padding = padding.as_padding();
-        self
-    }*/
-}
-
-/// Padding can either be /// f32, (f32, f32), or (f32, f32, f32, f32)
-/// where these values correspond
-/// to "global", "horizontal, vertical " and "left, right, top, bottom".
-pub trait Padding {
-    /// -> (left, right, top, bottom)
-    fn as_padding(self) -> (f32, f32, f32, f32);
-}
-
-impl Padding for f32 {
-    fn as_padding(self) -> (f32, f32, f32, f32) {
-        (self, self, self, self)
-    }
-}
-
-impl Padding for (f32, f32) {
-    fn as_padding(self) -> (f32, f32, f32, f32) {
-        let (h, v) = self;
-        (h, h, v, v)
-    }
-}
-
-impl Padding for (f32, f32, f32, f32) {
-    fn as_padding(self) -> (f32, f32, f32, f32) {
         self
     }
 }

@@ -25,7 +25,7 @@ impl TestRunner {
                 let cur = current.as_mut().unwrap();
                 let mut frame = window.cleared_frame(rgb(255, 255, 255));
 
-                frame.draw_text(&cur.0[..], 0.0, 0.0).unwrap();
+                frame.text(&cur.0, 0.0, 0.0).draw().unwrap();
                 frame.with_translate(0.0, 50.0, |frame| cur.1(frame));
             }
 
@@ -58,7 +58,7 @@ fn main() {
 
 
     runner.add_test("text_with_newline", |frame| {
-        frame.draw_text("Hello\nWorld", 0.0, 0.0).unwrap();
+        frame.text("Hello\nWorld", 0.0, 0.0).draw().unwrap();
     });
 
     runner.add_test("indiv_rotated_squares", |frame| {
@@ -123,15 +123,17 @@ fn main() {
     });
 
     runner.add_test("font_stuff", |frame| {
-        frame.draw_text("abcdefg", 0.0, 25.0).unwrap();
+        frame.text("abcdefg", 0.0, 25.0).draw().unwrap();
 
-        frame.set_font("SourceCodePro", 30).unwrap();
-        frame.set_color(rgba(1.0, 0.0, 0.0, 1.0));
-        frame.draw_text("hijklmnop", 0.0, 25.0).unwrap();
+        frame.text("hijklmnop", 0.0, 25.0)
+             .size(30)
+             .set_color(rgba(1.0, 0.0, 0.0, 1.0))
+             .draw().unwrap();
 
-        frame.set_font("SourceCodePro", 10).unwrap();
-        frame.set_color(rgba(0.0, 0.0, 1.0, 0.5));
-        frame.draw_text("hijklmnop", 0.0, 25.0).unwrap();
+        frame.text("hijklmnop", 0.0, 25.0)
+             .size(10)
+             .set_color(rgba(1.0, 0.0, 0.0, 0.5))
+             .draw().unwrap();
     });
 
     runner.add_test("sprite_sheet", |frame| {

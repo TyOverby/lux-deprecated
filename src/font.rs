@@ -13,10 +13,12 @@ use image;
 use freetype;
 use glium;
 use glyph_packer;
+use vecmath;
 use lux_constants::*;
 
 use super::accessors::{HasDisplay, HasFontCache};
 use super::prelude::{
+    Color,
     LuxError,
     Colored,
     Transform,
@@ -42,7 +44,6 @@ pub struct FontCache {
     library: freetype::Library,
     faces: HashMap<String, freetype::Face<'static>>,
     rendered: HashMap<(String, u32), Rc<RenderedFont>>,
-    pub current: Option<Rc<RenderedFont>>
 }
 
 #[doc(hidden)]
@@ -53,12 +54,17 @@ pub struct RenderedFont {
     pub offsets: HashMap<char, CharOffset>
 }
 
-pub struct ContainedText<'a, C: 'a, S: 'a + AsRef<str>> {
+#[must_use = "text references contain context, and must be drawn with `draw()`"]
+pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
-    text: &'a S,
+    text: S,
     pos: (f32, f32),
     transform: [[f32; 4]; 4],
-    color: [f32; 4]
+    color: [f32; 4],
+
+    size: u16,
+    font_family: String
+
 }
 
 pub trait FontLoad {
@@ -66,22 +72,79 @@ pub trait FontLoad {
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
 }
 
-pub trait TextDraw {
-    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()>;
-    fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
+pub trait TextDraw2: Sized + LuxCanvas + HasDisplay + HasFontCache {
+    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: f32, y : f32) -> ContainedText<'a, Self, S> {
+        ContainedText {
+            canvas: self,
+            text: text,
+            pos: (x, y),
+            size: 20,
+            font_family: "SourceCodePro".to_string(),
+            transform: vecmath::mat4_id(),
+            color: [0.0, 0.0, 0.0, 1.0]
+        }
+    }
 }
 
-pub trait TextDraw2 {
+impl <T> TextDraw2 for T where T: Sized + LuxCanvas + HasDisplay + HasFontCache {}
 
+impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
+    pub fn size(&mut self, size: u16) -> &mut ContainedText<'a, C, S> {
+        self.size = size;
+        self
+    }
+
+    pub fn font<A: Into<String>>(&mut self, font_family: A) -> &mut ContainedText<'a, C, S> {
+        self.font_family = font_family.into();
+        self
+    }
+
+    pub fn draw(&mut self) -> LuxResult<()> {
+        use std::fs::File;
+
+        let window_c: glium::Display = self.canvas.clone_display();
+
+        let rendered = {
+            let mut font_cache = self.canvas.font_cache();
+            let mut font_cache = font_cache.as_mut().unwrap();
+            let rendered = try!(font_cache.use_font(&mut |img: image::DynamicImage| {
+                let img = glium::texture::Texture2d::new(&window_c, img.flipv());
+                Sprite::new(Rc::new(img))
+            }, &self.font_family[..], self.size as u32));
+            rendered.clone()
+        };
+
+        let mut font_cache = self.canvas.font_cache().take().unwrap();
+        {
+            let face = font_cache.faces.get_mut(&self.font_family[..]).unwrap();
+            let (x, y) = self.pos;
+            try!(rendered.render_string(self.canvas, self.text.as_ref(), face, x, y, self.color));
+        }
+        *self.canvas.font_cache() = Some(font_cache);
+        Ok(())
+    }
 }
 
-impl <'a, A, B: AsRef<str>> Transform for ContainedText<'a, A, B> {
+impl <'a, A, B: AsRef<str>> Transform for ContainedText<'a, A, B>
+where A: HasDisplay + HasFontCache + LuxCanvas {
     fn current_matrix(&self) -> &[[f32; 4]; 4] {
         &self.transform
     }
 
     fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
         &mut self.transform
+    }
+}
+
+impl <'a, A, B: AsRef<str>> Colored for ContainedText<'a, A, B>
+where A: HasDisplay + HasFontCache + LuxCanvas {
+    fn color(&self) -> [f32; 4] {
+        self.color
+    }
+
+    fn set_color<C: Color>(&mut self, color: C) -> &mut Self {
+        self.color = color.to_rgba();
+        self
     }
 }
 
@@ -102,39 +165,7 @@ impl <T> FontLoad for T where T: HasDisplay + HasFontCache {
             let tex = glium::texture::Texture2d::new(&window_c, img);
             Sprite::new(Rc::new(tex))
         }, name, size);
-        res
-    }
-}
-
-impl <T> TextDraw for T where T: HasDisplay + HasFontCache + LuxCanvas {
-    fn draw_text(&mut self, text: &str, x: f32, y: f32) -> LuxResult<()> {
-        let c =  self.color();
-
-        // Take the font cache, then put it back when we're done.
-        let mut font_cache = self.font_cache().take().unwrap();
-        try!(font_cache.draw_onto(self, text, x, y, c));
-        *self.font_cache() = Some(font_cache);
-        Ok(())
-    }
-
-    fn set_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
-        use std::fs::File;
-
-        let window_c: glium::Display = self.clone_display();
-
-        let mut font_cache = self.font_cache();
-        let mut font_cache = font_cache.as_mut().unwrap();
-        let res = font_cache.use_font(&mut |img: image::DynamicImage| {
-            let img = img.flipv();
-
-            let mut out_path = File::create("out.png").unwrap();
-            let _ = img.save(&mut out_path, ::image::ImageFormat::PNG).unwrap();
-
-
-            let img = glium::texture::Texture2d::new(&window_c, img);
-            Sprite::new(Rc::new(img))
-        }, name, size);
-        res
+        res.map(|_|())
     }
 }
 
@@ -147,7 +178,6 @@ impl FontCache {
             library: lib,
             faces: HashMap::new(),
             rendered: HashMap::new(),
-            current: None
         };
 
         fc.load_bytes("SourceCodePro", SOURCE_CODE_PRO_REGULAR);
@@ -168,42 +198,30 @@ impl FontCache {
         Ok(())
     }
 
-    pub fn use_font<S>(&mut self, loader: &mut S, name: &str, size: u32) -> LuxResult<()>
+    // TODO: rewrite the body of this method with entry()
+    pub fn use_font<S>(&mut self, loader: &mut S, name: &str, size: u32) -> LuxResult<&Rc<RenderedFont>>
     where S: FnMut(image::DynamicImage) -> Sprite {
         use std::fmt::Write;
 
         let key = (name.to_string(), size);
 
-        // If we are already set, then this is a no-op.
-        if let &Some(ref font_sheet) = &self.current {
-            if font_sheet.name == name && font_sheet.size == size {
-                return Ok(());
+        {
+            if self.rendered.contains_key(&key) {
+                return Ok(self.rendered.get(&key).unwrap())
             }
         }
 
-        if let Some(font_sheet) = self.rendered.get(&key) {
-            self.current = Some(font_sheet.clone());
-            return Ok(());
+        {
+            if let Some(face) = self.faces.get_mut(name) {
+                let sheet = RenderedFont::new(loader, face, name.to_string(), size);
+                let sheet = Rc::new(try!(sheet));
+                self.rendered.insert(key.clone(), sheet.clone());
+                return Ok(self.rendered.get(&key).unwrap())
+            } else {
+                let err = format!("Font not loaded: {}", name);
+                return Err(LuxError::FontNotLoaded(err))
+            }
         }
-
-        if let Some(face) = self.faces.get_mut(name) {
-            let sheet = RenderedFont::new(loader, face, name.to_string(), size);
-            let sheet = Rc::new(try!(sheet));
-            self.rendered.insert(key, sheet.clone());
-            self.current = Some(sheet);
-        } else {
-            let err = format!("Font not loaded: {}", name);
-            return Err(LuxError::FontNotLoaded(err))
-        }
-
-        return Ok(());
-    }
-
-    pub fn draw_onto<S>(&mut self, canvas: &mut S, text: &str,
-                        x: f32, y: f32, color: [f32; 4]) -> LuxResult<()>
-    where S: LuxCanvas {
-        let face = self.faces.get_mut(&self.current.as_ref().unwrap().name).unwrap();
-        self.current.as_ref().unwrap().render_string(canvas, text, face, x, y, color)
     }
 }
 

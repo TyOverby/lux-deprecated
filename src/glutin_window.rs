@@ -19,7 +19,6 @@ use super::accessors::{
 use super::prelude::{
     EventIterator,
     FontCache,
-    TextDraw,
     Sprite,
     LuxCanvas,
     Interactive,
@@ -139,8 +138,6 @@ impl Frame {
 
 impl Drop for Frame {
     fn drop(&mut self) {
-        //TODO: why is this here?
-        let _ = self.set_font("SourceCodePro", 20);
         self.flush_draw();
     }
 }

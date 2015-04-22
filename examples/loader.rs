@@ -37,20 +37,26 @@ fn main() {
         let mut y = 0.0;
 
         for pt in 1 .. 6 {
-            frame.set_font("Pacifico", pt * 10).unwrap();
-            frame.draw_text("Hello World", 0.0, y).unwrap();
+            frame.text("Hello World", 0.0, y)
+                 .font("Pacifico")
+                 .size(pt * 10)
+                 .draw().unwrap();
             y += (pt * 15) as f32;
         }
 
         for pt in 1 .. 6 {
-            frame.set_font("cbt", pt * 10).unwrap();
-            frame.draw_text("Hello World", 0.0, y).unwrap();
+            frame.text("Hello World", 0.0, y)
+                 .font("cbt")
+                 .size(pt * 10)
+                 .draw().unwrap();
             y += (pt * 15) as f32;
         }
 
         for pt in 1 .. 6 {
-            frame.set_font("SourceCodePro", pt * 10).unwrap();
-            frame.draw_text("Hello World", 0.0, y).unwrap();
+            frame.text("Hello World", 0.0, y)
+                 .font("SourceCodePro")
+                 .size(pt * 10)
+                 .draw().unwrap();
             y += (pt * 15) as f32;
         }
 

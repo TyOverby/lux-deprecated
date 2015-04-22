@@ -2,6 +2,9 @@ extern crate lux;
 use lux::prelude::*;
 use lux::interactive::keycodes::Escape;
 
+const MESSAGE: &'static str =
+    "Press [space] [esc] or [a] to change the background color";
+
 fn main() {
     let mut window = Window::new().unwrap();
     while window.is_open() {
@@ -20,9 +23,6 @@ fn main() {
         };
 
         let mut frame = window.cleared_frame(color);
-        frame.set_font("SourceCodePro", 20).unwrap();
-        frame.draw_text(
-            "Press [space] [esc] or [a] to change the background color",
-            0.0, 50.0).unwrap();
+        frame.text(MESSAGE, 0.0, 50.0).draw().unwrap();
     }
 }
