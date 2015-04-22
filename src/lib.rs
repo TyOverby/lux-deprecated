@@ -44,7 +44,7 @@ pub mod prelude {
     pub use ::sprite::{Sprite, Texture, DrawableTexture, TextureLoader,
         NonUniformSpriteSheet, UniformSpriteSheet};
     pub use ::figure::Figure;
-    pub use ::font::{FontCache, FontLoad, TextDraw2};
+    pub use ::font::{FontCache, FontLoad, TextDraw};
 
     pub use glium::index::PrimitiveType;
     pub use glium::index::PrimitiveType::*;

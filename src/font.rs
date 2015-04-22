@@ -72,7 +72,7 @@ pub trait FontLoad {
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
 }
 
-pub trait TextDraw2: Sized + LuxCanvas + HasDisplay + HasFontCache {
+pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
     fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: f32, y : f32) -> ContainedText<'a, Self, S> {
         ContainedText {
             canvas: self,
@@ -86,7 +86,8 @@ pub trait TextDraw2: Sized + LuxCanvas + HasDisplay + HasFontCache {
     }
 }
 
-impl <T> TextDraw2 for T where T: Sized + LuxCanvas + HasDisplay + HasFontCache {}
+impl <T> TextDraw for T where T: Sized + LuxCanvas + HasDisplay + HasFontCache {
+}
 
 impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
     pub fn size(&mut self, size: u16) -> &mut ContainedText<'a, C, S> {
@@ -100,8 +101,6 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
     }
 
     pub fn draw(&mut self) -> LuxResult<()> {
-        use std::fs::File;
-
         let window_c: glium::Display = self.canvas.clone_display();
 
         let rendered = {
@@ -115,13 +114,82 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         };
 
         let mut font_cache = self.canvas.font_cache().take().unwrap();
-        {
+        let render_result = {
             let face = font_cache.faces.get_mut(&self.font_family[..]).unwrap();
             let (x, y) = self.pos;
-            try!(rendered.render_string(self.canvas, self.text.as_ref(), face, x, y, self.color));
-        }
+            rendered.render_string(self.canvas, self.text.as_ref(), face, x, y, self.color)
+        };
         *self.canvas.font_cache() = Some(font_cache);
-        Ok(())
+        render_result
+    }
+
+    /// Returns the height of one line of text with the selected font.
+    pub fn line_height(&mut self) -> Option<i64> {
+        let mut font_cache = self.canvas.font_cache();
+        let mut font_cache = font_cache.as_mut().unwrap();
+        let face = font_cache.faces.get_mut(&self.font_family);
+        face.and_then(|face| face.size_metrics().map(|m| m.height / 64))
+    }
+
+    /// Returns an iterator containing each character in the input text along
+    /// with the position and the size.
+    ///
+    /// These positions are absolute, and are not relative to the position that
+    /// the text will be drawn on the screen.
+    ///
+    /// (char, position, size)
+    pub fn absolute_positions(&mut self) -> LuxResult<Vec<(char, (i64, i64), (i64, i64))>> {
+        let window_c: glium::Display = self.canvas.clone_display();
+
+        let rendered = {
+            let mut font_cache = self.canvas.font_cache();
+            let mut font_cache = font_cache.as_mut().unwrap();
+            let rendered = try!(font_cache.use_font(&mut |img: image::DynamicImage| {
+                let img = glium::texture::Texture2d::new(&window_c, img.flipv());
+                Sprite::new(Rc::new(img))
+            }, &self.font_family[..], self.size as u32));
+            rendered.clone()
+        };
+
+        let mut font_cache = self.canvas.font_cache().take().unwrap();
+        let mut positions_result = {
+            let face = font_cache.faces.get_mut(&self.font_family[..]).unwrap();
+            let (x, y) = self.pos;
+            rendered.positions(self.text.as_ref(), face)
+        };
+        *self.canvas.font_cache() = Some(font_cache);
+        positions_result
+    }
+
+    pub fn positions(&mut self) -> LuxResult<Vec<(char, (f32, f32), (f32, f32))>> {
+        self.absolute_positions().map(|poses| {
+            poses.into_iter().map(
+                |(c, (px, py), (sx, sy))|
+                    (c,
+                     (px as f32 + self.pos.0, py as f32 + self.pos.1),
+                     (sx as f32, sy as f32))
+              ).collect()
+        })
+    }
+
+    /// Returns the bounding box around this text.
+    ///
+    /// ((start_x, start_y), (width, height))
+    pub fn bounding_box(&mut self) -> LuxResult<((f32, f32), (f32, f32))> {
+        let start = self.pos;
+        let end = try!(self.positions())
+                  .pop()
+                  .map(|(_, (px, py), (sx, sy))| (px + sx, py + sy))
+                  .unwrap_or(start);
+        Ok((start, end))
+    }
+
+    /// Returns the length in pixels of the rendered string.
+    pub fn get_length(&mut self) -> LuxResult<u32> {
+        self.positions().map(|mut positions| {
+            positions.pop().map(|(_, (x, _), (w, _))| (x + w) as u32)
+                     .unwrap_or(0)
+        })
     }
 }
 
@@ -237,24 +305,21 @@ impl RenderedFont {
         })
     }
 
-    fn render_string<C>(&self, canvas: &mut C, text: &str,
-                        face: &mut freetype::Face, x: f32, y: f32, color: [f32; 4])
-    -> LuxResult<()> where C: LuxCanvas {
+    fn positions(&self, text: &str, face: &mut freetype::Face) -> LuxResult<Vec<(char, (i64, i64), (i64, i64))>> {
         let sheet = &self.font_sheet;
-        let original_x = x;
-        let original_y = y;
+        let mut out = Vec::with_capacity(text.len());
 
         try!(face.set_pixel_sizes(0, self.size));
 
         let mut prev: Option<char> = None;
         let height_offset = face.size_metrics().map(|m| m.height / 64).unwrap_or(0);
 
-        let mut x = x;
-        let mut y = y + height_offset as f32;
+        let mut x = 0;
+        let mut y = height_offset;
         for current in text.chars() {
             if current == '\n' {
-                x = original_x;
-                y += height_offset as f32;
+                x = 0;
+                y += height_offset;
                 prev = None;
                 continue;
             }
@@ -265,22 +330,35 @@ impl RenderedFont {
                         face.get_char_index(current as usize),
                         freetype::face::KerningMode::KerningDefault);
                 let delta = try!(delta);
-                x += (delta.x / 64) as f32;
+                x += delta.x / 64;
             }
 
             let offset = self.offsets.get(&current).cloned().unwrap_or(CharOffset {
                 advance: (0, 0),
                 bitmap_offset: (0, 0)
             });
-            canvas.sprite(&sheet.get(&current),
-                          x + offset.bitmap_offset.0 as f32,
-                          y - offset.bitmap_offset.1 as f32).set_color(color).draw();
 
-            x += (offset.advance.0 / 64) as f32;
-            y += (offset.advance.1 / 64) as f32;
+            let pos = (x + offset.bitmap_offset.0, y - offset.bitmap_offset.1);
+            let size = ((offset.advance.0 / 64), (offset.advance.1 / 64));
+
+            out.push((current, pos, size));
+
+            x += offset.advance.0 / 64;
+            y += offset.advance.1 / 64;
 
             prev = Some(current);
         }
+        Ok((out))
+    }
+
+    fn render_string<C>(&self, canvas: &mut C, text: &str,
+                        face: &mut freetype::Face, x: f32, y: f32, color: [f32; 4])
+    -> LuxResult<()> where C: LuxCanvas {
+        let sheet = &self.font_sheet;
+        for (chr, (ox, oy), (_, _)) in try!(self.positions(text, face)) {
+            canvas.sprite(&sheet.get(&chr), x as f32 + ox as f32, y as f32 + oy as f32).set_color(color).draw();
+        }
+
         Ok(())
     }
 }
