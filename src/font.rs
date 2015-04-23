@@ -174,7 +174,11 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
 
     /// Returns the bounding box around this text.
     ///
-    /// ((start_x, start_y), (width, height))
+    /// `((start_x, start_y), (width, height))`
+    ///
+    /// `start_x` and `start_y` are oriented to the top-left of the screen.
+    ///
+    /// `width` and `height` are pointing down and to the right.
     pub fn bounding_box(&mut self) -> LuxResult<((f32, f32), (f32, f32))> {
         let start = self.pos;
         let end = try!(self.positions())

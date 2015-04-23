@@ -53,3 +53,10 @@ glutin = "*"
 image = "*"
 num = "*"
 clock_ticks = "*"
+
+[profile.dev]
+opt-level = 2
+debug = true
+rpath = false
+lto = false
+debug-assertions = false

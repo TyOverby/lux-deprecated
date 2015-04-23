@@ -163,10 +163,10 @@ impl Window {
 
         let display = try!(window_builder.build_glium().map_err(|e| {
             match e {
-                glium::GliumCreationError::GlutinCreationError(
+                glium::GliumCreationError::BackendCreationError(
                     glutin::CreationError::OsError(s)) =>
                         LuxError::WindowError(s),
-                glium::GliumCreationError::GlutinCreationError(
+                glium::GliumCreationError::BackendCreationError(
                     glutin::CreationError::NotSupported)  =>
                         LuxError::WindowError("Window creation is not supported.".to_string()),
                 glium::GliumCreationError::IncompatibleOpenGl(m) =>
