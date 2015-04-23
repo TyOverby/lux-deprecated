@@ -30,16 +30,17 @@ pub struct GameRunner<G: Game> {
 struct FrameTiming {
     update_durations: Vec<u64>,
     render_duration: u64,
+    debug_drawing: u64,
     render_publish: u64,
     timestamp_start: u64,
-    timestamp_end: u64
+    timestamp_end: u64,
 }
 
-fn time<F: FnOnce()>(f: F) -> u64 {
+fn time<R, F: FnOnce() -> R>(f: F) -> (u64, R) {
     let before = clock_ticks::precise_time_ns();
-    f();
+    let r = f();
     let after = clock_ticks::precise_time_ns();
-    after - before
+    (after - before, r)
 }
 
 impl <G: Game> GameRunner<G> {
@@ -55,17 +56,13 @@ impl <G: Game> GameRunner<G> {
     pub fn run_until_end(&mut self) {
         let mut previous = clock_ticks::precise_time_s();
         let mut lag = 0.0;
+        let mut frame = Some(self.window.cleared_frame(rgb(255, 255, 255)));
 
         while self.window.is_open() && !self.game.should_close() {
             //
             // Preframe setup
             //
             let mut events = self.window.events();
-            let mut frame = if let Some(c) = self.game.clear_color() {
-                self.window.cleared_frame(c)
-            } else {
-                self.window.frame()
-            };
 
             //
             // Core loop.
@@ -80,16 +77,23 @@ impl <G: Game> GameRunner<G> {
 
             let mut update_durations = vec![];
             while lag >= s_p_u {
-                let tu = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
+                let (tu, _) = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
                 update_durations.push(tu);
                 lag -= s_p_u;
             }
 
-            let tr = time(|| self.game.render(lag as f32, &mut self.window, &mut frame));
+            let (tr, _) = time(|| self.game.render(lag as f32, &mut self.window, frame.as_mut().unwrap()));
 
-            self.draw_timings(&mut frame);
+            let (t_timing, _) = time(|| self.draw_timings(frame.as_mut().unwrap()));
 
-            let tpublish = time(|| ::std::mem::drop(frame));
+            let (tpublish, _) = time(|| {
+                ::std::mem::drop(frame.take());
+                frame = Some(if let Some(c) = self.game.clear_color() {
+                            self.window.cleared_frame(c)
+                        } else {
+                            self.window.frame()
+                        });
+            });
 
             //
             // Postframe cleanup and recording
@@ -104,6 +108,7 @@ impl <G: Game> GameRunner<G> {
                     update_durations: update_durations,
                     render_duration: tr,
                     render_publish: tpublish,
+                    debug_drawing: t_timing,
                     timestamp_start: current_ns,
                     timestamp_end: now
                 };
@@ -138,6 +143,19 @@ impl <G: Game> GameRunner<G> {
     }
 
     fn draw_timings(&self, frame: &mut Frame) {
+        fn draw_bars<B: Iterator<Item=(f32, [f32; 4])>, I: ExactSizeIterator<Item=B>>(frame: &mut Frame, bars: I) {
+            let bar_count = bars.len();
+            let bar_width = 1.0 / bar_count as f32;
+            for (i, bar) in bars.enumerate() {
+                let x = bar_width * i as f32;
+                let mut y = 0.0;
+                for (p, color) in bar {
+                    frame.rect(x, y, bar_width, p).set_color(color).fill();
+                    y += p;
+                }
+            }
+        }
+
         fn percentage_time(span: u64) -> f32 {
             span as f32 / (16000000.0 )
         }
@@ -146,39 +164,28 @@ impl <G: Game> GameRunner<G> {
         const WIDTH:  f32 = 161.0;
         let h = frame.height();
         frame.with_translate(WIDTH, h, |frame| {
-        frame.with_scale(-1.0, -1.0, |frame| {
-            frame.rect(0.0, 0.0, WIDTH, HEIGHT)
-                 .set_color(rgba(1.0, 1.0, 1.0, 0.8))
+        frame.with_scale(-WIDTH, -HEIGHT, |frame| {
+            frame.rect(0.0, 0.0, 1.0, 1.0)
+                 .set_color(rgba(1.0, 1.0, 0.0, 0.8))
                  .fill();
 
-            let line_width = WIDTH / self.game.draw_fps().unwrap_or(100) as f32;
-            let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
-            for (i, frame_calc) in self.frame_timings.iter().enumerate() {
-                let mut pos = 0.0;
-                for (u, update_time) in frame_calc.update_durations.iter().enumerate() {
-                    let size = percentage_time(*update_time) * HEIGHT;
-                    frame.rect(i as f32 * line_width, pos, line_width, size)
-                         .set_color(update_colors[u % 2])
-                         .fill();
-                    pos += size;
-                }
-                {
-                    let size = percentage_time(frame_calc.render_duration) * HEIGHT;
-                    frame.rect(i as f32 * line_width, pos, line_width, size)
-                         .set_color(rgb(0.0, 0.9, 0.0))
-                         .fill();
-                    pos += size;
-                }
-                {
-                    let size = percentage_time(frame_calc.render_publish) * HEIGHT;
-                    frame.rect(i as f32 * line_width, pos, line_width, size)
-                         .set_color(rgb(0.0, 0.5, 0.0))
-                         .fill();
-                }
-            }
-            frame.rect(0.0, HEIGHT, WIDTH, 1.0).set_color(rgb(0, 0, 0)).fill();
+            draw_bars(frame, self.frame_timings.iter().map(|timing| {
+                let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
+                let mut v = vec![];
+                v.extend(
+                    timing.update_durations
+                          .iter()
+                          .enumerate()
+                          .map(|(i, &t)| (percentage_time(t), update_colors[i % 2])));
+                v.push((percentage_time(timing.render_duration), rgb(0.0, 0.9, 0.0)));
+                v.push((percentage_time(timing.debug_drawing), rgb(0.9, 0.0, 0.0)));
+                v.push((percentage_time(timing.render_publish), rgb(0.0, 0.5, 0.0)));
+                v.into_iter()
+            }));
         });
         });
+
+        frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).set_color(rgb(0, 0, 0)).fill();
 
         let (fps, ups) = self.calc_fps();
         frame.with_translate(WIDTH, h, |frame| {

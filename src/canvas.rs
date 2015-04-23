@@ -13,7 +13,7 @@ use super::prelude::{
 
 use vecmath;
 
-struct BasicFields<'a, C: 'a>  {
+struct BasicFields<'a, C: 'a> {
     fill_color: [f32; 4],
     stroke_color: Option<[f32; 4]>,
     padding: (f32, f32, f32, f32),

@@ -21,15 +21,15 @@ impl MyGame {
 
 impl Game for MyGame {
     fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) {
-        // dampening
-        self.speed.0 *= 1.0 - dt;
-        self.speed.1 *= 1.0 - dt;
         // position
         self.pos.0 += self.speed.0 * dt;
         self.pos.1 += self.speed.1 * dt;
         // Keep the player from moving off the edge
         self.pos.0 = clamp(0.0, self.pos.0, window.width() - PLAYER_SIZE);
         self.pos.1 = clamp(0.0, self.pos.1, window.height() - PLAYER_SIZE);
+        // dampening
+        self.speed.0 *= 1.0 - dt;
+        self.speed.1 *= 1.0 - dt;
 
         // events
         // x
@@ -44,14 +44,17 @@ impl Game for MyGame {
         } else if window.is_key_pressed('s') {
             self.speed.1 = MOVEMENT_SPEED;
         }
+        // ::std::thread::sleep_ms(5);
     }
 
     fn render(&mut self, lag: f32, _window: &mut Window, frame: &mut Frame) {
+        //let lag = 0.0;
         let (x, y) = self.pos;
         let (vx, vy) = self.speed;
 
         frame.text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).draw().unwrap();
         frame.circle(x + vx * lag, y + vy * lag, PLAYER_SIZE).fill();
+        println!("{}", lag);
     }
 
     fn updates_per_s(&self) -> f64 { 120.0 }
