@@ -3,8 +3,8 @@ name = "lux"
 version = "0.0.1"
 dependencies = [
  "clock_ticks 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "color 0.0.1 (git+https://github.com/TyOverby/color-rs.git)",
- "freetype-rs 0.0.8 (git+https://github.com/TyOverby/freetype-rs)",
+ "color 0.0.2 (git+https://github.com/bjz/color-rs.git)",
+ "freetype-rs 0.0.8 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glium 0.3.1 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "glyph_packer 0.0.0 (git+https://github.com/TyOverby/glyph_packer.git)",
@@ -52,8 +52,11 @@ dependencies = [
 
 [[package]]
 name = "color"
-version = "0.0.1"
-source = "git+https://github.com/TyOverby/color-rs.git#2a4dfd4b198aa0705c4c32537f300499572dca6a"
+version = "0.0.2"
+source = "git+https://github.com/bjz/color-rs.git#f4505401701f33cc92e2bd759f46e27ec69e1465"
+dependencies = [
+ "num 0.1.23 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "enum_primitive"
@@ -66,7 +69,7 @@ dependencies = [
 [[package]]
 name = "freetype-rs"
 version = "0.0.8"
-source = "git+https://github.com/TyOverby/freetype-rs#44a8408fe2b96bae122123161909bdb9df8f529d"
+source = "git+https://github.com/PistonDevelopers/freetype-rs#6d835eebef9b35c2ffe709f38678974cec5e77fc"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "freetype-sys 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
