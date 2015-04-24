@@ -21,6 +21,11 @@ impl MyGame {
 
 impl Game for MyGame {
     fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) {
+        let up_key = 'w';
+        let left_key = 'a';
+        let down_key = 's';
+        let right_key = 'd';
+
         // position
         self.pos.0 += self.speed.0 * dt;
         self.pos.1 += self.speed.1 * dt;
@@ -33,15 +38,15 @@ impl Game for MyGame {
 
         // events
         // x
-        if window.is_key_pressed('a') {
+        if window.is_key_pressed(left_key) {
             self.speed.0 = -MOVEMENT_SPEED;
-        } else if window.is_key_pressed('d') {
+        } else if window.is_key_pressed(right_key) {
             self.speed.0 = MOVEMENT_SPEED;
         }
         // y
-        if window.is_key_pressed('w') {
+        if window.is_key_pressed(up_key) {
             self.speed.1 = -MOVEMENT_SPEED;
-        } else if window.is_key_pressed('s') {
+        } else if window.is_key_pressed(down_key) {
             self.speed.1 = MOVEMENT_SPEED;
         }
         // ::std::thread::sleep_ms(5);
