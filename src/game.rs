@@ -157,7 +157,7 @@ impl <G: Game> GameRunner<G> {
         }
 
         fn percentage_time(span: u64) -> f32 {
-            span as f32 / (16000000.0 )
+            span as f32 / (16666666.6 )
         }
 
         const HEIGHT: f32 = 100.0;
