@@ -10,7 +10,6 @@ use super::prelude::{
     TexVertex,
     PrimitiveType,
     Color,
-    Points,
     Transform
 };
 use super::gfx_integration;
@@ -156,8 +155,6 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 points: &[ColorVertex],
                 idxs: Option<&[u32]>,
                 base_mat: Option<[[f32; 4]; 4]>) {
-        use glium::index::*;
-        use glium::index::PrimitiveType as Prim;
         use glium::Surface;
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
@@ -181,8 +178,6 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
                 color_mult: [f32; 4]) {
-        use glium::index::*;
-        use glium::index::PrimitiveType as Prim;
         use glium::Surface;
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
