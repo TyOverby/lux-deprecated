@@ -67,13 +67,13 @@ pub trait PrimitiveCanvas {
 
     fn draw_colored_now(&mut self,
                 typ: PrimitiveType,
-                points: Vec<ColorVertex>,
+                points: &[ColorVertex],
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>);
 
     fn draw_textured_now(&mut self,
                 typ: PrimitiveType,
-                points: Vec<TexVertex>,
+                points: &[TexVertex],
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
@@ -84,7 +84,7 @@ pub trait PrimitiveCanvas {
 
     fn draw_shape_no_batch(&mut self,
                            typ: PrimitiveType,
-                           vs: Vec<ColorVertex>,
+                           vs: &[ColorVertex],
                            idxs: Option<Vec<u32>>,
                            mat: Option<[[f32; 4]; 4]>);
 
@@ -98,7 +98,7 @@ pub trait PrimitiveCanvas {
 
     fn draw_tex_no_batch(&mut self,
                          typ: PrimitiveType,
-                         vs: Vec<TexVertex>,
+                         vs: &[TexVertex],
                          idxs: Option<Vec<u32>>,
                          mat: Option<[[f32; 4]; 4]>,
                          &glium::texture::Texture2d,
@@ -129,7 +129,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
     fn draw_colored_now(&mut self,
                 typ: PrimitiveType,
-                points: Vec<ColorVertex>,
+                points: &[ColorVertex],
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index::*;
@@ -170,7 +170,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
     fn draw_textured_now(&mut self,
                 typ: PrimitiveType,
-                points: Vec<TexVertex>,
+                points: &[TexVertex],
                 idxs: Vec<u32>,
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
@@ -215,17 +215,17 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
     fn flush_draw(&mut self) {
         if let Some(CachedColorDraw{typ, points, idxs}) =
             self.color_draw_cache_mut().take() {
-                self.draw_colored_now(typ, points, idxs, None);
+                self.draw_colored_now(typ, &points, idxs, None);
         }
         if let Some(CachedTexDraw{typ, points, texture, idxs, color_mult}) =
             self.tex_draw_cache_mut().take() {
-                self.draw_textured_now(typ, points, idxs, None, &*texture, color_mult);
+                self.draw_textured_now(typ, &points, idxs, None, &*texture, color_mult);
         }
     }
 
     fn draw_shape_no_batch(&mut self,
                            n_typ: PrimitiveType,
-                           n_points: Vec<ColorVertex>,
+                           n_points: &[ColorVertex],
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
@@ -239,7 +239,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
     fn draw_tex_no_batch(&mut self,
                            n_typ: PrimitiveType,
-                           n_points: Vec<TexVertex>,
+                           n_points: &[TexVertex],
                            idxs: Option<Vec<u32>>,
                            transform: Option<[[f32; 4]; 4]>,
                            texture: &glium::texture::Texture2d,
