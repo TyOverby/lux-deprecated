@@ -18,15 +18,39 @@ use super::gfx_integration;
 use vecmath;
 use glium;
 
-macro_rules! draw_cmd {
-    ($typ: path, $cons: ident, $act: ident, $frame: ident,
-     $vbuf: ident, $idx: ident, $prog: ident, $uni: ident, $params: ident) => {
-        if $act == $typ {
-            let idx_buffer = $cons($idx);
-            $frame.draw(&$vbuf, &idx_buffer, $prog, &$uni, &$params).unwrap();
-            return;
+struct Indices<'a, T: 'a + glium::index::Index> {
+    idxs: Option<&'a [T]>,
+    prim: glium::index::PrimitiveType
+}
+
+impl <'a, T: 'a + glium::index::Index> Indices<'a, T> {
+    fn new(prim: glium::index::PrimitiveType, idxs: Option<&'a [T]>) -> Indices<'a, T> {
+        Indices {
+            idxs: idxs,
+            prim: prim
         }
-    };
+    }
+}
+
+impl <'a, T: 'a + glium::index::Index> glium::index::ToIndicesSource for Indices<'a, T> {
+    type Data = T;
+    fn to_indices_source<'b>(&'b self) -> glium::index::IndicesSource<'b, T> {
+        match self.idxs {
+            Some(slice) => {
+                glium::index::IndicesSource::Buffer {
+                    pointer: slice,
+                    primitives: self.prim,
+                    offset: 0,
+                    length: slice.len()
+                }
+            }
+            None => {
+                glium::index::IndicesSource::NoIndices {
+                    primitives: self.prim
+                }
+            }
+        }
+    }
 }
 
 pub struct CachedColorDraw {
@@ -68,13 +92,13 @@ pub trait PrimitiveCanvas {
     fn draw_colored_now(&mut self,
                 typ: PrimitiveType,
                 points: &[ColorVertex],
-                idxs: Vec<u32>,
+                idxs: Option<&[u32]>,
                 base_mat: Option<[[f32; 4]; 4]>);
 
     fn draw_textured_now(&mut self,
                 typ: PrimitiveType,
                 points: &[TexVertex],
-                idxs: Vec<u32>,
+                idxs: Option<&[u32]>,
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
                 color_mult: [f32; 4]);
@@ -85,7 +109,7 @@ pub trait PrimitiveCanvas {
     fn draw_shape_no_batch(&mut self,
                            typ: PrimitiveType,
                            vs: &[ColorVertex],
-                           idxs: Option<Vec<u32>>,
+                           idxs: Option<&[u32]>,
                            mat: Option<[[f32; 4]; 4]>);
 
     fn draw_tex(&mut self,
@@ -99,7 +123,7 @@ pub trait PrimitiveCanvas {
     fn draw_tex_no_batch(&mut self,
                          typ: PrimitiveType,
                          vs: &[TexVertex],
-                         idxs: Option<Vec<u32>>,
+                         idxs: Option<&[u32]>,
                          mat: Option<[[f32; 4]; 4]>,
                          &glium::texture::Texture2d,
                          color_mult: Option<[f32; 4]>);
@@ -130,7 +154,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
     fn draw_colored_now(&mut self,
                 typ: PrimitiveType,
                 points: &[ColorVertex],
-                idxs: Vec<u32>,
+                idxs: Option<&[u32]>,
                 base_mat: Option<[[f32; 4]; 4]>) {
         use glium::index::*;
         use glium::index::PrimitiveType as Prim;
@@ -145,33 +169,15 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let draw_params = draw_params();
 
-        draw_cmd!(Prim::Points, PointsList,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::LinesList, LinesList,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::LinesListAdjacency, LinesListAdjacency,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::LineStrip, LineStrip,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::LineStripAdjacency, LineStripAdjacency,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::TrianglesList, TrianglesList,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::TrianglesListAdjacency, TrianglesListAdjacency,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::TriangleStrip, TriangleStrip,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::TriangleStripAdjacency, TriangleStripAdjacency,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
-        draw_cmd!(Prim::TriangleFan, TriangleFan,
-          typ, frame, vertex_buffer, idxs, color_program, uniform, draw_params);
+        let idx = Indices::new(typ, idxs);
 
+        frame.draw(&vertex_buffer, &idx, &color_program, &uniform, &draw_params).unwrap();
     }
 
     fn draw_textured_now(&mut self,
                 typ: PrimitiveType,
                 points: &[TexVertex],
-                idxs: Vec<u32>,
+                idxs: Option<&[u32]>,
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
                 color_mult: [f32; 4]) {
@@ -190,46 +196,29 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let draw_params = draw_params();
 
-        draw_cmd!(Prim::Points, PointsList,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::LinesList, LinesList,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::LinesListAdjacency, LinesListAdjacency,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::LineStrip, LineStrip,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::LineStripAdjacency, LineStripAdjacency,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::TrianglesList, TrianglesList,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::TrianglesListAdjacency, TrianglesListAdjacency,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::TriangleStrip, TriangleStrip,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::TriangleStripAdjacency, TriangleStripAdjacency,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
-        draw_cmd!(Prim::TriangleFan, TriangleFan,
-          typ, frame, vertex_buffer, idxs, tex_program, uniform, draw_params);
+        let idx = Indices::new(typ, idxs);
+
+        frame.draw(&vertex_buffer, &idx, &tex_program, &uniform, &draw_params).unwrap();
+        // TODO: returrn error?
     }
 
     fn flush_draw(&mut self) {
         if let Some(CachedColorDraw{typ, points, idxs}) =
             self.color_draw_cache_mut().take() {
-                self.draw_colored_now(typ, &points, idxs, None);
+                self.draw_colored_now(typ, &points, Some(&idxs), None);
         }
         if let Some(CachedTexDraw{typ, points, texture, idxs, color_mult}) =
             self.tex_draw_cache_mut().take() {
-                self.draw_textured_now(typ, &points, idxs, None, &*texture, color_mult);
+                self.draw_textured_now(typ, &points, Some(&idxs), None, &*texture, color_mult);
         }
     }
 
     fn draw_shape_no_batch(&mut self,
                            n_typ: PrimitiveType,
                            n_points: &[ColorVertex],
-                           idxs: Option<Vec<u32>>,
+                           idxs: Option<&[u32]>,
                            transform: Option<[[f32; 4]; 4]>) {
         self.flush_draw();
-        let idxs = idxs.unwrap_or_else(|| (0u32 .. n_points.len() as u32).collect());
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
@@ -240,13 +229,11 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
     fn draw_tex_no_batch(&mut self,
                            n_typ: PrimitiveType,
                            n_points: &[TexVertex],
-                           idxs: Option<Vec<u32>>,
+                           idxs: Option<&[u32]>,
                            transform: Option<[[f32; 4]; 4]>,
                            texture: &glium::texture::Texture2d,
                            color_mult: Option<[f32; 4]>) {
         self.flush_draw();
-        let idxs = idxs.unwrap_or_else(||
-                               (0u32 .. n_points.len() as u32).collect());
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
