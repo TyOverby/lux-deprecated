@@ -32,6 +32,7 @@ use super::prelude::{
     Transform,
 };
 
+use super::shaders::{gen_texture_shader, gen_color_shader};
 use super::primitive_canvas::{
     PrimitiveCanvas,
     CachedColorDraw,
@@ -154,7 +155,7 @@ impl Window {
             WindowBuilder::new()
             .with_title("Lux".to_string())
             .with_dimensions(600, 500)
-            //.with_gl_version((3, 2))
+            .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (2, 0)))
             .with_vsync()
             .with_gl_debug_flag(false)
             .with_multisampling(8)
@@ -174,11 +175,8 @@ impl Window {
             }
         }));
 
-        let color_program = try!(
-            glium::Program::from_source( &display, COLOR_VERT, COLOR_FRAG, None));
-
-        let tex_program = try!(
-            glium::Program::from_source( &display, TEX_VERT, TEX_FRAG, None));
+        let color_program = try!(gen_color_shader(&display));
+        let tex_program = try!(gen_texture_shader(&display));
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 

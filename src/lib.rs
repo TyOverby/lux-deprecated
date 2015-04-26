@@ -30,6 +30,7 @@ pub mod loader;
 pub mod game;
 pub mod accessors;
 pub mod primitive_canvas;
+pub mod shaders;
 
 pub mod prelude {
     pub use ::gfx_integration::{ColorVertex, TexVertex};
