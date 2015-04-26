@@ -19,12 +19,12 @@ Result<glium::Program,
 
             fragment: "
                 #version 140
-                uniform sampler2D texture;
+                uniform sampler2D tex;
                 uniform vec4 color_mult;
                 in vec2 v_tex_coords;
                 out vec4 f_color;
                 void main() {
-                    f_color = texture2D(texture, v_tex_coords) * color_mult;
+                    f_color = texture(tex, v_tex_coords) * color_mult;
                 }
             "
         },

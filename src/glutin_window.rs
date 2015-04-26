@@ -155,7 +155,7 @@ impl Window {
             WindowBuilder::new()
             .with_title("Lux".to_string())
             .with_dimensions(600, 500)
-            .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (2, 0)))
+            //.with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (2, 0)))
             .with_vsync()
             .with_gl_debug_flag(false)
             .with_multisampling(8)

@@ -185,7 +185,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
-            texture: texture,
+            tex: texture,
             color_mult: color_mult
         };
 

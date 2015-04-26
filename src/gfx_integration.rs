@@ -31,7 +31,7 @@ impl uniforms::Uniforms for ColorParams {
 
 pub struct TexParams<'a> {
     pub matrix: [[f32; 4]; 4],
-    pub texture: &'a Texture2d,
+    pub tex: &'a Texture2d,
     pub color_mult: [f32; 4]
 }
 
@@ -40,7 +40,7 @@ impl <'a> uniforms::Uniforms for TexParams<'a> {
     fn visit_values<'b, F>(&'b self, mut f: F) where F: FnMut(&str, uniforms::UniformValue<'b>) {
         use glium::uniforms::AsUniformValue;
         f("matrix", self.matrix.as_uniform_value());
-        f("texture", self.texture.as_uniform_value());
+        f("tex", self.tex.as_uniform_value());
         f("color_mult", self.color_mult.as_uniform_value());
     }
 }
