@@ -11,8 +11,9 @@ fn main() {
         let mut tex = Texture::empty(&lux, 256, 256);
         {
             let mut tex = tex.as_drawable_texture(&lux);
-            tex.draw_pixel(5.0, 5.0, rgb(255, 0, 0));
-            tex.square(5.0, 5.0, 50.0).border(5.0, rgb(50,50,50)).fill_and_stroke();
+            tex.circle(50.0, 50.0, 50.0).set_color(rgb(255, 0, 0)).fill();
+            tex.circle(150.0, 50.0, 50.0).set_color(rgb(255, 0, 0)).fill();
+            tex.rect(50.0, 150.0, 200.0, 25.0).set_color(rgb(255, 0, 0)).fill();
         }
         tex.into_sprite()
     };
@@ -26,6 +27,7 @@ fn main() {
 
         // Set a special size
         frame.sprite(&sprite, x - 32.0, y - 32.0).size(32.0, 32.0).draw();
-        return;
+
+        frame.text("Hello World", 0.0, 0.0).draw();
     }
 }

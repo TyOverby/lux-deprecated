@@ -139,6 +139,7 @@ impl Frame {
 
 impl Drop for Frame {
     fn drop(&mut self) {
+        self.display.assert_no_error();
         self.flush_draw();
     }
 }
@@ -202,8 +203,7 @@ impl Window {
 
         let window_c = window.display.clone();
         *window.font_cache.borrow_mut() = Some(try!(FontCache::new(|img: image::DynamicImage| {
-            let img = img.flipv();
-            let img = glium::texture::Texture2d::new(&window_c, img);
+            let img = glium::texture::Texture2d::new(&window_c, img.flipv());
             Sprite::new(Rc::new(img))
         })));
 

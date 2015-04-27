@@ -82,8 +82,7 @@ impl <T> TextureLoader for T where T: HasDisplay {
     }
 
     fn texture_from_image(&mut self, img: image::DynamicImage) -> Texture {
-        let img = img.flipv();
-        let img = glium::texture::Texture2d::new(self.borrow_display(), img);
+        let img = glium::texture::Texture2d::new(self.borrow_display(), img.flipv());
         Texture::new(img)
     }
 }
@@ -120,10 +119,26 @@ impl Texture {
 impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
     fn new(texture: glium::texture::TextureSurface<'a>, d: &'a D)
     -> DrawableTexture<'a, D> {
+        use glium::Surface;
+
+        let (w, h) = texture.get_dimensions();
+        let (w, h) = (w as f32, h as f32);
+        let (sx, sy) = (2.0 / w, -2.0 / h);
+
+        let mut basis = vecmath::mat4_id();
+        basis[1][1] = -1.0;
+        basis[3][0] = -1.0;
+        basis[3][1] = 1.0;
+        basis[0][0] = sx;
+        basis[1][1] = sy;
+
+        basis.scale(1.0, -1.0);
+        basis.translate(0.0, -h);
+
         DrawableTexture {
             texture: texture,
             d: d,
-            matrix: vecmath::mat4_id(),
+            matrix: basis,
             color_draw_cache: None,
             tex_draw_cache: None,
             color: [0.0, 0.0, 0.0, 1.0],
@@ -199,9 +214,8 @@ impl <'a, D> LuxCanvas for DrawableTexture<'a, D> where D: HasDisplay + HasProgr
 }
 
 impl <'a, D> Drop for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    fn drop (&mut self) {
+    fn drop(&mut self) {
         use primitive_canvas::PrimitiveCanvas;
-        println!("dropping!");
         self.flush_draw();
     }
 }

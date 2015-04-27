@@ -168,6 +168,7 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let idx = Indices::new(typ, idxs);
 
+
         frame.draw(&vertex_buffer, &idx, &color_program, &uniform, &draw_params).unwrap();
     }
 
