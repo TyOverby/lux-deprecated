@@ -2,12 +2,14 @@ use super::prelude::*;
 use std::collections::VecDeque;
 use clock_ticks;
 
+const FRAMES_TO_TRACK: usize = 80;
+
 pub trait Game {
     fn update(&mut self, dt: f32, window: &mut Window, events: &mut EventIterator);
     fn render(&mut self, lag: f32, window: &mut Window, frame: &mut Frame);
 
     fn clear_color(&self) -> Option<[f32; 4]> {Some([1.0, 1.0, 1.0, 1.0])}
-    fn draw_fps(&self) -> Option<usize> { Some(100) }
+    fn show_fps(&self, _window: &Window) -> bool { true }
     fn should_close(&self) -> bool { false }
     fn prepare_window(&mut self, _window: &mut Window) {}
     fn on_close(&mut self, _window: &mut Window) {}
@@ -45,11 +47,10 @@ fn time<R, F: FnOnce() -> R>(f: F) -> (u64, R) {
 
 impl <G: Game> GameRunner<G> {
     pub fn new(game: G) -> LuxResult<GameRunner<G>> {
-        let amnt = game.draw_fps().unwrap_or(10);
         Ok(GameRunner {
             game: game,
             window: try!(Window::new()),
-            frame_timings: VecDeque::with_capacity(amnt + 1)
+            frame_timings: VecDeque::with_capacity(FRAMES_TO_TRACK + 1)
         })
     }
 
@@ -84,7 +85,11 @@ impl <G: Game> GameRunner<G> {
 
             let (tr, _) = time(|| self.game.render(lag as f32, &mut self.window, frame.as_mut().unwrap()));
 
-            let (t_timing, _) = time(|| self.draw_timings(frame.as_mut().unwrap()));
+            let (t_timing, _) = time(|| {
+                if self.game.show_fps(&self.window) {
+                    self.draw_timings(frame.as_mut().unwrap())
+                }
+            });
 
             let (tpublish, _) = time(|| {
                 ::std::mem::drop(frame.take());
@@ -102,20 +107,18 @@ impl <G: Game> GameRunner<G> {
                 self.window.restock_events(events);
             }
 
-            if let Some(max_timings) = self.game.draw_fps() {
-                let now = clock_ticks::precise_time_ns();
-                let timing = FrameTiming {
-                    update_durations: update_durations,
-                    render_duration: tr,
-                    render_publish: tpublish,
-                    debug_drawing: t_timing,
-                    timestamp_start: current_ns,
-                    timestamp_end: now
-                };
+            let now = clock_ticks::precise_time_ns();
+            let timing = FrameTiming {
+                update_durations: update_durations,
+                render_duration: tr,
+                render_publish: tpublish,
+                debug_drawing: t_timing,
+                timestamp_start: current_ns,
+                timestamp_end: now
+            };
 
-                self.frame_timings.push_front(timing);
-                self.frame_timings.truncate(max_timings);
-            }
+            self.frame_timings.push_front(timing);
+            self.frame_timings.truncate(FRAMES_TO_TRACK);
         }
     }
 
@@ -161,7 +164,7 @@ impl <G: Game> GameRunner<G> {
         }
 
         const HEIGHT: f32 = 100.0;
-        const WIDTH:  f32 = 161.0;
+        const WIDTH:  f32 = 160.0;
         let h = frame.height();
         frame.with_translate(WIDTH, h, |frame| {
         frame.with_scale(-WIDTH, -HEIGHT, |frame| {

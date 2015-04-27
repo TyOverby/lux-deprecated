@@ -53,11 +53,15 @@ impl Game for MyGame {
         let (vx, vy) = self.speed;
 
         frame.text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).draw().unwrap();
+        frame.text("Hold the spacebar to see the debug fps viewer", 5.0, 25.0).draw().unwrap();
         frame.circle(x + vx * lag, y + vy * lag, PLAYER_SIZE).fill();
-        println!("{}", lag);
     }
 
     fn updates_per_s(&self) -> f64 { 120.0 }
+
+    fn show_fps(&self, window: &Window) -> bool {
+        window.is_key_pressed(' ')
+    }
 }
 
 fn clamp(low: f32, value: f32, high: f32) -> f32 {
