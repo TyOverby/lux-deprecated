@@ -1,11 +1,10 @@
-use std::collections::{HashMap, VecMap, VecDeque};
+use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
 
 use glutin;
 use glium;
 use image;
-use lux_constants::*;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
@@ -71,7 +70,7 @@ pub struct Window {
     codes_pressed: HashMap<u8, bool>,
     chars_pressed: HashMap<char, bool>,
     virtual_keys_pressed: HashMap<VirtualKeyCode, bool>,
-    code_to_char: VecMap<char>,
+    code_to_char: HashMap<usize, char>,
 
     // FONT
     pub font_cache: Rc<RefCell<Option<FontCache>>>,
@@ -196,7 +195,7 @@ impl Window {
             codes_pressed: HashMap::new(),
             chars_pressed: HashMap::new(),
             virtual_keys_pressed: HashMap::new(),
-            code_to_char: VecMap::new(),
+            code_to_char: HashMap::new(),
             typemap: TypeMap::new(),
             font_cache: Rc::new(RefCell::new(None))
         };

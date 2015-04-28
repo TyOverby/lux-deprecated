@@ -118,7 +118,9 @@ impl <G: Game> GameRunner<G> {
             };
 
             self.frame_timings.push_front(timing);
-            self.frame_timings.truncate(FRAMES_TO_TRACK);
+            if self.frame_timings.len() > FRAMES_TO_TRACK {
+                self.frame_timings.pop_back();
+            }
         }
     }
 
