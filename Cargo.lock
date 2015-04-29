@@ -4,8 +4,8 @@ version = "0.0.1"
 dependencies = [
  "clock_ticks 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "color 0.0.2 (git+https://github.com/bjz/color-rs.git)",
- "fontcache 0.1.0",
- "freetype-fontcache 0.1.0",
+ "fontcache 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
+ "freetype-fontcache 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
  "freetype-rs 0.0.8 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glium 0.3.3 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -71,15 +71,18 @@ dependencies = [
 [[package]]
 name = "fontcache"
 version = "0.1.0"
+source = "git+https://github.com/TyOverby/font-cache.git#518d3d83bcf4ba3372880b098de91495f7b60563"
 dependencies = [
  "glyph_packer 0.0.0 (git+https://github.com/TyOverby/glyph_packer.git)",
+ "rustc-serialize 0.3.13 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "freetype-fontcache"
 version = "0.1.0"
+source = "git+https://github.com/TyOverby/font-cache.git#518d3d83bcf4ba3372880b098de91495f7b60563"
 dependencies = [
- "fontcache 0.1.0",
+ "fontcache 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
  "freetype-rs 0.0.8 (git+https://github.com/PistonDevelopers/freetype-rs)",
  "glyph_packer 0.0.0 (git+https://github.com/TyOverby/glyph_packer.git)",
  "image 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
