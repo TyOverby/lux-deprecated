@@ -8,13 +8,14 @@ authors = ["Ty Overby <ty@pre-alpha.com>"]
 name = "lux"
 path = "src/lib.rs"
 
-[[bin]]
-name = "lux_demo"
-path = "src/bin.rs"
 
-[[bin]]
-name = "test_runner"
-path = "src/test_runner.rs"
+#[[bin]]
+#name = "lux_demo"
+#path = "src/bin.rs"
+
+#[[bin]]
+#name = "test_runner"
+#path = "src/test_runner.rs"
 
 [dependencies.glium]
 git = "https://github.com/tomaka/glium.git"
@@ -46,6 +47,14 @@ git = "https://github.com/TyOverby/glyph_packer.git"
 
 [dependencies.lux-constants]
 path = "./constants"
+
+# TODO: CHANGE
+[dependencies.fontcache]
+path = "../fontcache"
+
+# TODO: CHANGE
+[dependencies.freetype-fontcache]
+path = "../fontcache/freetype-fontcache"
 
 [dependencies]
 nd_iter = "*"

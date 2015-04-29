@@ -28,6 +28,6 @@ fn main() {
         // Set a special size
         frame.sprite(&sprite, x - 32.0, y - 32.0).size(32.0, 32.0).draw();
 
-        frame.text("Hello World", 0.0, 0.0).draw();
+        frame.text("Hello World", 0.0, 0.0).draw().unwrap();
     }
 }

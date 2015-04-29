@@ -10,13 +10,19 @@ pub trait HasDisplay {
     }
 }
 
+impl HasDisplay for glium::Display {
+    fn borrow_display(&self) -> &glium::Display {
+        self
+    }
+}
+
 pub trait HasPrograms {
     fn texture_shader(&self) -> &glium::Program;
     fn color_shader(&self) -> &glium::Program;
 }
 
 pub trait HasFontCache {
-    fn font_cache(&self) -> RefMut<Option<FontCache>>;
+    fn font_cache(&self) -> RefMut<FontCache>;
 }
 
 pub trait HasSurface {

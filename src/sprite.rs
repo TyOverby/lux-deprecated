@@ -63,25 +63,25 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
 }
 
 pub trait TextureLoader {
-    fn load_texture_file<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Texture, ImageError>;
+    fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, ImageError>;
 
-    fn texture_from_pixels(&mut self, Vec<Vec<[f32; 4]>>) -> Texture;
-    fn texture_from_image(&mut self, img: image::DynamicImage) -> Texture;
+    fn texture_from_pixels(&self, Vec<Vec<[f32; 4]>>) -> Texture;
+    fn texture_from_image(&self, img: image::DynamicImage) -> Texture;
 }
 
 impl <T> TextureLoader for T where T: HasDisplay {
-    fn load_texture_file<P: AsRef<Path> + ?Sized>(&mut self, path: &P) -> Result<Texture, ImageError> {
+    fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, ImageError> {
         let img = try!(image::open(path)).flipv();
         let img = glium::texture::Texture2d::new(self.borrow_display(), img);
         Ok(Texture::new(img))
     }
 
-    fn texture_from_pixels(&mut self, pixels: Vec<Vec<[f32; 4]>>) -> Texture {
+    fn texture_from_pixels(&self, pixels: Vec<Vec<[f32; 4]>>) -> Texture {
         let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
         Texture::new(glium::texture::Texture2d::new(self.borrow_display(), pixels))
     }
 
-    fn texture_from_image(&mut self, img: image::DynamicImage) -> Texture {
+    fn texture_from_image(&self, img: image::DynamicImage) -> Texture {
         let img = glium::texture::Texture2d::new(self.borrow_display(), img.flipv());
         Texture::new(img)
     }

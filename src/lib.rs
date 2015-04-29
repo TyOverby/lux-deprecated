@@ -11,6 +11,8 @@ extern crate glyph_packer;
 extern crate num;
 extern crate clock_ticks;
 extern crate lux_constants;
+extern crate fontcache;
+extern crate freetype_fontcache;
 
 pub mod interactive;
 pub mod figure;

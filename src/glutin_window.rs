@@ -4,7 +4,6 @@ use std::cell::{RefCell, RefMut};
 
 use glutin;
 use glium;
-use image;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
@@ -18,7 +17,6 @@ use super::accessors::{
 use super::prelude::{
     EventIterator,
     FontCache,
-    Sprite,
     LuxCanvas,
     Interactive,
     Event,
@@ -73,7 +71,7 @@ pub struct Window {
     code_to_char: HashMap<usize, char>,
 
     // FONT
-    pub font_cache: Rc<RefCell<Option<FontCache>>>,
+    pub font_cache: Rc<RefCell<FontCache>>,
 
     // EXTEND
     typemap: TypeMap,
@@ -93,7 +91,7 @@ pub struct Frame {
     basis_matrix: Mat4f,
     color: [f32; 4],
 
-    pub font_cache: Rc<RefCell<Option<FontCache>>>,
+    pub font_cache: Rc<RefCell<FontCache>>,
 }
 
 
@@ -102,7 +100,7 @@ impl Frame {
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
            clear_color: Option<[f32; 4]>,
-           font_cache: Rc<RefCell<Option<FontCache>>>) -> Frame {
+           font_cache: Rc<RefCell<FontCache>>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -179,6 +177,8 @@ impl Window {
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
+        let font_cache = try!(FontCache::new(&display));
+
         let window = Window {
             display: display,
             color_program: Rc::new(color_program),
@@ -197,14 +197,8 @@ impl Window {
             virtual_keys_pressed: HashMap::new(),
             code_to_char: HashMap::new(),
             typemap: TypeMap::new(),
-            font_cache: Rc::new(RefCell::new(None))
+            font_cache: Rc::new(RefCell::new(font_cache))
         };
-
-        let window_c = window.display.clone();
-        *window.font_cache.borrow_mut() = Some(try!(FontCache::new(|img: image::DynamicImage| {
-            let img = glium::texture::Texture2d::new(&window_c, img.flipv());
-            Sprite::new(Rc::new(img))
-        })));
 
         Ok(window)
     }
@@ -431,7 +425,7 @@ impl HasDisplay for Window {
 }
 
 impl HasFontCache for Window {
-    fn font_cache(&self) -> RefMut<Option<FontCache>> {
+    fn font_cache(&self) -> RefMut<FontCache> {
         self.font_cache.borrow_mut()
     }
 }
@@ -443,7 +437,7 @@ impl HasDisplay for Frame {
 }
 
 impl HasFontCache for Frame {
-    fn font_cache(&self) -> RefMut<Option<FontCache>> {
+    fn font_cache(&self) -> RefMut<FontCache> {
         self.font_cache.borrow_mut()
     }
 }
