@@ -20,6 +20,10 @@ impl MyGame {
 }
 
 impl Game for MyGame {
+    fn prepare_window(&mut self, window: &mut Window) {
+        window.preload_font("SourceCodePro", 10);
+    }
+
     fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) {
         // position
         self.pos.0 += self.speed.0 * dt;

@@ -87,8 +87,8 @@ Result<glium::Program,
                 #version 110
                 uniform mat4 matrix;
                 attribute vec2 pos;
-                attribute vec3 color;
-                varying vec3 v_color;
+                attribute vec4 color;
+                varying vec4 v_color;
                 void main() {
                     gl_Position = vec4(pos, 0.0, 1.0) * matrix;
                     v_color = color;
@@ -97,9 +97,9 @@ Result<glium::Program,
 
             fragment: "
                 #version 110
-                varying vec3 v_color;
+                varying vec4 v_color;
                 void main() {
-                    gl_FragColor = vec4(v_color, 1.0);
+                    gl_FragColor = vec4(v_color);
                 }
             ",
         }

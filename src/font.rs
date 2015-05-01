@@ -88,6 +88,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         let rendered = try!(fc.use_font(d, self.font_family.as_ref(), self.size as u32));
 
         for OutputPosition{c: _, screen_pos: (x, y), char_info} in positions {
+            //println!("drawing from {:?}", rendered.image());
             let subsprite = rendered.image().sub_sprite(char_info.image_position,
                                                 char_info.image_size);
             if let Some(sp) = subsprite.as_ref() {

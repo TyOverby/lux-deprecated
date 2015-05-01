@@ -136,14 +136,14 @@ impl Frame {
 
 impl Drop for Frame {
     fn drop(&mut self) {
-        self.display.assert_no_error();
+        //self.display.assert_no_error();
         self.flush_draw();
     }
 }
 
 impl Window {
     pub fn assert_no_error(&self)  {
-        self.display.assert_no_error();
+        //self.display.assert_no_error();
     }
 
     pub fn new() -> LuxResult<Window> {
@@ -299,6 +299,7 @@ impl Window {
                 self.closed = true;
             }
             glevent::Awakened => {  }
+            glevent::Refresh => {  }
         }}
     }
 

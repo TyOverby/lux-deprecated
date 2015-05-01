@@ -82,7 +82,12 @@ impl <T> TextureLoader for T where T: HasDisplay {
     }
 
     fn texture_from_image(&self, img: image::DynamicImage) -> Texture {
-        let img = glium::texture::Texture2d::new(self.borrow_display(), img.flipv());
+        use std::fs::File;
+        use image::ImageFormat::PNG;
+        let img = img.flipv();
+        img.save(&mut File::create("out.png").unwrap(), PNG);
+        let img = glium::texture::Texture2d::new(self.borrow_display(), img);
+        println!("GOT {:?}", img);
         Texture::new(img)
     }
 }
