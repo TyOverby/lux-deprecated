@@ -41,12 +41,12 @@ pub struct Sprite {
 pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
     texture: glium::texture::TextureSurface<'a>,
     d: &'a D,
+
     matrix: [[f32; 4]; 4],
+    color: [f32; 4],
 
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
-
-    color: [f32; 4],
 }
 
 #[derive(Clone, Debug)]
@@ -82,12 +82,8 @@ impl <T> TextureLoader for T where T: HasDisplay {
     }
 
     fn texture_from_image(&self, img: image::DynamicImage) -> Texture {
-        use std::fs::File;
-        use image::ImageFormat::PNG;
         let img = img.flipv();
-        img.save(&mut File::create("out.png").unwrap(), PNG);
         let img = glium::texture::Texture2d::new(self.borrow_display(), img);
-        println!("GOT {:?}", img);
         Texture::new(img)
     }
 }
@@ -98,7 +94,8 @@ impl Texture {
         let backing = glium::texture::Texture2d::empty(d.borrow_display(), width, height);
         {
             let mut s = backing.as_surface();
-            s.clear_all((1.0, 1.0, 0.0, 1.0), 0.0, 0);
+            s.clear_depth(0.0);
+            s.clear_stencil(0);
         }
         Texture {
             backing: backing

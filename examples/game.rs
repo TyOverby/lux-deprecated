@@ -48,7 +48,6 @@ impl Game for MyGame {
         } else if window.is_key_pressed('s') {
             self.speed.1 = MOVEMENT_SPEED;
         }
-        // ::std::thread::sleep_ms(5);
     }
 
     fn render(&mut self, lag: f32, _window: &mut Window, frame: &mut Frame) {

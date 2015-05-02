@@ -184,7 +184,6 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
         let (frame, tex_program) = self.surface_and_texture_shader();
 
-        println!("tex {:?}", texture);
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
             tex: texture,
