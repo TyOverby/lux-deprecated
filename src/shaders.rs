@@ -44,11 +44,11 @@ Result<glium::Program,
 
             fragment: "
                 #version 110
-                uniform sampler2D texture;
+                uniform sampler2D tex;
                 uniform vec4 color_mult;
                 varying vec2 v_tex_coords;
                 void main() {
-                    gl_FragColor = texture2D(texture, v_tex_coords) * color_mult;
+                    gl_FragColor = texture2D(tex, v_tex_coords) * color_mult;
                 }
             ",
         },

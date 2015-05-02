@@ -148,7 +148,7 @@ dependencies = [
 [[package]]
 name = "glium"
 version = "0.3.4"
-source = "git+https://github.com/tomaka/glium.git#982bfd868d6e423fe80429b285e318ef99be3253"
+source = "git+https://github.com/tomaka/glium.git#f9cdf6279817303206c81366beaa0679624b6b62"
 dependencies = [
  "cgmath 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl_common 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
