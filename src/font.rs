@@ -7,7 +7,7 @@ use freetype;
 use glium;
 use vecmath;
 use fontcache;
-use freetype_fontcache;
+use freetype_atlas;
 use lux_constants::*;
 
 pub use fontcache::OutputPosition;
@@ -31,7 +31,7 @@ pub struct FontCache {
     rendered: HashMap<(String, u32), fontcache::RenderedFont<Sprite>>,
 }
 
-#[must_use = "text references contain context, and must be drawn with `draw()`"]
+#[must_use = "text references just contains context, and must be drawn with `draw()`"]
 pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
     text: S,
@@ -249,9 +249,9 @@ impl FontCache {
             Entry::Vacant(entry) => {
                 if let Some(face) = self.faces.get_mut(&name[..]) {
                     try!(face.set_pixel_sizes(0, size));
-                    let rendered = try!(freetype_fontcache::render(face, v.into_iter(), true));
-                    let sprited = rendered.map_img(move |img|
-                       TextureLoader::texture_from_image(display, img).into_sprite());
+                    let rendered = try!(freetype_atlas::render(face, v.into_iter(), true));
+                    let (sprited, _) = rendered.map_img(move |img|(
+                       TextureLoader::texture_from_image(display, img).into_sprite(),()));
                     Ok(entry.insert(sprited))
                 } else {
                     Err(LuxError::FontNotLoaded(name.to_string()))

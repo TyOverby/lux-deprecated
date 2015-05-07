@@ -1,6 +1,9 @@
 use std::collections::VecDeque;
 use super::prelude::*;
 
+// TODO: When thread::scoped lands again, do all loading in seperate threads
+// which get Window and Game in a mutex.
+
 trait Loadable<S> {
     fn step(&mut self, window: &mut Window, state: &mut S);
     fn describe(&self) -> &str;

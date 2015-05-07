@@ -254,8 +254,8 @@ impl Window {
                 self.window_pos = (x as i32, y as i32);
                 self.event_store.push_back(WindowMoved(self.window_pos));
             }
-            glevent::MouseWheel(i) => {
-                self.event_store.push_back(MouseWheel(i as i32));
+            glevent::MouseWheel(x, y) => {
+                self.event_store.push_back(MouseWheel(x as f32, y as f32));
             }
             glevent::ReceivedCharacter(c) => {
                 last_char = Some(c);

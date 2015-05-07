@@ -45,7 +45,7 @@ path = "./constants"
 [dependencies.fontcache]
 git = "https://github.com/TyOverby/font-cache.git"
 
-[dependencies.freetype-fontcache]
+[dependencies.freetype-atlas]
 git = "https://github.com/TyOverby/font-cache.git"
 
 [dependencies]

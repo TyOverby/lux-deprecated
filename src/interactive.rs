@@ -12,12 +12,12 @@ pub struct EventIterator {
 }
 
 /// An even coming from an Interactive object.
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Event {
     /// The mouse moved to this position.
     MouseMoved((i32, i32)),
     /// The mouse wheel moved by this delta.
-    MouseWheel(i32),
+    MouseWheel(f32, f32),
     /// This mouse button was pushed down.
     MouseDown(MouseButton),
     /// This mouse button was released.

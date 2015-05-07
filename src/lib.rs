@@ -12,7 +12,7 @@ extern crate num;
 extern crate clock_ticks;
 extern crate lux_constants;
 extern crate fontcache;
-extern crate freetype_fontcache;
+extern crate freetype_atlas;
 
 pub mod interactive;
 pub mod figure;
