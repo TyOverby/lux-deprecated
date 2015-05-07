@@ -45,7 +45,7 @@ pub enum MouseButton {
     /// The middle mouse button.
     Middle,
     /// Any other unnamed mouse button.
-    OtherMouseButton(u8)
+    Other(u8)
 }
 
 /// A trait for objects that are interactive to the user.

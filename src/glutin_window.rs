@@ -223,7 +223,7 @@ impl Window {
                 glutin::MouseButton::Left=> Left,
                 glutin::MouseButton::Right=> Right,
                 glutin::MouseButton::Middle=> Middle,
-                glutin::MouseButton::Other(a) => OtherMouseButton(a)
+                glutin::MouseButton::Other(a) => Other(a)
             }
         }
 
