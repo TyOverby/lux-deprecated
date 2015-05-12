@@ -8,11 +8,6 @@ authors = ["Ty Overby <ty@pre-alpha.com>"]
 name = "lux"
 path = "src/lib.rs"
 
-
-#[[bin]]
-#name = "lux_demo"
-#path = "src/bin.rs"
-
 [[bin]]
 name = "test_runner"
 path = "src/test_runner.rs"
@@ -57,7 +52,7 @@ num = "*"
 clock_ticks = "*"
 
 [profile.dev]
-opt-level = 2
+opt-level = 1
 debug = true
 rpath = false
 lto = false
