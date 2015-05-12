@@ -128,7 +128,7 @@ pub trait PrimitiveCanvas {
                          color_mult: Option<[f32; 4]>);
 }
 
-fn draw_params() -> glium::DrawParameters {
+fn draw_params() -> glium::DrawParameters<'static> {
         use glium::LinearBlendingFactor::*;
         let defaults: glium::DrawParameters = ::std::default::Default::default();
         glium::DrawParameters {

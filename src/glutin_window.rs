@@ -29,7 +29,11 @@ use super::prelude::{
     Transform,
 };
 
-use super::shaders::{gen_texture_shader, gen_color_shader};
+use super::shaders::{
+    gen_texture_shader,
+    gen_color_shader
+};
+
 use super::primitive_canvas::{
     PrimitiveCanvas,
     CachedColorDraw,

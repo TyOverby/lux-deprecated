@@ -19,6 +19,7 @@ path = "src/test_runner.rs"
 
 [dependencies.glium]
 git = "https://github.com/tomaka/glium.git"
+default-features = false
 features = ["image"]
 
 [dependencies.vecmath]
