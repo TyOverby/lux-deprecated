@@ -17,41 +17,6 @@ use super::gfx_integration;
 use vecmath;
 use glium;
 
-struct Indices<'a, T: 'a + glium::index::Index> {
-    idxs: Option<&'a [T]>,
-    prim: glium::index::PrimitiveType
-}
-
-impl <'a, T: 'a + glium::index::Index> Indices<'a, T> {
-    fn new(prim: glium::index::PrimitiveType, idxs: Option<&'a [T]>) -> Indices<'a, T> {
-        Indices {
-            idxs: idxs,
-            prim: prim
-        }
-    }
-}
-
-impl <'a, T: 'a + glium::index::Index> glium::index::ToIndicesSource for Indices<'a, T> {
-    type Data = T;
-    fn to_indices_source<'b>(&'b self) -> glium::index::IndicesSource<'b, T> {
-        match self.idxs {
-            Some(slice) => {
-                glium::index::IndicesSource::Buffer {
-                    pointer: slice,
-                    primitives: self.prim,
-                    offset: 0,
-                    length: slice.len()
-                }
-            }
-            None => {
-                glium::index::IndicesSource::NoIndices {
-                    primitives: self.prim
-                }
-            }
-        }
-    }
-}
-
 pub struct CachedColorDraw {
     pub typ: PrimitiveType,
     pub points: Vec<ColorVertex>,
@@ -155,10 +120,10 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 points: &[ColorVertex],
                 idxs: Option<&[u32]>,
                 base_mat: Option<[[f32; 4]; 4]>) {
-        use glium::Surface;
+        use glium::{Surface, IndexBuffer};
+        use glium::index::NoIndices;
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
-        let (frame, color_program) = self.surface_and_color_shader();
 
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
@@ -166,10 +131,17 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let draw_params = draw_params();
 
-        let idx = Indices::new(typ, idxs);
-
-
-        frame.draw(&vertex_buffer, &idx, &color_program, &uniform, &draw_params).unwrap();
+        match idxs {
+            Some(idxs) => {
+                let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs.iter().cloned().collect(), typ);
+                let (frame, color_program) = self.surface_and_color_shader();
+                frame.draw(&vertex_buffer, &idx_buf, &color_program, &uniform, &draw_params).unwrap();
+            }
+            None => {
+                let (frame, color_program) = self.surface_and_color_shader();
+                frame.draw(&vertex_buffer, &NoIndices(typ), &color_program, &uniform, &draw_params).unwrap();
+            }
+        }
     }
 
     fn draw_textured_now(&mut self,
@@ -179,10 +151,10 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 base_mat: Option<[[f32; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
                 color_mult: [f32; 4]) {
-        use glium::Surface;
+        use glium::{Surface, IndexBuffer};
+        use glium::index::NoIndices;
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
-        let (frame, tex_program) = self.surface_and_texture_shader();
 
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
@@ -192,9 +164,17 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let draw_params = draw_params();
 
-        let idx = Indices::new(typ, idxs);
-
-        frame.draw(&vertex_buffer, &idx, &tex_program, &uniform, &draw_params).unwrap();
+        match idxs {
+            Some(idxs) => {
+                let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs.iter().cloned().collect(), typ);
+                let (frame, tex_program) = self.surface_and_texture_shader();
+                frame.draw(&vertex_buffer, &idx_buf, &tex_program, &uniform, &draw_params).unwrap();
+            }
+            None => {
+                let (frame, tex_program) = self.surface_and_texture_shader();
+                frame.draw(&vertex_buffer, &NoIndices(typ), &tex_program, &uniform, &draw_params).unwrap();
+            }
+        }
         // TODO: returrn error?
     }
 
