@@ -11,6 +11,7 @@ extern crate clock_ticks;
 extern crate lux_constants;
 extern crate fontcache;
 extern crate freetype_atlas;
+extern crate reuse_cache;
 
 pub mod interactive;
 pub mod figure;

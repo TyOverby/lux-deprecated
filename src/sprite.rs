@@ -11,11 +11,12 @@ use std::path::Path;
 use std::cmp::Eq;
 use std::hash::Hash;
 
-use ::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache};
-use ::prelude::{TexVertex, Figure, LuxCanvas, TrianglesList, Transform, Colored, Color};
+use ::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache, Fetch};
+use ::prelude::{TexVertex, ColorVertex, Figure, LuxCanvas, TrianglesList, Transform, Colored, Color};
 use ::primitive_canvas::{CachedColorDraw, CachedTexDraw};
 
 use vecmath;
+use reuse_cache;
 
 use image::ImageError;
 
@@ -204,6 +205,24 @@ impl <'a, D> HasDrawCache for DrawableTexture<'a, D> where D: HasPrograms + HasD
 
     fn tex_draw_cache_mut(&mut self) -> &mut Option<CachedTexDraw> {
         &mut self.tex_draw_cache
+    }
+}
+
+impl <'a, D> Fetch<Vec<u32>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+    fn fetch(&self) -> reuse_cache::Item<Vec<u32>> {
+        reuse_cache::Item::from_value(vec![])
+    }
+}
+
+impl <'a, D> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
+        reuse_cache::Item::from_value(vec![])
+    }
+}
+
+impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
+        reuse_cache::Item::from_value(vec![])
     }
 }
 

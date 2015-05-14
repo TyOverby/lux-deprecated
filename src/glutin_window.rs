@@ -3,7 +3,9 @@ use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
 
 use glutin;
+use vecmath;
 use glium;
+use reuse_cache;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
@@ -12,11 +14,14 @@ use super::accessors::{
     HasDisplay,
     HasFontCache,
     HasSurface,
+    Fetch
 };
 
 use super::prelude::{
     EventIterator,
     FontCache,
+    ColorVertex,
+    TexVertex,
     LuxCanvas,
     Interactive,
     Event,
@@ -44,7 +49,6 @@ use glutin::WindowBuilder;
 
 use typemap::TypeMap;
 
-use vecmath;
 
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
@@ -58,6 +62,11 @@ pub struct Window {
 
     // WINDOW
     title: String,
+
+    // CACHES
+    idx_cache: reuse_cache::ReuseCache<Vec<u32>>,
+    tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
+    color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
 
     // EVENT
     event_store: VecDeque<Event>,
@@ -91,6 +100,11 @@ pub struct Frame {
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
 
+    // CACHES
+    idx_cache: reuse_cache::ReuseCache<Vec<u32>>,
+    tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
+    color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
+
     // Raw
     basis_matrix: Mat4f,
     color: [f32; 4],
@@ -103,6 +117,9 @@ impl Frame {
     fn new(display: &glium::Display,
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
+           idx_cache: reuse_cache::ReuseCache<Vec<u32>>,
+           tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
+           color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
            clear_color: Option<[f32; 4]>,
            font_cache: Rc<RefCell<FontCache>>) -> Frame {
         use glium::Surface;
@@ -127,6 +144,9 @@ impl Frame {
             display: display.clone(),
             color_program: color_program,
             tex_program: tex_program,
+            idx_cache: idx_cache,
+            tex_vtx_cache: tex_vtx_cache,
+            color_vtx_cache: color_vtx_cache,
             f: frm,
             color_draw_cache: None,
             tex_draw_cache: None,
@@ -189,6 +209,9 @@ impl Window {
             tex_program: Rc::new(tex_program),
             closed: false,
             title: "Lux".to_string(),
+            idx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
+            tex_vtx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
+            color_vtx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
             event_store: VecDeque::new(),
             mouse_pos: (0, 0),
             window_pos: (0, 0),
@@ -311,6 +334,9 @@ impl Window {
         Frame::new(&self.display,
                    self.color_program.clone(),
                    self.tex_program.clone(),
+                   self.idx_cache.clone(),
+                   self.tex_vtx_cache.clone(),
+                   self.color_vtx_cache.clone(),
                    Some(clear_color.to_rgba()),
                    self.font_cache.clone())
     }
@@ -319,6 +345,9 @@ impl Window {
         Frame::new(&self.display,
                    self.color_program.clone(),
                    self.tex_program.clone(),
+                   self.idx_cache.clone(),
+                   self.tex_vtx_cache.clone(),
+                   self.color_vtx_cache.clone(),
                    None,
                    self.font_cache.clone())
     }
@@ -496,5 +525,53 @@ impl HasPrograms for Frame {
 
     fn color_shader(&self) -> &glium::Program {
         &*self.color_program
+    }
+}
+
+impl Fetch<Vec<u32>> for Window {
+    fn fetch(&self) -> reuse_cache::Item<Vec<u32>> {
+        let mut ret = self.idx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<TexVertex>> for Window {
+    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
+        let mut ret = self.tex_vtx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<ColorVertex>> for Window {
+    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
+        let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<u32>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<u32>> {
+        let mut ret = self.idx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<TexVertex>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
+        let mut ret = self.tex_vtx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<ColorVertex>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
+        let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
     }
 }

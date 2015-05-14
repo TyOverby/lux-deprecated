@@ -1,7 +1,8 @@
 use std::cell::RefMut;
 use ::font::FontCache;
-use glium;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw};
+use glium;
+use reuse_cache;
 
 pub trait HasDisplay {
     fn borrow_display(&self) -> &glium::Display;
@@ -39,4 +40,8 @@ pub trait HasDrawCache {
 
     fn color_draw_cache_mut(&mut self) -> &mut Option<CachedColorDraw>;
     fn tex_draw_cache_mut(&mut self) -> &mut Option<CachedTexDraw>;
+}
+
+pub trait Fetch<T> {
+    fn fetch(&self) -> reuse_cache::Item<T>;
 }

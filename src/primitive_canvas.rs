@@ -1,5 +1,6 @@
 use std::rc::Rc;
 use super::accessors::{
+    Fetch,
     HasDisplay,
     HasSurface,
     HasDrawCache
@@ -16,18 +17,19 @@ use super::gfx_integration;
 
 use vecmath;
 use glium;
+use reuse_cache;
 
 pub struct CachedColorDraw {
     pub typ: PrimitiveType,
-    pub points: Vec<ColorVertex>,
-    pub idxs: Vec<u32>,
+    pub points: reuse_cache::Item<Vec<ColorVertex>>,
+    pub idxs: reuse_cache::Item<Vec<u32>>,
 }
 
 pub struct CachedTexDraw {
     pub typ: PrimitiveType,
-    pub points: Vec<TexVertex>,
+    pub points: reuse_cache::Item<Vec<TexVertex>>,
     pub texture: Rc<glium::texture::Texture2d>,
-    pub idxs: Vec<u32>,
+    pub idxs: reuse_cache::Item<Vec<u32>>,
     pub color_mult: [f32; 4],
 }
 
@@ -108,7 +110,9 @@ fn draw_params() -> glium::DrawParameters<'static> {
         }
 }
 
-impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache + Transform {
+impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
+Transform + Fetch<Vec<u32>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
+{
     fn clear<C: Color>(&mut self, color: C) {
         use glium::Surface;
         let c = color.to_rgba();
@@ -259,8 +263,8 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 self.flush_draw();
                 *self.tex_draw_cache_mut() = Some(CachedTexDraw {
                     typ: n_typ,
-                    points: Vec::with_capacity(1024),
-                    idxs: Vec::with_capacity(1024),
+                    points: self.fetch(),
+                    idxs: self.fetch(),
                     texture: texture,
                     color_mult: color_mult,
                 });
@@ -268,8 +272,8 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         } else {
             *self.tex_draw_cache_mut() = Some(CachedTexDraw {
                 typ: n_typ,
-                points: Vec::with_capacity(1024),
-                idxs: Vec::with_capacity(1024),
+                points: self.fetch(),
+                idxs: self.fetch(),
                 texture: texture,
                 color_mult: color_mult
             });
@@ -337,15 +341,15 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 self.flush_draw();
                 *self.color_draw_cache_mut() = Some(CachedColorDraw {
                     typ: n_typ,
-                    points: Vec::with_capacity(1024),
-                    idxs: Vec::with_capacity(1024),
+                    points: self.fetch(),
+                    idxs: self.fetch()
                 });
             }
         } else {
             *self.color_draw_cache_mut() = Some(CachedColorDraw {
                 typ: n_typ,
-                points: Vec::with_capacity(1024),
-                idxs: Vec::with_capacity(1024),
+                points: self.fetch(),
+                idxs: self.fetch()
 
             });
         }

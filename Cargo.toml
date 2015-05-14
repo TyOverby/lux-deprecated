@@ -29,6 +29,10 @@ git = "https://github.com/TyOverby/font-cache.git"
 [dependencies.freetype-atlas]
 git = "https://github.com/TyOverby/font-cache.git"
 
+[dependencies.reuse-cache]
+#git = "https://github.com/TyOverby/reuse-cache.git"
+path = "../reuse-cache"
+
 [dependencies]
 nd_iter = "*"
 glutin = "*"
