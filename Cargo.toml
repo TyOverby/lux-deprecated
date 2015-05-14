@@ -17,23 +17,8 @@ git = "https://github.com/tomaka/glium.git"
 default-features = false
 features = ["image"]
 
-[dependencies.vecmath]
-git = "https://github.com/PistonDevelopers/vecmath"
-
-[dependencies.typemap]
-git = "https://github.com/reem/rust-typemap"
-
-[dependencies.freetype-rs]
-git = "https://github.com/PistonDevelopers/freetype-rs"
-
-[dependencies.color]
-git = "https://github.com/bjz/color-rs.git"
-
-[dependencies.noise]
-git = "https://github.com/bjz/noise-rs.git"
-
-[dependencies.glyph_packer]
-git = "https://github.com/TyOverby/glyph_packer.git"
+#[dependencies.glyph_packer]
+#git = "https://github.com/TyOverby/glyph_packer.git"
 
 [dependencies.lux-constants]
 path = "./constants"
@@ -50,6 +35,10 @@ glutin = "*"
 image = "*"
 num = "*"
 clock_ticks = "*"
+vecmath = "*"
+typemap = "*"
+noise = "*"
+freetype-rs = "*"
 
 [profile.dev]
 opt-level = 1
