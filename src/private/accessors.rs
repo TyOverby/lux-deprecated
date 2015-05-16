@@ -3,7 +3,7 @@
 //! capabilities.
 
 use std::cell::RefMut;
-use ::font::FontCache;
+use super::font::FontCache;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw};
 use glium;
 use reuse_cache;

@@ -1,16 +1,14 @@
 use super::primitive_canvas::PrimitiveCanvas;
 use super::types::Float;
-use super::prelude::{
+use super::gfx_integration::{
     ColorVertex,
     TexVertex,
-    TriangleFan,
-    TrianglesList,
-    Colored,
-    Color,
-    Points,
-    Sprite,
-    Transform
 };
+
+use glium::index::PrimitiveType::{self, TriangleFan, TrianglesList, Points};
+use super::color::Color;
+use super::raw::{Colored, Transform};
+use super::sprite::Sprite;
 
 use vecmath;
 

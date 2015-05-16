@@ -1,19 +1,10 @@
 use std::rc::Rc;
 
-use super::accessors::{
-    Fetch,
-    HasDisplay,
-    HasSurface,
-    HasDrawCache
-};
-
-use super::prelude::{
-    ColorVertex,
-    TexVertex,
-    PrimitiveType,
-    Color,
-    Transform
-};
+use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache};
+use super::gfx_integration::{ColorVertex, TexVertex};
+use glium::index::PrimitiveType;
+use super::color::Color;
+use super::raw::Transform;
 use super::gfx_integration;
 use super::types::{Idx, Float};
 
@@ -267,7 +258,7 @@ Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
                   transform: Option<[[Float; 4]; 4]>,
                   texture: Rc<glium::texture::Texture2d>,
                   color_mult: Option<[Float; 4]>) {
-        use super::prelude::PrimitiveType::{Points, LinesList, TrianglesList};
+        use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
         use std::mem::transmute;
 
         if self.color_draw_cache().is_some() {
@@ -360,7 +351,7 @@ Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
                   n_points: &[ColorVertex],
                   idxs: Option<&[Idx]>,
                   transform: Option<[[Float; 4]; 4]>) {
-        use super::prelude::PrimitiveType::{Points, LinesList, TrianglesList};
+        use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
 
         if self.tex_draw_cache().is_some() {
             self.flush_draw();

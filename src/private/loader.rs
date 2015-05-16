@@ -1,5 +1,12 @@
 use std::collections::VecDeque;
-use super::prelude::*;
+
+use super::glutin_window::{Window, Frame};
+use super::color::rgb;
+use super::interactive::Interactive;
+use super::canvas::LuxCanvas;
+use super::raw::{Transform, Colored};
+use super::font::TextDraw;
+
 
 // TODO: When thread::scoped lands again, do all loading in seperate threads
 // which get Window and Game in a mutex.

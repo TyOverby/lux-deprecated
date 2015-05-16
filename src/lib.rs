@@ -15,44 +15,57 @@ extern crate fontcache;
 extern crate freetype_atlas;
 extern crate reuse_cache;
 
-pub mod interactive;
-pub mod canvas;
-pub mod raw;
-pub mod gfx_integration;
-pub mod glutin_window;
-pub mod color;
-pub mod sprite;
-pub mod font;
-pub mod error;
-pub mod colors;
-pub mod extend;
-pub mod loader;
-pub mod game;
-pub mod accessors;
-pub mod primitive_canvas;
-pub mod shaders;
-pub mod types;
+mod private;
 
-/// The prelude is a collection of structs, traits and functions that
-/// are commonly used in programs using Lux.
-///
-/// Importing `prelude::*` is recommended, but not required.
+pub use private::types;
+
+pub use private::error::{LuxError, LuxResult};
+
+pub mod color {
+    pub use private::color::{Color, rgb, rgba, hsv, hsva};
+    pub use private::colors::*;
+}
+
+pub mod graphics {
+    pub use private::canvas::{LuxCanvas, Rectangle, Ellipse, ContainedSprite};
+    pub use private::primitive_canvas::PrimitiveCanvas;
+    pub use private::sprite::{
+        Sprite,
+        Texture,
+        DrawableTexture,
+        UniformSpriteSheet,
+        NonUniformSpriteSheet,
+        TextureLoader
+    };
+}
+
+pub mod interactive {
+    pub use private::interactive::{
+        keycodes,
+        EventIterator,
+        Event,
+        MouseButton,
+        Interactive,
+        AbstractKey
+    };
+}
+
+pub mod window {
+    pub use private::glutin_window::{Window, Frame};
+}
+
+pub mod modifiers {
+    pub use private::raw::{Colored, Transform};
+}
+
+pub mod game {
+    pub use private::game::{Game, GameRunner};
+}
+
 pub mod prelude {
-    pub use ::gfx_integration::{ColorVertex, TexVertex};
-    pub use ::canvas::{LuxCanvas, Ellipse, Rectangle, ContainedSprite};
-    pub use ::error::{LuxError, ImageError, FreetypeError, LuxResult};
-    pub use ::interactive::{Event, MouseButton, Interactive, EventIterator, AbstractKey};
-    pub use ::interactive::Event::*;
-    pub use ::interactive::MouseButton::*;
-    pub use ::raw::{Colored, Transform};
-    pub use ::glutin_window::{Window, Frame};
-    pub use ::color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
-    pub use ::sprite::{Sprite, Texture, DrawableTexture, TextureLoader,
-        NonUniformSpriteSheet, UniformSpriteSheet};
-    pub use ::font::{FontCache, FontLoad, TextDraw};
-
-    pub use glium::index::PrimitiveType;
-    pub use glium::index::PrimitiveType::*;
-    pub use super::extend::LuxExtend;
-    pub use colors;
+    pub use color::{Color, rgb, rgba, hsv, hsva};
+    pub use graphics::LuxCanvas;
+    pub use interactive::Interactive;
+    pub use window::Window;
+    pub use modifiers::{Colored, Transform};
 }

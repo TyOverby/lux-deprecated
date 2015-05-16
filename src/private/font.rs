@@ -15,16 +15,11 @@ use lux_constants::*;
 pub use fontcache::OutputPosition;
 
 use super::accessors::{HasDisplay, HasFontCache};
-use super::prelude::{
-    Color,
-    LuxError,
-    Colored,
-    Transform,
-    LuxCanvas,
-    TextureLoader,
-    LuxResult,
-    Sprite,
-};
+use super::color::Color;
+use super::error::{LuxError, LuxResult};
+use super::raw::{Colored, Transform};
+use super::canvas::LuxCanvas;
+use super::sprite::{TextureLoader, Sprite};
 
 #[doc(hidden)]
 pub struct FontCache {

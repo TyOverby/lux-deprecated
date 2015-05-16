@@ -11,10 +11,14 @@ use std::path::Path;
 use std::cmp::Eq;
 use std::hash::Hash;
 
-use ::types::Float;
-use ::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache, Fetch};
-use ::prelude::{TexVertex, ColorVertex, LuxCanvas, TrianglesList, Transform, Colored, Color};
-use ::primitive_canvas::{CachedColorDraw, CachedTexDraw};
+use super::types::Float;
+use super::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache, Fetch};
+use super::gfx_integration::{TexVertex, ColorVertex};
+use super::canvas::LuxCanvas;
+use super::raw::{Transform, Colored};
+use super::color::Color;
+use super::primitive_canvas::{CachedColorDraw, CachedTexDraw};
+use glium::index::PrimitiveType::TrianglesList;
 
 use vecmath;
 use reuse_cache;
@@ -237,7 +241,7 @@ impl <'a, D> LuxCanvas for DrawableTexture<'a, D> where D: HasDisplay + HasProgr
 
 impl <'a, D> Drop for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
     fn drop(&mut self) {
-        use primitive_canvas::PrimitiveCanvas;
+        use super::primitive_canvas::PrimitiveCanvas;
         self.flush_draw();
     }
 }

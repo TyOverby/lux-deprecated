@@ -17,33 +17,16 @@ use super::accessors::{
     Fetch
 };
 
-use super::prelude::{
-    EventIterator,
-    FontCache,
-    ColorVertex,
-    TexVertex,
-    LuxCanvas,
-    Interactive,
-    Event,
-    LuxExtend,
-    AbstractKey,
-    Color,
-    Colored,
-    LuxResult,
-    LuxError,
-    Transform,
-};
-
-use super::shaders::{
-    gen_texture_shader,
-    gen_color_shader
-};
-
-use super::primitive_canvas::{
-    PrimitiveCanvas,
-    CachedColorDraw,
-    CachedTexDraw
-};
+use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
+use super::font::FontCache;
+use super::gfx_integration::{ColorVertex, TexVertex};
+use super::canvas::LuxCanvas;
+use super::extend::LuxExtend;
+use super::color::Color;
+use super::raw::{Colored, Transform};
+use super::error::{LuxResult, LuxError};
+use super::shaders::{gen_texture_shader, gen_color_shader};
+use super::primitive_canvas::{PrimitiveCanvas, CachedColorDraw, CachedTexDraw};
 
 use glutin::WindowBuilder;
 
