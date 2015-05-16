@@ -13,7 +13,8 @@ name = "test_runner"
 path = "src/test_runner.rs"
 
 [dependencies.glium]
-git = "https://github.com/tomaka/glium.git"
+#git = "https://github.com/tomaka/glium.git"
+path = "../glium"
 default-features = false
 features = ["image"]
 

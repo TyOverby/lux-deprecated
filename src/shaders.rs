@@ -1,5 +1,6 @@
 use glium::{self, Display};
 
+/// Generates a texture shader.
 pub fn gen_texture_shader(display: &Display) ->
 Result<glium::Program,
        glium::ProgramCreationError> {
@@ -55,6 +56,7 @@ Result<glium::Program,
     )
 }
 
+/// Generates a color shader.
 pub fn gen_color_shader(display: &Display) ->
 Result<glium::Program,
        glium::ProgramCreationError> {

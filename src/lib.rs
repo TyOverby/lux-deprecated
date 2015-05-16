@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 #[macro_use]
 extern crate glium;
 
@@ -14,7 +16,6 @@ extern crate freetype_atlas;
 extern crate reuse_cache;
 
 pub mod interactive;
-pub mod figure;
 pub mod canvas;
 pub mod raw;
 pub mod gfx_integration;
@@ -30,7 +31,12 @@ pub mod game;
 pub mod accessors;
 pub mod primitive_canvas;
 pub mod shaders;
+pub mod types;
 
+/// The prelude is a collection of structs, traits and functions that
+/// are commonly used in programs using Lux.
+///
+/// Importing `prelude::*` is recommended, but not required.
 pub mod prelude {
     pub use ::gfx_integration::{ColorVertex, TexVertex};
     pub use ::canvas::{LuxCanvas, Ellipse, Rectangle, ContainedSprite};
@@ -43,7 +49,6 @@ pub mod prelude {
     pub use ::color::{Color, rgb, rgba, hsv, hsva, hex_rgb, hex_rgba};
     pub use ::sprite::{Sprite, Texture, DrawableTexture, TextureLoader,
         NonUniformSpriteSheet, UniformSpriteSheet};
-    pub use ::figure::Figure;
     pub use ::font::{FontCache, FontLoad, TextDraw};
 
     pub use glium::index::PrimitiveType;

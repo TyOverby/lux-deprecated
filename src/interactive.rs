@@ -2,6 +2,8 @@ use std::collections::VecDeque;
 use std::collections::vec_deque::{Iter, IterMut};
 use self::keycodes::*;
 
+use super::types::Float;
+
 pub mod keycodes {
     pub use glutin::VirtualKeyCode;
     pub use glutin::VirtualKeyCode::*;
@@ -17,7 +19,7 @@ pub enum Event {
     /// The mouse moved to this position.
     MouseMoved((i32, i32)),
     /// The mouse wheel moved by this delta.
-    MouseWheel(f32, f32),
+    MouseWheel(Float, Float),
     /// This mouse button was pushed down.
     MouseDown(MouseButton),
     /// This mouse button was released.
@@ -75,15 +77,15 @@ pub trait Interactive {
     /// Returns the size of the window.
     fn get_size(&self) -> (u32, u32);
 
-    fn width(&self) -> f32 {
+    fn width(&self) -> Float {
         match self.get_size() {
-            (w, _) => w as f32
+            (w, _) => w as Float
         }
     }
 
-    fn height(&self) -> f32 {
+    fn height(&self) -> Float {
         match self.get_size() {
-            (_, h) => h as f32
+            (_, h) => h as Float
         }
     }
 
@@ -99,20 +101,20 @@ pub trait Interactive {
     ///
     /// This function returns the position in floating point units
     /// for usability.  Use `mouse_pos_int` if you want integer units.
-    fn mouse_pos(&self) -> (f32, f32);
+    fn mouse_pos(&self) -> (Float, Float);
 
     /// Returns the current position of the mouse in integer units.
     fn mouse_pos_int(&self) -> (i32, i32);
 
     /// Returns the x coordinate of the mouse.
-    fn mouse_x(&self) -> f32 {
+    fn mouse_x(&self) -> Float {
         match self.mouse_pos() {
             (x, _) => x
         }
     }
 
     /// Returns the y coordinate of the mouse.
-    fn mouse_y(&self) -> f32 {
+    fn mouse_y(&self) -> Float {
         match self.mouse_pos() {
             (_, y) => y
         }

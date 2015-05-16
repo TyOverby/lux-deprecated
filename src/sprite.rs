@@ -11,8 +11,9 @@ use std::path::Path;
 use std::cmp::Eq;
 use std::hash::Hash;
 
+use ::types::Float;
 use ::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache, Fetch};
-use ::prelude::{TexVertex, ColorVertex, Figure, LuxCanvas, TrianglesList, Transform, Colored, Color};
+use ::prelude::{TexVertex, ColorVertex, LuxCanvas, TrianglesList, Transform, Colored, Color};
 use ::primitive_canvas::{CachedColorDraw, CachedTexDraw};
 
 use vecmath;
@@ -35,16 +36,16 @@ pub struct Sprite {
     size: (u32, u32),
     pos: (u32, u32),
 
-    texture_size: (f32, f32),
-    texture_pos: (f32, f32),
+    texture_size: (Float, Float),
+    texture_pos: (Float, Float),
 }
 
 pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
     texture: glium::texture::TextureSurface<'a>,
     d: &'a D,
 
-    matrix: [[f32; 4]; 4],
-    color: [f32; 4],
+    matrix: [[Float; 4]; 4],
+    color: [Float; 4],
 
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
@@ -66,7 +67,7 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
 pub trait TextureLoader {
     fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, ImageError>;
 
-    fn texture_from_pixels(&self, Vec<Vec<[f32; 4]>>) -> Texture;
+    fn texture_from_pixels(&self, Vec<Vec<[Float; 4]>>) -> Texture;
     fn texture_from_image(&self, img: image::DynamicImage) -> Texture;
 }
 
@@ -77,8 +78,8 @@ impl <T> TextureLoader for T where T: HasDisplay {
         Ok(Texture::new(img))
     }
 
-    fn texture_from_pixels(&self, pixels: Vec<Vec<[f32; 4]>>) -> Texture {
-        let pixels: Vec<Vec<(f32, f32, f32, f32)>> = unsafe {::std::mem::transmute(pixels)};
+    fn texture_from_pixels(&self, pixels: Vec<Vec<[Float; 4]>>) -> Texture {
+        let pixels: Vec<Vec<(Float, Float, Float, Float)>> = unsafe {::std::mem::transmute(pixels)};
         Texture::new(glium::texture::Texture2d::new(self.borrow_display(), pixels))
     }
 
@@ -125,7 +126,7 @@ impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
         use glium::Surface;
 
         let (w, h) = texture.get_dimensions();
-        let (w, h) = (w as f32, h as f32);
+        let (w, h) = (w as Float, h as Float);
         let (sx, sy) = (2.0 / w, -2.0 / h);
 
         let mut basis = vecmath::mat4_id();
@@ -150,7 +151,7 @@ impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
 }
 
 impl <'a, D> Colored for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms{
-    fn color(&self) -> [f32; 4] {
+    fn color(&self) -> [Float; 4] {
         self.color
     }
 
@@ -161,10 +162,10 @@ impl <'a, D> Colored for DrawableTexture<'a, D> where D: HasDisplay + HasProgram
 }
 
 impl <'a, D> Transform for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    fn current_matrix(&self) -> &[[f32; 4]; 4] {
+    fn current_matrix(&self) -> &[[Float; 4]; 4] {
         &self.matrix
     }
-    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
+    fn current_matrix_mut(&mut self) -> &mut [[Float; 4]; 4] {
         &mut self.matrix
     }
 }
@@ -208,8 +209,8 @@ impl <'a, D> HasDrawCache for DrawableTexture<'a, D> where D: HasPrograms + HasD
     }
 }
 
-impl <'a, D> Fetch<Vec<u32>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
-    fn fetch(&self) -> reuse_cache::Item<Vec<u32>> {
+impl <'a, D> Fetch<Vec<u16>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+    fn fetch(&self) -> reuse_cache::Item<Vec<u16>> {
         reuse_cache::Item::from_value(vec![])
     }
 }
@@ -227,10 +228,10 @@ impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> where D: HasProg
 }
 
 impl <'a, D> LuxCanvas for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    fn size(&self) -> (f32, f32) {
+    fn size(&self) -> (Float, Float) {
         use glium::Surface;
         let (w, h) = self.texture.get_dimensions();
-        (w as f32, h as f32)
+        (w as Float, h as Float)
     }
 }
 
@@ -257,9 +258,9 @@ impl Sprite {
         }
     }
 
-    pub fn ideal_size(&self) -> (f32, f32) {
+    pub fn ideal_size(&self) -> (Float, Float) {
         let (w, h) = self.size;
-        (w as f32, h as f32)
+        (w as Float, h as Float)
     }
 
     pub fn sub_sprite(&self, offset: (u32, u32), size: (u32, u32)) -> Option<Sprite> {
@@ -275,10 +276,10 @@ impl Sprite {
             size: size,
             pos: pos,
 
-            texture_size: (size.0 as f32 / self.original_size.0 as f32,
-                           size.1 as f32 / self.original_size.1 as f32),
-            texture_pos: (pos.0 as f32 / self.original_size.0 as f32,
-                          pos.1 as f32 / self.original_size.1 as f32)
+            texture_size: (size.0 as Float / self.original_size.0 as Float,
+                           size.1 as Float / self.original_size.1 as Float),
+            texture_pos: (pos.0 as Float / self.original_size.0 as Float,
+                          pos.1 as Float / self.original_size.1 as Float)
         })
     }
 
@@ -293,7 +294,7 @@ impl Sprite {
         }
     }
 
-    pub fn bounds(&self) -> [[f32; 2]; 4]{
+    pub fn bounds(&self) -> [[Float; 2]; 4]{
         let top_left = [self.texture_pos.0,
                         self.texture_pos.1];
         let top_right = [self.texture_pos.0 + self.texture_size.0,
@@ -340,33 +341,6 @@ impl Sprite {
     pub fn as_nonuniform_sprite_sheet<T>(&self) -> NonUniformSpriteSheet<T>
     where T: Eq + Hash {
         NonUniformSpriteSheet::new(self.clone())
-    }
-}
-
-impl Figure for Sprite {
-    fn draw<C: LuxCanvas>(&self, canvas: &mut C) {
-        let bounds = self.bounds();
-
-        let top_left = bounds[0];
-        let top_right = bounds[1];
-        let bottom_left = bounds[2];
-        let bottom_right = bounds[3];
-
-        let tex_vs = vec![
-            TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
-            TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
-            TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
-            TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
-        ];
-
-        let idxs = [0u32, 1, 2, 0, 2, 3];
-
-        canvas.draw_tex(TrianglesList,
-                        &tex_vs[..],
-                        Some(&idxs[..]),
-                        None,
-                        self.texture(),
-                        None);
     }
 }
 

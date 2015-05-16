@@ -64,7 +64,7 @@ pub struct Window {
     title: String,
 
     // CACHES
-    idx_cache: reuse_cache::ReuseCache<Vec<u32>>,
+    idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
     tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
     color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
 
@@ -101,7 +101,7 @@ pub struct Frame {
     tex_draw_cache: Option<CachedTexDraw>,
 
     // CACHES
-    idx_cache: reuse_cache::ReuseCache<Vec<u32>>,
+    idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
     tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
     color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
 
@@ -117,7 +117,7 @@ impl Frame {
     fn new(display: &glium::Display,
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
-           idx_cache: reuse_cache::ReuseCache<Vec<u32>>,
+           idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
            tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
            color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
            clear_color: Option<[f32; 4]>,
@@ -528,32 +528,8 @@ impl HasPrograms for Frame {
     }
 }
 
-impl Fetch<Vec<u32>> for Window {
-    fn fetch(&self) -> reuse_cache::Item<Vec<u32>> {
-        let mut ret = self.idx_cache.get_or_else(|| vec![]);
-        ret.clear();
-        ret
-    }
-}
-
-impl Fetch<Vec<TexVertex>> for Window {
-    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
-        let mut ret = self.tex_vtx_cache.get_or_else(|| vec![]);
-        ret.clear();
-        ret
-    }
-}
-
-impl Fetch<Vec<ColorVertex>> for Window {
-    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
-        let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
-        ret.clear();
-        ret
-    }
-}
-
-impl Fetch<Vec<u32>> for Frame {
-    fn fetch(&self) -> reuse_cache::Item<Vec<u32>> {
+impl Fetch<Vec<u16>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<u16>> {
         let mut ret = self.idx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret

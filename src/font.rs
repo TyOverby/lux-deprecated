@@ -3,6 +3,8 @@ use std::collections::hash_map::Entry;
 use std::path::Path;
 use std::convert::{Into, AsRef};
 
+use super::types::Float;
+
 use freetype;
 use glium;
 use vecmath;
@@ -35,9 +37,9 @@ pub struct FontCache {
 pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
     text: S,
-    pos: (f32, f32),
-    transform: [[f32; 4]; 4],
-    color: [f32; 4],
+    pos: (Float, Float),
+    transform: [[Float; 4]; 4],
+    color: [Float; 4],
 
     size: u16,
     font_family: String
@@ -50,7 +52,7 @@ pub trait FontLoad {
 }
 
 pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
-    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: f32, y : f32) -> ContainedText<'a, Self, S> {
+    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: Float, y : Float) -> ContainedText<'a, Self, S> {
         ContainedText {
             canvas: self,
             text: text,
@@ -93,8 +95,8 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
             if let Some(sp) = subsprite.as_ref() {
                 canvas.sprite(
                         sp,
-                        x as f32 + self.pos.0,
-                        y as f32 + self.pos.1).set_color(self.color).draw()
+                        x as Float + self.pos.0,
+                        y as Float + self.pos.1).set_color(self.color).draw()
             }
         }
         Ok(())
@@ -136,13 +138,13 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         })
     }
 
-    pub fn positions(&mut self) -> LuxResult<Vec<(char, (f32, f32), (f32, f32))>> {
+    pub fn positions(&mut self) -> LuxResult<Vec<(char, (Float, Float), (Float, Float))>> {
         self.absolute_positions().map(|poses| {
             poses.into_iter().map(
                 |OutputPosition{c, screen_pos: (px, py), char_info}|
                     (c,
-                    (px as f32 + self.pos.0, py as f32 + self.pos.1),
-                    (char_info.advance.0 as f32, char_info.advance.1 as f32))
+                    (px as Float + self.pos.0, py as Float + self.pos.1),
+                    (char_info.advance.0 as Float, char_info.advance.1 as Float))
               ).collect()
         })
     }
@@ -154,7 +156,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
     /// `start_x` and `start_y` are oriented to the top-left of the screen.
     ///
     /// `width` and `height` are pointing down and to the right.
-    pub fn bounding_box(&mut self) -> LuxResult<((f32, f32), (f32, f32))> {
+    pub fn bounding_box(&mut self) -> LuxResult<((Float, Float), (Float, Float))> {
         let start = self.pos;
         let end = try!(self.positions())
                   .pop()
@@ -174,18 +176,18 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
 
 impl <'a, A, B: AsRef<str>> Transform for ContainedText<'a, A, B>
 where A: HasDisplay + HasFontCache + LuxCanvas {
-    fn current_matrix(&self) -> &[[f32; 4]; 4] {
+    fn current_matrix(&self) -> &[[Float; 4]; 4] {
         &self.transform
     }
 
-    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
+    fn current_matrix_mut(&mut self) -> &mut [[Float; 4]; 4] {
         &mut self.transform
     }
 }
 
 impl <'a, A, B: AsRef<str>> Colored for ContainedText<'a, A, B>
 where A: HasDisplay + HasFontCache + LuxCanvas {
-    fn color(&self) -> [f32; 4] {
+    fn color(&self) -> [Float; 4] {
         self.color
     }
 

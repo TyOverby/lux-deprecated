@@ -1,4 +1,5 @@
 use vecmath::{mat4_id, col_mat4_mul};
+use super::types::Float;
 use super::prelude::Color;
 
 /// A trait for objects that can be "transformed".  Transformations
@@ -6,13 +7,13 @@ use super::prelude::Color;
 /// purpose matrix application.
 pub trait Transform {
     /// Return a reference to the current matrix.
-    fn current_matrix(&self) -> &[[f32; 4]; 4];
+    fn current_matrix(&self) -> &[[Float; 4]; 4];
     /// Return a mutible reference to the current matrix.
-    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4];
+    fn current_matrix_mut(&mut self) -> &mut [[Float; 4]; 4];
 
     /// Multiplies the current matrix against another.
     /// `self = self * other`.
-    fn apply_matrix(&mut self, other: [[f32; 4]; 4]) -> &mut Self{
+    fn apply_matrix(&mut self, other: [[Float; 4]; 4]) -> &mut Self{
         {
             let current = self.current_matrix_mut();
             *current = col_mat4_mul(*current, other);
@@ -21,7 +22,7 @@ pub trait Transform {
     }
 
     /// Applies a translation transformation to the matrix.
-    fn translate(&mut self, dx: f32, dy: f32) -> &mut Self {
+    fn translate(&mut self, dx: Float, dy: Float) -> &mut Self {
         let mut prod = mat4_id();
         prod[3][0] = dx;
         prod[3][1] = dy;
@@ -29,7 +30,7 @@ pub trait Transform {
     }
 
     /// Applies a scaling transformation to the matrix.
-    fn scale(&mut self, sx: f32, sy: f32) -> &mut Self {
+    fn scale(&mut self, sx: Float, sy: Float) -> &mut Self {
         let mut prod = mat4_id();
         prod[0][0] = sx;
         prod[1][1] = sy;
@@ -37,7 +38,7 @@ pub trait Transform {
     }
 
     /// Applies a shearing transformation to the matrix.
-    fn shear(&mut self, sx: f32, sy: f32) -> &mut Self {
+    fn shear(&mut self, sx: Float, sy: Float) -> &mut Self {
         let mut prod = mat4_id();
         prod[1][0] = sx;
         prod[0][1] = sy;
@@ -45,7 +46,7 @@ pub trait Transform {
     }
 
     /// Applies a rotation transformation to the matrix.
-    fn rotate(&mut self, theta: f32) -> &mut Self {
+    fn rotate(&mut self, theta: Float) -> &mut Self {
         use num::traits::Float;
         let mut prod = mat4_id();
         let (c, s) = (theta.cos(), theta.sin());
@@ -58,7 +59,7 @@ pub trait Transform {
 
     /// Combines rotation with translation to effectively
     /// rotate around a given point.
-    fn rotate_around(&mut self, point: (f32, f32), theta: f32) -> &mut Self {
+    fn rotate_around(&mut self, point: (Float, Float), theta: Float) -> &mut Self {
         self.translate(point.0, point.1);
         self.rotate(theta);
         self.translate(-point.0, -point.1);
@@ -83,7 +84,7 @@ pub trait Transform {
 
     /// Similar to `with_matrix` but with a rotation applied
     /// for the duration of the closure.
-    fn with_rotation<'a, F>(&'a mut self, rotation: f32, f: F)
+    fn with_rotation<'a, F>(&'a mut self, rotation: Float, f: F)
     where F: FnOnce(&mut Self) {
         let prev = *self.current_matrix();
         self.rotate(rotation);
@@ -93,7 +94,7 @@ pub trait Transform {
 
     /// Similar to `with_matrix` but with a translation applied
     /// for the duration of the closure.
-    fn with_translate<F>(&mut self, dx: f32, dy: f32, f: F)
+    fn with_translate<F>(&mut self, dx: Float, dy: Float, f: F)
     where F: FnOnce(&mut Self) {
         let prev = *self.current_matrix();
         self.translate(dx, dy);
@@ -103,7 +104,7 @@ pub trait Transform {
 
     /// Similar to `with_matrix` but with a scale applied
     /// for the duration of the closure.
-    fn with_scale<F>(&mut self, scale_x: f32, scale_y: f32, f: F)
+    fn with_scale<F>(&mut self, scale_x: Float, scale_y: Float, f: F)
     where F: FnOnce(&mut Self) {
         let prev = *self.current_matrix();
         self.scale(scale_x, scale_y);
@@ -113,7 +114,7 @@ pub trait Transform {
 
     /// Similar to `with_matrix` but with a shear applied
     /// for the duration of the closure.
-    fn with_shear<F>(&mut self, sx: f32, sy: f32, f: F)
+    fn with_shear<F>(&mut self, sx: Float, sy: Float, f: F)
     where F: FnOnce(&mut Self) {
         let prev = *self.current_matrix();
         self.shear(sx, sy);
@@ -123,7 +124,7 @@ pub trait Transform {
 
     /// Similar to `with_matrix` but with rotate_around applied
     /// for the duration of the closure.
-    fn with_rotate_around<F>(&mut self, point: (f32, f32), theta: f32, f: F)
+    fn with_rotate_around<F>(&mut self, point: (Float, Float), theta: Float, f: F)
     where F: FnOnce(&mut Self) {
         let prev = *self.current_matrix();
         self.rotate_around(point, theta);
@@ -134,9 +135,9 @@ pub trait Transform {
 
 /// Turns out that implementing matrix transformations on matrices is a
 /// no brainer!
-impl Transform for [[f32; 4]; 4] {
-    fn current_matrix(&self) -> &[[f32; 4]; 4] { self }
-    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] { self }
+impl Transform for [[Float; 4]; 4] {
+    fn current_matrix(&self) -> &[[Float; 4]; 4] { self }
+    fn current_matrix_mut(&mut self) -> &mut [[Float; 4]; 4] { self }
 }
 
 /// A trait representing objects that can be colored with
@@ -147,7 +148,7 @@ impl Transform for [[f32; 4]; 4] {
 /// [r, b, b, a].
 pub trait Colored {
     /// Returns a reference to the current fill color.
-    fn color(&self) -> [f32; 4];
+    fn color(&self) -> [Float; 4];
     fn set_color<C: Color>(&mut self, color: C) -> &mut Self;
 
     fn with_color<F, C: Color>(&mut self, color: C, f: F) where F: FnOnce(&mut Self) {
