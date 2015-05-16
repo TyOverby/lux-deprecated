@@ -62,10 +62,19 @@ pub mod game {
     pub use private::game::{Game, GameRunner};
 }
 
+pub mod font {
+    pub use private::font::{ContainedText, FontLoad, TextDraw};
+}
+
 pub mod prelude {
     pub use color::{Color, rgb, rgba, hsv, hsva};
     pub use graphics::LuxCanvas;
     pub use interactive::Interactive;
-    pub use window::Window;
+    pub use window::{Window, Frame};
+    pub use interactive::EventIterator;
     pub use modifiers::{Colored, Transform};
+    pub use font::{FontLoad, TextDraw};
+
+    pub use LuxError;
+    pub use LuxResult;
 }
