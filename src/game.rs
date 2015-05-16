@@ -150,7 +150,7 @@ impl <G: Game> GameRunner<G> {
 
         try!(self.game.prepare_window(&mut self.window));
 
-        while self.game.should_close(&self.window) {
+        while !self.game.should_close(&self.window) {
             //
             // Preframe setup
             //

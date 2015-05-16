@@ -13,6 +13,6 @@ fn main() {
 
     while window.is_open() {
         let mut frame = window.cleared_frame(colors::WHITE);
-        frame.draw_shape(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
+        frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
     }
 }

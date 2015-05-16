@@ -29,7 +29,7 @@ fn main() {
             ];
 
             let idxs = [0, 1, 2];
-            frame.draw_shape(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
+            frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
         });
 
         frame.rect(101.0, 100.0, 50.0, 50.0).set_color(colors::GREEN).fill();
