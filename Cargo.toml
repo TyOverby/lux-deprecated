@@ -12,11 +12,6 @@ path = "src/lib.rs"
 name = "test_runner"
 path = "src/test_runner.rs"
 
-[dependencies.glium]
-git = "https://github.com/tomaka/glium.git"
-default-features = false
-features = ["image"]
-
 [dependencies.lux-constants]
 path = "./constants"
 
@@ -30,6 +25,12 @@ git = "https://github.com/TyOverby/font-cache.git"
 #git = "https://github.com/TyOverby/reuse-cache.git"
 path = "../reuse-cache"
 
+[dependencies.glium]
+#version = "0.4.*"
+git = "https://github.com/tomaka/glium.git"
+default-features = false
+features = ["image"]
+
 [dependencies]
 nd_iter = "*"
 glutin = "*"
@@ -37,7 +38,6 @@ image = "*"
 num = "*"
 clock_ticks = "*"
 vecmath = "*"
-typemap = "*"
 noise = "*"
 freetype-rs = "*"
 

@@ -5,12 +5,18 @@ use self::keycodes::*;
 use super::types::Float;
 
 pub mod keycodes {
+    //! A keycode is a platform independent way to refer to
+    //! keys on the keyboard.
     pub use glutin::VirtualKeyCode;
     pub use glutin::VirtualKeyCode::*;
 }
 
+/// An iterator for windowing events.
+///
+/// It contains a `VecDeque<Event>` internally
+/// that it pulls items from during iteration.
 pub struct EventIterator {
-    pub backing: VecDeque<Event>
+    backing: VecDeque<Event>
 }
 
 /// An even coming from an Interactive object.
@@ -134,6 +140,11 @@ pub trait Interactive {
 }
 
 impl EventIterator {
+    /// Returns true if this event iterator contains no events
+    pub fn is_empty(&self) -> bool {
+        self.backing.is_empty()
+    }
+
     /// Constructs an `EventIterator` from a `VecDeque`.
     pub fn from_deque(v: VecDeque<Event>) -> EventIterator {
         EventIterator {

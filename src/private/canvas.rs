@@ -5,7 +5,7 @@ use super::gfx_integration::{
     TexVertex,
 };
 
-use glium::index::PrimitiveType::{self, TriangleFan, TrianglesList, Points};
+use glium::index::PrimitiveType::{TriangleFan, TrianglesList, Points};
 use super::color::Color;
 use super::raw::{Colored, Transform};
 use super::sprite::Sprite;
@@ -37,6 +37,7 @@ pub struct Rectangle<'a, C: 'a> {
     fields: BasicFields<'a, C>,
 }
 
+/// A sprite that can be drawn to the screen.
 #[must_use = "sprite references contain context, and must be drawn with `draw()`"]
 pub struct ContainedSprite<'a, C: 'a>  {
     fields: BasicFields<'a, C>,
@@ -63,36 +64,41 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored + Sized + Transform {
         }
     }
 
+    /// Clears the canvas with a solid color.
     fn clear<C: Color>(&mut self, color: C) {
         PrimitiveCanvas::clear(self, color);
     }
 
     /// Returns a rectangle with the given dimensions and position.
     fn rect<'a>(&'a mut self, x: Float, y: Float, w: Float, h: Float) -> Rectangle<'a, Self> {
-        let c = self.color();
+        let c = self.get_color();
         Rectangle::new(self, (x, y), (w, h), c)
     }
 
     /// Returns a square with the given dimensions and position.
     fn square<'a>(&'a mut self, x: Float, y: Float, size: Float) -> Rectangle<'a, Self> {
-        let c = self.color();
+        let c = self.get_color();
         Rectangle::new(self, (x, y), (size, size), c)
     }
 
     /// Returns an ellipse with the given dimensions and position.
     fn ellipse<'a>(&'a mut self, x: Float, y: Float, w: Float, h: Float) -> Ellipse<'a, Self> {
-        let c = self.color();
+        let c = self.get_color();
         Ellipse::new(self, (x, y), (w, h), c)
     }
 
     /// Returns an circle with the given dimensions and position.
     fn circle<'a>(&'a mut self, x: Float, y: Float, size: Float) -> Ellipse<'a, Self> {
-        let c = self.color();
+        let c = self.get_color();
         Ellipse::new(self, (x, y), (size, size), c)
     }
 
     // TODO: unify this and draw_pixels.
-    fn draw_pixel<C: Color>(&mut self, x: Float, y: Float, color: C) {
+    /// Draws a 1-pixel colored point to the screen at a position.
+    ///
+    /// This is *not* the same as setting a "pixel" because the point can
+    /// be moved by transformations on the Frame.
+    fn draw_point<C: Color>(&mut self, x: Float, y: Float, color: C) {
         let vertex = ColorVertex {
             pos: [x, y],
             color: color.to_rgba(),
@@ -100,15 +106,11 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored + Sized + Transform {
         self.draw_colored(Points, &[vertex][..], None, None);
     }
 
-    fn draw_pixels<C: Color, I: Iterator<Item = ((Float, Float), C)>>(&mut self, pixels: I) {
-        let v: Vec<_> = pixels
-            .map(|((px, py), c)|{
-                ColorVertex {
-                    pos: [px + 0.5, py + 0.5],
-                    color: c.to_rgba(),
-                }
-            }) .collect();
-        self.draw_colored(Points, &v[..], None, None);
+    /// Draws a sequence of colored points with the size of 1 pixel.
+    fn draw_points(&mut self, pixels: &[ColorVertex]) {
+        let mut transf = vecmath::mat4_id();
+        transf.translate(0.5, 0.5); // Correctly align
+        self.draw_colored(Points, &pixels[..], None, Some(transf));
     }
 
     /// Draws a single line from `start` to `end` with a
@@ -182,33 +184,33 @@ impl <'a, C> Transform for Rectangle<'a, C> {
 }
 
 impl <'a, C> Colored for Ellipse<'a, C> {
-    fn color(&self) -> [Float; 4] {
+    fn get_color(&self) -> [Float; 4] {
         self.fields.fill_color
     }
 
-    fn set_color<A: Color>(&mut self, color: A) -> &mut Self {
+    fn color<A: Color>(&mut self, color: A) -> &mut Self {
         self.fields.fill_color = color.to_rgba();
         self
     }
 }
 
 impl <'a, C> Colored for Rectangle<'a, C> {
-    fn color(&self) -> [Float; 4] {
+    fn get_color(&self) -> [Float; 4] {
         self.fields.fill_color
     }
 
-    fn set_color<A: Color>(&mut self, color: A) -> &mut Self{
+    fn color<A: Color>(&mut self, color: A) -> &mut Self{
         self.fields.fill_color = color.to_rgba();
         self
     }
 }
 
 impl <'a, C> Colored for ContainedSprite<'a, C> {
-    fn color(&self) -> [Float; 4] {
+    fn get_color(&self) -> [Float; 4] {
         self.fields.fill_color
     }
 
-    fn set_color<A: Color>(&mut self, color: A) -> &mut Self{
+    fn color<A: Color>(&mut self, color: A) -> &mut Self{
         self.fields.fill_color = color.to_rgba();
         self
     }
@@ -220,7 +222,7 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
         use std::f32::consts::PI;
         use num::traits::Float as Nfloat;
 
-        let color = self.color();
+        let color = self.get_color();
         let spokes = self.spokes;
         let mut vertices = vec![];
 
@@ -251,21 +253,13 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
                                None,
                                Some(trx));
     }
-    /*
-    pub fn padding<P: Padding>(&mut self, padding: P) -> &mut Ellipse<'a, C> {
-        self.fields.padding = padding.as_padding();
-        self
-    }*/
 }
 
 fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[Float; 4]; 4] {
         let (x, y) = fields.pos;
-//        x += fields.border + fields.padding.0;
-//        y += fields.border + fields.padding.2;
-
         let (mut sx, mut sy) = fields.size;
-        sx -= fields.border * 2.0; // + fields.padding.0 + fields.padding.1;
-        sy -= fields.border * 2.0; // + fields.padding.2 + fields.padding.3;
+        sx -= fields.border * 2.0;
+        sy -= fields.border * 2.0;
 
         if sx < 0.0 { sx = 0.0 }
         if sy < 0.0 { sy = 0.0 }
@@ -279,11 +273,16 @@ fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[Float; 4]; 4] {
 }
 
 impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
+    /// Sets the side of the sprite when drawn to the screen.
+    ///
+    /// The default size is the "ideal size", that is, 1 pixel in the texture
+    /// goes to 1 pixel on the screen.
     pub fn size(&mut self, w: Float, h: Float) -> &mut ContainedSprite<'a, C> {
         self.fields.size = (w, h);
         self
     }
 
+    /// Draws the sprite to the screen.
     pub fn draw(&mut self) {
         let bounds = self.sprite.bounds();
 
@@ -315,7 +314,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
 impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
     /// Fills the rectangle with a solid color.
     pub fn fill(&mut self) {
-        let color = self.color();
+        let color = self.get_color();
         let vertices = [
             ColorVertex{ pos: [1.0, 0.0], color: color },
             ColorVertex{ pos: [0.0, 0.0], color: color },
@@ -338,7 +337,7 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         let size = self.fields.size;
         let border = self.fields.border;
         let transform = self.fields.transform;
-        let color = self.fields.stroke_color.unwrap_or(self.color());
+        let color = self.fields.stroke_color.unwrap_or(self.get_color());
 
         self.fields.border = 0.0;
 
@@ -360,6 +359,7 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
         self
     }
 
+    /// Both fills and strokes the rectangle.
     pub fn fill_and_stroke(&mut self) {
         self.fill();
         self.stroke();

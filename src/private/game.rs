@@ -205,7 +205,7 @@ impl <G: Game> GameRunner<G> {
             //
             // Postframe cleanup and recording
             //
-            if !events.backing.is_empty() {
+            if !events.is_empty() {
                 self.window.restock_events(events);
             }
 
@@ -259,7 +259,7 @@ impl <G: Game> GameRunner<G> {
                 let x = bar_width * i as f32;
                 let mut y = 0.0;
                 for (p, color) in bar {
-                    frame.rect(x, y, bar_width, p).set_color(color).fill();
+                    frame.rect(x, y, bar_width, p).color(color).fill();
                     y += p;
                 }
             }
@@ -275,7 +275,7 @@ impl <G: Game> GameRunner<G> {
         frame.with_translate(WIDTH, h, |frame| {
         frame.with_scale(-WIDTH, -HEIGHT, |frame| {
             frame.rect(0.0, 0.0, 1.0, 1.0)
-                 .set_color(rgba(1.0, 1.0, 0.0, 0.8))
+                 .color(rgba(1.0, 1.0, 0.0, 0.8))
                  .fill();
 
             draw_bars(frame, self.frame_timings.iter().map(|timing| {
@@ -294,7 +294,7 @@ impl <G: Game> GameRunner<G> {
         });
         });
 
-        frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).set_color(rgb(0, 0, 0)).fill();
+        frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).color(rgb(0, 0, 0)).fill();
 
         let (fps, ups) = self.calc_fps();
         frame.with_translate(WIDTH, h, |frame| {

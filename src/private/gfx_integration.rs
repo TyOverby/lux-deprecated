@@ -1,18 +1,26 @@
 use glium::texture::Texture2d;
 use glium::uniforms;
 
-// Colored Vertex
+/// A colored vertex.
 #[derive(Copy, Debug, Clone)]
 pub struct ColorVertex {
+    /// The position in screen space.
     pub pos: [f32; 2],
+    /// The color in [r, g, b, a].
     pub color: [f32; 4],
 }
 implement_vertex!(ColorVertex, pos, color);
 
-// Textured Vertex
+/// A textured vertex.
+///
+/// `tex_coords` is the position on the texture
+/// where x and y are in the range `0.0` to `1.0`.
 #[derive(Copy, Debug, Clone)]
 pub struct TexVertex {
+    /// The position in screen space
     pub pos: [f32; 2],
+    /// The texture cooordinates [x, y] where x and y
+    /// are in the range `0.0` to `1.0`.
     pub tex_coords: [f32; 2]
 }
 implement_vertex!(TexVertex, pos, tex_coords);

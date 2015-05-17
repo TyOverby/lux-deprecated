@@ -29,12 +29,12 @@ use super::primitive_canvas::{PrimitiveCanvas, CachedColorDraw, CachedTexDraw};
 
 use glutin::WindowBuilder;
 
-use typemap::TypeMap;
-
-
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
 
+/// A 1 to 1 correlation with a window shown on your desktop.
+///
+/// Lux uses Glutin for the window implementation.
 pub struct Window {
     // CANVAS
     display: glium::Display,
@@ -66,12 +66,13 @@ pub struct Window {
     code_to_char: HashMap<usize, char>,
 
     // FONT
-    pub font_cache: Rc<RefCell<FontCache>>,
-
-    // EXTEND
-    typemap: TypeMap,
+    font_cache: Rc<RefCell<FontCache>>,
 }
 
+/// A frame is a render target that can be drawn on.
+///
+/// Because frame rendering will wait on vsync, you should - as the name
+/// implies - use one Frame instance per frame.
 pub struct Frame {
     display: glium::Display,
     f: glium::Frame,
@@ -91,7 +92,7 @@ pub struct Frame {
     basis_matrix: Mat4f,
     color: [f32; 4],
 
-    pub font_cache: Rc<RefCell<FontCache>>,
+    font_cache: Rc<RefCell<FontCache>>,
 }
 
 
@@ -207,7 +208,6 @@ impl Window {
             chars_pressed: HashMap::new(),
             virtual_keys_pressed: HashMap::new(),
             code_to_char: HashMap::new(),
-            typemap: TypeMap::new(),
             font_cache: Rc::new(RefCell::new(font_cache))
         };
 
@@ -215,6 +215,7 @@ impl Window {
     }
 
     // TODO: hide from docs
+    /// Add the events from an iterator of events back to the internal event queue.
     pub fn restock_events<I: DoubleEndedIterator<Item=Event>>(&mut self, mut i: I) {
         while let Some(e) = i.next_back() {
             self.event_store.push_front(e);
@@ -222,6 +223,8 @@ impl Window {
     }
 
     // TODO: hide from docs
+    /// Query the underlying window system for events and add them to the
+    /// the interal event queue.
     pub fn process_events(&mut self) {
         use glutin::Event as glevent;
         use super::interactive::*;
@@ -314,6 +317,7 @@ impl Window {
         }}
     }
 
+    /// Produce a frame that has been cleared with a color.
     pub fn cleared_frame<C: Color>(&mut self, clear_color: C) -> Frame {
         Frame::new(&self.display,
                    self.color_program.clone(),
@@ -325,6 +329,7 @@ impl Window {
                    self.font_cache.clone())
     }
 
+    /// Produce a frame that has not been cleared.
     pub fn frame(&mut self) -> Frame {
         Frame::new(&self.display,
                    self.color_program.clone(),
@@ -416,11 +421,11 @@ impl Transform for Frame {
 }
 
 impl Colored for Frame {
-    fn color(&self) -> [f32; 4] {
+    fn get_color(&self) -> [f32; 4] {
         self.color
     }
 
-    fn set_color<C: Color>(&mut self, color: C) -> &mut Frame {
+    fn color<C: Color>(&mut self, color: C) -> &mut Frame {
         self.color = color.to_rgba();
         self
     }

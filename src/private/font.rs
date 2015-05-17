@@ -108,7 +108,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
                 canvas.sprite(
                         sp,
                         x as Float + self.pos.0,
-                        y as Float + self.pos.1).set_color(self.color).draw()
+                        y as Float + self.pos.1).color(self.color).draw()
             }
         }
         Ok(())
@@ -204,11 +204,11 @@ where A: HasDisplay + HasFontCache + LuxCanvas {
 
 impl <'a, A, B: AsRef<str>> Colored for ContainedText<'a, A, B>
 where A: HasDisplay + HasFontCache + LuxCanvas {
-    fn color(&self) -> [Float; 4] {
+    fn get_color(&self) -> [Float; 4] {
         self.color
     }
 
-    fn set_color<C: Color>(&mut self, color: C) -> &mut Self {
+    fn color<C: Color>(&mut self, color: C) -> &mut Self {
         self.color = color.to_rgba();
         self
     }

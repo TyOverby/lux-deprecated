@@ -18,7 +18,6 @@ use super::canvas::LuxCanvas;
 use super::raw::{Transform, Colored};
 use super::color::Color;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw};
-use glium::index::PrimitiveType::TrianglesList;
 
 use vecmath;
 use reuse_cache;
@@ -177,11 +176,11 @@ impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
 }
 
 impl <'a, D> Colored for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms{
-    fn color(&self) -> [Float; 4] {
+    fn get_color(&self) -> [Float; 4] {
         self.color
     }
 
-    fn set_color<C: Color>(&mut self, color: C) -> &mut DrawableTexture<'a, D> {
+    fn color<C: Color>(&mut self, color: C) -> &mut DrawableTexture<'a, D> {
         self.color = color.to_rgba();
         self
     }

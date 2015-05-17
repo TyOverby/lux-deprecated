@@ -1,3 +1,5 @@
+//! #Lux
+
 #![warn(missing_docs)]
 
 #[macro_use]
@@ -5,7 +7,6 @@ extern crate glium;
 
 extern crate glutin;
 extern crate vecmath;
-extern crate typemap;
 extern crate image;
 extern crate freetype;
 extern crate num;

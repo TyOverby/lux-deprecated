@@ -9,6 +9,7 @@ pub trait Color {
 /// A number that can be converted to a floating point number within the range
 /// `0.0` to `1.0`
 pub trait ToColorComponent {
+    /// Converts this number to a float between `0.0` and `1.0`.
     fn norm(&self) -> f32;
 }
 

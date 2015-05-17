@@ -147,14 +147,26 @@ impl Transform for [[Float; 4]; 4] {
 /// where each value goes from 0.0 to 1.0 and is of the form
 /// [r, b, b, a].
 pub trait Colored {
-    /// Returns a reference to the current fill color.
-    fn color(&self) -> [Float; 4];
-    fn set_color<C: Color>(&mut self, color: C) -> &mut Self;
+    /// Returns the current color.
+    fn get_color(&self) -> [Float; 4];
 
+    /// Sets the color.
+    fn color<C: Color>(&mut self, color: C) -> &mut Self;
+
+    /// Executes a closure with the given color, then resets it to what it was before.
+    ///
+    /// ### Example
+    /// ```ignore rust
+    /// frame.with_color(rgb(255, 0, 0), |frame| {
+    ///     frame.rect(0.0, 0.0, 50.0, 50.0).fill();
+    ///     frame.rect(0.0, 51.0, 50.0, 50.0).fill();
+    ///     frame.rect(51.0, 0.0, 50.0, 50.0).fill();
+    /// });
+    /// ```
     fn with_color<F, C: Color>(&mut self, color: C, f: F) where F: FnOnce(&mut Self) {
-        let prev = self.color();
-        self.set_color(color);
+        let prev = self.get_color();
+        self.color(color);
         f(self);
-        self.set_color(prev);
+        self.color(prev);
     }
 }
