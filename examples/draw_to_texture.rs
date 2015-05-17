@@ -12,10 +12,10 @@ fn main() {
     let sprite = {
         let mut tex = Texture::empty(&lux, 256, 256);
         {
-            let mut tex = tex.as_drawable_texture(&lux);
-            tex.circle(50.0, 50.0, 50.0).set_color(rgb(255, 0, 0)).fill();
-            tex.circle(150.0, 50.0, 50.0).set_color(rgb(255, 0, 0)).fill();
-            tex.rect(50.0, 150.0, 200.0, 25.0).set_color(rgb(255, 0, 0)).fill();
+            let mut tex = tex.as_drawable(&lux);
+            tex.circle(50.0, 50.0, 50.0).color(rgb(255, 0, 0)).fill();
+            tex.circle(150.0, 50.0, 50.0).color(rgb(255, 0, 0)).fill();
+            tex.rect(50.0, 150.0, 200.0, 25.0).color(rgb(255, 0, 0)).fill();
         }
         tex.into_sprite()
     };

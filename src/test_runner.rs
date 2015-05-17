@@ -166,7 +166,7 @@ fn main() {
             let y = y as f32;
             frame.draw_point(0.5, y + 0.5, rgb(255, 0, 0));
             frame.draw_point(y + 0.5, 0.5, rgb(0, 255, 0));
-            frame.draw_point(y + 0.5, y + 0.5, rgb(0, 0, 255));
+            frame.draw_point(y + 1.5, y + 0.5, rgb(0, 0, 255));
         }
     });
 

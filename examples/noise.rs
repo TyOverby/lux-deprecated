@@ -3,6 +3,7 @@ extern crate noise;
 extern crate nd_iter;
 
 use lux::prelude::*;
+use lux::graphics::ColorVertex;
 use lux::color;
 use nd_iter::iter_2d;
 
@@ -18,14 +19,17 @@ fn main() {
         z += 1.0;
         let mut frame = window.cleared_frame(color::WHITE);
 
-        frame.draw_pixels(
-            iter_2d(0u32..256, 0u32..256).map(|(x, y)| {
-                let (x, y) = (x as f32, y as f32);
-                let value = noise::perlin3(&seed, &[x / DIV, y / DIV, z / DIV]);
-                let value = (value + 1.0) / 2.0;
+        let points: Vec<_> = iter_2d(0u32..256, 0u32..256).map(|(x, y)| {
+            let (x, y) = (x as f32, y as f32);
+            let value = noise::perlin3(&seed, &[x / DIV, y / DIV, z / DIV]);
+            let value = (value + 1.0) / 2.0;
 
-                ((x, y), rgb(value, value, value))
-            })
-        );
+            ColorVertex {
+                pos: [x, y],
+                color: rgb(value, value, value)
+            }
+        }).collect();
+
+        frame.draw_points(&points);
     }
 }
