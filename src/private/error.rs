@@ -8,15 +8,24 @@ use std;
 
 use glium;
 
+/// A result returning either a value or a lux-generated error.
 pub type LuxResult<A> = Result<A, LuxError>;
 
+/// Any error that Lux might run into.
 #[derive(Debug)]
 pub enum LuxError {
+    /// An error that can occur when creating a window.
     WindowError(String),
+    /// An error that can occur when creating an opengl context.
     OpenGlError(String),
+    /// An error that can occur when compiling or linking shaders.
     ShaderError(glium::ProgramCreationError),
+    /// An error that comes from the freetype font system.
     FontError(FreetypeError, String),
+    /// An error that can occur when required I/O fails.
     IoError(IoError),
+    /// An error that can occur when attempting to use a font that hasn't
+    /// been loaded yet.
     FontNotLoaded(String)
 }
 

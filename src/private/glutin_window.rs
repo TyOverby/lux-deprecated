@@ -21,7 +21,6 @@ use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
 use super::font::FontCache;
 use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::LuxCanvas;
-use super::extend::LuxExtend;
 use super::color::Color;
 use super::raw::{Colored, Transform};
 use super::error::{LuxResult, LuxError};
@@ -149,10 +148,12 @@ impl Drop for Frame {
 }
 
 impl Window {
+    /// Panics if an OpenGL error has occurred.
     pub fn assert_no_error(&self)  {
-        //self.display.assert_no_error();
+        self.display.assert_no_error(None);
     }
 
+    /// Constructs a new window with the default settings.
     pub fn new() -> LuxResult<Window> {
         use glium::DisplayBuild;
 
@@ -411,16 +412,6 @@ impl Transform for Frame {
 
     fn current_matrix(&self) -> &[[f32; 4]; 4] {
         &self.basis_matrix
-    }
-}
-
-impl LuxExtend for Window {
-    fn typemap(&self) -> &TypeMap {
-        &self.typemap
-    }
-
-    fn typemap_mut(&mut self) -> &mut TypeMap {
-        &mut self.typemap
     }
 }
 

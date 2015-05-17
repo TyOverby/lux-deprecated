@@ -1,6 +1,8 @@
 extern crate lux;
 extern crate num;
+
 use lux::prelude::*;
+use lux::color;
 
 use num::Float;
 
@@ -20,7 +22,7 @@ fn main() {
                 let y = y as f32 * dist;
                 frame.rect(x, y, size, size)
                    .rotate_around((size / 2.0, size / 2.0), theta)
-                   .set_color(colors::RED)
+                   .set_color(color::RED)
                    .fill();
             }
         }

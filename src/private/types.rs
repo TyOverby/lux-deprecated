@@ -1,3 +1,5 @@
+//! Typedefs for use inside Lux.
+
 /// The type for indexing into vertices when drawing shapes.
 pub type Idx = u16;
 

@@ -1,4 +1,5 @@
 extern crate lux;
+
 use lux::prelude::*;
 use lux::interactive::keycodes::Escape;
 

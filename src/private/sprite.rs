@@ -26,12 +26,13 @@ use reuse_cache;
 use image::ImageError;
 
 /// An owned texture on the hardware.
-///
-/// Only one Texture can be used at a time.
 pub struct Texture {
     backing: glium::texture::Texture2d,
 }
 
+/// A ref-counted reference to a texture on the GPU.
+///
+/// This sprite can be cheaply cloned, resized, sliced, and drawn.
 #[derive(Clone, Debug)]
 pub struct Sprite {
     texture: Rc<glium::texture::Texture2d>,
@@ -44,6 +45,11 @@ pub struct Sprite {
     texture_pos: (Float, Float),
 }
 
+// TODO: add font rendering
+/// A texture that can be drawn to like a regular canvas.
+///
+/// A DrawableTexture can be obtained by calling `as_drawable` on a `Texture`
+/// object.
 pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
     texture: glium::texture::TextureSurface<'a>,
     d: &'a D,
@@ -55,23 +61,38 @@ pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
     tex_draw_cache: Option<CachedTexDraw>,
 }
 
+/// A uniform sprite sheet is a sprite sheet that is broken up into
+/// a grid of equally sized sub-sprites.
+///
+/// A `UniformSpriteSheet` can be obtained by calling `as_uniform_sprite_sheet` on
+/// a `Sprite` object.
 #[derive(Clone, Debug)]
 pub struct UniformSpriteSheet {
+    /// The sprite that this sprite sheet indexes into
     pub sprite: Sprite,
     divs: (u32, u32),
     indiv_size: (u32, u32),
 }
 
+/// A uniform sprite sheet is a sprite sheet that has parts of the original
+/// sprite broken up into chunks that are associated to a Key.
+///
+/// A `NonUniformSpriteSheet` can be obtained by calling
+/// `as_non_uniform_sprite_sheet` on a `Sprite` object.
 #[derive(Clone, Debug)]
 pub struct NonUniformSpriteSheet<K: Hash + Eq> {
+    /// The sprite that this sprite sheet indexes into
     pub sprite: Sprite,
+    /// The mapping from a key to a subsprite
     pub mapping: HashMap<K, Sprite>
 }
 
+/// TextureLoader is implemented on any object that can load textures.
 pub trait TextureLoader {
+    /// Attempts to load a texture from a path.
     fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, ImageError>;
 
-    fn texture_from_pixels(&self, Vec<Vec<[Float; 4]>>) -> Texture;
+    /// Attempts to load a texture from a `DynamicImage` from the `image` crate.
     fn texture_from_image(&self, img: image::DynamicImage) -> Texture;
 }
 
@@ -82,11 +103,6 @@ impl <T> TextureLoader for T where T: HasDisplay {
         Ok(Texture::new(img))
     }
 
-    fn texture_from_pixels(&self, pixels: Vec<Vec<[Float; 4]>>) -> Texture {
-        let pixels: Vec<Vec<(Float, Float, Float, Float)>> = unsafe {::std::mem::transmute(pixels)};
-        Texture::new(glium::texture::Texture2d::new(self.borrow_display(), pixels))
-    }
-
     fn texture_from_image(&self, img: image::DynamicImage) -> Texture {
         let img = img.flipv();
         let img = glium::texture::Texture2d::new(self.borrow_display(), img);
@@ -95,6 +111,10 @@ impl <T> TextureLoader for T where T: HasDisplay {
 }
 
 impl Texture {
+    /// Creates an empty texture with a given width and height.
+    ///
+    /// Depending on the graphics card, the width and height might need
+    /// to be powers of two.
     pub fn empty<D: HasDisplay>(d: &D, width: u32, height: u32) -> Texture {
         use glium::Surface;
         let backing = glium::texture::Texture2d::empty(d.borrow_display(), width, height);
@@ -114,11 +134,13 @@ impl Texture {
         }
     }
 
+    /// Converts this texture into a `Sprite`.
     pub fn into_sprite(self) -> Sprite {
         Sprite::new(Rc::new(self.backing))
     }
 
-    pub fn as_drawable_texture<'a, D>(&'a mut self, d: &'a D) -> DrawableTexture<'a, D>
+    /// Returns a reference to this texture with a drawable context.
+    pub fn as_drawable<'a, D>(&'a mut self, d: &'a D) -> DrawableTexture<'a, D>
     where D: HasDisplay + HasPrograms {
         DrawableTexture::new(self.backing.as_surface(), d)
     }
@@ -247,8 +269,7 @@ impl <'a, D> Drop for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
 }
 
 impl Sprite {
-    // TODO: hide from docs
-    pub fn new(tex: Rc<glium::texture::Texture2d>) -> Sprite {
+    fn new(tex: Rc<glium::texture::Texture2d>) -> Sprite {
         use glium::Surface;
         let size = tex.as_surface().get_dimensions();
         Sprite {
@@ -262,11 +283,14 @@ impl Sprite {
         }
     }
 
+    /// Returns the size of this sprite given the size of the image in pixels
+    /// that this sprite was loaded from.
     pub fn ideal_size(&self) -> (Float, Float) {
         let (w, h) = self.size;
         (w as Float, h as Float)
     }
 
+    /// Returns a new sprite located offset from this sprite with a specified size.
     pub fn sub_sprite(&self, offset: (u32, u32), size: (u32, u32)) -> Option<Sprite> {
         if offset.0 + size.0 > self.size.0 { return None };
         if offset.1 + size.1 > self.size.1 { return None };
@@ -287,6 +311,8 @@ impl Sprite {
         })
     }
 
+    /// Returns a sprite that contains the entire texture that the sprite
+    /// was loaded from.
     pub fn original_sprite(&self) -> Sprite {
         Sprite {
             texture: self.texture.clone(),
@@ -298,6 +324,17 @@ impl Sprite {
         }
     }
 
+    /// Returns a an array containing the positions of
+    ///
+    /// * The top left corner,
+    /// * The top right corner,
+    /// * The bottom left corner,
+    /// * the bottom right corner
+    ///
+    /// all in order.
+    ///
+    /// These positions are positions in texture space of the texture
+    /// that this sprite has been loaded from.
     pub fn bounds(&self) -> [[Float; 2]; 4]{
         let top_left = [self.texture_pos.0,
                         self.texture_pos.1];
@@ -311,37 +348,24 @@ impl Sprite {
         [top_left, top_right, bottom_left, bottom_right]
     }
 
+    /// Returns a clone of the reference counted texture that this
+    /// sprite was loaded from.
     pub fn texture(&self) -> Rc<glium::texture::Texture2d> {
         self.texture.clone()
     }
 
+    /// Returns a reference to the texture that this sprite wasa loaded from.
     pub fn texture_ref(&self) -> &glium::texture::Texture2d {
         self.texture.deref()
     }
 
-    pub fn zeroed_vertices(&self) -> (Vec<TexVertex>, Vec<u32>) {
-        let bounds = self.bounds();
-
-        let top_left = bounds[0];
-        let top_right = bounds[1];
-        let bottom_left = bounds[2];
-        let bottom_right = bounds[3];
-
-        (vec![
-                TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
-                TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
-                TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
-                TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
-             ],
-             vec![0u32, 1, 2, 0, 2, 3]
-        )
-    }
-
+    /// Returns a new uniform sprite sheet using this sprite as its base.
     pub fn as_uniform_sprite_sheet(&self, indiv_width: u32, indiv_height: u32)
     -> UniformSpriteSheet {
         UniformSpriteSheet::new(self.clone(), indiv_width, indiv_height)
     }
 
+    /// Returns a new nonuniform sprite sheet using this sprite as its base.
     pub fn as_nonuniform_sprite_sheet<T>(&self) -> NonUniformSpriteSheet<T>
     where T: Eq + Hash {
         NonUniformSpriteSheet::new(self.clone())

@@ -3,6 +3,7 @@ extern crate glium;
 extern crate image;
 
 use lux::prelude::*;
+use lux::color;
 use std::path::Path;
 
 fn main() {
@@ -15,7 +16,7 @@ fn main() {
     let sprite2 = sprite1.sub_sprite((0, 0), (256 / 2, 255)).unwrap();
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::WHITE);
+        let mut frame = lux.cleared_frame(color::WHITE);
         let (x, y) = lux.mouse_pos();
 
         frame.sprite(&sprite1, 0.0, 0.0).draw();

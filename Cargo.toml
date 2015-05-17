@@ -13,13 +13,9 @@ name = "test_runner"
 path = "src/test_runner.rs"
 
 [dependencies.glium]
-#git = "https://github.com/tomaka/glium.git"
-path = "../glium"
+git = "https://github.com/tomaka/glium.git"
 default-features = false
 features = ["image"]
-
-#[dependencies.glyph_packer]
-#git = "https://github.com/TyOverby/glyph_packer.git"
 
 [dependencies.lux-constants]
 path = "./constants"

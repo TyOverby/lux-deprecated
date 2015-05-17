@@ -62,6 +62,8 @@ pub trait Interactive {
     /// However, you should prefer is_open if at all possible.
     fn is_open(&mut self) -> bool;
 
+    /// Returns true if the window wasn't closed the last time that input was
+    /// polled.
     fn was_open(&self) -> bool;
 
     /// Returns the title of the object.
@@ -77,12 +79,14 @@ pub trait Interactive {
     /// Returns the size of the window.
     fn get_size(&self) -> (u32, u32);
 
+    /// Returns the width of the window.
     fn width(&self) -> Float {
         match self.get_size() {
             (w, _) => w as Float
         }
     }
 
+    /// Returns the height of the window.
     fn height(&self) -> Float {
         match self.get_size() {
             (_, h) => h as Float
@@ -130,20 +134,26 @@ pub trait Interactive {
 }
 
 impl EventIterator {
+    /// Constructs an `EventIterator` from a `VecDeque`.
     pub fn from_deque(v: VecDeque<Event>) -> EventIterator {
         EventIterator {
             backing: v
         }
     }
 
+    /// Convertes this `EventIterator` back into a `VecDeque`.
     pub fn into_deque(self) -> VecDeque<Event> {
         self.backing
     }
 
+    /// Returns an iterator over the events contained inside without
+    /// removing them.
     pub fn as_ref(&self) -> Iter<Event> {
         self.backing.iter()
     }
 
+    /// Returns a mutable iterator over the events contained
+    /// inside without removing them.
     pub fn as_mut(&mut self) -> IterMut<Event> {
         self.backing.iter_mut()
     }
@@ -169,6 +179,7 @@ impl DoubleEndedIterator for EventIterator {
 /// A conversion trait for representing the different ways that a key
 /// can be represented.
 pub trait AbstractKey {
+    /// Converts an abstract key into a set of concrete key implementations.
     fn to_key(self) -> (Option<u8>, Option<char>, Option<VirtualKeyCode>);
 }
 

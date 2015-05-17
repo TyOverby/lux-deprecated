@@ -1,8 +1,8 @@
 extern crate lux;
-/*
 use std::collections::VecDeque;
 use lux::prelude::*;
 use lux::interactive::keycodes::Escape;
+use lux::interactive::Event;
 
 struct TestRunner {
     tests: VecDeque<(String, Box<FnMut(&mut Frame)>)>
@@ -168,4 +168,3 @@ fn main() {
 
     runner.display().unwrap();
 }
-*/

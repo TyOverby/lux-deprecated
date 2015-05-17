@@ -3,6 +3,8 @@ extern crate glium;
 extern crate image;
 
 use lux::prelude::*;
+use lux::color;
+use lux::graphics::Texture;
 
 fn main() {
     let mut lux = Window::new().unwrap();
@@ -19,7 +21,7 @@ fn main() {
     };
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::WHITE);
+        let mut frame = lux.cleared_frame(color::WHITE);
         let (x, y) = lux.mouse_pos();
 
         frame.sprite(&sprite, 0.0, 0.0).draw();

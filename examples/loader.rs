@@ -1,9 +1,11 @@
+/*
 extern crate lux;
 extern crate glium;
 extern crate image;
 extern crate freetype;
 
 use lux::prelude::*;
+use lux::color;
 use lux::loader::*;
 use std::path::Path;
 
@@ -33,7 +35,7 @@ fn main() {
 
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::WHITE);
+        let mut frame = lux.cleared_frame(color::WHITE);
         let mut y = 0.0;
 
         for pt in 1 .. 6 {
@@ -62,3 +64,4 @@ fn main() {
 
     }
 }
+*/

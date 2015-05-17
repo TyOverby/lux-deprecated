@@ -1,5 +1,6 @@
 extern crate lux;
 use lux::prelude::*;
+use lux::color;
 
 fn main() {
     let mut rot = 0.0;

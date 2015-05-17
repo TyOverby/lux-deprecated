@@ -3,6 +3,7 @@ extern crate noise;
 extern crate nd_iter;
 
 use lux::prelude::*;
+use lux::color;
 use nd_iter::iter_2d;
 
 const DIV: f32 = 20.0;
@@ -15,7 +16,7 @@ fn main() {
 
     while window.is_open() {
         z += 1.0;
-        let mut frame = window.cleared_frame(colors::WHITE);
+        let mut frame = window.cleared_frame(color::WHITE);
 
         frame.draw_pixels(
             iter_2d(0u32..256, 0u32..256).map(|(x, y)| {

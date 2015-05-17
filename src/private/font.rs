@@ -28,6 +28,7 @@ pub struct FontCache {
     rendered: HashMap<(String, u32), fontcache::RenderedFont<Sprite>>,
 }
 
+/// A context that contains information about the text that can be drawn to the screen.
 #[must_use = "text references just contains context, and must be drawn with `draw()`"]
 pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
@@ -41,12 +42,25 @@ pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: '
 
 }
 
+/// This trait is implemented by all objects that can load fonts.
 pub trait FontLoad {
+    /// Loads a freetype font file from the provided path.
+    ///
+    /// The given name is used to identify the font later on.
     fn load_font<P: AsRef<Path>>(&mut self, name: &str, path: &P) -> LuxResult<()>;
+
+    /// After loading a font, you may pre-render it at a specific size.
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
 }
 
+/// Any struct that implements `TextDraw` can draw text to it.
+///
+/// The only known implementation of `TextDraw` is Frame.
 pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
+    /// Starts drawing some text at a position.
+    ///
+    /// Text size and text font can be configured on the returned `ContainedText`
+    /// object and finally drawn to the canvas with `.draw()`.
     fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: Float, y : Float) -> ContainedText<'a, Self, S> {
         ContainedText {
             canvas: self,
@@ -63,16 +77,19 @@ pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
 impl <T> TextDraw for T where T: Sized + LuxCanvas + HasDisplay + HasFontCache { }
 
 impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
+    /// Sets the size of the font.
     pub fn size(&mut self, size: u16) -> &mut ContainedText<'a, C, S> {
         self.size = size;
         self
     }
 
+    /// Sets the font to be used.
     pub fn font<A: Into<String>>(&mut self, font_family: A) -> &mut ContainedText<'a, C, S> {
         self.font_family = font_family.into();
         self
     }
 
+    /// Draws the font to the screen.
     pub fn draw(&mut self) -> LuxResult<()> {
         let canvas: &mut C = {
             let x: &mut C = self.canvas;
@@ -107,6 +124,8 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         })
     }
 
+    /// Returns the maximum horizontal distance that a character can move the pen
+    /// while drawing.
     pub fn max_advance(&mut self) -> LuxResult<u32> {
         let mut fc = self.canvas.font_cache();
         let d = self.canvas.borrow_display();
@@ -120,9 +139,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
     /// with the position and the size.
     ///
     /// These positions are absolute, and are not relative to the position that
-    /// the text will be drawn on the screen.
-    ///
-    /// (char, position, size)
+    /// the text will be drawn on the screen. (they start at position (0, 0))
     pub fn absolute_positions(&mut self) -> LuxResult<Vec<OutputPosition>> {
         let mut fc = self.canvas.font_cache();
         let d = self.canvas.borrow_display();
@@ -133,6 +150,11 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         })
     }
 
+    /// Returns an iterator containing each character in the input text along
+    /// with the position and the size.
+    ///
+    /// These positions are relative to the providex (x, y) coordinates that
+    /// the text will be drawn at.
     pub fn positions(&mut self) -> LuxResult<Vec<(char, (Float, Float), (Float, Float))>> {
         self.absolute_positions().map(|poses| {
             poses.into_iter().map(
