@@ -3,6 +3,7 @@ extern crate glium;
 extern crate image;
 
 use lux::prelude::*;
+use lux::color;
 use std::path::Path;
 
 fn main() {
@@ -16,7 +17,7 @@ fn main() {
     let sheet = texture.as_uniform_sprite_sheet(16, 16);
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::BLACK);
+        let mut frame = lux.cleared_frame(color::BLACK);
         let (x, y) = lux.mouse_pos();
 
         let s1 = sheet.get(1, 4);

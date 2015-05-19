@@ -1,6 +1,7 @@
 extern crate lux;
+
 use lux::prelude::*;
-use lux::colors::{BLUE, RED, GRAY};
+use lux::color::{BLUE, RED, GRAY};
 
 fn main() {
     let mut window = Window::new().unwrap();

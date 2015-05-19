@@ -1,75 +1,55 @@
 use std::rc::Rc;
-use super::accessors::{
-    HasDisplay,
-    HasSurface,
-    HasDrawCache
-};
 
-use super::prelude::{
-    ColorVertex,
-    TexVertex,
-    PrimitiveType,
-    Color,
-    Transform
-};
+use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache};
+use super::gfx_integration::{ColorVertex, TexVertex};
+use glium::index::PrimitiveType;
+use super::color::Color;
+use super::raw::Transform;
 use super::gfx_integration;
+use super::types::{Idx, Float};
 
 use vecmath;
 use glium;
+use reuse_cache;
 
-struct Indices<'a, T: 'a + glium::index::Index> {
-    idxs: Option<&'a [T]>,
-    prim: glium::index::PrimitiveType
-}
-
-impl <'a, T: 'a + glium::index::Index> Indices<'a, T> {
-    fn new(prim: glium::index::PrimitiveType, idxs: Option<&'a [T]>) -> Indices<'a, T> {
-        Indices {
-            idxs: idxs,
-            prim: prim
-        }
-    }
-}
-
-impl <'a, T: 'a + glium::index::Index> glium::index::ToIndicesSource for Indices<'a, T> {
-    type Data = T;
-    fn to_indices_source<'b>(&'b self) -> glium::index::IndicesSource<'b, T> {
-        match self.idxs {
-            Some(slice) => {
-                glium::index::IndicesSource::Buffer {
-                    pointer: slice,
-                    primitives: self.prim,
-                    offset: 0,
-                    length: slice.len()
-                }
-            }
-            None => {
-                glium::index::IndicesSource::NoIndices {
-                    primitives: self.prim
-                }
-            }
-        }
-    }
-}
-
+/// A cache for batching texture drawing commands.
+///
+/// This mechanism is used to reduce draw-calls in cases where
+/// they could be more efficiently grouped together.
 pub struct CachedColorDraw {
+    /// The type of primitive that is being used to draw.
     pub typ: PrimitiveType,
-    pub points: Vec<ColorVertex>,
-    pub idxs: Vec<u32>,
+    /// A cache of colored vertices.
+    pub points: reuse_cache::Item<Vec<ColorVertex>>,
+    /// A cache of indices indexing into the points cache.
+    pub idxs: reuse_cache::Item<Vec<Idx>>,
 }
 
+/// A cache for batching texture drawing commands.
+///
+/// This mechanism is used to reduce draw-calls in cases where
+/// they could be more efficiently grouped together.
 pub struct CachedTexDraw {
+    /// The type of primitive that is being used to draw.
     pub typ: PrimitiveType,
-    pub points: Vec<TexVertex>,
+    /// A cache of colored vertices.
+    pub points: reuse_cache::Item<Vec<TexVertex>>,
+    /// The texture that is going to be bound for the draw call.
     pub texture: Rc<glium::texture::Texture2d>,
-    pub idxs: Vec<u32>,
-    pub color_mult: [f32; 4],
+    /// A cache of indices indexing into the points cache.
+    pub idxs: reuse_cache::Item<Vec<Idx>>,
+    /// A color that will be multiplied against the values in the texture
+    /// to give the texture color.
+    pub color_mult: [Float; 4],
 }
 
-
-/// A primitive canvas is a canvas that can be drawn to with only the
-/// `draw_shape` function.
+/// A Primitive canvas is a trait that is implemented by objects that
+/// can have draw commands issued to them.
+///
+/// As the name implies, this is a lower-level API and you should probably
+/// be using methods on the `Canvas` trait instead.
 pub trait PrimitiveCanvas {
+    /// Clears the canvas with a color.
     fn clear<C: Color>(&mut self, color: C);
 
     /// Draws the verteces to the canvas. This function uses caching to
@@ -82,53 +62,68 @@ pub trait PrimitiveCanvas {
     ///       duplicates of each other.
     /// mat: An optional transformation matrix that would be applied to the
     ///      each point before drawing.
-    fn draw_shape(&mut self,
+    fn draw_colored(&mut self,
                   typ: PrimitiveType,
                   vs: &[ColorVertex],
-                  idxs: Option<&[u32]>,
-                  mat: Option<[[f32; 4]; 4]>);
+                  idxs: Option<&[Idx]>,
+                  mat: Option<[[Float; 4]; 4]>);
 
+    /// Draws colored vertices to the canvas with no thought given to the
+    /// cached draw commands.
+    ///
+    /// This function is meant for internal use and shouldn't regularly show
+    /// up in user code.  Instead, prefer `draw_colored` or `draw_colored_no_batch`
     fn draw_colored_now(&mut self,
                 typ: PrimitiveType,
                 points: &[ColorVertex],
-                idxs: Option<&[u32]>,
-                base_mat: Option<[[f32; 4]; 4]>);
+                idxs: Option<&[Idx]>,
+                base_mat: Option<[[Float; 4]; 4]>);
 
-    fn draw_textured_now(&mut self,
-                typ: PrimitiveType,
-                points: &[TexVertex],
-                idxs: Option<&[u32]>,
-                base_mat: Option<[[f32; 4]; 4]>,
-                texture: &glium::texture::Texture2d,
-                color_mult: [f32; 4]);
-
-    /// Flush all stored draw calls to the screen.
-    fn flush_draw(&mut self);
-
-    fn draw_shape_no_batch(&mut self,
+    /// Immediately draws colored vertices to the canvas.
+    ///
+    /// The vertex batch cache is cleared before drawing.
+    /// These vertices are not cached.
+    fn draw_colored_no_batch(&mut self,
                            typ: PrimitiveType,
                            vs: &[ColorVertex],
-                           idxs: Option<&[u32]>,
-                           mat: Option<[[f32; 4]; 4]>);
+                           idxs: Option<&[Idx]>,
+                           mat: Option<[[Float; 4]; 4]>);
 
+    /// Same as `draw_colored` but for textured vertices.
     fn draw_tex(&mut self,
                 typ: PrimitiveType,
                 vs: &[TexVertex],
-                idxs: Option<&[u32]>,
-                mat: Option<[[f32; 4]; 4]>,
+                idxs: Option<&[Idx]>,
+                mat: Option<[[Float; 4]; 4]>,
                 Rc<glium::texture::Texture2d>,
-                color_mult: Option<[f32; 4]>);
+                color_mult: Option<[Float; 4]>);
 
+    /// Same as `draw_colored_now` but for textured vertices.
+    fn draw_textured_now(&mut self,
+                typ: PrimitiveType,
+                points: &[TexVertex],
+                idxs: Option<&[Idx]>,
+                base_mat: Option<[[Float; 4]; 4]>,
+                texture: &glium::texture::Texture2d,
+                color_mult: [Float; 4]);
+
+    /// Same as `draw_colored_no_batch` but for textured vertices.
     fn draw_tex_no_batch(&mut self,
                          typ: PrimitiveType,
                          vs: &[TexVertex],
-                         idxs: Option<&[u32]>,
-                         mat: Option<[[f32; 4]; 4]>,
+                         idxs: Option<&[Idx]>,
+                         mat: Option<[[Float; 4]; 4]>,
                          &glium::texture::Texture2d,
-                         color_mult: Option<[f32; 4]>);
+                         color_mult: Option<[Float; 4]>);
+
+    /// Flush all stored draw calls to the screen.
+    ///
+    /// This is an interal function that should not usually be called
+    /// by the user of this library.
+    fn flush_draw(&mut self);
 }
 
-fn draw_params() -> glium::DrawParameters {
+fn draw_params() -> glium::DrawParameters<'static> {
         use glium::LinearBlendingFactor::*;
         let defaults: glium::DrawParameters = ::std::default::Default::default();
         glium::DrawParameters {
@@ -143,7 +138,9 @@ fn draw_params() -> glium::DrawParameters {
         }
 }
 
-impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache + Transform {
+impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
+Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
+{
     fn clear<C: Color>(&mut self, color: C) {
         use glium::Surface;
         let c = color.to_rgba();
@@ -153,12 +150,12 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
     fn draw_colored_now(&mut self,
                 typ: PrimitiveType,
                 points: &[ColorVertex],
-                idxs: Option<&[u32]>,
-                base_mat: Option<[[f32; 4]; 4]>) {
-        use glium::Surface;
+                idxs: Option<&[Idx]>,
+                base_mat: Option<[[Float; 4]; 4]>) {
+        use glium::{Surface, IndexBuffer};
+        use glium::index::NoIndices;
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
-        let (frame, color_program) = self.surface_and_color_shader();
 
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
@@ -166,23 +163,30 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let draw_params = draw_params();
 
-        let idx = Indices::new(typ, idxs);
-
-
-        frame.draw(&vertex_buffer, &idx, &color_program, &uniform, &draw_params).unwrap();
+        match idxs {
+            Some(idxs) => {
+                let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs, typ);
+                let (frame, color_program) = self.surface_and_color_shader();
+                frame.draw(&vertex_buffer, &idx_buf, &color_program, &uniform, &draw_params).unwrap();
+            }
+            None => {
+                let (frame, color_program) = self.surface_and_color_shader();
+                frame.draw(&vertex_buffer, &NoIndices(typ), &color_program, &uniform, &draw_params).unwrap();
+            }
+        }
     }
 
     fn draw_textured_now(&mut self,
                 typ: PrimitiveType,
                 points: &[TexVertex],
-                idxs: Option<&[u32]>,
-                base_mat: Option<[[f32; 4]; 4]>,
+                idxs: Option<&[Idx]>,
+                base_mat: Option<[[Float; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
-                color_mult: [f32; 4]) {
-        use glium::Surface;
+                color_mult: [Float; 4]) {
+        use glium::{Surface, IndexBuffer};
+        use glium::index::NoIndices;
 
         let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
-        let (frame, tex_program) = self.surface_and_texture_shader();
 
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
@@ -192,9 +196,17 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
 
         let draw_params = draw_params();
 
-        let idx = Indices::new(typ, idxs);
-
-        frame.draw(&vertex_buffer, &idx, &tex_program, &uniform, &draw_params).unwrap();
+        match idxs {
+            Some(idxs) => {
+                let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs, typ);
+                let (frame, tex_program) = self.surface_and_texture_shader();
+                frame.draw(&vertex_buffer, &idx_buf, &tex_program, &uniform, &draw_params).unwrap();
+            }
+            None => {
+                let (frame, tex_program) = self.surface_and_texture_shader();
+                frame.draw(&vertex_buffer, &NoIndices(typ), &tex_program, &uniform, &draw_params).unwrap();
+            }
+        }
         // TODO: returrn error?
     }
 
@@ -209,11 +221,11 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         }
     }
 
-    fn draw_shape_no_batch(&mut self,
+    fn draw_colored_no_batch(&mut self,
                            n_typ: PrimitiveType,
                            n_points: &[ColorVertex],
-                           idxs: Option<&[u32]>,
-                           transform: Option<[[f32; 4]; 4]>) {
+                           idxs: Option<&[Idx]>,
+                           transform: Option<[[Float; 4]; 4]>) {
         self.flush_draw();
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
@@ -225,10 +237,10 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
     fn draw_tex_no_batch(&mut self,
                            n_typ: PrimitiveType,
                            n_points: &[TexVertex],
-                           idxs: Option<&[u32]>,
-                           transform: Option<[[f32; 4]; 4]>,
+                           idxs: Option<&[Idx]>,
+                           transform: Option<[[Float; 4]; 4]>,
                            texture: &glium::texture::Texture2d,
-                           color_mult: Option<[f32; 4]>) {
+                           color_mult: Option<[Float; 4]>) {
         self.flush_draw();
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
@@ -242,11 +254,11 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
     fn draw_tex(&mut self,
                   n_typ: PrimitiveType,
                   n_points: &[TexVertex],
-                  idxs: Option<&[u32]>,
-                  transform: Option<[[f32; 4]; 4]>,
+                  idxs: Option<&[Idx]>,
+                  transform: Option<[[Float; 4]; 4]>,
                   texture: Rc<glium::texture::Texture2d>,
-                  color_mult: Option<[f32; 4]>) {
-        use super::prelude::PrimitiveType::{Points, LinesList, TrianglesList};
+                  color_mult: Option<[Float; 4]>) {
+        use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
         use std::mem::transmute;
 
         if self.color_draw_cache().is_some() {
@@ -279,8 +291,8 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 self.flush_draw();
                 *self.tex_draw_cache_mut() = Some(CachedTexDraw {
                     typ: n_typ,
-                    points: Vec::with_capacity(1024),
-                    idxs: Vec::with_capacity(1024),
+                    points: self.fetch(),
+                    idxs: self.fetch(),
                     texture: texture,
                     color_mult: color_mult,
                 });
@@ -288,8 +300,8 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         } else {
             *self.tex_draw_cache_mut() = Some(CachedTexDraw {
                 typ: n_typ,
-                points: Vec::with_capacity(1024),
-                idxs: Vec::with_capacity(1024),
+                points: self.fetch(),
+                idxs: self.fetch(),
                 texture: texture,
                 color_mult: color_mult
             });
@@ -304,8 +316,8 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
         let draw_cache = self.tex_draw_cache_mut().as_mut().unwrap();
 
-        let already_in = draw_cache.points.len() as u32;
-        let adding = n_points.len() as u32;
+        let already_in = draw_cache.points.len() as Idx;
+        let adding = n_points.len() as Idx;
 
         // Perform the global transforms here
         draw_cache.points.extend(n_points.iter().map(|&point| {
@@ -334,12 +346,12 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         }
     }
 
-    fn draw_shape(&mut self,
+    fn draw_colored(&mut self,
                   n_typ: PrimitiveType,
                   n_points: &[ColorVertex],
-                  idxs: Option<&[u32]>,
-                  transform: Option<[[f32; 4]; 4]>) {
-        use super::prelude::PrimitiveType::{Points, LinesList, TrianglesList};
+                  idxs: Option<&[Idx]>,
+                  transform: Option<[[Float; 4]; 4]>) {
+        use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
 
         if self.tex_draw_cache().is_some() {
             self.flush_draw();
@@ -357,15 +369,15 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
                 self.flush_draw();
                 *self.color_draw_cache_mut() = Some(CachedColorDraw {
                     typ: n_typ,
-                    points: Vec::with_capacity(1024),
-                    idxs: Vec::with_capacity(1024),
+                    points: self.fetch(),
+                    idxs: self.fetch()
                 });
             }
         } else {
             *self.color_draw_cache_mut() = Some(CachedColorDraw {
                 typ: n_typ,
-                points: Vec::with_capacity(1024),
-                idxs: Vec::with_capacity(1024),
+                points: self.fetch(),
+                idxs: self.fetch()
 
             });
         }
@@ -379,8 +391,8 @@ impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
         let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
         let draw_cache = self.color_draw_cache_mut().as_mut().unwrap();
 
-        let already_in = draw_cache.points.len() as u32;
-        let adding = n_points.len() as u32;
+        let already_in = draw_cache.points.len() as Idx;
+        let adding = n_points.len() as Idx;
 
         // Perform the global transforms here
         draw_cache.points.extend(n_points.iter().map(|&point| {

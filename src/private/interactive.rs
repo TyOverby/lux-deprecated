@@ -2,22 +2,30 @@ use std::collections::VecDeque;
 use std::collections::vec_deque::{Iter, IterMut};
 use self::keycodes::*;
 
+use super::types::Float;
+
 pub mod keycodes {
+    //! A keycode is a platform independent way to refer to
+    //! keys on the keyboard.
     pub use glutin::VirtualKeyCode;
     pub use glutin::VirtualKeyCode::*;
 }
 
+/// An iterator for windowing events.
+///
+/// It contains a `VecDeque<Event>` internally
+/// that it pulls items from during iteration.
 pub struct EventIterator {
-    pub backing: VecDeque<Event>
+    backing: VecDeque<Event>
 }
 
 /// An even coming from an Interactive object.
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Event {
     /// The mouse moved to this position.
     MouseMoved((i32, i32)),
     /// The mouse wheel moved by this delta.
-    MouseWheel(i32),
+    MouseWheel(Float, Float),
     /// This mouse button was pushed down.
     MouseDown(MouseButton),
     /// This mouse button was released.
@@ -45,7 +53,7 @@ pub enum MouseButton {
     /// The middle mouse button.
     Middle,
     /// Any other unnamed mouse button.
-    OtherMouseButton(u8)
+    Other(u8)
 }
 
 /// A trait for objects that are interactive to the user.
@@ -60,8 +68,8 @@ pub trait Interactive {
     /// However, you should prefer is_open if at all possible.
     fn is_open(&mut self) -> bool;
 
-    /// Returns true if the window was not closed the last time
-    /// that events were polled from the backing window implementation.
+    /// Returns true if the window wasn't closed the last time that input was
+    /// polled.
     fn was_open(&self) -> bool;
 
     /// Returns the title of the object.
@@ -123,13 +131,13 @@ pub trait Interactive {
     ///
     /// This function returns the position in floating point units
     /// for usability.  Use `mouse_pos_int` if you want integer units.
-    fn mouse_pos(&self) -> (f32, f32);
+    fn mouse_pos(&self) -> (Float, Float);
 
     /// Returns the current position of the mouse in integer units.
     fn mouse_pos_i(&self) -> (i32, i32);
 
     /// Returns the x coordinate of the mouse.
-    fn mouse_x(&self) -> f32 {
+    fn mouse_x(&self) -> Float {
         match self.mouse_pos() {
             (x, _) => x
         }
@@ -143,7 +151,7 @@ pub trait Interactive {
     }
 
     /// Returns the y coordinate of the mouse.
-    fn mouse_y(&self) -> f32 {
+    fn mouse_y(&self) -> Float {
         match self.mouse_pos() {
             (_, y) => y
         }
@@ -165,20 +173,31 @@ pub trait Interactive {
 }
 
 impl EventIterator {
+    /// Returns true if this event iterator contains no events
+    pub fn is_empty(&self) -> bool {
+        self.backing.is_empty()
+    }
+
+    /// Constructs an `EventIterator` from a `VecDeque`.
     pub fn from_deque(v: VecDeque<Event>) -> EventIterator {
         EventIterator {
             backing: v
         }
     }
 
+    /// Convertes this `EventIterator` back into a `VecDeque`.
     pub fn into_deque(self) -> VecDeque<Event> {
         self.backing
     }
 
+    /// Returns an iterator over the events contained inside without
+    /// removing them.
     pub fn as_ref(&self) -> Iter<Event> {
         self.backing.iter()
     }
 
+    /// Returns a mutable iterator over the events contained
+    /// inside without removing them.
     pub fn as_mut(&mut self) -> IterMut<Event> {
         self.backing.iter_mut()
     }
@@ -204,6 +223,7 @@ impl DoubleEndedIterator for EventIterator {
 /// A conversion trait for representing the different ways that a key
 /// can be represented.
 pub trait AbstractKey {
+    /// Converts an abstract key into a set of concrete key implementations.
     fn to_key(self) -> (Option<u8>, Option<char>, Option<VirtualKeyCode>);
 }
 

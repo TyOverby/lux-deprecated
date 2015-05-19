@@ -1,4 +1,5 @@
 extern crate lux;
+
 use lux::prelude::*;
 use lux::game::*;
 
@@ -10,21 +11,12 @@ struct MyGame {
     speed: (f32, f32)
 }
 
-impl MyGame {
-    fn new() -> MyGame {
-        MyGame {
-            pos: (0.0, 0.0),
-            speed: (10.0, 10.0)
-        }
-    }
-}
-
 impl Game for MyGame {
-    fn prepare_window(&mut self, window: &mut Window) {
-        window.preload_font("SourceCodePro", 10);
+    fn prepare_window(&mut self, window: &mut Window) -> LuxResult<()> {
+        window.preload_font("SourceCodePro", 10)
     }
 
-    fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) {
+    fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) -> LuxResult<()> {
         // position
         self.pos.0 += self.speed.0 * dt;
         self.pos.1 += self.speed.1 * dt;
@@ -48,16 +40,20 @@ impl Game for MyGame {
         } else if window.is_key_pressed('s') {
             self.speed.1 = MOVEMENT_SPEED;
         }
+
+        Ok(())
     }
 
-    fn render(&mut self, lag: f32, _window: &mut Window, frame: &mut Frame) {
+    fn render(&mut self, lag: f32, _window: &mut Window, frame: &mut Frame) -> LuxResult<()> {
         //let lag = 0.0;
         let (x, y) = self.pos;
         let (vx, vy) = self.speed;
 
-        frame.text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).draw().unwrap();
-        frame.text("Hold the spacebar to see the debug fps viewer", 5.0, 25.0).draw().unwrap();
+        try!(frame.text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).draw());
+        try!(frame.text("Hold the spacebar to see the debug fps viewer", 5.0, 25.0).draw());
         frame.circle(x + vx * lag, y + vy * lag, PLAYER_SIZE).fill();
+
+        Ok(())
     }
 
     fn updates_per_s(&self) -> f64 { 120.0 }
@@ -78,5 +74,9 @@ fn clamp(low: f32, value: f32, high: f32) -> f32 {
 }
 
 fn main() {
-    MyGame::new().run_until_end();
+    let game = MyGame {
+        pos: (0.0, 0.0),
+        speed: (10.0, 10.0)
+    };
+    game.run_until_end().unwrap();
 }

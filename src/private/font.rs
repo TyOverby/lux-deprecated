@@ -3,26 +3,23 @@ use std::collections::hash_map::Entry;
 use std::path::Path;
 use std::convert::{Into, AsRef};
 
+use super::types::Float;
+
 use freetype;
 use glium;
 use vecmath;
 use fontcache;
-use freetype_fontcache;
+use freetype_atlas;
 use lux_constants::*;
 
 pub use fontcache::OutputPosition;
 
 use super::accessors::{HasDisplay, HasFontCache};
-use super::prelude::{
-    Color,
-    LuxError,
-    Colored,
-    Transform,
-    LuxCanvas,
-    TextureLoader,
-    LuxResult,
-    Sprite,
-};
+use super::color::Color;
+use super::error::{LuxError, LuxResult};
+use super::raw::{Colored, Transform};
+use super::canvas::LuxCanvas;
+use super::sprite::{TextureLoader, Sprite};
 
 #[doc(hidden)]
 pub struct FontCache {
@@ -31,26 +28,40 @@ pub struct FontCache {
     rendered: HashMap<(String, u32), fontcache::RenderedFont<Sprite>>,
 }
 
-#[must_use = "text references contain context, and must be drawn with `draw()`"]
+/// A context that contains information about the text that can be drawn to the screen.
+#[must_use = "text references just contains context, and must be drawn with `draw()`"]
 pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
     text: S,
-    pos: (f32, f32),
-    transform: [[f32; 4]; 4],
-    color: [f32; 4],
+    pos: (Float, Float),
+    transform: [[Float; 4]; 4],
+    color: [Float; 4],
 
     size: u16,
     font_family: String
 
 }
 
+/// This trait is implemented by all objects that can load fonts.
 pub trait FontLoad {
+    /// Loads a freetype font file from the provided path.
+    ///
+    /// The given name is used to identify the font later on.
     fn load_font<P: AsRef<Path>>(&mut self, name: &str, path: &P) -> LuxResult<()>;
+
+    /// After loading a font, you may pre-render it at a specific size.
     fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
 }
 
+/// Any struct that implements `TextDraw` can draw text to it.
+///
+/// The only known implementation of `TextDraw` is Frame.
 pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
-    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: f32, y : f32) -> ContainedText<'a, Self, S> {
+    /// Starts drawing some text at a position.
+    ///
+    /// Text size and text font can be configured on the returned `ContainedText`
+    /// object and finally drawn to the canvas with `.draw()`.
+    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: Float, y : Float) -> ContainedText<'a, Self, S> {
         ContainedText {
             canvas: self,
             text: text,
@@ -66,16 +77,19 @@ pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
 impl <T> TextDraw for T where T: Sized + LuxCanvas + HasDisplay + HasFontCache { }
 
 impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
+    /// Sets the size of the font.
     pub fn size(&mut self, size: u16) -> &mut ContainedText<'a, C, S> {
         self.size = size;
         self
     }
 
+    /// Sets the font to be used.
     pub fn font<A: Into<String>>(&mut self, font_family: A) -> &mut ContainedText<'a, C, S> {
         self.font_family = font_family.into();
         self
     }
 
+    /// Draws the font to the screen.
     pub fn draw(&mut self) -> LuxResult<()> {
         let canvas: &mut C = {
             let x: &mut C = self.canvas;
@@ -93,8 +107,8 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
             if let Some(sp) = subsprite.as_ref() {
                 canvas.sprite(
                         sp,
-                        x as f32 + self.pos.0,
-                        y as f32 + self.pos.1).set_color(self.color).draw()
+                        x as Float + self.pos.0,
+                        y as Float + self.pos.1).color(self.color).draw()
             }
         }
         Ok(())
@@ -110,6 +124,8 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         })
     }
 
+    /// Returns the maximum horizontal distance that a character can move the pen
+    /// while drawing.
     pub fn max_advance(&mut self) -> LuxResult<u32> {
         let mut fc = self.canvas.font_cache();
         let d = self.canvas.borrow_display();
@@ -123,9 +139,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
     /// with the position and the size.
     ///
     /// These positions are absolute, and are not relative to the position that
-    /// the text will be drawn on the screen.
-    ///
-    /// (char, position, size)
+    /// the text will be drawn on the screen. (they start at position (0, 0))
     pub fn absolute_positions(&mut self) -> LuxResult<Vec<OutputPosition>> {
         let mut fc = self.canvas.font_cache();
         let d = self.canvas.borrow_display();
@@ -136,13 +150,18 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
         })
     }
 
-    pub fn positions(&mut self) -> LuxResult<Vec<(char, (f32, f32), (f32, f32))>> {
+    /// Returns an iterator containing each character in the input text along
+    /// with the position and the size.
+    ///
+    /// These positions are relative to the providex (x, y) coordinates that
+    /// the text will be drawn at.
+    pub fn positions(&mut self) -> LuxResult<Vec<(char, (Float, Float), (Float, Float))>> {
         self.absolute_positions().map(|poses| {
             poses.into_iter().map(
                 |OutputPosition{c, screen_pos: (px, py), char_info}|
                     (c,
-                    (px as f32 + self.pos.0, py as f32 + self.pos.1),
-                    (char_info.advance.0 as f32, char_info.advance.1 as f32))
+                    (px as Float + self.pos.0, py as Float + self.pos.1),
+                    (char_info.advance.0 as Float, char_info.advance.1 as Float))
               ).collect()
         })
     }
@@ -154,7 +173,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
     /// `start_x` and `start_y` are oriented to the top-left of the screen.
     ///
     /// `width` and `height` are pointing down and to the right.
-    pub fn bounding_box(&mut self) -> LuxResult<((f32, f32), (f32, f32))> {
+    pub fn bounding_box(&mut self) -> LuxResult<((Float, Float), (Float, Float))> {
         let start = self.pos;
         let end = try!(self.positions())
                   .pop()
@@ -174,22 +193,22 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
 
 impl <'a, A, B: AsRef<str>> Transform for ContainedText<'a, A, B>
 where A: HasDisplay + HasFontCache + LuxCanvas {
-    fn current_matrix(&self) -> &[[f32; 4]; 4] {
+    fn current_matrix(&self) -> &[[Float; 4]; 4] {
         &self.transform
     }
 
-    fn current_matrix_mut(&mut self) -> &mut [[f32; 4]; 4] {
+    fn current_matrix_mut(&mut self) -> &mut [[Float; 4]; 4] {
         &mut self.transform
     }
 }
 
 impl <'a, A, B: AsRef<str>> Colored for ContainedText<'a, A, B>
 where A: HasDisplay + HasFontCache + LuxCanvas {
-    fn color(&self) -> [f32; 4] {
+    fn get_color(&self) -> [Float; 4] {
         self.color
     }
 
-    fn set_color<C: Color>(&mut self, color: C) -> &mut Self {
+    fn color<C: Color>(&mut self, color: C) -> &mut Self {
         self.color = color.to_rgba();
         self
     }
@@ -249,9 +268,9 @@ impl FontCache {
             Entry::Vacant(entry) => {
                 if let Some(face) = self.faces.get_mut(&name[..]) {
                     try!(face.set_pixel_sizes(0, size));
-                    let rendered = try!(freetype_fontcache::render(face, v.into_iter(), true));
-                    let sprited = rendered.map_img(move |img|
-                       TextureLoader::texture_from_image(display, img).into_sprite());
+                    let rendered = try!(freetype_atlas::render(face, v.into_iter(), true));
+                    let (sprited, _) = rendered.map_img(move |img|(
+                       TextureLoader::texture_from_image(display, img).into_sprite(),()));
                     Ok(entry.insert(sprited))
                 } else {
                     Err(LuxError::FontNotLoaded(name.to_string()))

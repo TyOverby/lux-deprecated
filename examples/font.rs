@@ -1,6 +1,7 @@
 extern crate lux;
 
 use lux::prelude::*;
+use lux::color;
 use std::path::Path;
 
 fn main() {
@@ -10,7 +11,7 @@ fn main() {
     lux.load_font("cbt", &Path::new("./resources/cbt.ttf")).unwrap();
 
     while lux.is_open() {
-        let mut frame = lux.cleared_frame(colors::WHITE);
+        let mut frame = lux.cleared_frame(color::WHITE);
         let mut y = 0.0;
 
         for pt in 1 .. 6 {

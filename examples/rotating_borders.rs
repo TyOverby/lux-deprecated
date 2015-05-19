@@ -1,5 +1,6 @@
 extern crate lux;
 use lux::prelude::*;
+use lux::color;
 
 fn main() {
     let mut rot = 0.0;
@@ -10,7 +11,7 @@ fn main() {
 
         frame.translate(200.0, 200.0);
 
-        frame.set_color(rgb(255, 0, 0));
+        frame.color(rgb(255, 0, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;

@@ -1,7 +1,9 @@
 extern crate lux;
 use std::collections::VecDeque;
 use lux::prelude::*;
+use lux::graphics::ColorVertex;
 use lux::interactive::keycodes::Escape;
+use lux::interactive::Event;
 
 struct TestRunner {
     tests: VecDeque<(String, Box<FnMut(&mut Frame)>)>
@@ -62,7 +64,7 @@ fn main() {
     });
 
     runner.add_test("indiv_rotated_squares", |frame| {
-        frame.set_color(rgb(255, 100, 0));
+        frame.color(rgb(255, 100, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
@@ -75,7 +77,7 @@ fn main() {
     });
 
     runner.add_test("squares", |frame| {
-        frame.set_color(rgb(255, 0, 0));
+        frame.color(rgb(255, 0, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
@@ -88,7 +90,7 @@ fn main() {
 
     runner.add_test("rotated_squares", |frame| {
         frame.rotate(0.5);
-        frame.set_color(rgb(255, 0, 0));
+        frame.color(rgb(255, 0, 0));
 
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
@@ -100,25 +102,25 @@ fn main() {
     });
 
     runner.add_test("red_square_rotated_frame", |frame| {
-        frame.set_color(rgb(255, 0, 0));
+        frame.color(rgb(255, 0, 0));
         frame.with_rotate_around((12.5, 12.5), 0.5, |frame| {
             frame.square(0.0, 0.0, 25.0).fill();
         });
     });
 
     runner.add_test("red_square_rotated_self", |frame| {
-        frame.set_color(rgb(255, 0, 0));
+        frame.color(rgb(255, 0, 0));
         frame.square(0.0, 0.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill();
-        frame.set_color(rgb(0, 0, 255));
+        frame.color(rgb(0, 0, 255));
         frame.square(50.0, 50.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill();
     });
 
     runner.add_test("alpha_blending", |frame| {
-        frame.set_color(rgba(1.0, 0.0, 0.0, 1.0));
+        frame.color(rgba(1.0, 0.0, 0.0, 1.0));
         frame.square(0.0, 0.0, 25.0).fill();
 
         frame.rotate(0.5);
-        frame.set_color(rgba(0.0, 0.0, 1.0, 0.5));
+        frame.color(rgba(0.0, 0.0, 1.0, 0.5));
         frame.square(12.0, 12.0, 25.0).fill();
     });
 
@@ -127,12 +129,12 @@ fn main() {
 
         frame.text("hijklmnop", 0.0, 25.0)
              .size(30)
-             .set_color(rgba(1.0, 0.0, 0.0, 1.0))
+             .color(rgba(1.0, 0.0, 0.0, 1.0))
              .draw().unwrap();
 
         frame.text("hijklmnop", 0.0, 25.0)
              .size(10)
-             .set_color(rgba(1.0, 0.0, 0.0, 0.5))
+             .color(rgba(1.0, 0.0, 0.0, 0.5))
              .draw().unwrap();
     });
 
@@ -149,22 +151,24 @@ fn main() {
         for x in 0 .. 255 {
             for y in 0 .. 255 {
                 let vl = x ^ y;
-                v.push(((x as f32, y as f32), rgb(vl, vl, vl)));
+                v.push(ColorVertex {
+                    pos: [x as f32, y as f32],
+                    color: rgb(vl, vl, vl)
+                });
             }
         }
 
-        frame.draw_pixels(v.into_iter());
+        frame.draw_points(&v);
     });
 
     runner.add_test("point", |frame| {
         for y in 0 .. 50 {
             let y = y as f32;
-            frame.draw_pixel(0.5, y + 0.5, rgb(255, 0, 0));
-            frame.draw_pixel(y + 0.5, 0.5, rgb(0, 255, 0));
-            frame.draw_pixel(y + 0.5, y + 0.5, rgb(0, 0, 255));
+            frame.draw_point(0.5, y + 0.5, rgb(255, 0, 0));
+            frame.draw_point(y + 0.5, 0.5, rgb(0, 255, 0));
+            frame.draw_point(y + 1.5, y + 0.5, rgb(0, 0, 255));
         }
     });
 
     runner.display().unwrap();
 }
-

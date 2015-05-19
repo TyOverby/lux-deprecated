@@ -3,7 +3,9 @@ use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
 
 use glutin;
+use vecmath;
 use glium;
+use reuse_cache;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
@@ -12,39 +14,28 @@ use super::accessors::{
     HasDisplay,
     HasFontCache,
     HasSurface,
+    Fetch
 };
 
-use super::prelude::{
-    EventIterator,
-    FontCache,
-    LuxCanvas,
-    Interactive,
-    Event,
-    LuxExtend,
-    AbstractKey,
-    Color,
-    Colored,
-    LuxResult,
-    LuxError,
-    Transform,
-};
-
+use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
+use super::font::FontCache;
+use super::gfx_integration::{ColorVertex, TexVertex};
+use super::canvas::LuxCanvas;
+use super::color::Color;
+use super::raw::{Colored, Transform};
+use super::error::{LuxResult, LuxError};
 use super::shaders::{gen_texture_shader, gen_color_shader};
-use super::primitive_canvas::{
-    PrimitiveCanvas,
-    CachedColorDraw,
-    CachedTexDraw
-};
+use super::primitive_canvas::{PrimitiveCanvas, CachedColorDraw, CachedTexDraw};
+use super::types::Float;
 
 use glutin::WindowBuilder;
-
-use typemap::TypeMap;
-
-use vecmath;
 
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
 
+/// A 1 to 1 correlation with a window shown on your desktop.
+///
+/// Lux uses Glutin for the window implementation.
 pub struct Window {
     // CANVAS
     display: glium::Display,
@@ -54,6 +45,11 @@ pub struct Window {
 
     // WINDOW
     title: String,
+
+    // CACHES
+    idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
+    tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
+    color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
 
     // EVENT
     event_store: VecDeque<Event>,
@@ -71,12 +67,13 @@ pub struct Window {
     code_to_char: HashMap<usize, char>,
 
     // FONT
-    pub font_cache: Rc<RefCell<FontCache>>,
-
-    // EXTEND
-    typemap: TypeMap,
+    font_cache: Rc<RefCell<FontCache>>,
 }
 
+/// A frame is a render target that can be drawn on.
+///
+/// Because frame rendering will wait on vsync, you should - as the name
+/// implies - use one Frame instance per frame.
 pub struct Frame {
     display: glium::Display,
     f: glium::Frame,
@@ -87,11 +84,16 @@ pub struct Frame {
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
 
+    // CACHES
+    idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
+    tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
+    color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
+
     // Raw
     basis_matrix: Mat4f,
     color: [f32; 4],
 
-    pub font_cache: Rc<RefCell<FontCache>>,
+    font_cache: Rc<RefCell<FontCache>>,
 }
 
 
@@ -99,6 +101,9 @@ impl Frame {
     fn new(display: &glium::Display,
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
+           idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
+           tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
+           color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
            clear_color: Option<[f32; 4]>,
            font_cache: Rc<RefCell<FontCache>>) -> Frame {
         use glium::Surface;
@@ -123,6 +128,9 @@ impl Frame {
             display: display.clone(),
             color_program: color_program,
             tex_program: tex_program,
+            idx_cache: idx_cache,
+            tex_vtx_cache: tex_vtx_cache,
+            color_vtx_cache: color_vtx_cache,
             f: frm,
             color_draw_cache: None,
             tex_draw_cache: None,
@@ -142,10 +150,12 @@ impl Drop for Frame {
 }
 
 impl Window {
+    /// Panics if an OpenGL error has occurred.
     pub fn assert_no_error(&self)  {
-        //self.display.assert_no_error();
+        self.display.assert_no_error(None);
     }
 
+    /// Constructs a new window with the default settings.
     pub fn new() -> LuxResult<Window> {
         use glium::DisplayBuild;
 
@@ -185,6 +195,9 @@ impl Window {
             tex_program: Rc::new(tex_program),
             closed: false,
             title: "Lux".to_string(),
+            idx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
+            tex_vtx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
+            color_vtx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
             event_store: VecDeque::new(),
             mouse_pos: (0, 0),
             window_pos: (0, 0),
@@ -196,7 +209,6 @@ impl Window {
             chars_pressed: HashMap::new(),
             virtual_keys_pressed: HashMap::new(),
             code_to_char: HashMap::new(),
-            typemap: TypeMap::new(),
             font_cache: Rc::new(RefCell::new(font_cache))
         };
 
@@ -204,6 +216,7 @@ impl Window {
     }
 
     // TODO: hide from docs
+    /// Add the events from an iterator of events back to the internal event queue.
     pub fn restock_events<I: DoubleEndedIterator<Item=Event>>(&mut self, mut i: I) {
         while let Some(e) = i.next_back() {
             self.event_store.push_front(e);
@@ -211,6 +224,8 @@ impl Window {
     }
 
     // TODO: hide from docs
+    /// Query the underlying window system for events and add them to the
+    /// the interal event queue.
     pub fn process_events(&mut self) {
         use glutin::Event as glevent;
         use super::interactive::*;
@@ -223,7 +238,7 @@ impl Window {
                 glutin::MouseButton::Left=> Left,
                 glutin::MouseButton::Right=> Right,
                 glutin::MouseButton::Middle=> Middle,
-                glutin::MouseButton::Other(a) => OtherMouseButton(a)
+                glutin::MouseButton::Other(a) => Other(a)
             }
         }
 
@@ -254,8 +269,8 @@ impl Window {
                 self.window_pos = (x as i32, y as i32);
                 self.event_store.push_back(WindowMoved(self.window_pos));
             }
-            glevent::MouseWheel(i) => {
-                self.event_store.push_back(MouseWheel(i as i32));
+            glevent::MouseWheel(x, y) => {
+                self.event_store.push_back(MouseWheel(x as f32, y as f32));
             }
             glevent::ReceivedCharacter(c) => {
                 last_char = Some(c);
@@ -303,18 +318,26 @@ impl Window {
         }}
     }
 
+    /// Produce a frame that has been cleared with a color.
     pub fn cleared_frame<C: Color>(&mut self, clear_color: C) -> Frame {
         Frame::new(&self.display,
                    self.color_program.clone(),
                    self.tex_program.clone(),
+                   self.idx_cache.clone(),
+                   self.tex_vtx_cache.clone(),
+                   self.color_vtx_cache.clone(),
                    Some(clear_color.to_rgba()),
                    self.font_cache.clone())
     }
 
+    /// Produce a frame that has not been cleared.
     pub fn frame(&mut self) -> Frame {
         Frame::new(&self.display,
                    self.color_program.clone(),
                    self.tex_program.clone(),
+                   self.idx_cache.clone(),
+                   self.tex_vtx_cache.clone(),
+                   self.color_vtx_cache.clone(),
                    None,
                    self.font_cache.clone())
     }
@@ -352,15 +375,20 @@ impl Interactive for Window {
         unimplemented!();
     }
 
-    fn get_size(&self) -> (u32, u32) {
+    fn get_size_u(&self) -> (u32, u32) {
         self.window_size
+    }
+
+    fn get_size(&self) -> (Float, Float) {
+        let (x, y) = self.get_size_u();
+        (x as Float, y as Float)
     }
 
     fn is_focused(&self) -> bool {
         self.focused
     }
 
-    fn mouse_pos_int(&self) -> (i32, i32) {
+    fn mouse_pos_i(&self) -> (i32, i32) {
         self.mouse_pos
     }
 
@@ -368,7 +396,7 @@ impl Interactive for Window {
         (self.mouse_pos.0 as f32, self.mouse_pos.1 as f32)
     }
 
-    fn mouse_down(&self) -> bool {
+    fn is_mouse_down(&self) -> bool {
         self.mouse_down_count != 0
     }
 
@@ -398,22 +426,12 @@ impl Transform for Frame {
     }
 }
 
-impl LuxExtend for Window {
-    fn typemap(&self) -> &TypeMap {
-        &self.typemap
-    }
-
-    fn typemap_mut(&mut self) -> &mut TypeMap {
-        &mut self.typemap
-    }
-}
-
 impl Colored for Frame {
-    fn color(&self) -> [f32; 4] {
+    fn get_color(&self) -> [f32; 4] {
         self.color
     }
 
-    fn set_color<C: Color>(&mut self, color: C) -> &mut Frame {
+    fn color<C: Color>(&mut self, color: C) -> &mut Frame {
         self.color = color.to_rgba();
         self
     }
@@ -492,5 +510,29 @@ impl HasPrograms for Frame {
 
     fn color_shader(&self) -> &glium::Program {
         &*self.color_program
+    }
+}
+
+impl Fetch<Vec<u16>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<u16>> {
+        let mut ret = self.idx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<TexVertex>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
+        let mut ret = self.tex_vtx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
+    }
+}
+
+impl Fetch<Vec<ColorVertex>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
+        let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
+        ret.clear();
+        ret
     }
 }
