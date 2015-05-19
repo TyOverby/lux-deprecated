@@ -8,7 +8,8 @@ const PLAYER_SIZE: f32 = 20.0;
 
 struct MyGame {
     pos: (f32, f32),
-    speed: (f32, f32)
+    speed: (f32, f32),
+    rotation: f32
 }
 
 impl Game for MyGame {
@@ -27,9 +28,11 @@ impl Game for MyGame {
             }
         }
 
-        // Update position
+
+        // Update position and rotation
         self.pos.0 += self.speed.0 * dt;
         self.pos.1 += self.speed.1 * dt;
+        self.rotation += 1.0 * dt;
 
         // Keep the player from moving off the edge
         self.pos.0 = clamp(0.0, self.pos.0, window.width() - PLAYER_SIZE);
@@ -63,7 +66,10 @@ impl Game for MyGame {
         try!(frame.text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).draw());
         try!(frame.text("Hold the spacebar to see the debug fps viewer", 5.0, 25.0).draw());
 
-        frame.circle(px + vx * lag, py + vy * lag, PLAYER_SIZE).fill();
+        frame.circle(px + vx * lag, py + vy * lag, PLAYER_SIZE)
+             .rotate_around((PLAYER_SIZE / 2.0, PLAYER_SIZE / 2.0), self.rotation)
+             .spokes(6)
+             .fill();
 
         Ok(())
     }
@@ -78,7 +84,8 @@ impl Game for MyGame {
 fn main() {
     let game = MyGame {
         pos: (0.0, 0.0),
-        speed: (10.0, 10.0)
+        speed: (10.0, 10.0),
+        rotation: 0.0
     };
     game.run_until_end().unwrap();
 }

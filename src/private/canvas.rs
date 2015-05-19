@@ -15,7 +15,6 @@ use vecmath;
 struct BasicFields<'a, C: 'a> {
     fill_color: [Float; 4],
     stroke_color: Option<[Float; 4]>,
-    padding: (Float, Float, Float, Float),
     border: Float,
     transform: [[Float; 4]; 4],
 
@@ -28,7 +27,7 @@ struct BasicFields<'a, C: 'a> {
 #[must_use = "shapes contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
 pub struct Ellipse<'a, C: 'a> {
     fields: BasicFields<'a, C>,
-    spokes: u8
+    spokes: u16
 }
 
 /// A Rectangle that can be drawn to the screen.
@@ -146,7 +145,6 @@ impl <'a, C: 'a> BasicFields<'a, C> {
         BasicFields {
             fill_color: color,
             stroke_color: None,
-            padding: (0.0, 0.0, 0.0, 0.0),
             border: 0.0,
             transform: vecmath::mat4_id(),
 
@@ -164,6 +162,18 @@ impl <'a, C> Ellipse<'a, C> {
             spokes: 90
         }
     }
+
+    /// Sets the number of segments that are used to approximate a circle.
+    ///
+    /// ### Example
+    /// ```ignore rust
+    /// // Draw a pentagon.
+    /// frame.circle(...).spokes(5).draw();
+    /// ```
+    pub fn spokes(&mut self, spokes: u16) -> &mut Self {
+        self.spokes = spokes;
+        self
+    }
 }
 
 impl <'a, C> Rectangle<'a, C> {
@@ -175,6 +185,15 @@ impl <'a, C> Rectangle<'a, C> {
 }
 
 impl <'a, C> Transform for Rectangle<'a, C> {
+    fn current_matrix(&self) -> &[[Float; 4]; 4] {
+        &self.fields.transform
+    }
+    fn current_matrix_mut(&mut self) -> &mut[[Float; 4]; 4] {
+        &mut self.fields.transform
+    }
+}
+
+impl <'a, C> Transform for Ellipse<'a, C> {
     fn current_matrix(&self) -> &[[Float; 4]; 4] {
         &self.fields.transform
     }
@@ -233,25 +252,19 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
             theta += (2.0 * PI) / (spokes as Float);
         }
 
-        let (mut x, mut y) = self.fields.pos;
-        x += self.fields.border + self.fields.padding.0;
-        y += self.fields.border + self.fields.padding.2;
+        //let mut trx = vecmath::mat4_id();
+        //trx.scale(0.5, 0.5);
 
-        let (mut sx, mut sy) = self.fields.size;
-        sx -= self.fields.border + self.fields.padding.0 + self.fields.padding.1;
-        sy -= self.fields.border + self.fields.padding.2 + self.fields.padding.3;
-        sx /= 2.0;
-        sy /= 2.0;
+        let mut transform = generate_transform(&self.fields);
 
-        let mut trx = vecmath::mat4_id();
-        trx.translate(x + sx, y + sy);
-        trx.scale(sx, sy);
-        trx = vecmath::col_mat4_mul(trx, self.fields.transform);
+        //trx = vecmath::col_mat4_mul(trx, transform);
+        transform.translate(0.5, 0.5);
+        transform.scale(0.5, 0.5);
 
         self.fields.canvas.draw_colored(TriangleFan,
                                &vertices[..],
                                None,
-                               Some(trx));
+                               Some(transform));
     }
 }
 

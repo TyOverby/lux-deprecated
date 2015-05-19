@@ -14,16 +14,16 @@ fn main() {
         theta += 0.01;
 
         let size = 10.0;
-        let dist = (2.0*size*size).sqrt();
+        let dist = (2.0 * size * size).sqrt();
 
         for x in 0 .. 100 {
             for y in 0 .. 100 {
                 let x = x as f32 * dist;
                 let y = y as f32 * dist;
                 frame.rect(x, y, size, size)
-                   .rotate_around((size / 2.0, size / 2.0), theta)
-                   .color(color::RED)
-                   .fill();
+                     .rotate_around((size / 2.0, size / 2.0), theta)
+                     .color(color::RED)
+                     .fill();
             }
         }
     }
