@@ -22,8 +22,7 @@ git = "https://github.com/TyOverby/font-cache.git"
 git = "https://github.com/TyOverby/font-cache.git"
 
 [dependencies.reuse-cache]
-#git = "https://github.com/TyOverby/reuse-cache.git"
-path = "../reuse-cache"
+path = "./reuse-cache"
 
 [dependencies.glium]
 #version = "0.4.*"
