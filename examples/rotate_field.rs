@@ -14,7 +14,7 @@ fn main() {
         theta += 0.01;
 
         let size = 10.0;
-        let dist = (2.0*size*size).sqrt();
+        let dist = (2.0 * size * size).sqrt();
 
         frame.rotate(0.3);
 

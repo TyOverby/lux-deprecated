@@ -82,20 +82,40 @@ pub trait Interactive {
     /// Sets the size of the window if possible.
     fn set_size(&mut self, width: u32, height: u32);
 
+    /// Returns the size of the window as an unsigned integer.
+    fn get_size_u(&self) -> (u32, u32);
+
     /// Returns the size of the window.
-    fn get_size(&self) -> (u32, u32);
+    fn get_size(&self) -> (f32, f32) {
+        let (x, y) = self.get_size_u();
+        (x as f32, y as f32)
+    }
 
     /// Returns the width of the window.
-    fn width(&self) -> Float {
+    fn width(&self) -> f32 {
         match self.get_size() {
-            (w, _) => w as Float
+            (w, _) => w
         }
     }
 
     /// Returns the height of the window.
-    fn height(&self) -> Float {
+    fn height(&self) -> f32 {
         match self.get_size() {
-            (_, h) => h as Float
+            (_, h) => h
+        }
+    }
+
+    /// Returns the width of the window as an unsigned integer.
+    fn width_u(&self) -> u32 {
+        match self.get_size_u() {
+            (w, _) => w
+        }
+    }
+
+    /// Returns the height of the window as an unsigned integer.
+    fn height_u(&self) -> u32 {
+        match self.get_size_u() {
+            (_, h) => h
         }
     }
 
@@ -105,7 +125,7 @@ pub trait Interactive {
     fn is_focused(&self) -> bool;
 
     /// Returns true if any mouse button is down.
-    fn mouse_down(&self) -> bool;
+    fn is_mouse_down(&self) -> bool;
 
     /// Returns the current position of the mouse.
     ///
@@ -114,11 +134,18 @@ pub trait Interactive {
     fn mouse_pos(&self) -> (Float, Float);
 
     /// Returns the current position of the mouse in integer units.
-    fn mouse_pos_int(&self) -> (i32, i32);
+    fn mouse_pos_i(&self) -> (i32, i32);
 
     /// Returns the x coordinate of the mouse.
     fn mouse_x(&self) -> Float {
         match self.mouse_pos() {
+            (x, _) => x
+        }
+    }
+
+    /// Returns the x coordinate of the mouse in integer units.
+    fn mouse_x_i(&self) -> i32 {
+        match self.mouse_pos_i() {
             (x, _) => x
         }
     }
@@ -131,6 +158,12 @@ pub trait Interactive {
     }
 
 
+    /// Returns the y coordinate of the mouse in integer units.
+    fn mouse_y_i(&self) -> i32 {
+        match self.mouse_pos_i() {
+            (y, _) => y
+        }
+    }
 
     /// Returns true if a given key is currently being pressed.
     fn is_key_pressed<K: AbstractKey>(&self, k: K) -> bool;

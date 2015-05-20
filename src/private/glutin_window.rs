@@ -27,6 +27,7 @@ use super::raw::{Colored, Transform};
 use super::error::{LuxResult, LuxError};
 use super::shaders::{gen_texture_shader, gen_color_shader};
 use super::primitive_canvas::{PrimitiveCanvas, CachedColorDraw, CachedTexDraw};
+use super::types::Float;
 
 use glutin::WindowBuilder;
 
@@ -378,15 +379,20 @@ impl Interactive for Window {
         unimplemented!();
     }
 
-    fn get_size(&self) -> (u32, u32) {
+    fn get_size_u(&self) -> (u32, u32) {
         self.window_size
+    }
+
+    fn get_size(&self) -> (Float, Float) {
+        let (x, y) = self.get_size_u();
+        (x as Float, y as Float)
     }
 
     fn is_focused(&self) -> bool {
         self.focused
     }
 
-    fn mouse_pos_int(&self) -> (i32, i32) {
+    fn mouse_pos_i(&self) -> (i32, i32) {
         self.mouse_pos
     }
 
@@ -394,7 +400,7 @@ impl Interactive for Window {
         (self.mouse_pos.0 as f32, self.mouse_pos.1 as f32)
     }
 
-    fn mouse_down(&self) -> bool {
+    fn is_mouse_down(&self) -> bool {
         self.mouse_down_count != 0
     }
 
