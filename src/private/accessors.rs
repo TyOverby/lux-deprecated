@@ -24,6 +24,16 @@ impl HasDisplay for glium::Display {
     }
 }
 
+/// Implemented on objects that have a scissor stencil.
+pub trait HasScissor {
+    /// Return a reference to the scissor.
+    fn scissor(&self) -> Option<&(u32, u32, u32, u32)>;
+    /// Takes and returns the scissor.
+    fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)>;
+    /// Sets the scissor.
+    fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>);
+}
+
 /// Implemented on objects that have a reference to the different
 /// shader programs.
 pub trait HasPrograms {

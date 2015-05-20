@@ -7,6 +7,7 @@ authors = ["Ty Overby <ty@pre-alpha.com>"]
 [lib]
 name = "lux"
 path = "src/lib.rs"
+crate-type = ["dylib", "bin", "rlib"]
 
 [[bin]]
 name = "test_runner"
@@ -22,24 +23,24 @@ git = "https://github.com/TyOverby/font-cache.git"
 git = "https://github.com/TyOverby/font-cache.git"
 
 [dependencies.reuse-cache]
-#git = "https://github.com/TyOverby/reuse-cache.git"
-path = "../reuse-cache"
+path = "./reuse-cache"
 
 [dependencies.glium]
-#version = "0.4.*"
-git = "https://github.com/tomaka/glium.git"
+version = "0.4.*"
 default-features = false
 features = ["image"]
 
 [dependencies]
-nd_iter = "*"
-glutin = "*"
+glutin = "0.1.*"
 image = "*"
 num = "*"
 clock_ticks = "*"
 vecmath = "*"
-noise = "*"
 freetype-rs = "*"
+
+[dev-dependencies]
+noise = "*"
+nd_iter = "*"
 
 [profile.dev]
 opt-level = 1

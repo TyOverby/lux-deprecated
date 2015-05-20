@@ -12,7 +12,7 @@ use std::cmp::Eq;
 use std::hash::Hash;
 
 use super::types::Float;
-use super::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache, Fetch};
+use super::accessors::{HasDisplay, HasPrograms, HasSurface, HasDrawCache, Fetch, HasScissor};
 use super::gfx_integration::{TexVertex, ColorVertex};
 use super::canvas::LuxCanvas;
 use super::raw::{Transform, Colored};
@@ -58,6 +58,7 @@ pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
 
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
+    scissor: Option<(u32, u32, u32, u32)>
 }
 
 /// A uniform sprite sheet is a sprite sheet that is broken up into
@@ -171,7 +172,22 @@ impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
             color_draw_cache: None,
             tex_draw_cache: None,
             color: [0.0, 0.0, 0.0, 1.0],
+            scissor: None
         }
+    }
+}
+
+impl <'a, D> HasScissor for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+    fn scissor(&self) -> Option<&(u32, u32, u32, u32)> {
+        self.scissor.as_ref()
+    }
+
+    fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)> {
+        self.scissor.take()
+    }
+
+    fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>) {
+        self.scissor = s;
     }
 }
 

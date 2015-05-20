@@ -14,7 +14,8 @@ use super::accessors::{
     HasDisplay,
     HasFontCache,
     HasSurface,
-    Fetch
+    HasScissor,
+    Fetch,
 };
 
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
@@ -92,7 +93,9 @@ pub struct Frame {
     basis_matrix: Mat4f,
     color: [f32; 4],
 
+    // Misc
     font_cache: Rc<RefCell<FontCache>>,
+    scissor: Option<(u32, u32, u32, u32)>
 }
 
 
@@ -135,7 +138,8 @@ impl Frame {
             tex_draw_cache: None,
             basis_matrix: basis,
             color: [0.0, 0.0, 0.0, 1.0],
-            font_cache: font_cache
+            font_cache: font_cache,
+            scissor: None
         }
     }
 
@@ -528,5 +532,20 @@ impl Fetch<Vec<ColorVertex>> for Frame {
         let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret
+    }
+}
+
+impl HasScissor for Frame {
+    fn scissor(&self) -> Option<&(u32, u32, u32, u32)> {
+        self.scissor.as_ref()
+    }
+
+    fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)> {
+        self.scissor.take()
+    }
+
+    fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>) {
+        println!("set to {:?}", s);
+        self.scissor = s;
     }
 }

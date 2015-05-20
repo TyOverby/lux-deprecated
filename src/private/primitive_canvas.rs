@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache};
+use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache, HasScissor};
 use super::gfx_integration::{ColorVertex, TexVertex};
 use glium::index::PrimitiveType;
 use super::color::Color;
@@ -123,9 +123,11 @@ pub trait PrimitiveCanvas {
     fn flush_draw(&mut self);
 }
 
-fn draw_params() -> glium::DrawParameters<'static> {
+fn draw_params<C: HasScissor>(c: &C) -> glium::DrawParameters<'static> {
         use glium::LinearBlendingFactor::*;
         let defaults: glium::DrawParameters = ::std::default::Default::default();
+
+        println!("scissor: {:?}", c.scissor());
         glium::DrawParameters {
             depth_test: glium::DepthTest::Overwrite,
             blending_function: Some(glium::BlendingFunction::Addition{
@@ -134,12 +136,20 @@ fn draw_params() -> glium::DrawParameters<'static> {
             }),
             backface_culling: glium::BackfaceCullingMode::CullingDisabled,
             multisampling: true,
+            scissor: c.scissor().map(|a|
+                glium::Rect{
+                    left: a.0,
+                    bottom: a.1,
+                    width: a.2,
+                    height: a.3
+                }),
             ..defaults
         }
 }
 
 impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
-Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
+HasScissor + Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> +
+Fetch<Vec<ColorVertex>>
 {
     fn clear<C: Color>(&mut self, color: C) {
         use glium::Surface;
@@ -161,7 +171,7 @@ Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
 
-        let draw_params = draw_params();
+        let draw_params = draw_params(self as &T);
 
         match idxs {
             Some(idxs) => {
@@ -194,7 +204,7 @@ Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> + Fetch<Vec<ColorVertex>>
             color_mult: color_mult
         };
 
-        let draw_params = draw_params();
+        let draw_params = draw_params(self);
 
         match idxs {
             Some(idxs) => {
