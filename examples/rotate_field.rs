@@ -18,17 +18,15 @@ fn main() {
 
         frame.rotate(0.3);
 
-        frame.with_scissor(0, 0, 500, 500, |frame| {
-            for x in 0 .. 100 {
-                for y in 0 .. 100 {
-                    let x = x as f32 * dist;
-                    let y = y as f32 * dist;
-                    frame.rect(x, y, size, size)
-                       .rotate_around((size / 2.0, size / 2.0), theta)
-                       .color(color::RED)
-                       .fill();
-                }
+        for x in 0 .. 100 {
+            for y in 0 .. 100 {
+                let x = x as f32 * dist;
+                let y = y as f32 * dist;
+                frame.rect(x, y, size, size)
+                   .rotate_around((size / 2.0, size / 2.0), theta)
+                   .color(color::RED)
+                   .fill();
             }
-        });
+        }
     }
 }

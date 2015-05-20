@@ -76,7 +76,7 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     where F: FnOnce(&mut Self) {
         let view_height = self.height() as u32;
         let old = self.take_scissor();
-        self.set_scissor(Some((x, y + view_height - h, w, h)));
+        self.set_scissor(Some((x, view_height - h - y, w, h)));
         f(self);
         self.flush_draw();
         self.set_scissor(old);
