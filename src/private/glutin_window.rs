@@ -14,7 +14,7 @@ use super::accessors::{
     HasDisplay,
     HasFontCache,
     HasSurface,
-    HasScissor,
+    DrawParamMod,
     Fetch,
 };
 
@@ -26,7 +26,12 @@ use super::color::Color;
 use super::raw::{Colored, Transform};
 use super::error::{LuxResult, LuxError};
 use super::shaders::{gen_texture_shader, gen_color_shader};
-use super::primitive_canvas::{PrimitiveCanvas, CachedColorDraw, CachedTexDraw};
+use super::primitive_canvas::{
+    PrimitiveCanvas,
+    CachedColorDraw,
+    CachedTexDraw,
+    DrawParamModifier
+};
 use super::types::Float;
 
 use glutin::WindowBuilder;
@@ -96,7 +101,7 @@ pub struct Frame {
 
     // Misc
     font_cache: Rc<RefCell<FontCache>>,
-    scissor: Option<(u32, u32, u32, u32)>
+    draw_mod: DrawParamModifier,
 }
 
 
@@ -140,7 +145,7 @@ impl Frame {
             basis_matrix: basis,
             color: [0.0, 0.0, 0.0, 1.0],
             font_cache: font_cache,
-            scissor: None
+            draw_mod: DrawParamModifier::new()
         }
     }
 
@@ -541,17 +546,11 @@ impl Fetch<Vec<ColorVertex>> for Frame {
     }
 }
 
-impl HasScissor for Frame {
-    fn scissor(&self) -> Option<&(u32, u32, u32, u32)> {
-        self.scissor.as_ref()
+impl DrawParamMod for Frame {
+    fn draw_param_mod(&self) -> &DrawParamModifier {
+        &self.draw_mod
     }
-
-    fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)> {
-        self.scissor.take()
-    }
-
-    fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>) {
-        println!("set to {:?}", s);
-        self.scissor = s;
+    fn draw_param_mod_mut(&mut self) -> &mut DrawParamModifier {
+        &mut self.draw_mod
     }
 }

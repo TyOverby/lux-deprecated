@@ -1,5 +1,5 @@
 use super::primitive_canvas::PrimitiveCanvas;
-use super::accessors::HasScissor;
+use super::accessors::DrawParamMod;
 use super::types::Float;
 use super::gfx_integration::{
     ColorVertex,
@@ -46,7 +46,7 @@ pub struct ContainedSprite<'a, C: 'a>  {
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + HasScissor + Sized {
+pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (Float, Float);
 
@@ -69,6 +69,7 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + HasScissor + Sized
         PrimitiveCanvas::clear(self, color);
     }
 
+    // TODO:
     /// Evaluates the function with a canvas that will only draw into the
     /// provided rectangle.
     fn with_scissor<F>(&mut self, x: u32, y: u32, w: u32, h: u32, f: F)

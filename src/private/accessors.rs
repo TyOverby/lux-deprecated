@@ -4,7 +4,11 @@
 
 use std::cell::RefMut;
 use super::font::FontCache;
-use super::primitive_canvas::{CachedColorDraw, CachedTexDraw};
+use super::primitive_canvas::{
+    CachedColorDraw,
+    CachedTexDraw,
+    DrawParamModifier
+};
 use glium;
 use reuse_cache;
 
@@ -25,13 +29,23 @@ impl HasDisplay for glium::Display {
 }
 
 /// Implemented on objects that have a scissor stencil.
-pub trait HasScissor {
+pub trait DrawParamMod {
+    fn draw_param_mod(&self) -> &DrawParamModifier;
+    fn draw_param_mod_mut(&mut self) -> &mut DrawParamModifier;
+
     /// Return a reference to the scissor.
-    fn scissor(&self) -> Option<&(u32, u32, u32, u32)>;
+    fn scissor(&self) -> Option<&(u32, u32, u32, u32)> {
+        self.draw_param_mod().scissor.as_ref()
+    }
     /// Takes and returns the scissor.
-    fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)>;
+    fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)> {
+        self.draw_param_mod_mut().scissor.take()
+    }
+
     /// Sets the scissor.
-    fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>);
+    fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>) {
+        *(&mut self.draw_param_mod_mut().scissor) = s
+    }
 }
 
 /// Implemented on objects that have a reference to the different

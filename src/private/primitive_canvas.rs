@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache, HasScissor};
+use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache, DrawParamMod};
 use super::gfx_integration::{ColorVertex, TexVertex};
 use glium::index::PrimitiveType;
 use super::color::Color;
@@ -11,6 +11,22 @@ use super::types::{Idx, Float};
 use vecmath;
 use glium;
 use reuse_cache;
+
+
+/// Signifies what state we are in with regards to drawing with stencils.
+pub enum StencilState {
+    /// We are currently drawing into the stencil buffer.
+    DrawingStencil,
+    /// We are currently drawing a shape that will be occluded by the stencil.
+    DrawingWithStencil,
+    /// We aren't doing anything with regards to stencils
+    None
+}
+
+pub struct DrawParamModifier {
+    pub scissor: Option<(u32, u32, u32, u32)>,
+    pub stencil_state: StencilState
+}
 
 /// A cache for batching texture drawing commands.
 ///
@@ -123,11 +139,10 @@ pub trait PrimitiveCanvas {
     fn flush_draw(&mut self);
 }
 
-fn draw_params<C: HasScissor>(c: &C) -> glium::DrawParameters<'static> {
+fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
         use glium::LinearBlendingFactor::*;
         let defaults: glium::DrawParameters = ::std::default::Default::default();
 
-        println!("scissor: {:?}", c.scissor());
         glium::DrawParameters {
             depth_test: glium::DepthTest::Overwrite,
             blending_function: Some(glium::BlendingFunction::Addition{
@@ -147,8 +162,17 @@ fn draw_params<C: HasScissor>(c: &C) -> glium::DrawParameters<'static> {
         }
 }
 
+impl DrawParamModifier {
+    pub fn new() -> DrawParamModifier {
+        DrawParamModifier {
+            scissor: None,
+            stencil_state: StencilState::None
+        }
+    }
+}
+
 impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
-HasScissor + Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> +
+DrawParamMod + Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> +
 Fetch<Vec<ColorVertex>>
 {
     fn clear<C: Color>(&mut self, color: C) {
