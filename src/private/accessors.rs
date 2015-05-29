@@ -30,7 +30,9 @@ impl HasDisplay for glium::Display {
 
 /// Implemented on objects that have a scissor stencil.
 pub trait DrawParamMod {
+    /// Returns a reference to the current draw parameter modifier
     fn draw_param_mod(&self) -> &DrawParamModifier;
+    /// Returns a mutable reference to the current draw parameter modifier
     fn draw_param_mod_mut(&mut self) -> &mut DrawParamModifier;
 
     /// Return a reference to the scissor.
