@@ -15,8 +15,13 @@ pub trait ToColorComponent {
 
 /// Convertes a u32 to a color by treating the last 3 bytes as rgb tripples.
 ///
-/// ```ignore rust
-/// hex_rgb(0xFF5500); // rgb(0xFF, 0x55, 0x00)
+/// ```rust no_run
+///# extern crate lux;
+///# use lux::color::{hex_rgb, rgb};
+///# fn main() {
+/// let blue_green = hex_rgb(0xFF5500); // rgb(0xFF, 0x55, 0x00);
+/// assert!(blue_green == rgb(0xFF, 0x55, 0x00));
+///# }
 /// ```
 pub fn hex_rgb(mut v: u32) -> [f32; 4] {
     let b = v & 0xff;
@@ -29,8 +34,13 @@ pub fn hex_rgb(mut v: u32) -> [f32; 4] {
 
 /// Convertes a u32 to a color by treating the 4 bytes as rgb tripples.
 ///
-/// ```ignore rust
-/// hex_rgb(0xFF5500AA); // rgba(0xFF, 0x55, 0x00, 0xAA)
+/// ```rust no_run
+///# extern crate lux;
+///# use lux::color::hex_rgba;
+///# fn main() {
+/// let blue_green_transparent = hex_rgba(0xFF550011);
+/// assert!(blue_green_transparent == rgba(0xFF, 0x55, 0x00, 0x11));
+///# }
 /// ```
 pub fn hex_rgba(mut v: u32) -> [f32; 4] {
     let a = v & 0xff;
@@ -49,6 +59,17 @@ pub fn hex_rgba(mut v: u32) -> [f32; 4] {
 ///
 /// If the numbers are u8s the scale is from `0` to `255`.  If the numbers
 /// are floating point, the scale is from `0.0` to `1.0`.
+///
+/// ```rust no_run
+///# extern crate lux;
+///# use lux::color::rgb;
+///# fn main() {
+/// // With f32 or f64
+/// let pure_red = rgb(1.0, 0.0, 0.0);
+///
+/// // With integers
+/// let pure_green = rgb(0, 255, 0);
+///# }
 pub fn rgb<T: ToColorComponent>(r: T, g: T, b: T) -> [f32; 4] {
     [r, g, b].to_rgba()
 }
@@ -57,6 +78,16 @@ pub fn rgb<T: ToColorComponent>(r: T, g: T, b: T) -> [f32; 4] {
 ///
 /// If the numbers are u8s the scale is from `0` to `255`.  If the numbers
 /// are floating point, the scale is from `0.0` to `1.0`.
+///
+/// ```rust no_run
+///# extern crate lux;
+///# use lux::color::rgba;
+///# fn main() {
+/// // With f32 or f64
+/// let transparent_red = rgba(1.0, 0.0, 0.0, 0.5);
+/// // With integers
+/// let transparent_green = rgba(0, 255, 0, 125);
+///# }
 pub fn rgba<T: ToColorComponent>(r: T, g: T, b: T, a: T) -> [f32; 4] {
     [r, g, b, a].to_rgba()
 }
@@ -66,6 +97,13 @@ pub fn rgba<T: ToColorComponent>(r: T, g: T, b: T, a: T) -> [f32; 4] {
 ///
 /// `h` is in the range of 0.0 to 360.0.  `s` and `v` are in the range of
 /// `0.0` to `1.0`.
+///
+/// ```rust no_run
+///# extern crate lux;
+///# use lux::color::hsv;
+///# fn main() {
+/// let dark_blue = hsv(240.0, 0.08, 0.2);
+///# }
 pub fn hsv(h: f32, s: f32, v: f32) -> [f32; 4] {
     let chr = v * s;
     let h = h / 60.0;
@@ -95,6 +133,13 @@ pub fn hsv(h: f32, s: f32, v: f32) -> [f32; 4] {
 /// Same as `hsv` but with an alpha component.
 ///
 /// `a` is in the range of `0.0` to `1.0`.
+///
+/// ```rust no_run
+///# extern crate lux;
+///# use lux::color::hsva;
+///# fn main() {
+/// let transparent_dark_blue = hsva(240.0, 0.08, 0.2, 0.5);
+///# }
 pub fn hsva(h: f32, s: f32, v: f32, a: f32) -> [f32; 4] {
     let mut r = hsv(h, s, v);
     r[3] = a.norm();

@@ -273,7 +273,7 @@ Fetch<Vec<ColorVertex>>
                            n_points: &[ColorVertex],
                            idxs: Option<&[Idx]>,
                            transform: Option<[[Float; 4]; 4]>) -> LuxResult<()> {
-        self.flush_draw();
+        try!(self.flush_draw());
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
@@ -288,7 +288,7 @@ Fetch<Vec<ColorVertex>>
                            transform: Option<[[Float; 4]; 4]>,
                            texture: &glium::texture::Texture2d,
                            color_mult: Option<[Float; 4]>) -> LuxResult<()> {
-        self.flush_draw();
+        try!(self.flush_draw());
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()

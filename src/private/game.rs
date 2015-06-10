@@ -48,14 +48,18 @@ pub trait Game {
     /// `None` means that the screen will not be cleared.
     ///
     /// Defaults to `Some(rgba(1.0, 1.0, 1.0, 1.0))` (solid white).
-    fn clear_color(&self) -> Option<[f32; 4]> {Some([1.0, 1.0, 1.0, 1.0])}
+    fn clear_color(&self) -> Option<[f32; 4]> {
+        Some([1.0, 1.0, 1.0, 1.0])
+    }
 
     /// If running in a GameRunner, this function can be overridden to
     /// display a running FPS counter that shows how time is being spent
     /// in the game.
     ///
     /// Defaults to `false` (don't show fps).
-    fn show_fps(&self, _window: &Window) -> bool { false }
+    fn show_fps(&self, _window: &Window) -> bool {
+        false
+    }
 
     /// For custom game-closing logic this function can be overridden to
     /// conditionally return true.
@@ -69,18 +73,24 @@ pub trait Game {
     /// overridden to set properties on the Window.
     ///
     /// Defaults to doing nothing.
-    fn prepare_window(&mut self, _window: &mut Window) -> LuxResult<()> { Ok(())}
+    fn prepare_window(&mut self, _window: &mut Window) -> LuxResult<()> {
+        Ok(())
+    }
 
     /// Called once before terminating the window.
     ///
     /// Defaults to doing nothing.
-    fn on_close(&mut self, _window: &mut Window) -> LuxResult<()> { Ok(()) }
+    fn on_close(&mut self, _window: &mut Window) -> LuxResult<()> {
+        Ok(())
+    }
 
     /// Returs the amount of updates you want to have run in one wall-clock
     /// second.
     ///
     /// Defaults to `60.0`.
-    fn updates_per_s(&self) -> f64 { 60.0 }
+    fn updates_per_s(&self) -> f64 {
+        60.0
+    }
 
     /// Returns the amount of (fractional) seconds that you want an individual
     /// update to take.
@@ -89,7 +99,9 @@ pub trait Game {
     ///
     /// Prefer changing the returning value of `updates_per_s` rather than
     /// changing this function.
-    fn s_per_update(&self) -> f64 { 1.0 / self.updates_per_s() }
+    fn s_per_update(&self) -> f64 {
+        1.0 / self.updates_per_s()
+    }
 
     /// Starts this game and runs it until the game is over.
     ///
