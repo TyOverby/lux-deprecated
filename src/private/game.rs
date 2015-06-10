@@ -187,11 +187,12 @@ impl <G: Game> GameRunner<G> {
             let (tr, r) = time(|| self.game.render(lag as f32, &mut self.window, frame.as_mut().unwrap()));
             try!(r);
 
-            let (t_timing, _) = time(|| {
+            let (t_timing, res) = time(|| {
                 if self.game.show_fps(&self.window) {
                     self.draw_timings(frame.as_mut().unwrap())
-                }
+                } else { Ok(()) }
             });
+            try!(res);
 
             let (tpublish, _) = time(|| {
                 ::std::mem::drop(frame.take());
@@ -251,18 +252,21 @@ impl <G: Game> GameRunner<G> {
         }
     }
 
-    fn draw_timings(&self, frame: &mut Frame) {
-        fn draw_bars<B: Iterator<Item=(f32, [f32; 4])>, I: ExactSizeIterator<Item=B>>(frame: &mut Frame, bars: I) {
+    fn draw_timings(&self, frame: &mut Frame) -> LuxResult<()> {
+        fn draw_bars<B, I>(frame: &mut Frame, bars: I) -> LuxResult<()>
+        where B: Iterator<Item=(f32, [f32; 4])>, I: ExactSizeIterator<Item=B>
+        {
             let bar_count = bars.len();
             let bar_width = 1.0 / bar_count as f32;
             for (i, bar) in bars.enumerate() {
                 let x = bar_width * i as f32;
                 let mut y = 0.0;
                 for (p, color) in bar {
-                    frame.rect(x, y, bar_width, p).color(color).fill();
+                    try!(frame.rect(x, y, bar_width, p).color(color).fill());
                     y += p;
                 }
             }
+            Ok(())
         }
 
         fn percentage_time(span: u64) -> f32 {
@@ -272,37 +276,40 @@ impl <G: Game> GameRunner<G> {
         const HEIGHT: f32 = 100.0;
         const WIDTH:  f32 = 160.0;
         let h = frame.height();
-        frame.with_translate(WIDTH, h, |frame| {
-        frame.with_scale(-WIDTH, -HEIGHT, |frame| {
-            frame.rect(0.0, 0.0, 1.0, 1.0)
-                 .color(rgba(1.0, 1.0, 0.0, 0.8))
-                 .fill();
+        let res: LuxResult<()> = frame.with_translate(WIDTH, h, |frame| {
+            frame.with_scale(-WIDTH, -HEIGHT, |frame| {
+                try!(frame.rect(0.0, 0.0, 1.0, 1.0)
+                     .color(rgba(1.0, 1.0, 0.0, 0.8))
+                     .fill());
 
-            draw_bars(frame, self.frame_timings.iter().map(|timing| {
-                let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
-                let mut v = vec![];
-                v.extend(
-                    timing.update_durations
-                          .iter()
-                          .enumerate()
-                          .map(|(i, &t)| (percentage_time(t), update_colors[i % 2])));
-                v.push((percentage_time(timing.render_duration), rgb(0.0, 0.9, 0.0)));
-                v.push((percentage_time(timing.debug_drawing), rgb(0.9, 0.0, 0.0)));
-                v.push((percentage_time(timing.render_publish), rgb(0.0, 0.5, 0.0)));
-                v.into_iter()
-            }));
+                draw_bars(frame, self.frame_timings.iter().map(|timing| {
+                    let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
+                    let mut v = vec![];
+                    v.extend(
+                        timing.update_durations
+                              .iter()
+                              .enumerate()
+                              .map(|(i, &t)| (percentage_time(t), update_colors[i % 2])));
+                    v.push((percentage_time(timing.render_duration), rgb(0.0, 0.9, 0.0)));
+                    v.push((percentage_time(timing.debug_drawing), rgb(0.9, 0.0, 0.0)));
+                    v.push((percentage_time(timing.render_publish), rgb(0.0, 0.5, 0.0)));
+                    v.into_iter()
+                }))
+            })
         });
-        });
+        try!(res);
 
-        frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).color(rgb(0, 0, 0)).fill();
+        try!(frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).color(rgb(0, 0, 0)).fill());
 
         let (fps, ups) = self.calc_fps();
-        frame.with_translate(WIDTH, h, |frame| {
-        frame.with_rotation(-3.1415 / 2.0, |frame| {
-            frame.text(format!("FPS {} UPS {}", fps, ups), 0.0, 0.0)
-                 .size(12)
-                 .draw().unwrap();
+        let res = frame.with_translate(WIDTH, h, |frame| {
+            frame.with_rotation(-3.1415 / 2.0, |frame| {
+                frame.text(format!("FPS {} UPS {}", fps, ups), 0.0, 0.0)
+                     .size(12)
+                     .draw()
+            })
         });
-        });
+
+        res
     }
 }

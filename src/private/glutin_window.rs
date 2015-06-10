@@ -154,7 +154,7 @@ impl Frame {
 impl Drop for Frame {
     fn drop(&mut self) {
         //self.display.assert_no_error();
-        self.flush_draw();
+        self.flush_draw().unwrap();
     }
 }
 

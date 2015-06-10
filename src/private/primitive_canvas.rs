@@ -7,6 +7,7 @@ use super::color::Color;
 use super::raw::Transform;
 use super::gfx_integration;
 use super::types::{Idx, Float};
+use super::error::LuxResult;
 
 use vecmath;
 use glium;
@@ -82,7 +83,7 @@ pub trait PrimitiveCanvas {
                   typ: PrimitiveType,
                   vs: &[ColorVertex],
                   idxs: Option<&[Idx]>,
-                  mat: Option<[[Float; 4]; 4]>);
+                  mat: Option<[[Float; 4]; 4]>) -> LuxResult<()>;
 
     /// Draws colored vertices to the canvas with no thought given to the
     /// cached draw commands.
@@ -93,7 +94,7 @@ pub trait PrimitiveCanvas {
                 typ: PrimitiveType,
                 points: &[ColorVertex],
                 idxs: Option<&[Idx]>,
-                base_mat: Option<[[Float; 4]; 4]>);
+                base_mat: Option<[[Float; 4]; 4]>) -> LuxResult<()>;
 
     /// Immediately draws colored vertices to the canvas.
     ///
@@ -103,7 +104,7 @@ pub trait PrimitiveCanvas {
                            typ: PrimitiveType,
                            vs: &[ColorVertex],
                            idxs: Option<&[Idx]>,
-                           mat: Option<[[Float; 4]; 4]>);
+                           mat: Option<[[Float; 4]; 4]>) -> LuxResult<()>;
 
     /// Same as `draw_colored` but for textured vertices.
     fn draw_tex(&mut self,
@@ -112,7 +113,7 @@ pub trait PrimitiveCanvas {
                 idxs: Option<&[Idx]>,
                 mat: Option<[[Float; 4]; 4]>,
                 Rc<glium::texture::Texture2d>,
-                color_mult: Option<[Float; 4]>);
+                color_mult: Option<[Float; 4]>) -> LuxResult<()>;
 
     /// Same as `draw_colored_now` but for textured vertices.
     fn draw_textured_now(&mut self,
@@ -121,7 +122,7 @@ pub trait PrimitiveCanvas {
                 idxs: Option<&[Idx]>,
                 base_mat: Option<[[Float; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
-                color_mult: [Float; 4]);
+                color_mult: [Float; 4]) -> LuxResult<()>;
 
     /// Same as `draw_colored_no_batch` but for textured vertices.
     fn draw_tex_no_batch(&mut self,
@@ -130,13 +131,13 @@ pub trait PrimitiveCanvas {
                          idxs: Option<&[Idx]>,
                          mat: Option<[[Float; 4]; 4]>,
                          &glium::texture::Texture2d,
-                         color_mult: Option<[Float; 4]>);
+                         color_mult: Option<[Float; 4]>) -> LuxResult<()>;
 
     /// Flush all stored draw calls to the screen.
     ///
     /// This is an interal function that should not usually be called
     /// by the user of this library.
-    fn flush_draw(&mut self);
+    fn flush_draw(&mut self) -> LuxResult<()>;
 }
 
 fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
@@ -185,7 +186,7 @@ Fetch<Vec<ColorVertex>>
                 typ: PrimitiveType,
                 points: &[ColorVertex],
                 idxs: Option<&[Idx]>,
-                base_mat: Option<[[Float; 4]; 4]>) {
+                base_mat: Option<[[Float; 4]; 4]>) -> LuxResult<()> {
         use glium::{Surface, IndexBuffer};
         use glium::index::NoIndices;
 
@@ -201,11 +202,11 @@ Fetch<Vec<ColorVertex>>
             Some(idxs) => {
                 let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs, typ);
                 let (frame, color_program) = self.surface_and_color_shader();
-                frame.draw(&vertex_buffer, &idx_buf, &color_program, &uniform, &draw_params).unwrap();
+                frame.draw(&vertex_buffer, &idx_buf, &color_program, &uniform, &draw_params).map_err(From::from)
             }
             None => {
                 let (frame, color_program) = self.surface_and_color_shader();
-                frame.draw(&vertex_buffer, &NoIndices(typ), &color_program, &uniform, &draw_params).unwrap();
+                frame.draw(&vertex_buffer, &NoIndices(typ), &color_program, &uniform, &draw_params).map_err(From::from)
             }
         }
     }
@@ -216,7 +217,7 @@ Fetch<Vec<ColorVertex>>
                 idxs: Option<&[Idx]>,
                 base_mat: Option<[[Float; 4]; 4]>,
                 texture: &glium::texture::Texture2d,
-                color_mult: [Float; 4]) {
+                color_mult: [Float; 4]) -> LuxResult<()> {
         use glium::{Surface, IndexBuffer};
         use glium::index::NoIndices;
 
@@ -234,24 +235,36 @@ Fetch<Vec<ColorVertex>>
             Some(idxs) => {
                 let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs, typ);
                 let (frame, tex_program) = self.surface_and_texture_shader();
-                frame.draw(&vertex_buffer, &idx_buf, &tex_program, &uniform, &draw_params).unwrap();
+                frame.draw(&vertex_buffer, &idx_buf, &tex_program, &uniform, &draw_params).map_err(From::from)
             }
             None => {
                 let (frame, tex_program) = self.surface_and_texture_shader();
-                frame.draw(&vertex_buffer, &NoIndices(typ), &tex_program, &uniform, &draw_params).unwrap();
+                frame.draw(&vertex_buffer, &NoIndices(typ), &tex_program, &uniform, &draw_params).map_err(From::from)
             }
         }
         // TODO: returrn error?
     }
 
-    fn flush_draw(&mut self) {
-        if let Some(CachedColorDraw{typ, points, idxs}) =
-            self.color_draw_cache_mut().take() {
-                self.draw_colored_now(typ, &points, Some(&idxs), None);
-        }
+    fn flush_draw(&mut self) -> LuxResult<()> {
+        let mut first_result = None;
+        let mut second_result = None;
+        if let Some(CachedColorDraw{typ, points, idxs}) = self.color_draw_cache_mut().take() {
+                first_result = Some(self.draw_colored_now(typ, &points, Some(&idxs), None));
+        };
         if let Some(CachedTexDraw{typ, points, texture, idxs, color_mult}) =
             self.tex_draw_cache_mut().take() {
-                self.draw_textured_now(typ, &points, Some(&idxs), None, &*texture, color_mult);
+                second_result = Some(self.draw_textured_now(typ, &points, Some(&idxs), None, &*texture, color_mult));
+        }
+        match (first_result, second_result) {
+            (Some(Err(e)), _) => {
+                // Assume that the first error either was the cause of , or the
+                // same as, the second error
+                Err(e)
+            }
+            (_, Some(Err(e))) => {
+                Err(e)
+            }
+            _ => Ok(())
         }
     }
 
@@ -259,13 +272,13 @@ Fetch<Vec<ColorVertex>>
                            n_typ: PrimitiveType,
                            n_points: &[ColorVertex],
                            idxs: Option<&[Idx]>,
-                           transform: Option<[[Float; 4]; 4]>) {
+                           transform: Option<[[Float; 4]; 4]>) -> LuxResult<()> {
         self.flush_draw();
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
         };
-        self.draw_colored_now(n_typ, n_points, idxs, Some(transform));
+        self.draw_colored_now(n_typ, n_points, idxs, Some(transform))
     }
 
     fn draw_tex_no_batch(&mut self,
@@ -274,14 +287,14 @@ Fetch<Vec<ColorVertex>>
                            idxs: Option<&[Idx]>,
                            transform: Option<[[Float; 4]; 4]>,
                            texture: &glium::texture::Texture2d,
-                           color_mult: Option<[Float; 4]>) {
+                           color_mult: Option<[Float; 4]>) -> LuxResult<()> {
         self.flush_draw();
         let transform = match transform {
             Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
             None => *self.current_matrix()
         };
         let color_mult = color_mult.unwrap_or([1.0, 1.0, 1.0, 1.0]);
-        self.draw_textured_now(n_typ, n_points, idxs, Some(transform), texture, color_mult);
+        self.draw_textured_now(n_typ, n_points, idxs, Some(transform), texture, color_mult)
     }
 
 
@@ -291,12 +304,12 @@ Fetch<Vec<ColorVertex>>
                   idxs: Option<&[Idx]>,
                   transform: Option<[[Float; 4]; 4]>,
                   texture: Rc<glium::texture::Texture2d>,
-                  color_mult: Option<[Float; 4]>) {
+                  color_mult: Option<[Float; 4]>) -> LuxResult<()> {
         use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
         use std::mem::transmute;
 
         if self.color_draw_cache().is_some() {
-            self.flush_draw();
+            try!(self.flush_draw());
         }
         let color_mult = color_mult.unwrap_or([1.0, 1.0, 1.0, 1.0]);
 
@@ -322,7 +335,7 @@ Fetch<Vec<ColorVertex>>
             }
 
             if !same_type || !coherant_group || !same_color_mult || !same_tex {
-                self.flush_draw();
+                try!(self.flush_draw());
                 *self.tex_draw_cache_mut() = Some(CachedTexDraw {
                     typ: n_typ,
                     points: self.fetch(),
@@ -378,17 +391,18 @@ Fetch<Vec<ColorVertex>>
                 }
             }
         }
+        Ok(())
     }
 
     fn draw_colored(&mut self,
                   n_typ: PrimitiveType,
                   n_points: &[ColorVertex],
                   idxs: Option<&[Idx]>,
-                  transform: Option<[[Float; 4]; 4]>) {
+                  transform: Option<[[Float; 4]; 4]>) -> LuxResult<()> {
         use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
 
         if self.tex_draw_cache().is_some() {
-            self.flush_draw();
+            try!(self.flush_draw());
         }
 
         // Look at all this awful code for handling something that should
@@ -400,7 +414,7 @@ Fetch<Vec<ColorVertex>>
                 _ => false
             };
             if !same_type || !coherant_group {
-                self.flush_draw();
+                try!(self.flush_draw());
                 *self.color_draw_cache_mut() = Some(CachedColorDraw {
                     typ: n_typ,
                     points: self.fetch(),
@@ -453,5 +467,6 @@ Fetch<Vec<ColorVertex>>
                 }
             }
         }
+        Ok(())
     }
 }

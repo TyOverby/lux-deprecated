@@ -282,7 +282,7 @@ impl <'a, D> LuxCanvas for DrawableTexture<'a, D> where D: HasDisplay + HasProgr
 impl <'a, D> Drop for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
     fn drop(&mut self) {
         use super::primitive_canvas::PrimitiveCanvas;
-        self.flush_draw();
+        self.flush_draw().unwrap();
     }
 }
 

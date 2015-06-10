@@ -6,7 +6,7 @@ use lux::interactive::keycodes::Escape;
 use lux::interactive::Event;
 
 struct TestRunner {
-    tests: VecDeque<(String, Box<FnMut(&mut Frame)>)>
+    tests: VecDeque<(String, Box<FnMut(&mut Frame) -> LuxResult<()>>)>
 }
 
 impl TestRunner {
@@ -14,8 +14,8 @@ impl TestRunner {
         TestRunner{ tests: VecDeque::new() }
     }
 
-    fn add_test<F: FnMut(&mut Frame) + 'static>(&mut self, name: &str, f: F) {
-        self.tests.push_back((name.to_string(), Box::new(f) as Box<FnMut(&mut Frame)>));
+    fn add_test<F: FnMut(&mut Frame) -> LuxResult<()> + 'static>(&mut self, name: &str, f: F) {
+        self.tests.push_back((name.to_string(), Box::new(f) as Box<FnMut(&mut Frame) -> LuxResult<()>>));
     }
 
     fn display(&mut self) -> LuxResult<()> {
@@ -28,7 +28,7 @@ impl TestRunner {
                 let mut frame = window.cleared_frame(rgb(255, 255, 255));
 
                 frame.text(&cur.0, 0.0, 0.0).draw().unwrap();
-                frame.with_translate(0.0, 50.0, |frame| cur.1(frame));
+                frame.with_translate(0.0, 50.0, |frame| cur.1(frame).unwrap());
             }
 
             let mut close = false;
@@ -60,7 +60,7 @@ fn main() {
 
 
     runner.add_test("text_with_newline", |frame| {
-        frame.text("Hello\nWorld", 0.0, 0.0).draw().unwrap();
+        frame.text("Hello\nWorld", 0.0, 0.0).draw()
     });
 
     runner.add_test("indiv_rotated_squares", |frame| {
@@ -69,11 +69,12 @@ fn main() {
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
             let pos = i as f32 * 100.0;
-            frame.square(pos, 0.0, 50.0)
+            try!(frame.square(pos, 0.0, 50.0)
                  .border(border / 2.0, rgb(255, 100, 50))
                  .rotate_around((12.5, 12.5), PI_4 + 0.2)
-                 .fill_and_stroke();
+                 .fill_and_stroke());
         }
+        Ok(())
     });
 
     runner.add_test("squares", |frame| {
@@ -82,10 +83,11 @@ fn main() {
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
             let pos = i as f32 * 100.0;
-            frame.square(pos, 0.0, 50.0)
+            try!(frame.square(pos, 0.0, 50.0)
                  .border(border / 2.0, rgba(0, 0, 255, 100))
-                 .fill_and_stroke();
+                 .fill_and_stroke());
         }
+        Ok(())
     });
 
     runner.add_test("rotated_squares", |frame| {
@@ -95,55 +97,57 @@ fn main() {
         for i in (0 .. 5) {
             let border = i as f32 * 10.0;
             let pos = i as f32 * 100.0;
-            frame.square(pos, 0.0, 50.0)
+            try!(frame.square(pos, 0.0, 50.0)
                  .border(border / 2.0, rgba(0, 0, 255, 100))
-                 .fill_and_stroke();
+                 .fill_and_stroke());
         }
+        Ok(())
     });
 
     runner.add_test("red_square_rotated_frame", |frame| {
         frame.color(rgb(255, 0, 0));
-        frame.with_rotate_around((12.5, 12.5), 0.5, |frame| {
-            frame.square(0.0, 0.0, 25.0).fill();
-        });
+        try!(frame.with_rotate_around((12.5, 12.5), 0.5, |frame| {
+            frame.square(0.0, 0.0, 25.0).fill()
+        }));
+        Ok(())
     });
 
     runner.add_test("red_square_rotated_self", |frame| {
         frame.color(rgb(255, 0, 0));
-        frame.square(0.0, 0.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill();
+        try!(frame.square(0.0, 0.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill());
         frame.color(rgb(0, 0, 255));
-        frame.square(50.0, 50.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill();
+        frame.square(50.0, 50.0, 25.0).rotate_around((12.5, 12.5), 0.5).fill()
     });
 
     runner.add_test("alpha_blending", |frame| {
         frame.color(rgba(1.0, 0.0, 0.0, 1.0));
-        frame.square(0.0, 0.0, 25.0).fill();
+        try!(frame.square(0.0, 0.0, 25.0).fill());
 
         frame.rotate(0.5);
         frame.color(rgba(0.0, 0.0, 1.0, 0.5));
-        frame.square(12.0, 12.0, 25.0).fill();
+        frame.square(12.0, 12.0, 25.0).fill()
     });
 
     runner.add_test("font_stuff", |frame| {
-        frame.text("abcdefg", 0.0, 25.0).draw().unwrap();
+        try!(frame.text("abcdefg", 0.0, 25.0).draw());
 
-        frame.text("hijklmnop", 0.0, 25.0)
+        try!(frame.text("hijklmnop", 0.0, 25.0)
              .size(30)
              .color(rgba(1.0, 0.0, 0.0, 1.0))
-             .draw().unwrap();
+             .draw());
 
         frame.text("hijklmnop", 0.0, 25.0)
              .size(10)
              .color(rgba(1.0, 0.0, 0.0, 0.5))
-             .draw().unwrap();
+             .draw()
     });
 
     runner.add_test("sprite_sheet", |frame| {
-        let sp = frame.load_texture_file("test/test.png").unwrap().into_sprite();
-        let mc = frame.load_texture_file("test/minecraft_fixedwidth_font.png").unwrap().into_sprite();
+        let sp = try!(frame.load_texture_file("test/test.png")).into_sprite();
+        let mc = try!(frame.load_texture_file("test/minecraft_fixedwidth_font.png")).into_sprite();
         let mc = mc.sub_sprite((0, 0), (200, 200)).unwrap();
-        frame.sprite(&sp, 0.0, 0.0).draw();
-        frame.sprite(&mc, 50.0, 50.0).size(100.0, 100.0).draw();
+        try!(frame.sprite(&sp, 0.0, 0.0).draw());
+        frame.sprite(&mc, 50.0, 50.0).size(100.0, 100.0).draw()
     });
 
     runner.add_test("points", |frame| {
@@ -158,16 +162,17 @@ fn main() {
             }
         }
 
-        frame.draw_points(&v);
+        frame.draw_points(&v)
     });
 
     runner.add_test("point", |frame| {
         for y in 0 .. 50 {
             let y = y as f32;
-            frame.draw_point(0.5, y + 0.5, rgb(255, 0, 0));
-            frame.draw_point(y + 0.5, 0.5, rgb(0, 255, 0));
-            frame.draw_point(y + 1.5, y + 0.5, rgb(0, 0, 255));
+            try!(frame.draw_point(0.5, y + 0.5, rgb(255, 0, 0)));
+            try!(frame.draw_point(y + 0.5, 0.5, rgb(0, 255, 0)));
+            try!(frame.draw_point(y + 1.5, y + 0.5, rgb(0, 0, 255)));
         }
+        Ok(())
     });
 
     runner.display().unwrap();

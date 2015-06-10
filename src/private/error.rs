@@ -18,6 +18,8 @@ pub enum LuxError {
     WindowError(String),
     /// An error that can occur when creating an opengl context.
     OpenGlError(String),
+    /// An error related to image decoding.
+    ImageError(ImageError),
     /// An error that can occur when compiling or linking shaders.
     ShaderError(glium::ProgramCreationError),
     /// An error that comes from the freetype font system.
@@ -26,7 +28,9 @@ pub enum LuxError {
     IoError(IoError),
     /// An error that can occur when attempting to use a font that hasn't
     /// been loaded yet.
-    FontNotLoaded(String)
+    FontNotLoaded(String),
+    /// An error that was produced while submitting a draw call
+    DrawError(glium::DrawError)
 }
 
 impl Error for LuxError {
@@ -38,6 +42,9 @@ impl Error for LuxError {
             &LuxError::FontError(_, ref s) => &s[..],
             &LuxError::IoError(ref ioe) => Error::description(ioe),
             &LuxError::FontNotLoaded(ref s) => &s[..],
+            // TODO: implement this when glium/959 is finished.
+            &LuxError::DrawError(_) => "",
+            &LuxError::ImageError(ref e) => e.description()
         }
     }
 }
@@ -63,6 +70,18 @@ impl From<IoError> for LuxError {
     }
 }
 
+impl From<glium::DrawError> for LuxError {
+    fn from(e: glium::DrawError) -> LuxError {
+        LuxError::DrawError(e)
+    }
+}
+
+impl From<ImageError> for LuxError {
+    fn from(e: ImageError) -> LuxError {
+        LuxError::ImageError(e)
+    }
+}
+
 impl std::fmt::Display for LuxError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         match self {
@@ -72,6 +91,10 @@ impl std::fmt::Display for LuxError {
             &LuxError::FontError(ref e, _) => e.fmt(f),
             &LuxError::IoError(ref e) => e.fmt(f),
             &LuxError::FontNotLoaded(ref s) => s.fmt(f),
+            &LuxError::DrawError(ref e) => e.fmt(f),
+            &LuxError::ImageError(ref e) => e.fmt(f),
         }
     }
 }
+
+

@@ -76,60 +76,67 @@ pub trait Transform {
     ///   lux.scale(2.0, 1.0);
     ///   // do other stuff
     /// });
-    fn with_matrix<F>(&mut self, f: F) where F: FnOnce(&mut Self){
+    fn with_matrix<F, R>(&mut self, f: F) -> R
+    where F: FnOnce(&mut Self) -> R{
         let prev = *self.current_matrix();
-        f(self);
+        let r = f(self);
         *self.current_matrix_mut() = prev;
+        r
     }
 
     /// Similar to `with_matrix` but with a rotation applied
     /// for the duration of the closure.
-    fn with_rotation<'a, F>(&'a mut self, rotation: Float, f: F)
-    where F: FnOnce(&mut Self) {
+    fn with_rotation<F, R>(&mut self, rotation: Float, f: F) -> R
+    where F: FnOnce(&mut Self) -> R {
         let prev = *self.current_matrix();
         self.rotate(rotation);
-        f(self);
+        let r =  f(self);
         *self.current_matrix_mut() = prev;
+        r
     }
 
     /// Similar to `with_matrix` but with a translation applied
     /// for the duration of the closure.
-    fn with_translate<F>(&mut self, dx: Float, dy: Float, f: F)
-    where F: FnOnce(&mut Self) {
+    fn with_translate<F, R>(&mut self, dx: Float, dy: Float, f: F) -> R
+    where F: FnOnce(&mut Self) -> R {
         let prev = *self.current_matrix();
         self.translate(dx, dy);
-        f(self);
+        let r = f(self);
         *self.current_matrix_mut() = prev;
+        r
     }
 
     /// Similar to `with_matrix` but with a scale applied
     /// for the duration of the closure.
-    fn with_scale<F>(&mut self, scale_x: Float, scale_y: Float, f: F)
-    where F: FnOnce(&mut Self) {
+    fn with_scale<F, R>(&mut self, scale_x: Float, scale_y: Float, f: F) -> R
+    where F: FnOnce(&mut Self) -> R {
         let prev = *self.current_matrix();
         self.scale(scale_x, scale_y);
-        f(self);
+        let r = f(self);
         *self.current_matrix_mut() = prev;
+        r
     }
 
     /// Similar to `with_matrix` but with a shear applied
     /// for the duration of the closure.
-    fn with_shear<F>(&mut self, sx: Float, sy: Float, f: F)
-    where F: FnOnce(&mut Self) {
+    fn with_shear<F, R>(&mut self, sx: Float, sy: Float, f: F) -> R
+    where F: FnOnce(&mut Self) -> R {
         let prev = *self.current_matrix();
         self.shear(sx, sy);
-        f(self);
+        let r = f(self);
         *self.current_matrix_mut() = prev;
+        r
     }
 
     /// Similar to `with_matrix` but with rotate_around applied
     /// for the duration of the closure.
-    fn with_rotate_around<F>(&mut self, point: (Float, Float), theta: Float, f: F)
-    where F: FnOnce(&mut Self) {
+    fn with_rotate_around<F, R>(&mut self, point: (Float, Float), theta: Float, f: F) -> R
+    where F: FnOnce(&mut Self) -> R {
         let prev = *self.current_matrix();
         self.rotate_around(point, theta);
-        f(self);
+        let r = f(self);
         *self.current_matrix_mut() = prev;
+        r
     }
 }
 

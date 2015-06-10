@@ -1,15 +1,13 @@
 use super::primitive_canvas::PrimitiveCanvas;
 use super::accessors::DrawParamMod;
 use super::types::Float;
-use super::gfx_integration::{
-    ColorVertex,
-    TexVertex,
-};
-
-use glium::index::PrimitiveType::{TriangleFan, TrianglesList, Points};
+use super::gfx_integration::{ColorVertex, TexVertex};
+use super::error::LuxResult;
 use super::color::Color;
 use super::raw::{Colored, Transform};
 use super::sprite::Sprite;
+
+use glium::index::PrimitiveType::{TriangleFan, TrianglesList, Points};
 
 use vecmath;
 
@@ -72,14 +70,15 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     // TODO:
     /// Evaluates the function with a canvas that will only draw into the
     /// provided rectangle.
-    fn with_scissor<F>(&mut self, x: u32, y: u32, w: u32, h: u32, f: F)
-    where F: FnOnce(&mut Self) {
+    fn with_scissor<F>(&mut self, x: u32, y: u32, w: u32, h: u32, f: F) -> LuxResult<()>
+    where F: FnOnce(&mut Self) -> LuxResult<()> {
         let view_height = self.height() as u32;
         let old = self.take_scissor();
         self.set_scissor(Some((x, view_height - h - y, w, h)));
-        f(self);
-        self.flush_draw();
+        try!(f(self));
+        try!(self.flush_draw());
         self.set_scissor(old);
+        Ok(())
     }
 
     /// Returns a rectangle with the given dimensions and position.
@@ -111,19 +110,19 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     ///
     /// This is *not* the same as setting a "pixel" because the point can
     /// be moved by transformations on the Frame.
-    fn draw_point<C: Color>(&mut self, x: Float, y: Float, color: C) {
+    fn draw_point<C: Color>(&mut self, x: Float, y: Float, color: C) -> LuxResult<()> {
         let vertex = ColorVertex {
             pos: [x, y],
             color: color.to_rgba(),
         };
-        self.draw_colored(Points, &[vertex][..], None, None);
+        self.draw_colored(Points, &[vertex][..], None, None)
     }
 
     /// Draws a sequence of colored points with the size of 1 pixel.
-    fn draw_points(&mut self, pixels: &[ColorVertex]) {
+    fn draw_points(&mut self, pixels: &[ColorVertex]) -> LuxResult<()> {
         let mut transf = vecmath::mat4_id();
         transf.translate(0.5, 0.5); // Correctly align
-        self.draw_colored(Points, &pixels[..], None, Some(transf));
+        self.draw_colored(Points, &pixels[..], None, Some(transf))
     }
 
     /// Draws a single line from `start` to `end` with a
@@ -251,7 +250,7 @@ impl <'a, C> Colored for ContainedSprite<'a, C> {
 
 impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
     /// Fills in the ellipse with a solid color.
-    pub fn fill(&mut self) {
+    pub fn fill(&mut self) -> LuxResult<()> {
         use std::f32::consts::PI;
         use num::traits::Float as Nfloat;
 
@@ -278,7 +277,7 @@ impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
         self.fields.canvas.draw_colored(TriangleFan,
                                &vertices[..],
                                None,
-                               Some(transform));
+                               Some(transform))
     }
 }
 
@@ -310,7 +309,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
     }
 
     /// Draws the sprite to the screen.
-    pub fn draw(&mut self) {
+    pub fn draw(&mut self) -> LuxResult<()> {
         let bounds = self.sprite.bounds();
 
         let top_left = bounds[0];
@@ -334,13 +333,13 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
                       Some(&idxs[..]),
                       Some(transform),
                       self.sprite.texture(),
-                      Some(self.fields.fill_color));
+                      Some(self.fields.fill_color))
     }
 }
 
 impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
     /// Fills the rectangle with a solid color.
-    pub fn fill(&mut self) {
+    pub fn fill(&mut self) -> LuxResult<()> {
         let color = self.get_color();
         let vertices = [
             ColorVertex{ pos: [1.0, 0.0], color: color },
@@ -355,11 +354,11 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
 
         self.fields.canvas.draw_colored(TrianglesList,
                                &vertices[..], Some(&idxs[..]),
-                               Some(transform));
+                               Some(transform))
     }
 
     /// Draws a border around the rectangle.
-    pub fn stroke(&mut self) -> &mut Rectangle<'a, C> {
+    pub fn stroke(&mut self) -> LuxResult<()> {
         let offset_pos = self.fields.pos;
         let size = self.fields.size;
         let border = self.fields.border;
@@ -368,28 +367,35 @@ impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
 
         self.fields.border = 0.0;
 
+        let mut draw_result = None;
+
         self.fields.canvas.with_matrix(|canvas| {
             canvas.translate(offset_pos.0, offset_pos.1);
             canvas.apply_matrix(transform);
             canvas.with_color(color, |canvas| {
                 // TOP
-                canvas.rect(0.0, 0.0, size.0, border)
-                      .fill();
-                canvas.rect(0.0, size.1 - border, size.0, border)
-                      .fill();
-                canvas.rect(0.0, border, border, size.1 - border * 2.0)
-                      .fill();
-                canvas.rect(size.0 - border, border, border, size.1 - border * 2.0)
-                      .fill();
+                let mut res;
+                res = canvas.rect(0.0, 0.0, size.0, border).fill();
+                if res.is_err() { draw_result = Some(res); return; }
+                res = canvas.rect(0.0, size.1 - border, size.0, border).fill();
+                if res.is_err() { draw_result = Some(res); return; }
+                res = canvas.rect(0.0, border, border, size.1 - border * 2.0).fill();
+                if res.is_err() { draw_result = Some(res); return; }
+                res = canvas.rect(size.0 - border, border, border, size.1 - border * 2.0).fill();
+                if res.is_err() { draw_result = Some(res); return; }
             });
         });
-        self
+
+        match draw_result {
+            Some(v) => v,
+            None => Ok(())
+        }
     }
 
     /// Both fills and strokes the rectangle.
-    pub fn fill_and_stroke(&mut self) {
-        self.fill();
-        self.stroke();
+    pub fn fill_and_stroke(&mut self) -> LuxResult<()> {
+        try!(self.fill());
+        self.stroke()
     }
 
     /// Sets the size of the border.  The border is drawn using the
