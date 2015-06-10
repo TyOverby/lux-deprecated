@@ -105,10 +105,10 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
             let subsprite = rendered.image().sub_sprite(char_info.image_position,
                                                 char_info.image_size);
             if let Some(sp) = subsprite.as_ref() {
-                try!(canvas.sprite(
-                        sp,
-                        x as Float + self.pos.0,
-                        y as Float + self.pos.1).color(self.color).draw())
+                canvas.sprite(
+                    sp,
+                    x as Float + self.pos.0,
+                    y as Float + self.pos.1).color(self.color).draw();
             }
         }
         Ok(())

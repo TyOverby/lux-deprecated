@@ -187,12 +187,11 @@ impl <G: Game> GameRunner<G> {
             let (tr, r) = time(|| self.game.render(lag as f32, &mut self.window, frame.as_mut().unwrap()));
             try!(r);
 
-            let (t_timing, res) = time(|| {
+            let (t_timing, _) = time(|| {
                 if self.game.show_fps(&self.window) {
-                    self.draw_timings(frame.as_mut().unwrap())
-                } else { Ok(()) }
+                    self.draw_timings(frame.as_mut().unwrap());
+                }
             });
-            try!(res);
 
             let (tpublish, _) = time(|| {
                 ::std::mem::drop(frame.take());
@@ -225,8 +224,7 @@ impl <G: Game> GameRunner<G> {
                 self.frame_timings.pop_back();
             }
         }
-        try!(self.game.on_close(&mut self.window));
-        Ok(())
+        self.game.on_close(&mut self.window)
     }
 
     fn calc_fps(&self) -> (u32, u32) {
@@ -252,8 +250,8 @@ impl <G: Game> GameRunner<G> {
         }
     }
 
-    fn draw_timings(&self, frame: &mut Frame) -> LuxResult<()> {
-        fn draw_bars<B, I>(frame: &mut Frame, bars: I) -> LuxResult<()>
+    fn draw_timings(&self, frame: &mut Frame){
+        fn draw_bars<B, I>(frame: &mut Frame, bars: I)
         where B: Iterator<Item=(f32, [f32; 4])>, I: ExactSizeIterator<Item=B>
         {
             let bar_count = bars.len();
@@ -262,11 +260,10 @@ impl <G: Game> GameRunner<G> {
                 let x = bar_width * i as f32;
                 let mut y = 0.0;
                 for (p, color) in bar {
-                    try!(frame.rect(x, y, bar_width, p).color(color).fill());
+                    frame.rect(x, y, bar_width, p).color(color).fill();
                     y += p;
                 }
             }
-            Ok(())
         }
 
         fn percentage_time(span: u64) -> f32 {
@@ -276,11 +273,11 @@ impl <G: Game> GameRunner<G> {
         const HEIGHT: f32 = 100.0;
         const WIDTH:  f32 = 160.0;
         let h = frame.height();
-        let res: LuxResult<()> = frame.with_translate(WIDTH, h, |frame| {
+        frame.with_translate(WIDTH, h, |frame| {
             frame.with_scale(-WIDTH, -HEIGHT, |frame| {
-                try!(frame.rect(0.0, 0.0, 1.0, 1.0)
+                frame.rect(0.0, 0.0, 1.0, 1.0)
                      .color(rgba(1.0, 1.0, 0.0, 0.8))
-                     .fill());
+                     .fill();
 
                 draw_bars(frame, self.frame_timings.iter().map(|timing| {
                     let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
@@ -294,22 +291,19 @@ impl <G: Game> GameRunner<G> {
                     v.push((percentage_time(timing.debug_drawing), rgb(0.9, 0.0, 0.0)));
                     v.push((percentage_time(timing.render_publish), rgb(0.0, 0.5, 0.0)));
                     v.into_iter()
-                }))
-            })
+                }));
+            });
         });
-        try!(res);
 
-        try!(frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).color(rgb(0, 0, 0)).fill());
+        frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).color(rgb(0, 0, 0)).fill();
 
         let (fps, ups) = self.calc_fps();
-        let res = frame.with_translate(WIDTH, h, |frame| {
+        frame.with_translate(WIDTH, h, |frame| {
             frame.with_rotation(-3.1415 / 2.0, |frame| {
                 frame.text(format!("FPS {} UPS {}", fps, ups), 0.0, 0.0)
                      .size(12)
-                     .draw()
+                     .draw().unwrap();
             })
         });
-
-        res
     }
 }
