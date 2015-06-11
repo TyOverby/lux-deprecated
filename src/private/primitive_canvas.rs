@@ -13,6 +13,7 @@ use vecmath;
 use glium;
 use reuse_cache;
 
+// TODO: Come up with a better name for this enum and varients.
 /// When modifying a stencil or clearing the stencil buffer,
 /// operations require a StencilType.
 #[derive(Clone, Copy)]
