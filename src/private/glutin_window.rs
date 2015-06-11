@@ -224,7 +224,6 @@ impl Window {
         Ok(window)
     }
 
-    // TODO: hide from docs
     /// Add the events from an iterator of events back to the internal event queue.
     pub fn restock_events<I: DoubleEndedIterator<Item=Event>>(&mut self, mut i: I) {
         while let Some(e) = i.next_back() {
@@ -232,9 +231,10 @@ impl Window {
         }
     }
 
-    // TODO: hide from docs
     /// Query the underlying window system for events and add them to the
     /// the interal event queue.
+    ///
+    /// This function is automatically called by `is_open()`, `events()`.
     pub fn process_events(&mut self) {
         use glutin::Event as glevent;
         use super::interactive::*;

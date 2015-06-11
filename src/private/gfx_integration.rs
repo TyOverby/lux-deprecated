@@ -29,7 +29,6 @@ pub struct ColorParams {
     pub matrix: [[f32; 4]; 4],
 }
 
-// TODO: use implement_uniforms!() here instead.
 impl uniforms::Uniforms for ColorParams {
     fn visit_values<'b, F>(&'b self, mut f: F) where F: FnMut(&str, uniforms::UniformValue<'b>) {
         use glium::uniforms::AsUniformValue;
@@ -43,7 +42,6 @@ pub struct TexParams<'a> {
     pub color_mult: [f32; 4]
 }
 
-// TODO: use implement_uniforms!() here instead.
 impl <'a> uniforms::Uniforms for TexParams<'a> {
     fn visit_values<'b, F>(&'b self, mut f: F) where F: FnMut(&str, uniforms::UniformValue<'b>) {
         use glium::uniforms::AsUniformValue;

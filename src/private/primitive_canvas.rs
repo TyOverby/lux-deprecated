@@ -324,7 +324,6 @@ Fetch<Vec<ColorVertex>>
                 frame.draw(&vertex_buffer, &NoIndices(typ), &tex_program, &uniform, &draw_params).map_err(From::from)
             }
         }
-        // TODO: returrn error?
     }
 
     fn flush_draw(&mut self) -> LuxResult<()> {

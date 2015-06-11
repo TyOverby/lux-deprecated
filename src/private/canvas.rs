@@ -211,7 +211,6 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized
         Ellipse::new(self, (x, y), (size, size), c)
     }
 
-    // TODO: unify this and draw_pixels.
     /// Draws a 1-pixel colored point to the screen at a position.
     ///
     /// This is *not* the same as setting a "pixel" because the point can
