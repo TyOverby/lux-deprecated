@@ -18,7 +18,7 @@ use super::accessors::{HasDisplay, HasFontCache};
 use super::color::Color;
 use super::error::{LuxError, LuxResult};
 use super::raw::{Colored, Transform};
-use super::canvas::LuxCanvas;
+use super::canvas::Canvas;
 use super::sprite::{TextureLoader, Sprite};
 
 #[doc(hidden)]
@@ -30,7 +30,7 @@ pub struct FontCache {
 
 /// A context that contains information about the text that can be drawn to the screen.
 #[must_use = "text references just contains context, and must be drawn with `draw()`"]
-pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> {
+pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
     text: S,
     pos: (Float, Float),
@@ -56,7 +56,7 @@ pub trait FontLoad {
 /// Any struct that implements `TextDraw` can draw text to it.
 ///
 /// The only known implementation of `TextDraw` is Frame.
-pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
+pub trait TextDraw: Sized + Canvas + HasDisplay + HasFontCache {
     /// Starts drawing some text at a position.
     ///
     /// Text size and text font can be configured on the returned `ContainedText`
@@ -74,9 +74,9 @@ pub trait TextDraw: Sized + LuxCanvas + HasDisplay + HasFontCache {
     }
 }
 
-impl <T> TextDraw for T where T: Sized + LuxCanvas + HasDisplay + HasFontCache { }
+impl <T> TextDraw for T where T: Sized + Canvas + HasDisplay + HasFontCache { }
 
-impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
+impl <'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
     /// Sets the size of the font.
     pub fn size(&mut self, size: u16) -> &mut ContainedText<'a, C, S> {
         self.size = size;
@@ -192,7 +192,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + LuxCanvas, S: 'a + AsRef<str>> Con
 }
 
 impl <'a, A, B: AsRef<str>> Transform for ContainedText<'a, A, B>
-where A: HasDisplay + HasFontCache + LuxCanvas {
+where A: HasDisplay + HasFontCache + Canvas {
     fn current_matrix(&self) -> &[[Float; 4]; 4] {
         &self.transform
     }
@@ -203,7 +203,7 @@ where A: HasDisplay + HasFontCache + LuxCanvas {
 }
 
 impl <'a, A, B: AsRef<str>> Colored for ContainedText<'a, A, B>
-where A: HasDisplay + HasFontCache + LuxCanvas {
+where A: HasDisplay + HasFontCache + Canvas {
     fn get_color(&self) -> [Float; 4] {
         self.color
     }

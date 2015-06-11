@@ -41,9 +41,9 @@ pub struct ContainedSprite<'a, C: 'a>  {
     sprite: Sprite
 }
 
-/// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
+/// Canvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
+pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (Float, Float);
 
@@ -413,7 +413,7 @@ impl <'a, C> Colored for ContainedSprite<'a, C> {
     }
 }
 
-impl <'a, C> Ellipse<'a, C> where C: LuxCanvas + 'a {
+impl <'a, C> Ellipse<'a, C> where C: Canvas + 'a {
     /// Fills in the ellipse with a solid color.
     pub fn fill(&mut self) {
         use std::f32::consts::PI;
@@ -463,7 +463,7 @@ fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[Float; 4]; 4] {
         trx
 }
 
-impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
+impl <'a, C> ContainedSprite<'a, C> where C: Canvas + 'a {
     /// Sets the side of the sprite when drawn to the screen.
     ///
     /// The default size is the "ideal size", that is, 1 pixel in the texture
@@ -502,7 +502,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: LuxCanvas + 'a {
     }
 }
 
-impl <'a, C> Rectangle<'a, C> where C: LuxCanvas + 'a {
+impl <'a, C> Rectangle<'a, C> where C: Canvas + 'a {
     /// Fills the rectangle with a solid color.
     pub fn fill(&mut self) {
         let color = self.get_color();

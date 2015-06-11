@@ -21,7 +21,7 @@ use super::accessors::{
     DrawParamMod
 };
 use super::gfx_integration::{TexVertex, ColorVertex};
-use super::canvas::LuxCanvas;
+use super::canvas::Canvas;
 use super::raw::{Transform, Colored};
 use super::color::Color;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw, DrawParamModifier};
@@ -271,7 +271,7 @@ impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> where D: HasProg
     }
 }
 
-impl <'a, D> LuxCanvas for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+impl <'a, D> Canvas for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
     fn size(&self) -> (Float, Float) {
         use glium::Surface;
         let (w, h) = self.texture.get_dimensions();

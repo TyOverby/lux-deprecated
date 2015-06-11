@@ -4,7 +4,7 @@ use super::interactive::EventIterator;
 use super::color::{rgba, rgb};
 use super::error::LuxResult;
 use super::interactive::Interactive;
-use super::canvas::LuxCanvas;
+use super::canvas::Canvas;
 use super::raw::{Transform, Colored};
 use super::font::TextDraw;
 

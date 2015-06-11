@@ -21,7 +21,7 @@ use super::accessors::{
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
 use super::font::FontCache;
 use super::gfx_integration::{ColorVertex, TexVertex};
-use super::canvas::LuxCanvas;
+use super::canvas::Canvas;
 use super::color::Color;
 use super::raw::{Colored, Transform};
 use super::error::{LuxResult, LuxError};
@@ -353,7 +353,7 @@ impl Window {
 }
 
 #[allow(unused_variables)]
-impl LuxCanvas for Frame {
+impl Canvas for Frame {
     fn size(&self) -> (f32, f32) {
         use glium::Surface;
         let (w, h) = self.f.get_dimensions();

@@ -38,7 +38,7 @@ pub mod graphics {
     //! The two objects that implement those traits are `Frame` and
     //! `DrawableTexture`.
 
-    pub use private::canvas::{LuxCanvas, Rectangle, Ellipse, ContainedSprite};
+    pub use private::canvas::{Canvas, Rectangle, Ellipse, ContainedSprite};
     pub use private::gfx_integration::{ColorVertex, TexVertex};
     pub use private::primitive_canvas::{PrimitiveCanvas, StencilType};
     pub use private::sprite::{
@@ -102,7 +102,7 @@ pub mod prelude {
     //! recommended for average Lux usage.
 
     pub use color::{Color, rgb, rgba, hsv, hsva};
-    pub use graphics::LuxCanvas;
+    pub use graphics::Canvas;
     pub use interactive::Interactive;
     pub use window::{Window, Frame};
     pub use interactive::EventIterator;

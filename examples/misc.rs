@@ -36,7 +36,7 @@ fn main() {
             ];
 
             let idxs = [0, 1, 2];
-            frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
+            frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None).unwrap();
         });
 
         frame.rect(101.0, 100.0, 50.0, 50.0).color(color::GREEN).fill();
@@ -45,6 +45,5 @@ fn main() {
         frame.draw_points(&points);
 
         frame.rect(100.0, 100.0, 50.0, 50.0).color(color::GREEN).fill();
-
     }
 }

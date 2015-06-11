@@ -17,6 +17,6 @@ fn main() {
             ColorVertex {pos: [0.5, -0.5], color: rgb(0.0, 1.0, 0.0)},
         ];
 
-        frame.draw_colored(TrianglesList, &vtxs[..], None, None);
+        frame.draw_colored(TrianglesList, &vtxs[..], None, None).unwrap();
     }
 }

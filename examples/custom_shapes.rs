@@ -15,6 +15,6 @@ fn main() {
 
     while window.is_open() {
         let mut frame = window.cleared_frame(color::WHITE);
-        frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None);
+        frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None).unwrap();
     }
 }
