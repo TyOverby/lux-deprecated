@@ -15,6 +15,7 @@ use reuse_cache;
 
 
 /// Signifies what state we are in with regards to drawing with stencils.
+#[derive(Clone, Copy)]
 pub enum StencilState {
     /// We are currently drawing into the stencil buffer.
     DrawingStencil,
@@ -142,7 +143,48 @@ pub trait PrimitiveCanvas {
 
 fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
         use glium::LinearBlendingFactor::*;
+        use glium::draw_parameters::{StencilOperation, StencilTest};
         let defaults: glium::DrawParameters = ::std::default::Default::default();
+
+        // Don't draw colors when drawing out a stencil.
+        let color_mask = match c.stencil_state() {
+            StencilState::DrawingStencil => (false, false, false, false),
+            StencilState::DrawingWithStencil | StencilState::None =>
+                (true, true, true, true)
+        };
+
+        let stencil_test = match c.stencil_state() {
+            StencilState::DrawingStencil =>
+                StencilTest::AlwaysFail,
+            StencilState::DrawingWithStencil =>
+                StencilTest::IfEqual{mask: 0xFF},
+            StencilState::None =>
+                StencilTest::AlwaysPass,
+        };
+
+        let stencil_ref_value = match c.stencil_state() {
+            StencilState::DrawingStencil => 1,
+            StencilState::DrawingWithStencil => 1,
+            StencilState::None => 0
+        };
+
+        let (s_fail, dp_fail, dp_pass) = match c.stencil_state() {
+            StencilState::DrawingStencil => {
+                (StencilOperation::Replace,
+                 StencilOperation::Keep,
+                 StencilOperation::Keep)
+            }
+
+            StencilState::DrawingWithStencil => {
+                (StencilOperation::Keep,
+                 StencilOperation::Keep,
+                 StencilOperation::Keep)
+            }
+
+            StencilState::None => {
+                (StencilOperation::Keep, StencilOperation::Keep, StencilOperation::Keep)
+            }
+        };
 
         glium::DrawParameters {
             depth_test: glium::DepthTest::Overwrite,
@@ -152,6 +194,8 @@ fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
             }),
             backface_culling: glium::BackfaceCullingMode::CullingDisabled,
             multisampling: true,
+
+            // SCISSOR
             scissor: c.scissor().map(|a|
                 glium::Rect{
                     left: a.0,
@@ -159,6 +203,25 @@ fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
                     width: a.2,
                     height: a.3
                 }),
+
+            // STENCIL
+            color_mask: color_mask,
+
+            stencil_test_clockwise: stencil_test,
+            stencil_test_counter_clockwise: stencil_test,
+
+            stencil_reference_value_clockwise: stencil_ref_value,
+            stencil_reference_value_counter_clockwise: stencil_ref_value,
+
+            stencil_fail_operation_clockwise: s_fail,
+            stencil_fail_operation_counter_clockwise: s_fail,
+
+            stencil_pass_depth_fail_operation_clockwise: dp_fail,
+            stencil_pass_depth_fail_operation_counter_clockwise: dp_fail,
+
+            stencil_depth_pass_operation_clockwise: dp_pass,
+            stencil_depth_pass_operation_counter_clockwise: dp_pass,
+
             ..defaults
         }
 }

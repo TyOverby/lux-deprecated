@@ -7,7 +7,8 @@ use super::font::FontCache;
 use super::primitive_canvas::{
     CachedColorDraw,
     CachedTexDraw,
-    DrawParamModifier
+    DrawParamModifier,
+    StencilState
 };
 use glium;
 use reuse_cache;
@@ -36,9 +37,10 @@ pub trait DrawParamMod {
     fn draw_param_mod_mut(&mut self) -> &mut DrawParamModifier;
 
     /// Return a reference to the scissor.
-    fn scissor(&self) -> Option<&(u32, u32, u32, u32)> {
-        self.draw_param_mod().scissor.as_ref()
+    fn scissor(&self) -> Option<(u32, u32, u32, u32)> {
+        self.draw_param_mod().scissor.clone()
     }
+
     /// Takes and returns the scissor.
     fn take_scissor(&mut self) -> Option<(u32, u32, u32, u32)> {
         self.draw_param_mod_mut().scissor.take()
@@ -47,6 +49,16 @@ pub trait DrawParamMod {
     /// Sets the scissor.
     fn set_scissor(&mut self, s: Option<(u32, u32, u32, u32)>) {
         *(&mut self.draw_param_mod_mut().scissor) = s
+    }
+
+    ///
+    fn stencil_state(&self) -> StencilState {
+        self.draw_param_mod().stencil_state
+    }
+
+    ///
+    fn set_stencil_state(&mut self, stencil_state: StencilState) {
+        (*self.draw_param_mod_mut()).stencil_state = stencil_state;
     }
 }
 

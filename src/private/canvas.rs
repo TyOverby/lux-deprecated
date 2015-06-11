@@ -1,4 +1,4 @@
-use super::primitive_canvas::PrimitiveCanvas;
+use super::primitive_canvas::{PrimitiveCanvas, StencilState};
 use super::accessors::DrawParamMod;
 use super::types::Float;
 use super::gfx_integration::{ColorVertex, TexVertex};
@@ -78,18 +78,39 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
         PrimitiveCanvas::clear(self, color);
     }
 
-    // TODO:
     /// Evaluates the function with a canvas that will only draw into the
     /// provided rectangle.
     fn with_scissor<F, R>(&mut self, x: u32, y: u32, w: u32, h: u32, f: F) -> R
     where F: FnOnce(&mut Self) -> R {
+        // Flush things that we don't want scissored.
+        self.flush_draw().unwrap();
+
         let view_height = self.height() as u32;
         let old = self.take_scissor();
+        // TODO: merge these rectangles
         self.set_scissor(Some((x, view_height - h - y, w, h)));
         let res = f(self);
         self.flush_draw().unwrap();
         self.set_scissor(old);
         res
+    }
+
+    fn with_stencil<R1, R2, S, D>(&mut self, stencil_fn: S, draw_fn: D) -> (R1, R2)
+    where S: FnOnce(&mut Self) -> R1, D: FnOnce(&mut Self) -> R2 {
+        // Flush draws that shouldn't be stenciled.
+        self.flush_draw().unwrap();
+        let old = self.stencil_state();
+
+        self.set_stencil_state(StencilState::DrawingStencil);
+        let res1 = stencil_fn(self);
+        self.flush_draw().unwrap();
+
+        self.set_stencil_state(StencilState::DrawingWithStencil);
+        let res2 = draw_fn(self);
+        self.flush_draw().unwrap();
+
+        self.set_stencil_state(old);
+        (res1, res2)
     }
 
     /// Returns a rectangle with the given dimensions and position.
