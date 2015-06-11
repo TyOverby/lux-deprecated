@@ -1,4 +1,4 @@
-use super::primitive_canvas::{PrimitiveCanvas, StencilState};
+use super::primitive_canvas::{PrimitiveCanvas, StencilState, StencilType};
 use super::accessors::DrawParamMod;
 use super::types::Float;
 use super::gfx_integration::{ColorVertex, TexVertex};
@@ -43,7 +43,7 @@ pub struct ContainedSprite<'a, C: 'a>  {
 
 /// LuxCanvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Sized {
+pub trait LuxCanvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (Float, Float);
 
@@ -95,22 +95,40 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
         res
     }
 
-    fn with_stencil<R1, R2, S, D>(&mut self, stencil_fn: S, draw_fn: D) -> (R1, R2)
-    where S: FnOnce(&mut Self) -> R1, D: FnOnce(&mut Self) -> R2 {
-        // Flush draws that shouldn't be stenciled.
+    /// Executes a drawing function where all drawing is done on the
+    /// stencil buffer.
+    fn draw_to_stencil<R, S>(&mut self, typ: StencilType, stencil_fn: S) -> R
+    where S: FnOnce(&mut Self) -> R {
         self.flush_draw().unwrap();
-        let old = self.stencil_state();
+        self.set_stencil_state(StencilState::DrawingStencil(typ));
 
-        self.set_stencil_state(StencilState::DrawingStencil);
         let res1 = stencil_fn(self);
         self.flush_draw().unwrap();
-
         self.set_stencil_state(StencilState::DrawingWithStencil);
-        let res2 = draw_fn(self);
-        self.flush_draw().unwrap();
+        res1
+    }
 
-        self.set_stencil_state(old);
-        (res1, res2)
+    /// Clears the stencil buffer allowing all draws to go though.
+    ///
+    /// When called with `StencilType::Allow`, the stencil buffer will
+    /// be cleared allowing all future draws to pass through until
+    /// `draw_to_stencil` is called with `StencilType::Deny`.
+    ///
+    /// Whene called with `StencilType::Deny`, the stencil buffer will be
+    /// filled, preventing all future draws to fail until `draw_to_stencil`
+    /// is called with `StencilType::Allow`.
+    fn clear_stencil(&mut self, typ: StencilType) {
+        self.flush_draw().unwrap();
+        match typ {
+            StencilType::Allow => {
+                PrimitiveCanvas::clear_stencil(self, 1);
+                self.set_stencil_state(StencilState::None);
+            }
+            StencilType::Deny => {
+                PrimitiveCanvas::clear_stencil(self, 0);
+                self.set_stencil_state(StencilState::DrawingWithStencil);
+            }
+        }
     }
 
     /// Returns a rectangle with the given dimensions and position.

@@ -13,12 +13,21 @@ use vecmath;
 use glium;
 use reuse_cache;
 
+/// When modifying a stencil or clearing the stencil buffer,
+/// operations require a StencilType.
+#[derive(Clone, Copy)]
+pub enum StencilType {
+    /// Deny blacklists pixels on the screen when drawing or clearing.
+    Deny,
+    /// Deny whitelists pixels on the screen when drawing or clearing.
+    Allow,
+}
 
 /// Signifies what state we are in with regards to drawing with stencils.
 #[derive(Clone, Copy)]
 pub enum StencilState {
     /// We are currently drawing into the stencil buffer.
-    DrawingStencil,
+    DrawingStencil(StencilType),
     /// We are currently drawing a shape that will be occluded by the stencil.
     DrawingWithStencil,
     /// We aren't doing anything with regards to stencils
@@ -69,6 +78,9 @@ pub struct CachedTexDraw {
 pub trait PrimitiveCanvas {
     /// Clears the canvas with a color.
     fn clear<C: Color>(&mut self, color: C);
+
+    /// Clears the stencil buffer.
+    fn clear_stencil(&mut self, v: i32);
 
     /// Draws the verteces to the canvas. This function uses caching to
     /// batch draw calls that are similar.
@@ -148,13 +160,13 @@ fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
 
         // Don't draw colors when drawing out a stencil.
         let color_mask = match c.stencil_state() {
-            StencilState::DrawingStencil => (false, false, false, false),
+            StencilState::DrawingStencil(_) => (false, false, false, false),
             StencilState::DrawingWithStencil | StencilState::None =>
                 (true, true, true, true)
         };
 
         let stencil_test = match c.stencil_state() {
-            StencilState::DrawingStencil =>
+            StencilState::DrawingStencil(_) =>
                 StencilTest::AlwaysFail,
             StencilState::DrawingWithStencil =>
                 StencilTest::IfEqual{mask: 0xFF},
@@ -163,13 +175,14 @@ fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
         };
 
         let stencil_ref_value = match c.stencil_state() {
-            StencilState::DrawingStencil => 1,
+            StencilState::DrawingStencil(StencilType::Allow) => 1,
+            StencilState::DrawingStencil(StencilType::Deny) => 0,
             StencilState::DrawingWithStencil => 1,
             StencilState::None => 0
         };
 
         let (s_fail, dp_fail, dp_pass) = match c.stencil_state() {
-            StencilState::DrawingStencil => {
+            StencilState::DrawingStencil(_) => {
                 (StencilOperation::Replace,
                  StencilOperation::Keep,
                  StencilOperation::Keep)
@@ -243,6 +256,11 @@ Fetch<Vec<ColorVertex>>
         use glium::Surface;
         let c = color.to_rgba();
         self.surface().clear_color(c[0], c[1], c[2], c[3]);
+    }
+
+    fn clear_stencil(&mut self, v: i32) {
+        use glium::Surface;
+        self.surface().clear_stencil(v);
     }
 
     fn draw_colored_now(&mut self,
@@ -531,5 +549,15 @@ Fetch<Vec<ColorVertex>>
             }
         }
         Ok(())
+    }
+}
+
+impl StencilType {
+    /// Returns the opposite of this stencil type.
+    pub fn inverse(&self) -> StencilType {
+        match *self {
+            StencilType::Allow => StencilType::Deny,
+            StencilType::Deny => StencilType::Allow,
+        }
     }
 }

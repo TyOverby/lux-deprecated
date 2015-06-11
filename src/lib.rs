@@ -40,7 +40,7 @@ pub mod graphics {
 
     pub use private::canvas::{LuxCanvas, Rectangle, Ellipse, ContainedSprite};
     pub use private::gfx_integration::{ColorVertex, TexVertex};
-    pub use private::primitive_canvas::PrimitiveCanvas;
+    pub use private::primitive_canvas::{PrimitiveCanvas, StencilType};
     pub use private::sprite::{
         Sprite,
         Texture,
