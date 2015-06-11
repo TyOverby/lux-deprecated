@@ -19,15 +19,15 @@ pub trait ToColorComponent {
 ///# extern crate lux;
 ///# use lux::color::{hex_rgb, rgb};
 ///# fn main() {
-/// let blue_green = hex_rgb(0xFF5500); // rgb(0xFF, 0x55, 0x00);
-/// assert!(blue_green == rgb(0xFF, 0x55, 0x00));
+/// let blue_green = hex_rgb(0xDD9911);
+/// assert_eq!(blue_green, rgb(0xDD, 0x99, 0x11));
 ///# }
 /// ```
 pub fn hex_rgb(mut v: u32) -> [f32; 4] {
     let b = v & 0xff;
-    v = v << 4;
+    v = v >> 8;
     let g = v & 0xff;
-    v = v << 4;
+    v = v >> 8;
     let r = v & 0xff;
     [r as u8, g as u8, b as u8].to_rgba()
 }
@@ -36,19 +36,19 @@ pub fn hex_rgb(mut v: u32) -> [f32; 4] {
 ///
 /// ```rust no_run
 ///# extern crate lux;
-///# use lux::color::hex_rgba;
+///# use lux::color::{hex_rgba, rgba};
 ///# fn main() {
 /// let blue_green_transparent = hex_rgba(0xFF550011);
-/// assert!(blue_green_transparent == rgba(0xFF, 0x55, 0x00, 0x11));
+/// assert_eq!(blue_green_transparent, rgba(0xFF, 0x55, 0x00, 0x11));
 ///# }
 /// ```
 pub fn hex_rgba(mut v: u32) -> [f32; 4] {
     let a = v & 0xff;
-    v = v << 4;
+    v = v >> 8;
     let b = v & 0xff;
-    v = v << 4;
+    v = v >> 8;
     let g = v & 0xff;
-    v = v << 4;
+    v = v >> 8;
     let r = v & 0xff;
     [r as u8, g as u8, b as u8, a as u8].to_rgba()
 }

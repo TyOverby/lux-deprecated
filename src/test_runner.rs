@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 extern crate lux;
 use std::collections::VecDeque;
 use lux::prelude::*;

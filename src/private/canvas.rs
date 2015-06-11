@@ -62,6 +62,18 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     }
 
     /// Clears the canvas with a solid color.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// // Clear the screen with purple.
+    /// frame.clear(rgb(1.0, 0.0, 1.0));
+    ///# }
+    /// ```
     fn clear<C: Color>(&mut self, color: C) {
         PrimitiveCanvas::clear(self, color);
     }
@@ -81,24 +93,80 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     }
 
     /// Returns a rectangle with the given dimensions and position.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let (x, y, w, h) = (0.0, 5.0, 50.0, 70.0);
+    /// frame.rect(x, y, w, h)
+    ///      .color(rgb(100, 200, 255))
+    ///      .fill();
+    ///# }
+    /// ```
     fn rect<'a>(&'a mut self, x: Float, y: Float, w: Float, h: Float) -> Rectangle<'a, Self> {
         let c = self.get_color();
         Rectangle::new(self, (x, y), (w, h), c)
     }
 
     /// Returns a square with the given dimensions and position.
+    ///
+    /// ```rust,no_run
+    /// use lux::prelude::*;
+    ///# extern crate lux;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let (x, y, size) = (0.0, 5.0, 50.0);
+    /// frame.square(x, y, size)
+    ///      .color(rgb(100, 200, 255))
+    ///      .fill();
+    ///# }
+    /// ```
     fn square<'a>(&'a mut self, x: Float, y: Float, size: Float) -> Rectangle<'a, Self> {
         let c = self.get_color();
         Rectangle::new(self, (x, y), (size, size), c)
     }
 
     /// Returns an ellipse with the given dimensions and position.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let (x, y, w, h) = (0.0, 5.0, 50.0, 70.0);
+    /// frame.ellipse(x, y, w, h)
+    ///      .color(rgb(100, 200, 255))
+    ///      .fill();
+    ///# }
+    /// ```
     fn ellipse<'a>(&'a mut self, x: Float, y: Float, w: Float, h: Float) -> Ellipse<'a, Self> {
         let c = self.get_color();
         Ellipse::new(self, (x, y), (w, h), c)
     }
 
     /// Returns an circle with the given dimensions and position.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let (x, y, size) = (0.0, 5.0, 50.0);
+    /// frame.circle(x, y, size)
+    ///      .color(rgb(100, 200, 255))
+    ///      .fill();
+    ///# }
+    /// ```
     fn circle<'a>(&'a mut self, x: Float, y: Float, size: Float) -> Ellipse<'a, Self> {
         let c = self.get_color();
         Ellipse::new(self, (x, y), (size, size), c)
@@ -109,6 +177,18 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     ///
     /// This is *not* the same as setting a "pixel" because the point can
     /// be moved by transformations on the Frame.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let (x, y) = (10.0, 20.0);
+    /// frame.draw_point(x, y, lux::color::RED);
+    ///# }
+    /// ```
     fn draw_point<C: Color>(&mut self, x: Float, y: Float, color: C) {
         let vertex = ColorVertex {
             pos: [x, y],
@@ -118,6 +198,28 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     }
 
     /// Draws a sequence of colored points with the size of 1 pixel.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    /// use lux::graphics::ColorVertex;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let points = [
+    ///     ColorVertex {
+    ///         pos: [10.0, 15.0],
+    ///         color: rgb(255, 0, 0)
+    ///     },
+    ///     ColorVertex {
+    ///         pos: [15.0, 10.0],
+    ///         color: rgb(0, 255, 0)
+    ///     },
+    /// ];
+    /// frame.draw_points(&points[..]);
+    ///# }
+    /// ```
     fn draw_points(&mut self, pixels: &[ColorVertex]) {
         let mut transf = vecmath::mat4_id();
         transf.translate(0.5, 0.5); // Correctly align
@@ -144,6 +246,23 @@ pub trait LuxCanvas: PrimitiveCanvas + Colored +  Transform + DrawParamMod+ Size
     }
 
     /// Draws a sprite  to the screen.
+    ///
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use std::path::Path;
+    /// use lux::prelude::*;
+    /// use lux::graphics::ColorVertex;
+    ///# fn main() {
+    ///
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let logo = window.load_texture_file(&Path::new("./logo.png"))
+    ///                  .unwrap()
+    ///                  .into_sprite();
+    /// let (x, y) = (20.0, 50.0);
+    /// frame.sprite(&logo, x, y).draw();
+    ///# }
+    /// ```
     fn sprite(&mut self, sprite: &Sprite, x: Float, y: Float) -> ContainedSprite<Self> {
         ContainedSprite {
             fields: BasicFields::new((x, y), sprite.ideal_size(), self, [1.0, 1.0, 1.0, 1.0]),
@@ -178,9 +297,18 @@ impl <'a, C> Ellipse<'a, C> {
     /// Sets the number of segments that are used to approximate a circle.
     ///
     /// ### Example
-    /// ```ignore rust
-    /// // Draw a pentagon.
-    /// frame.circle(...).spokes(5).draw();
+    /// ```rust,no_run
+    ///# extern crate lux;
+    /// use lux::prelude::*;
+    /// use lux::graphics::ColorVertex;
+    ///
+    ///# fn main() {
+    /// let mut window = Window::new().unwrap();
+    /// let mut frame = window.frame();
+    /// let (x, y, size) = (10.0, 10.0, 50.0);
+    /// // draw a pentagon
+    /// frame.circle(x, y, size).spokes(5).draw();
+    ///# }
     /// ```
     pub fn spokes(&mut self, spokes: u16) -> &mut Self {
         self.spokes = spokes;
