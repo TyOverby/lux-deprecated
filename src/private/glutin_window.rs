@@ -120,6 +120,7 @@ impl Frame {
         if let Some(c) = clear_color {
             frm.clear_color(c[0],c[1],c[2],c[3]);
         }
+        frm.clear_stencil(0);
 
         let size = frm.get_dimensions();
         let (w, h) = (size.0 as f32, size.1 as f32);
@@ -148,7 +149,6 @@ impl Frame {
             draw_mod: DrawParamModifier::new()
         }
     }
-
 }
 
 impl Drop for Frame {

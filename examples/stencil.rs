@@ -8,7 +8,9 @@ use num::Float;
 
 fn main() {
     let mut window = Window::new().unwrap();
-    let mut theta:f32 = 0.0;
+
+    let mut theta: f32 = 0.0;
+    let (mut x, mut y) = (0.0, 0.0);
     while window.is_open() {
         let mut frame = window.cleared_frame(rgb(0.9, 0.9, 0.9));
         theta += 0.01;
@@ -17,9 +19,10 @@ fn main() {
         let dist = (2.0 * size * size).sqrt();
 
 
+
         frame.with_stencil(|frame| {
-            frame.circle(0.0, 0.0, 600.0).color(color::BLACK).fill();
-            frame.circle(600.0, 0.0, 600.0).color(color::BLACK).fill();
+            frame.circle(x, y, 600.0).color(color::BLACK).fill();
+            x += 5.0; y += 5.0;
         }, |frame| {
             for x in 0 .. 100 {
                 for y in 0 .. 100 {
