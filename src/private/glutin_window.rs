@@ -32,7 +32,7 @@ use super::primitive_canvas::{
     CachedTexDraw,
     DrawParamModifier
 };
-use super::types::Float;
+use super::types::{Float, Idx};
 
 use glutin::WindowBuilder;
 
@@ -53,7 +53,7 @@ pub struct Window {
     title: String,
 
     // CACHES
-    idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
+    idx_cache: reuse_cache::ReuseCache<Vec<Idx>>,
     tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
     color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
 
@@ -91,7 +91,7 @@ pub struct Frame {
     tex_draw_cache: Option<CachedTexDraw>,
 
     // CACHES
-    idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
+    idx_cache: reuse_cache::ReuseCache<Vec<Idx>>,
     tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
     color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
 
@@ -109,7 +109,7 @@ impl Frame {
     fn new(display: &glium::Display,
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
-           idx_cache: reuse_cache::ReuseCache<Vec<u16>>,
+           idx_cache: reuse_cache::ReuseCache<Vec<Idx>>,
            tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
            color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
            clear_color: Option<[f32; 4]>,
@@ -522,8 +522,8 @@ impl HasPrograms for Frame {
     }
 }
 
-impl Fetch<Vec<u16>> for Frame {
-    fn fetch(&self) -> reuse_cache::Item<Vec<u16>> {
+impl Fetch<Vec<Idx>> for Frame {
+    fn fetch(&self) -> reuse_cache::Item<Vec<Idx>> {
         let mut ret = self.idx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret
