@@ -163,7 +163,7 @@ pub trait Colored {
     /// Executes a closure with the given color, then resets it to what it was before.
     ///
     /// ### Example
-    /// ```ignore rust
+    /// ```ignore,rust
     /// frame.with_color(rgb(255, 0, 0), |frame| {
     ///     frame.rect(0.0, 0.0, 50.0, 50.0).fill();
     ///     frame.rect(0.0, 51.0, 50.0, 50.0).fill();
