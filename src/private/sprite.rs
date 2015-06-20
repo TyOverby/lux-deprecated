@@ -11,7 +11,7 @@ use std::path::Path;
 use std::cmp::Eq;
 use std::hash::Hash;
 
-use super::types::Float;
+use super::types::{Float, Idx};
 use super::accessors::{
     HasDisplay,
     HasPrograms,
@@ -253,8 +253,8 @@ impl <'a, D> HasDrawCache for DrawableTexture<'a, D> where D: HasPrograms + HasD
     }
 }
 
-impl <'a, D> Fetch<Vec<u16>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
-    fn fetch(&self) -> reuse_cache::Item<Vec<u16>> {
+impl <'a, D> Fetch<Vec<Idx>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+    fn fetch(&self) -> reuse_cache::Item<Vec<Idx>> {
         reuse_cache::Item::from_value(vec![])
     }
 }

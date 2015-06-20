@@ -489,7 +489,7 @@ impl <'a, C> ContainedSprite<'a, C> where C: Canvas + 'a {
             TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
         ];
 
-        let idxs = [0u16, 1, 2, 0, 2, 3];
+        let idxs = [0, 1, 2, 0, 2, 3];
 
         let transform = generate_transform(&self.fields);
 
