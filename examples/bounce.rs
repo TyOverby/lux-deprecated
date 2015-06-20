@@ -2,13 +2,13 @@ extern crate lux;
 
 use lux::prelude::*;
 
-fn bound(l: f32, v: f32, h: f32) -> (f32, bool) {
-    if v <= l{
-        (l, true)
-    } else if v >= h {
-        (h, true)
+fn bound(low: f32, value: f32, high: f32) -> (f32, bool) {
+    if value <= low {
+        (low , true)
+    } else if value >= high {
+        (high, true)
     } else {
-        (v, false)
+        (value, false)
     }
 }
 

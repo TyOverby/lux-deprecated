@@ -27,9 +27,8 @@ fn main() {
         frame.sprite(&sprite, 0.0, 0.0).draw();
         frame.sprite(&sprite, x, y).draw();
 
-        // Set a special size
-        frame.sprite(&sprite, x - 32.0, y - 32.0).size(32.0, 32.0).draw();
-
-        frame.text("Hello World", 0.0, 0.0).draw().unwrap();
+        frame.sprite(&sprite, x - 32.0, y - 32.0)
+             .size(32.0, 32.0) // resize
+             .draw();
     }
 }

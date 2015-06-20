@@ -4,6 +4,8 @@ use lux::prelude::*;
 use lux::color;
 use lux::graphics::{PrimitiveCanvas, TrianglesList, ColorVertex};
 
+// Standard RGB triangle
+
 fn main() {
     let mut window = Window::new().unwrap();
     let vtxs = [
