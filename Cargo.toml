@@ -28,7 +28,7 @@ path = "./reuse-cache"
 [dependencies.glium]
 version = "0.4.*"
 default-features = false
-features = ["image"]
+features = ["image", "glutin"]
 
 [dependencies]
 glutin = "0.1.*"

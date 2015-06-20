@@ -22,7 +22,7 @@ fn main() {
 
         ColorVertex {
             pos: [x, y],
-            color: rgb(255, 0, 0) //rgb(value, value, value)
+            color: rgb(value, value, value)
         }
     }).collect();
 
