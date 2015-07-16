@@ -20,6 +20,7 @@ use super::accessors::{
     Fetch,
     DrawParamMod
 };
+use super::error::LuxError;
 use super::gfx_integration::{TexVertex, ColorVertex};
 use super::canvas::Canvas;
 use super::raw::{Transform, Colored};
@@ -28,8 +29,6 @@ use super::primitive_canvas::{CachedColorDraw, CachedTexDraw, DrawParamModifier}
 
 use vecmath;
 use reuse_cache;
-
-use image::ImageError;
 
 /// An owned texture on the hardware.
 pub struct Texture {
@@ -57,7 +56,7 @@ pub struct Sprite {
 /// A DrawableTexture can be obtained by calling `as_drawable` on a `Texture`
 /// object.
 pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
-    texture: glium::texture::TextureSurface<'a>,
+    texture: glium::framebuffer::SimpleFrameBuffer<'a>,
     d: &'a D,
 
     matrix: [[Float; 4]; 4],
@@ -97,23 +96,24 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
 /// TextureLoader is implemented on any object that can load textures.
 pub trait TextureLoader {
     /// Attempts to load a texture from a path.
-    fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, ImageError>;
+    fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, LuxError>;
 
     /// Attempts to load a texture from a `DynamicImage` from the `image` crate.
-    fn texture_from_image(&self, img: image::DynamicImage) -> Texture;
+    fn texture_from_image(&self, img: image::DynamicImage) -> Result<Texture, LuxError>;
 }
 
 impl <T> TextureLoader for T where T: HasDisplay {
-    fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, ImageError> {
+    fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, LuxError> {
         let img = try!(image::open(path)).flipv();
-        let img = glium::texture::Texture2d::new(self.borrow_display(), img);
-        Ok(Texture::new(img))
+        let img = try!(glium::texture::Texture2d::new(self.borrow_display(), img));
+        let tex = Texture::new(img);
+        Ok(tex)
     }
 
-    fn texture_from_image(&self, img: image::DynamicImage) -> Texture {
+    fn texture_from_image(&self, img: image::DynamicImage) -> Result<Texture, LuxError> {
         let img = img.flipv();
-        let img = glium::texture::Texture2d::new(self.borrow_display(), img);
-        Texture::new(img)
+        let img = try!(glium::texture::Texture2d::new(self.borrow_display(), img));
+        Ok(Texture::new(img))
     }
 }
 
@@ -122,17 +122,17 @@ impl Texture {
     ///
     /// Depending on the graphics card, the width and height might need
     /// to be powers of two.
-    pub fn empty<D: HasDisplay>(d: &D, width: u32, height: u32) -> Texture {
+    pub fn empty<D: HasDisplay>(d: &D, width: u32, height: u32) -> Result<Texture, LuxError> {
         use glium::Surface;
-        let backing = glium::texture::Texture2d::empty(d.borrow_display(), width, height);
+        let backing = try!(glium::texture::Texture2d::empty(d.borrow_display(), width, height));
         {
             let mut s = backing.as_surface();
             s.clear_depth(0.0);
             s.clear_stencil(0);
         }
-        Texture {
+        Ok(Texture {
             backing: backing
-        }
+        })
     }
 
     fn new(texture: glium::texture::Texture2d) -> Texture {
@@ -154,7 +154,7 @@ impl Texture {
 }
 
 impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
-    fn new(texture: glium::texture::TextureSurface<'a>, d: &'a D)
+    fn new(texture: glium::framebuffer::SimpleFrameBuffer<'a>, d: &'a D)
     -> DrawableTexture<'a, D> {
         use glium::Surface;
 
@@ -221,7 +221,7 @@ impl <'a, D> HasDisplay for DrawableTexture<'a, D> where D: HasDisplay + HasProg
 }
 
 impl <'a, D> HasSurface for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    type Out = glium::texture::TextureSurface<'a>;
+    type Out = glium::framebuffer::SimpleFrameBuffer<'a>;
 
     fn surface(&mut self) -> &mut Self::Out {
         &mut self.texture

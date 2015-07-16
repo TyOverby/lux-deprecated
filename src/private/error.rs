@@ -30,7 +30,13 @@ pub enum LuxError {
     /// been loaded yet.
     FontNotLoaded(String),
     /// An error that was produced while submitting a draw call
-    DrawError(glium::DrawError)
+    DrawError(glium::DrawError),
+    /// An error occured while creating a texture
+    TextureCreationError(glium::texture::TextureCreationError),
+    /// An error creating an index buffer occured
+    IndexBufferCreationError,
+    /// An error creating an vertex buffer occured
+    VertexBufferCreationError,
 }
 
 impl Error for LuxError {
@@ -43,8 +49,11 @@ impl Error for LuxError {
             &LuxError::IoError(ref ioe) => Error::description(ioe),
             &LuxError::FontNotLoaded(ref s) => &s[..],
             // TODO: implement this when glium/959 is finished.
+            &LuxError::ImageError(ref e) => e.description(),
             &LuxError::DrawError(_) => "",
-            &LuxError::ImageError(ref e) => e.description()
+            &LuxError::TextureCreationError(_) => "",
+            &LuxError::IndexBufferCreationError => "An index buffer could not be created",
+            &LuxError::VertexBufferCreationError => "A vertex buffer could not be created",
         }
     }
 }
@@ -61,6 +70,12 @@ impl From<FreetypeError> for LuxError {
 impl From<glium::ProgramCreationError> for LuxError {
     fn from(e: glium::ProgramCreationError) -> LuxError {
         LuxError::ShaderError(e)
+    }
+}
+
+impl From<glium::texture::TextureCreationError> for LuxError {
+    fn from(e: glium::texture::TextureCreationError) -> LuxError {
+        LuxError::TextureCreationError(e)
     }
 }
 
@@ -82,6 +97,19 @@ impl From<ImageError> for LuxError {
     }
 }
 
+
+impl From<glium::vertex::BufferCreationError> for LuxError {
+    fn from(_: glium::vertex::BufferCreationError) -> LuxError {
+        LuxError::VertexBufferCreationError
+    }
+}
+
+impl From<glium::index::BufferCreationError> for LuxError {
+    fn from(_: glium::index::BufferCreationError) -> LuxError {
+        LuxError::IndexBufferCreationError
+    }
+}
+
 impl std::fmt::Display for LuxError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         match self {
@@ -93,6 +121,9 @@ impl std::fmt::Display for LuxError {
             &LuxError::FontNotLoaded(ref s) => s.fmt(f),
             &LuxError::DrawError(ref e) => e.fmt(f),
             &LuxError::ImageError(ref e) => e.fmt(f),
+            &LuxError::TextureCreationError(ref e) => std::fmt::Debug::fmt(&e, f),
+            &LuxError::IndexBufferCreationError => "An index buffer could not be created".fmt(f),
+            &LuxError::VertexBufferCreationError => "A vertex buffer could not be created".fmt(f),
         }
     }
 }

@@ -153,8 +153,8 @@ impl Frame {
 
 impl Drop for Frame {
     fn drop(&mut self) {
-        //self.display.assert_no_error();
         self.flush_draw().unwrap();
+        self.f.set_finish().unwrap();
     }
 }
 
@@ -278,8 +278,13 @@ impl Window {
                 self.window_pos = (x as i32, y as i32);
                 self.event_store.push_back(WindowMoved(self.window_pos));
             }
-            glevent::MouseWheel(x, y) => {
-                self.event_store.push_back(MouseWheel(x as f32, y as f32));
+            glevent::MouseWheel(wheel_delta) => {
+                // TODO: remove this when this code breaks.
+                let wheel_delta = match wheel_delta {
+                    glutin::MouseScrollDelta::LineDelta(x, y) => MouseScrollDelta::LineDelta(x, y),
+                    glutin::MouseScrollDelta::PixelDelta(x, y) => MouseScrollDelta::PixelDelta(x, y)
+                };
+                self.event_store.push_back(MouseWheel(wheel_delta));
             }
             glevent::ReceivedCharacter(c) => {
                 last_char = Some(c);
@@ -322,8 +327,21 @@ impl Window {
             glevent::Closed => {
                 self.closed = true;
             }
-            glevent::Awakened => {  }
-            glevent::Refresh => {  }
+            glevent::DroppedFile(buf) => {
+                self.event_store.push_back(FileDropped(buf))
+            }
+            glevent::Awakened => {
+                // TODO: handle this
+            }
+            glevent::Refresh => {
+                // TODO: handle this
+            }
+            glevent::Suspended(_) => {
+
+            }
+            glevent::Touch(_) => {
+                // TODO: -- high priority -- handle this.
+            }
         }}
     }
 

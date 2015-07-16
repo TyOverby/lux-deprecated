@@ -1,5 +1,4 @@
 [package]
-
 name = "lux"
 version = "0.0.1"
 authors = ["Ty Overby <ty@pre-alpha.com>"]
@@ -26,12 +25,13 @@ git = "https://github.com/TyOverby/font-cache.git"
 path = "./reuse-cache"
 
 [dependencies.glium]
-version = "0.4.*"
+path = "../glium"
+version = "0.7.*"
 default-features = false
 features = ["image", "glutin"]
 
 [dependencies]
-glutin = "0.1.*"
+glutin = "0.3.1"
 image = "*"
 num = "*"
 clock_ticks = "*"

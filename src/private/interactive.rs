@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 use std::collections::vec_deque::{Iter, IterMut};
+use std::path::PathBuf;
+
 use self::keycodes::*;
 
 use super::types::Float;
@@ -19,13 +21,20 @@ pub struct EventIterator {
     backing: VecDeque<Event>
 }
 
+// TODO: pub use glutin::MouseScrollDelta when it derives PartialEq
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum MouseScrollDelta {
+    LineDelta(f32, f32),
+    PixelDelta(f32, f32)
+}
+
 /// An even coming from an Interactive object.
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Event {
     /// The mouse moved to this position.
     MouseMoved((i32, i32)),
     /// The mouse wheel moved by this delta.
-    MouseWheel(Float, Float),
+    MouseWheel(MouseScrollDelta),
     /// This mouse button was pushed down.
     MouseDown(MouseButton),
     /// This mouse button was released.
@@ -40,7 +49,9 @@ pub enum Event {
     /// The window was resized to this size.
     WindowResized((u32, u32)),
     /// The window was moved to this position on the screen.
-    WindowMoved((i32, i32))
+    WindowMoved((i32, i32)),
+    /// A file has been dragged-and-dropped into the screen.
+    FileDropped(PathBuf)
 }
 
 /// A handy enumeration for the buttons on a mouse.

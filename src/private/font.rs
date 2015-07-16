@@ -269,8 +269,8 @@ impl FontCache {
                 if let Some(face) = self.faces.get_mut(&name[..]) {
                     try!(face.set_pixel_sizes(0, size));
                     let rendered = try!(freetype_atlas::render(face, v.into_iter(), true));
-                    let (sprited, _) = rendered.map_img(move |img|(
-                       TextureLoader::texture_from_image(display, img).into_sprite(),()));
+                    let (sprited, _) = rendered.map_img(move |img| (
+                       TextureLoader::texture_from_image(display, img).unwrap().into_sprite(), ()));
                     Ok(entry.insert(sprited))
                 } else {
                     Err(LuxError::FontNotLoaded(name.to_string()))

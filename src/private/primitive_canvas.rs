@@ -272,7 +272,7 @@ Fetch<Vec<ColorVertex>>
         use glium::{Surface, IndexBuffer};
         use glium::index::NoIndices;
 
-        let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
+        let vertex_buffer = try!(glium::VertexBuffer::new(self.borrow_display(), points));
 
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
@@ -282,7 +282,7 @@ Fetch<Vec<ColorVertex>>
 
         match idxs {
             Some(idxs) => {
-                let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs, typ);
+                let idx_buf = try!(IndexBuffer::new(self.borrow_display(), typ, idxs));
                 let (frame, color_program) = self.surface_and_color_shader();
                 frame.draw(&vertex_buffer, &idx_buf, &color_program, &uniform, &draw_params).map_err(From::from)
             }
@@ -303,7 +303,7 @@ Fetch<Vec<ColorVertex>>
         use glium::{Surface, IndexBuffer};
         use glium::index::NoIndices;
 
-        let vertex_buffer = glium::VertexBuffer::new(self.borrow_display(), points);
+        let vertex_buffer = try!(glium::VertexBuffer::new(self.borrow_display(), points));
 
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
@@ -315,7 +315,7 @@ Fetch<Vec<ColorVertex>>
 
         match idxs {
             Some(idxs) => {
-                let idx_buf = IndexBuffer::from_raw(self.borrow_display(), idxs, typ);
+                let idx_buf = try!(IndexBuffer::new(self.borrow_display(), typ, idxs));
                 let (frame, tex_program) = self.surface_and_texture_shader();
                 frame.draw(&vertex_buffer, &idx_buf, &tex_program, &uniform, &draw_params).map_err(From::from)
             }
