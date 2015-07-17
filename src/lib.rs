@@ -8,12 +8,10 @@ extern crate glium;
 extern crate glutin;
 extern crate vecmath;
 extern crate image;
-extern crate freetype;
 extern crate num;
 extern crate clock_ticks;
 extern crate lux_constants;
 extern crate fontcache;
-extern crate freetype_atlas;
 extern crate reuse_cache;
 
 mod private;
@@ -32,10 +30,10 @@ pub mod color {
 pub mod graphics {
     //! All of 2d graphics related functionality.
     //!
-    //! Most of the drawing functionality are implemented in two main traits:
+    //! Most of the methods that actually let you draw things are defined in two main traits:
     //! `Canvas` and `PrimitiveCanvas`.
     //!
-    //! The two objects that implement those traits are `Frame` and
+    //! The two objects that can be drawn to are are `Frame` and
     //! `DrawableTexture`.
 
     pub use private::canvas::{Canvas, Rectangle, Ellipse, ContainedSprite};
@@ -94,7 +92,7 @@ pub mod game {
 pub mod font {
     //! Text drawing and loading functionality.
 
-    pub use private::font::{ContainedText, FontLoad, TextDraw};
+    pub use private::font::{ContainedText, TextDraw};
 }
 
 pub mod prelude {
@@ -107,7 +105,7 @@ pub mod prelude {
     pub use window::{Window, Frame};
     pub use interactive::EventIterator;
     pub use modifiers::{Colored, Transform};
-    pub use font::{FontLoad, TextDraw};
+    pub use font::{TextDraw};
     pub use graphics::TextureLoader;
 
     pub use LuxError;

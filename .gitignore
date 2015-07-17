@@ -1,5 +1,6 @@
 /target
 /constants/target
+/font-cache/target
 *.swp
 *.swo
 .DS_Store

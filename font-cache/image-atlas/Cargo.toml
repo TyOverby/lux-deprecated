@@ -1,0 +1,11 @@
+[package]
+name = "image-atlas"
+version = "0.1.0"
+authors = ["Ty Overby <ty@pre-alpha.com>"]
+
+[dependencies]
+rustc-serialize = "*"
+image = "*"
+
+[dependencies.fontcache]
+path = "../"

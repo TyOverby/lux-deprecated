@@ -16,16 +16,13 @@ path = "src/test_runner.rs"
 path = "./constants"
 
 [dependencies.fontcache]
-git = "https://github.com/TyOverby/font-cache.git"
-
-[dependencies.freetype-atlas]
-git = "https://github.com/TyOverby/font-cache.git"
+path = "./font-cache"
 
 [dependencies.reuse-cache]
 path = "./reuse-cache"
 
 [dependencies.glium]
-path = "../glium"
+git = "https://github.com/tomaka/glium.git"
 version = "0.7.*"
 default-features = false
 features = ["image", "glutin"]

@@ -1,16 +1,10 @@
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
-use std::path::Path;
 use std::convert::{Into, AsRef};
 
 use super::types::Float;
 
-use freetype;
-use glium;
 use vecmath;
 use fontcache;
-use freetype_atlas;
-use lux_constants::*;
 
 pub use fontcache::OutputPosition;
 
@@ -19,13 +13,23 @@ use super::color::Color;
 use super::error::{LuxError, LuxResult};
 use super::raw::{Colored, Transform};
 use super::canvas::Canvas;
-use super::sprite::{TextureLoader, Sprite};
+use super::sprite::{Sprite};
 
-#[doc(hidden)]
+/// Two components, Cache and Loader.
+///
+/// struct FontCache
+///     fn cache(name: &str, size: u32, RenderedFont<Sprite>)
+///     fn clear(name: &str, size: u32)
+///
+/// trait Loader
+///     fn load(name: &str, size: u32) -> LuxResult<RenderedFont<Sprite>>
+///     fn load_into(name: &str, size: u32, cache: &mut FontCache) -> LuxResult<()>
+///
+/// struct FreetypeLoader implements Loader
+
 pub struct FontCache {
-    library: freetype::Library,
-    faces: HashMap<String, freetype::Face<'static>>,
-    rendered: HashMap<(String, u32), fontcache::RenderedFont<Sprite>>,
+    rendered: HashMap<(String, u16), fontcache::RenderedFont<Sprite>>,
+    current: Option<(String, u16)>
 }
 
 /// A context that contains information about the text that can be drawn to the screen.
@@ -42,17 +46,6 @@ pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a +
 
 }
 
-/// This trait is implemented by all objects that can load fonts.
-pub trait FontLoad {
-    /// Loads a freetype font file from the provided path.
-    ///
-    /// The given name is used to identify the font later on.
-    fn load_font<P: AsRef<Path>>(&mut self, name: &str, path: &P) -> LuxResult<()>;
-
-    /// After loading a font, you may pre-render it at a specific size.
-    fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()>;
-}
-
 /// Any struct that implements `TextDraw` can draw text to it.
 ///
 /// The only known implementation of `TextDraw` is Frame.
@@ -61,16 +54,33 @@ pub trait TextDraw: Sized + Canvas + HasDisplay + HasFontCache {
     ///
     /// Text size and text font can be configured on the returned `ContainedText`
     /// object and finally drawn to the canvas with `.draw()`.
-    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: Float, y : Float) -> ContainedText<'a, Self, S> {
+    fn text<'a, S: 'a + AsRef<str>>(&'a mut self, text: S, x: Float, y: Float) -> ContainedText<'a, Self, S> {
+        let (font_fam, size) = self.font_cache().current.clone().unwrap_or_else(|| ("SourceCodePro".to_string(), 20));
+
         ContainedText {
             canvas: self,
             text: text,
             pos: (x, y),
-            size: 20,
-            font_family: "SourceCodePro".to_string(),
+            size: size,
+            font_family: font_fam,
             transform: vecmath::mat4_id(),
             color: [0.0, 0.0, 0.0, 1.0]
         }
+    }
+
+    /// Adds a rendered font to the font cache.
+    fn cache(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<Sprite>) {
+        self.font_cache().cache(name, size, rendered);
+    }
+
+    /// Removes a rendered font from the cache.
+    fn clear(&mut self, name: &str, size: u16) {
+        self.font_cache().clear(name, size);
+    }
+
+    /// Sets a font as the current font.
+    fn use_font(&mut self, name: &str, size: u16) -> LuxResult<()> {
+        self.font_cache().use_font(name, size).map(|_| ())
     }
 }
 
@@ -98,8 +108,7 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> Contai
         let positions = try!(self.absolute_positions());
 
         let mut fc = self.canvas.font_cache();
-        let d = self.canvas.borrow_display();
-        let rendered = try!(fc.use_font(d, self.font_family.as_ref(), self.size as u32));
+        let rendered = try!(fc.use_font(self.font_family.as_ref(), self.size));
 
         for OutputPosition{c: _, screen_pos: (x, y), char_info} in positions {
             let subsprite = rendered.image().sub_sprite(char_info.image_position,
@@ -117,22 +126,16 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> Contai
     /// Returns the height of one line of text with the selected font.
     pub fn line_height(&mut self) -> LuxResult<u32> {
         let mut fc = self.canvas.font_cache();
-        let d = self.canvas.borrow_display();
-        let rendered = fc.use_font(d, self.font_family.as_ref(), self.size as u32);
-        rendered.map(|rf| {
-            rf.line_height()
-        })
+        let rendered = try!(fc.use_font(self.font_family.as_ref(), self.size));
+        Ok(rendered.line_height())
     }
 
     /// Returns the maximum horizontal distance that a character can move the pen
     /// while drawing.
     pub fn max_advance(&mut self) -> LuxResult<u32> {
         let mut fc = self.canvas.font_cache();
-        let d = self.canvas.borrow_display();
-        let rendered = fc.use_font( d, self.font_family.as_ref(), self.size as u32);
-        rendered.map(|rf| {
-            rf.max_width()
-        })
+        let rendered = try!(fc.use_font(self.font_family.as_ref(), self.size));
+        Ok(rendered.max_width())
     }
 
     /// Returns an iterator containing each character in the input text along
@@ -142,12 +145,8 @@ impl <'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> Contai
     /// the text will be drawn on the screen. (they start at position (0, 0))
     pub fn absolute_positions(&mut self) -> LuxResult<Vec<OutputPosition>> {
         let mut fc = self.canvas.font_cache();
-        let d = self.canvas.borrow_display();
-        let rendered = fc.use_font( d, self.font_family.as_ref(), self.size as u32);
-
-        rendered.map(|rf| {
-            rf.positions_for(self.text.as_ref())
-        })
+        let rendered = try!(fc.use_font(self.font_family.as_ref(), self.size));
+        Ok(rendered.positions_for(self.text.as_ref()))
     }
 
     /// Returns an iterator containing each character in the input text along
@@ -214,68 +213,26 @@ where A: HasDisplay + HasFontCache + Canvas {
     }
 }
 
-impl <T> FontLoad for T where T: HasDisplay + HasFontCache {
-    fn load_font<P: AsRef<Path> + ?Sized>(&mut self, name: &str, path: &P) -> LuxResult<()> {
-        self.font_cache().load(name, path.as_ref())
-    }
-
-    fn preload_font(&mut self, name: &str, size: u32) -> LuxResult<()> {
-        let d = self.borrow_display();
-        self.font_cache().use_font(d, name, size).map(|_| ())
-    }
-}
-
 impl FontCache {
-    pub fn new(loader: &glium::Display) -> LuxResult<FontCache> {
-        // Load the default font.
-        let lib = try!(freetype::Library::init());
-
-        let mut fc = FontCache {
-            library: lib,
-            faces: HashMap::new(),
+    pub fn new() -> LuxResult<FontCache> {
+        let fc = FontCache {
             rendered: HashMap::new(),
+            current: None
         };
-
-        try!(fc.load_bytes("SourceCodePro", SOURCE_CODE_PRO_REGULAR));
-        try!(fc.use_font(loader, "SourceCodePro", 20));
-
         Ok(fc)
     }
 
-    pub fn load(&mut self, name: &str, path: &Path) -> LuxResult<()> {
-        let face = try!(self.library.new_face(&path, 0));
-        self.faces.insert(name.to_string(), face);
-        Ok(())
+    fn cache(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<Sprite>) {
+        self.rendered.insert((name.to_string(), size), rendered);
+    }
+    fn clear(&mut self, name: &str, size: u16) {
+        self.rendered.remove(&(name.to_string(), size));
     }
 
-    pub fn load_bytes(&mut self, name: &str, bytes: &'static [u8]) -> LuxResult<()> {
-        let face = try!(self.library.new_memory_face(&bytes[..], 0));
-        self.faces.insert(name.to_string(), face);
-        Ok(())
-    }
-
-    pub fn use_font<'a>(&'a mut self, display: &glium::Display, name: &str, size: u32)
-    -> LuxResult<&'a fontcache::RenderedFont<Sprite>> {
-        let mut v = vec![];
-        for i in 0u8 .. 255 {
-            v.push(i as char);
-        }
-
-        match self.rendered.entry((name.to_string(), size)) {
-            Entry::Occupied(entry) => {
-                Ok(entry.into_mut())
-            }
-            Entry::Vacant(entry) => {
-                if let Some(face) = self.faces.get_mut(&name[..]) {
-                    try!(face.set_pixel_sizes(0, size));
-                    let rendered = try!(freetype_atlas::render(face, v.into_iter(), true));
-                    let (sprited, _) = rendered.map_img(move |img| (
-                       TextureLoader::texture_from_image(display, img).unwrap().into_sprite(), ()));
-                    Ok(entry.insert(sprited))
-                } else {
-                    Err(LuxError::FontNotLoaded(name.to_string()))
-                }
-            }
-        }
+    fn use_font<'a>(&'a mut self, name: &str, size: u16) -> LuxResult<&'a fontcache::RenderedFont<Sprite>> {
+        let tup = (name.to_string(), size);
+        let res = self.rendered.get(&tup).ok_or_else(|| LuxError::FontNotLoaded(name.to_string()));
+        self.current = Some(tup);
+        res
     }
 }

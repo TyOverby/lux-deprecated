@@ -1,5 +1,4 @@
 pub use image::ImageError;
-pub use freetype::error::Error as FreetypeError;
 
 use std::error::Error;
 use std::io::Error as IoError;
@@ -22,8 +21,6 @@ pub enum LuxError {
     ImageError(ImageError),
     /// An error that can occur when compiling or linking shaders.
     ShaderError(glium::ProgramCreationError),
-    /// An error that comes from the freetype font system.
-    FontError(FreetypeError, String),
     /// An error that can occur when required I/O fails.
     IoError(IoError),
     /// An error that can occur when attempting to use a font that hasn't
@@ -45,7 +42,6 @@ impl Error for LuxError {
             &LuxError::WindowError(ref s) => &s[..],
             &LuxError::OpenGlError(ref s) => &s[..],
             &LuxError::ShaderError(ref e) => e.description(),
-            &LuxError::FontError(_, ref s) => &s[..],
             &LuxError::IoError(ref ioe) => Error::description(ioe),
             &LuxError::FontNotLoaded(ref s) => &s[..],
             // TODO: implement this when glium/959 is finished.
@@ -55,15 +51,6 @@ impl Error for LuxError {
             &LuxError::IndexBufferCreationError => "An index buffer could not be created",
             &LuxError::VertexBufferCreationError => "A vertex buffer could not be created",
         }
-    }
-}
-
-impl From<FreetypeError> for LuxError {
-    fn from(e: FreetypeError) -> LuxError {
-        use std::fmt::Write;
-        let mut bf = String::new();
-        write!(&mut bf, "{}", e).unwrap();
-        LuxError::FontError(e, bf)
     }
 }
 
@@ -116,7 +103,6 @@ impl std::fmt::Display for LuxError {
             &LuxError::WindowError(ref s) => s.fmt(f),
             &LuxError::OpenGlError(ref s) => s.fmt(f),
             &LuxError::ShaderError(ref e) => e.fmt(f),
-            &LuxError::FontError(ref e, _) => e.fmt(f),
             &LuxError::IoError(ref e) => e.fmt(f),
             &LuxError::FontNotLoaded(ref s) => s.fmt(f),
             &LuxError::DrawError(ref e) => e.fmt(f),

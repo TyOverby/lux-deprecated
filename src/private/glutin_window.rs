@@ -196,7 +196,7 @@ impl Window {
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
-        let font_cache = try!(FontCache::new(&display));
+        let font_cache = try!(FontCache::new());
 
         let window = Window {
             display: display,

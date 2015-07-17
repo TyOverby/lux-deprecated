@@ -3,10 +3,9 @@ name = "lux"
 version = "0.0.1"
 dependencies = [
  "clock_ticks 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "fontcache 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
- "freetype-atlas 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
+ "fontcache 0.1.0",
  "freetype-rs 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "glium 0.7.1",
+ "glium 0.7.1 (git+https://github.com/tomaka/glium.git)",
  "glutin 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "lux-constants 0.0.1",
@@ -114,22 +113,9 @@ dependencies = [
 [[package]]
 name = "fontcache"
 version = "0.1.0"
-source = "git+https://github.com/TyOverby/font-cache.git#c7b73049b51608b2b38f0b44bf6e4771d30d80ba"
 dependencies = [
  "glyph_packer 0.0.0 (git+https://github.com/TyOverby/glyph_packer.git)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "freetype-atlas"
-version = "0.1.0"
-source = "git+https://github.com/TyOverby/font-cache.git#c7b73049b51608b2b38f0b44bf6e4771d30d80ba"
-dependencies = [
- "fontcache 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
- "freetype-rs 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "glyph_packer 0.0.0 (git+https://github.com/TyOverby/glyph_packer.git)",
- "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "image-atlas 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
 ]
 
 [[package]]
@@ -221,6 +207,7 @@ dependencies = [
 [[package]]
 name = "glium"
 version = "0.7.1"
+source = "git+https://github.com/tomaka/glium.git#e1b49085700e98e4264b51cfa550bb9dc2f285cb"
 dependencies = [
  "gl_common 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl_generator 0.0.25 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -284,16 +271,6 @@ dependencies = [
  "gif 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "num 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "image-atlas"
-version = "0.1.0"
-source = "git+https://github.com/TyOverby/font-cache.git#c7b73049b51608b2b38f0b44bf6e4771d30d80ba"
-dependencies = [
- "fontcache 0.1.0 (git+https://github.com/TyOverby/font-cache.git)",
- "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
