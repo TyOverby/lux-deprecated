@@ -20,7 +20,7 @@ use super::accessors::{
     Fetch,
     DrawParamMod
 };
-use super::error::LuxError;
+use super::error::{LuxError, LuxResult};
 use super::gfx_integration::{TexVertex, ColorVertex};
 use super::canvas::Canvas;
 use super::raw::{Transform, Colored};
@@ -34,6 +34,7 @@ use reuse_cache;
 pub struct Texture {
     backing: glium::texture::Texture2d,
 }
+
 
 /// A ref-counted reference to a texture on the GPU.
 ///
@@ -93,6 +94,12 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
     pub mapping: HashMap<K, Sprite>
 }
 
+/// Implemented by any object that can be converted into a Sprite.
+pub trait IntoSprite {
+    /// Attempts to convert itself into a sprite.
+    fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite>;
+}
+
 /// TextureLoader is implemented on any object that can load textures.
 pub trait TextureLoader {
     /// Attempts to load a texture from a path.
@@ -100,6 +107,34 @@ pub trait TextureLoader {
 
     /// Attempts to load a texture from a `DynamicImage` from the `image` crate.
     fn texture_from_image(&self, img: image::DynamicImage) -> Result<Texture, LuxError>;
+}
+
+impl IntoSprite for Sprite {
+    fn into_sprite<D: HasDisplay>(self, _display: &D) -> LuxResult<Sprite> {
+        Ok(self)
+    }
+}
+
+impl IntoSprite for Texture {
+    fn into_sprite<D: HasDisplay>(self, _display: &D) -> LuxResult<Sprite> {
+        Ok(Sprite::new(Rc::new(self.backing)))
+    }
+}
+
+impl IntoSprite for image::DynamicImage {
+    fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite> {
+        let img = self.flipv();
+        let img = try!(glium::texture::Texture2d::new(display.borrow_display(), img));
+        let tex: Texture = Texture::new(img);
+        tex.into_sprite(display)
+    }
+}
+
+impl <'a> IntoSprite for &'a Path {
+    fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite> {
+        let img = try!(image::open(self)).flipv();
+        img.into_sprite(display)
+    }
 }
 
 impl <T> TextureLoader for T where T: HasDisplay {
@@ -142,7 +177,7 @@ impl Texture {
     }
 
     /// Converts this texture into a `Sprite`.
-    pub fn into_sprite(self) -> Sprite {
+    pub fn to_sprite(self) -> Sprite {
         Sprite::new(Rc::new(self.backing))
     }
 

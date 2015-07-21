@@ -13,19 +13,7 @@ use super::color::Color;
 use super::error::{LuxError, LuxResult};
 use super::raw::{Colored, Transform};
 use super::canvas::Canvas;
-use super::sprite::{Sprite};
-
-/// Two components, Cache and Loader.
-///
-/// struct FontCache
-///     fn cache(name: &str, size: u32, RenderedFont<Sprite>)
-///     fn clear(name: &str, size: u32)
-///
-/// trait Loader
-///     fn load(name: &str, size: u32) -> LuxResult<RenderedFont<Sprite>>
-///     fn load_into(name: &str, size: u32, cache: &mut FontCache) -> LuxResult<()>
-///
-/// struct FreetypeLoader implements Loader
+use super::sprite::{Sprite, IntoSprite};
 
 pub struct FontCache {
     rendered: HashMap<(String, u16), fontcache::RenderedFont<Sprite>>,
@@ -33,7 +21,7 @@ pub struct FontCache {
 }
 
 /// A context that contains information about the text that can be drawn to the screen.
-#[must_use = "text references just contains context, and must be drawn with `draw()`"]
+#[must_use = "text references just contains a drawing context, and must be drawn with `draw()`"]
 pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> {
     canvas: &'a mut C,
     text: S,
@@ -69,8 +57,11 @@ pub trait TextDraw: Sized + Canvas + HasDisplay + HasFontCache {
     }
 
     /// Adds a rendered font to the font cache.
-    fn cache(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<Sprite>) {
-        self.font_cache().cache(name, size, rendered);
+    fn cache<F: IntoSprite>(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<F>) -> LuxResult<()> {
+        let rendered = rendered.map(|i| i.into_sprite(self.borrow_display()))
+                               .reskin();
+        self.font_cache().cache(name, size, try!(rendered));
+        Ok(())
     }
 
     /// Removes a rendered font from the cache.

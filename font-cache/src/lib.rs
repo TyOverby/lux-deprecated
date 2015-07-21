@@ -113,10 +113,10 @@ impl <I> RenderedFont<I> {
 
     /// Applies a transformation function to the image of this rendered font
     /// producing a new rendered font with that image.
-    pub fn map_img<A, B, F>(self, mapping_fn: F) -> (RenderedFont<A>, B)
-    where F: FnOnce(I) -> (A, B) {
-        let (r, e) = mapping_fn(self.image);
-        (RenderedFont {
+    pub fn map<A, F>(self, mapping_fn: F) -> RenderedFont<A>
+    where F: FnOnce(I) -> A {
+        let r = mapping_fn(self.image);
+        RenderedFont {
             family_name: self.family_name,
             style_name: self.style_name,
 
@@ -125,7 +125,7 @@ impl <I> RenderedFont<I> {
             max_width: self.max_width,
             char_info: self.char_info,
             kerning: self.kerning
-        }, e)
+        }
 
     }
 
@@ -175,6 +175,40 @@ impl <I> RenderedFont<I> {
         }
 
         out
+    }
+}
+
+impl <A, E> RenderedFont<Result<A, E>> {
+    pub fn reskin(self) -> Result<RenderedFont<A>, E> {
+        match self {
+            RenderedFont {
+                family_name,
+                style_name,
+
+                image: Ok(i),
+                line_height,
+                max_width,
+                char_info,
+                kerning
+            } => {
+                Ok(RenderedFont {
+                    family_name: family_name,
+                    style_name: style_name,
+
+                    image: i,
+                    line_height: line_height,
+                    max_width: max_width,
+                    char_info: char_info,
+                    kerning: kerning
+                })
+            }
+            RenderedFont {
+                image: Err(e),
+                ..
+            } => {
+                Err(e)
+            }
+        }
     }
 }
 

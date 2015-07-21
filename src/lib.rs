@@ -1,4 +1,4 @@
-//! #Lux
+//! # Lux
 
 #![warn(missing_docs)]
 
