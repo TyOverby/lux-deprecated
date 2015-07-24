@@ -11,7 +11,6 @@ use std::convert::AsRef;
 use image::ImageFormat;
 
 pub use error::*;
-
 mod error;
 
 pub fn load_atlas(image: &[u8], metadata: &str)
@@ -19,7 +18,7 @@ pub fn load_atlas(image: &[u8], metadata: &str)
     let img = try!(image::load_from_memory(image)
                          .map_err(DecodingError::ImageDecodingError));
     let meta: RenderedFont<()> = try!(json::decode(metadata));
-    Ok(meta.map_img(move |_| (img, ())).0)
+    Ok(meta.map(move |_| img))
 }
 
 pub fn read_atlas<R1, R2>(image: &mut R1, metadata: &mut R2)
@@ -50,9 +49,12 @@ pub fn write_atlas<W1, W2>(rendered: RenderedFont<image::DynamicImage>,
                            metadata: &mut W2) -> EncodingResult<()>
 where W1: Write, W2: Write
 {
-    let (meta, img) = rendered.map_img(|i| ((), i));
-    let _ = try!(img.save(image, format));
-    let encoded = try!(json::encode(&meta));
+    let just_meta = rendered.map(|img| {
+        img.save(image, format).map(|_| ())
+    });
+    let just_meta = try!(just_meta.reskin());
+
+    let encoded = try!(json::encode(&just_meta));
     try!(metadata.write_all(encoded.as_bytes()));
     Ok(())
 }

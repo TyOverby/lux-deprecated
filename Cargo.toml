@@ -12,11 +12,21 @@ crate-type = ["dylib", "bin", "rlib"]
 name = "test_runner"
 path = "src/test_runner.rs"
 
+[features]
+default = [ "freetype-atlas" ]
+
 [dependencies.lux-constants]
 path = "./constants"
 
 [dependencies.fontcache]
 path = "./font-cache"
+
+[dependencies.image-atlas]
+path = "./font-cache/image-atlas"
+
+[dependencies.freetype-atlas]
+path = "./font-cache/freetype-atlas"
+optional = true
 
 [dependencies.reuse-cache]
 path = "./reuse-cache"
@@ -26,6 +36,7 @@ git = "https://github.com/tomaka/glium.git"
 version = "0.7.*"
 default-features = false
 features = ["image", "glutin"]
+
 
 [dependencies]
 glutin = "0.3.1"
