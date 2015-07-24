@@ -6,6 +6,7 @@ authors = ["Ty Overby <ty@pre-alpha.com>"]
 [dependencies]
 rustc-serialize = "*"
 image = "*"
+bincode = "0.3.0"
 
 [dependencies.fontcache]
 path = "../"

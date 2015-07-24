@@ -1,9 +1,10 @@
 extern crate rustc_serialize;
 extern crate image;
 extern crate fontcache;
+extern crate bincode;
 
 use fontcache::RenderedFont;
-use rustc_serialize::json;
+use bincode::{encode_into};
 use std::io::{Read, Write};
 use std::path::Path;
 use std::fs::File;
@@ -14,12 +15,12 @@ pub use error::*;
 mod error;
 
 /// Load the image portion of a font atlas from a slice of bytes, and the
-/// metadata portion from a str.
-pub fn load_atlas(image: &[u8], metadata: &str)
+/// metadata portion from a slice.
+pub fn load_atlas(image: &[u8], metadata: &[u8])
 -> DecodingResult<RenderedFont<image::DynamicImage>> {
     let img = try!(image::load_from_memory(image)
                          .map_err(DecodingError::ImageDecodingError));
-    let meta: RenderedFont<()> = try!(json::decode(metadata));
+    let meta: RenderedFont<()> = try!(bincode::decode(metadata));
     Ok(meta.map(move |_| img))
 }
 
@@ -29,10 +30,10 @@ pub fn read_atlas<R1, R2>(image: &mut R1, metadata: &mut R2)
 -> DecodingResult<RenderedFont<image::DynamicImage>>
 where R1: Read, R2: Read {
     let mut image_bytes = Vec::new();
-    let mut metadata_str = String::new();
+    let mut metadata_bytes = Vec::new();
     try!(image.read_to_end(&mut image_bytes));
-    try!(metadata.read_to_string(&mut metadata_str));
-    load_atlas(&image_bytes[..], &metadata_str[..])
+    try!(metadata.read_to_end(&mut metadata_bytes));
+    load_atlas(&image_bytes[..], &metadata_bytes[..])
 }
 
 
@@ -44,8 +45,8 @@ pub fn save_atlas<P1, P2>(rendered: RenderedFont<image::DynamicImage>,
                           metadata: P2) -> EncodingResult<()>
 where P1: AsRef<Path>, P2: AsRef<Path>
 {
-    let mut img_file = try!(File::open(image));
-    let mut meta_file = try!(File::open(metadata));
+    let mut img_file = try!(File::create(image));
+    let mut meta_file = try!(File::create(metadata));
     write_atlas(rendered, format, &mut img_file, &mut meta_file)
 }
 
@@ -62,7 +63,6 @@ where W1: Write, W2: Write
     });
     let just_meta = try!(just_meta.reskin());
 
-    let encoded = try!(json::encode(&just_meta));
-    try!(metadata.write_all(encoded.as_bytes()));
+    try!(bincode::encode_into(&just_meta, metadata, bincode::SizeLimit::Infinite));
     Ok(())
 }

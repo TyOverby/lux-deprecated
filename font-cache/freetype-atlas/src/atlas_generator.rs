@@ -46,19 +46,20 @@ fn main() {
     let library = freetype::Library::init().ok().expect("Freetype library failed to open!");
 
     for (file, sizes) in targets {
-        render_face(&library, file, sizes).unwrap();
+        render_face(&library, file, sizes);
     }
 }
 
-fn render_face(library: &freetype::Library, file: String, sizes: Vec<u32>) -> EncodingError<()> {
-    let mut face = try!(library.new_face(file.clone(), 0));
+fn render_face(library: &freetype::Library, file: String, sizes: Vec<u32>) {
+    let mut face = library.new_face(file.clone(), 0).unwrap();
     for size in sizes {
-        face.set_pixel_sizes(0, size);
-        let rendered = try!(freetype_atlas::render(&mut face, ascii(), true));
+        // TODO: change this to try once freetype::error::Error implements Error
+        face.set_pixel_sizes(0, size).unwrap();
+        // TODO: change this to try once freetype::error::Error implements Error
+        let rendered = freetype_atlas::render(&mut face, ascii(), true).unwrap();
         let name = file.split('.').nth(0).unwrap_or(&file[..]);
         let img_path = format!("{}-{}.png", name, size);
         let meta_path = format!("{}-{}.json", name, size);
-        try!(image_atlas::save_atlas(rendered, image::ImageFormat::PNG, img_path, meta_path));
+        image_atlas::save_atlas(rendered, image::ImageFormat::PNG, img_path, meta_path).unwrap();
     }
-    Ok(())
 }
