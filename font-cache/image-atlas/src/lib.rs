@@ -13,6 +13,8 @@ use image::ImageFormat;
 pub use error::*;
 mod error;
 
+/// Load the image portion of a font atlas from a slice of bytes, and the
+/// metadata portion from a str.
 pub fn load_atlas(image: &[u8], metadata: &str)
 -> DecodingResult<RenderedFont<image::DynamicImage>> {
     let img = try!(image::load_from_memory(image)
@@ -21,6 +23,8 @@ pub fn load_atlas(image: &[u8], metadata: &str)
     Ok(meta.map(move |_| img))
 }
 
+/// Load the image portion of a font atlas from one Reader, and the
+/// metadata portion from another.
 pub fn read_atlas<R1, R2>(image: &mut R1, metadata: &mut R2)
 -> DecodingResult<RenderedFont<image::DynamicImage>>
 where R1: Read, R2: Read {
@@ -32,6 +36,8 @@ where R1: Read, R2: Read {
 }
 
 
+/// Saves an atlas to two paths.  One for the image (using the specified image format),
+/// one for the font metadata.
 pub fn save_atlas<P1, P2>(rendered: RenderedFont<image::DynamicImage>,
                           format: ImageFormat,
                           image: P1,
@@ -43,6 +49,8 @@ where P1: AsRef<Path>, P2: AsRef<Path>
     write_atlas(rendered, format, &mut img_file, &mut meta_file)
 }
 
+/// Saves an atlas to two Writers.  One for the image (using the specified image format),
+/// one for the font metadata.
 pub fn write_atlas<W1, W2>(rendered: RenderedFont<image::DynamicImage>,
                            format: ImageFormat,
                            image: &mut W1,

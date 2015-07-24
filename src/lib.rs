@@ -12,6 +12,9 @@ extern crate num;
 extern crate clock_ticks;
 extern crate lux_constants;
 extern crate fontcache;
+#[cfg(feature="freetype-atlas")]
+extern crate freetype_atlas;
+extern crate image_atlas;
 extern crate reuse_cache;
 
 mod private;
@@ -93,6 +96,11 @@ pub mod font {
     //! Text drawing and loading functionality.
 
     pub use private::font::{ContainedText, TextDraw};
+
+    pub use image_atlas::{load_atlas, read_atlas, save_atlas, write_atlas};
+
+    #[cfg(feature="freetype-atlas")]
+    pub use freetype_atlas::{render};
 }
 
 pub mod prelude {

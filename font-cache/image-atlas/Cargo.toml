@@ -9,3 +9,6 @@ image = "*"
 
 [dependencies.fontcache]
 path = "../"
+
+[lib]
+name = "image_atlas"

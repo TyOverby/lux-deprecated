@@ -13,7 +13,7 @@ name = "test_runner"
 path = "src/test_runner.rs"
 
 [features]
-default = [ "freetype-atlas" ]
+default = [ ]
 
 [dependencies.lux-constants]
 path = "./constants"
