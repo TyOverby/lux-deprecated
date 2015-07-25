@@ -20,7 +20,7 @@ use super::accessors::{
 };
 
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
-use super::font::{FontCache, TextDraw, TextLoad};
+use super::font::{FontCache, TextLoad};
 use ::font::read_atlas;
 use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::Canvas;
@@ -224,13 +224,13 @@ impl Window {
             font_cache: Rc::new(RefCell::new(font_cache))
         };
 
-        let loaded_10 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_10_PNG),
-                                        &mut Cursor::new(lux_constants::SCP_10_BINCODE)));
+        let loaded_12 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_12_PNG),
+                                        &mut Cursor::new(lux_constants::SCP_12_BINCODE)));
         let loaded_20 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_20_PNG),
                                         &mut Cursor::new(lux_constants::SCP_20_BINCODE)));
         let loaded_30 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_30_PNG),
                                         &mut Cursor::new(lux_constants::SCP_30_BINCODE)));
-        try!(window.cache("SourceCodePro", 10, loaded_10));
+        try!(window.cache("SourceCodePro", 12, loaded_12));
         try!(window.cache("SourceCodePro", 20, loaded_20));
         try!(window.cache("SourceCodePro", 30, loaded_30));
 

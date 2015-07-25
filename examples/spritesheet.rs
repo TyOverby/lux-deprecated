@@ -13,7 +13,7 @@ fn main() {
     let texture =
         lux.load_texture_file(&Path::new("./test/minecraft_fixedwidth_font.png"))
            .unwrap()
-           .into_sprite();
+           .to_sprite();
     let sheet = texture.as_uniform_sprite_sheet(16, 16);
 
     while lux.is_open() {

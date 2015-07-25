@@ -10,14 +10,14 @@ fn main() {
     let mut lux = Window::new().unwrap();
 
     let sprite = {
-        let mut tex = Texture::empty(&lux, 256, 256);
+        let mut tex = Texture::empty(&lux, 256, 256).unwrap();
         {
             let mut tex = tex.as_drawable(&lux);
             tex.circle(50.0, 50.0, 50.0).color(rgb(255, 0, 0)).fill();
             tex.circle(150.0, 50.0, 50.0).color(rgb(255, 0, 0)).fill();
             tex.rect(50.0, 150.0, 200.0, 25.0).color(rgb(255, 0, 0)).fill();
         }
-        tex.into_sprite()
+        tex.to_sprite()
     };
 
     while lux.is_open() {

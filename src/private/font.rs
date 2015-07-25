@@ -58,6 +58,10 @@ pub trait TextDraw: TextLoad + Canvas {
 
 }
 
+/// Any struct that implements TextLoad can have fonts atlases added
+/// to an internal cache.
+///
+/// Fonts must be loaded before they can be drawn with `TextDraw`.
 pub trait TextLoad: Sized + HasDisplay + HasFontCache {
     /// Adds a rendered font to the font cache.
     fn cache<F: IntoSprite>(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<F>) -> LuxResult<()> {

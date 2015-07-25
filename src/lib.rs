@@ -43,6 +43,7 @@ pub mod graphics {
     pub use private::gfx_integration::{ColorVertex, TexVertex};
     pub use private::primitive_canvas::{PrimitiveCanvas, StencilType};
     pub use private::sprite::{
+        IntoSprite,
         Sprite,
         Texture,
         DrawableTexture,
@@ -108,7 +109,7 @@ pub mod prelude {
     //! recommended for average Lux usage.
 
     pub use color::{Color, rgb, rgba, hsv, hsva};
-    pub use graphics::Canvas;
+    pub use graphics::{Canvas, IntoSprite};
     pub use interactive::Interactive;
     pub use window::{Window, Frame};
     pub use interactive::EventIterator;

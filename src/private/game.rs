@@ -313,7 +313,7 @@ impl <G: Game> GameRunner<G> {
         frame.with_translate(WIDTH, h, |frame| {
             frame.with_rotation(-3.1415 / 2.0, |frame| {
                 frame.text(format!("FPS {} UPS {}", fps, ups), 0.0, 0.0)
-                     .size(10)
+                     .size(12)
                      .draw().unwrap();
             })
         });

@@ -296,7 +296,7 @@ pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
     /// let mut frame = window.frame();
     /// let logo = window.load_texture_file(&Path::new("./logo.png"))
     ///                  .unwrap()
-    ///                  .into_sprite();
+    ///                  .to_sprite();
     /// let (x, y) = (20.0, 50.0);
     /// frame.sprite(&logo, x, y).draw();
     ///# }
