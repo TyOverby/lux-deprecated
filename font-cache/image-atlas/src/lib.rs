@@ -11,6 +11,10 @@ use std::fs::File;
 use std::convert::AsRef;
 use image::ImageFormat;
 
+pub mod image_atlas_bincode {
+    pub use bincode::*;
+}
+
 pub use error::*;
 mod error;
 

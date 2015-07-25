@@ -6,6 +6,7 @@ use glutin;
 use vecmath;
 use glium;
 use reuse_cache;
+use lux_constants;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
@@ -19,7 +20,8 @@ use super::accessors::{
 };
 
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
-use super::font::FontCache;
+use super::font::{FontCache, TextDraw, TextLoad};
+use ::font::read_atlas;
 use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::Canvas;
 use super::color::Color;
@@ -167,6 +169,7 @@ impl Window {
     /// Constructs a new window with the default settings.
     pub fn new() -> LuxResult<Window> {
         use glium::DisplayBuild;
+        use std::io::Cursor;
 
         let window_builder =
             WindowBuilder::new()
@@ -198,7 +201,7 @@ impl Window {
 
         let font_cache = try!(FontCache::new());
 
-        let window = Window {
+        let mut window = Window {
             display: display,
             color_program: Rc::new(color_program),
             tex_program: Rc::new(tex_program),
@@ -220,6 +223,17 @@ impl Window {
             code_to_char: HashMap::new(),
             font_cache: Rc::new(RefCell::new(font_cache))
         };
+
+        let loaded_10 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_10_PNG),
+                                        &mut Cursor::new(lux_constants::SCP_10_BINCODE)));
+        let loaded_20 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_20_PNG),
+                                        &mut Cursor::new(lux_constants::SCP_20_BINCODE)));
+        let loaded_30 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_30_PNG),
+                                        &mut Cursor::new(lux_constants::SCP_30_BINCODE)));
+        try!(window.cache("SourceCodePro", 10, loaded_10));
+        try!(window.cache("SourceCodePro", 20, loaded_20));
+        try!(window.cache("SourceCodePro", 30, loaded_30));
+
 
         Ok(window)
     }

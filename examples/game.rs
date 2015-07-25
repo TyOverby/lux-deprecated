@@ -13,9 +13,6 @@ struct MyGame {
 }
 
 impl Game for MyGame {
-    fn prepare_window(&mut self, window: &mut Window) -> LuxResult<()> {
-        window.preload_font("SourceCodePro", 10)
-    }
 
     fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) -> LuxResult<()> {
         fn clamp(low: f32, value: f32, high: f32) -> f32 {

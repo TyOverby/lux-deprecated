@@ -24,6 +24,15 @@ version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "bincode"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "byteorder 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "bitflags"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -290,6 +299,7 @@ dependencies = [
 name = "image-atlas"
 version = "0.1.0"
 dependencies = [
+ "bincode 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fontcache 0.1.0",
  "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",

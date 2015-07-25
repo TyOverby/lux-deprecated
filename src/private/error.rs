@@ -6,6 +6,8 @@ use std::convert::From;
 use std;
 
 use glium;
+use image_atlas;
+use image_atlas::image_atlas_bincode as bincode;
 
 /// A result returning either a value or a lux-generated error.
 pub type LuxResult<A> = Result<A, LuxError>;
@@ -34,6 +36,8 @@ pub enum LuxError {
     IndexBufferCreationError,
     /// An error creating an vertex buffer occured
     VertexBufferCreationError,
+    /// An error occurred when reading the metadata of a font
+    FontMetadataError(bincode::DecodingError)
 }
 
 impl Error for LuxError {
@@ -50,6 +54,18 @@ impl Error for LuxError {
             &LuxError::TextureCreationError(_) => "",
             &LuxError::IndexBufferCreationError => "An index buffer could not be created",
             &LuxError::VertexBufferCreationError => "A vertex buffer could not be created",
+            &LuxError::FontMetadataError(ref e) => e.description()
+        }
+    }
+}
+
+impl From<image_atlas::DecodingError> for LuxError {
+    fn from(e: image_atlas::DecodingError) -> LuxError {
+        use image_atlas::DecodingError::*;
+        match e {
+            ImageDecodingError(e) => LuxError::ImageError(e),
+            BincodeDecodingError(e) => LuxError::FontMetadataError(e),
+            IoError(e) => LuxError::IoError(e)
         }
     }
 }
@@ -110,6 +126,7 @@ impl std::fmt::Display for LuxError {
             &LuxError::TextureCreationError(ref e) => std::fmt::Debug::fmt(&e, f),
             &LuxError::IndexBufferCreationError => "An index buffer could not be created".fmt(f),
             &LuxError::VertexBufferCreationError => "A vertex buffer could not be created".fmt(f),
+            &LuxError::FontMetadataError(ref e) => e.fmt(f)
         }
     }
 }

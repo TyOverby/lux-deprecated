@@ -37,7 +37,7 @@ pub struct ContainedText<'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a +
 /// Any struct that implements `TextDraw` can draw text to it.
 ///
 /// The only known implementation of `TextDraw` is Frame.
-pub trait TextDraw: Sized + Canvas + HasDisplay + HasFontCache {
+pub trait TextDraw: TextLoad + Canvas {
     /// Starts drawing some text at a position.
     ///
     /// Text size and text font can be configured on the returned `ContainedText`
@@ -56,6 +56,9 @@ pub trait TextDraw: Sized + Canvas + HasDisplay + HasFontCache {
         }
     }
 
+}
+
+pub trait TextLoad: Sized + HasDisplay + HasFontCache {
     /// Adds a rendered font to the font cache.
     fn cache<F: IntoSprite>(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<F>) -> LuxResult<()> {
         let rendered = rendered.map(|i| i.into_sprite(self.borrow_display()))
@@ -73,9 +76,11 @@ pub trait TextDraw: Sized + Canvas + HasDisplay + HasFontCache {
     fn use_font(&mut self, name: &str, size: u16) -> LuxResult<()> {
         self.font_cache().use_font(name, size).map(|_| ())
     }
+
 }
 
-impl <T> TextDraw for T where T: Sized + Canvas + HasDisplay + HasFontCache { }
+impl <T> TextLoad for T where T: Sized + HasDisplay + HasFontCache { }
+impl <T> TextDraw for T where T: TextLoad + Canvas {  }
 
 impl <'a, C: 'a + HasDisplay + HasFontCache + Canvas, S: 'a + AsRef<str>> ContainedText<'a, C, S> {
     /// Sets the size of the font.

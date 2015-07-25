@@ -95,7 +95,7 @@ pub mod game {
 pub mod font {
     //! Text drawing and loading functionality.
 
-    pub use private::font::{ContainedText, TextDraw};
+    pub use private::font::{ContainedText, TextDraw, TextLoad};
 
     pub use image_atlas::{load_atlas, read_atlas, save_atlas, write_atlas};
 
