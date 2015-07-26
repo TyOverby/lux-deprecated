@@ -32,23 +32,22 @@ optional = true
 path = "./reuse-cache"
 
 [dependencies.glium]
-git = "https://github.com/tomaka/glium.git"
-version = "0.7.*"
+version = "0.8.0"
 default-features = false
 features = ["image", "glutin"]
 
 
 [dependencies]
 glutin = "0.3.1"
-image = "*"
-num = "*"
-clock_ticks = "*"
-vecmath = "*"
-freetype-rs = "*"
+image = "0.3.11"
+num = "0.1.25"
+clock_ticks = "0.0.6"
+vecmath = "0.1.1"
+freetype-rs = "0.1.0"
 
 [dev-dependencies]
-noise = "*"
-nd_iter = "*"
+noise = "0.1.5"
+nd_iter = "0.0.4"
 
 [profile.dev]
 opt-level = 1

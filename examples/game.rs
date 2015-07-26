@@ -13,8 +13,8 @@ struct MyGame {
 }
 
 impl Game for MyGame {
-
     fn update(&mut self, dt: f32, window: &mut Window, _events: &mut EventIterator) -> LuxResult<()> {
+        // Clamps a value between low and high bounds
         fn clamp(low: f32, value: f32, high: f32) -> f32 {
             if value < low {
                 low
@@ -60,8 +60,8 @@ impl Game for MyGame {
         let (px, py) = self.pos;
         let (vx, vy) = self.speed;
 
-        try!(frame.text("Use the [w][a][s][d] keys to move around", 5.0, 5.0).size(20).draw());
-        try!(frame.text("Hold the spacebar to see the debug fps viewer", 5.0, 25.0).size(20).draw());
+        try!(frame.text("Use the [w][a][s][d] keys to move around.", 5.0, 5.0).size(20).draw());
+        try!(frame.text("Hold the spacebar to see the debug fps viewer.", 5.0, 25.0).size(20).draw());
 
         frame.circle(px + vx * lag, py + vy * lag, PLAYER_SIZE)
              .rotate_around((PLAYER_SIZE / 2.0, PLAYER_SIZE / 2.0), self.rotation)
@@ -71,7 +71,9 @@ impl Game for MyGame {
         Ok(())
     }
 
-    fn updates_per_s(&self) -> f64 { 120.0 }
+    fn updates_per_s(&self) -> f64 {
+        120.0
+    }
 
     fn show_fps(&self, window: &Window) -> bool {
         window.is_key_pressed(' ')
@@ -84,5 +86,6 @@ fn main() {
         speed: (10.0, 10.0),
         rotation: 0.0
     };
+
     game.run_until_end().unwrap();
 }
