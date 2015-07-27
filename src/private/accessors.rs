@@ -11,7 +11,7 @@ use super::primitive_canvas::{
     StencilState
 };
 use glium;
-use reuse_cache;
+use poison_pool;
 
 /// Implemented on objects that have a glutin Display.
 pub trait HasDisplay {
@@ -106,5 +106,5 @@ pub trait HasDrawCache {
 /// Implemented on objects that can hand off items from a cache.
 pub trait Fetch<T> {
     /// Fetches an item.
-    fn fetch(&self) -> reuse_cache::Item<T>;
+    fn fetch(&self) -> poison_pool::Item<T>;
 }

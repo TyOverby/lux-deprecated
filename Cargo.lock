@@ -4,6 +4,8 @@ version = "0.0.1"
 dependencies = [
  "clock_ticks 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "font-atlas 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "font-atlas-freetype 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "font-atlas-image 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "freetype-rs 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glium 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -19,6 +21,15 @@ dependencies = [
 name = "android_glue"
 version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "bincode"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "byteorder 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "bitflags"
@@ -115,6 +126,29 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "glyph_packer 0.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "font-atlas-freetype"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "font-atlas 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "font-atlas-image 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "freetype-rs 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "glyph_packer 0.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "font-atlas-image"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bincode 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "font-atlas 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

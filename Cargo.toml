@@ -2,6 +2,8 @@
 name = "lux"
 version = "0.0.1"
 authors = ["Ty Overby <ty@pre-alpha.com>"]
+description = "A super simple 2d-graphics engine that handles windowing and events for you!"
+license = "MIT"
 
 [lib]
 name = "lux"
@@ -14,11 +16,10 @@ path = "src/test_runner.rs"
 
 [features]
 default = [ ]
+freetype = ["font-atlas-freetype"]
 
-[dependencies.font-atlas]
-version = "0.1.0"
-
-[dependencies.poison-pool]
+[dependencies.font-atlas-freetype]
+optional = true
 version = "0.1.0"
 
 [dependencies.glium]
@@ -26,8 +27,10 @@ version = "0.8.0"
 default-features = false
 features = ["image", "glutin"]
 
-
 [dependencies]
+poison-pool = "0.1.0"
+font-atlas = "0.1.0"
+font-atlas-image = "0.1.0"
 glutin = "0.3.1"
 image = "0.3.11"
 num = "0.1.25"

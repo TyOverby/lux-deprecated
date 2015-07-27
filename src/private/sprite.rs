@@ -28,7 +28,7 @@ use super::color::Color;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw, DrawParamModifier};
 
 use vecmath;
-use reuse_cache;
+use poison_pool;
 
 /// An owned texture on the hardware.
 pub struct Texture {
@@ -289,20 +289,20 @@ impl <'a, D> HasDrawCache for DrawableTexture<'a, D> where D: HasPrograms + HasD
 }
 
 impl <'a, D> Fetch<Vec<Idx>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
-    fn fetch(&self) -> reuse_cache::Item<Vec<Idx>> {
-        reuse_cache::Item::from_value(vec![])
+    fn fetch(&self) -> poison_pool::Item<Vec<Idx>> {
+        poison_pool::Item::from_value(vec![])
     }
 }
 
 impl <'a, D> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
-    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
-        reuse_cache::Item::from_value(vec![])
+    fn fetch(&self) -> poison_pool::Item<Vec<TexVertex>> {
+        poison_pool::Item::from_value(vec![])
     }
 }
 
 impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
-    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
-        reuse_cache::Item::from_value(vec![])
+    fn fetch(&self) -> poison_pool::Item<Vec<ColorVertex>> {
+        poison_pool::Item::from_value(vec![])
     }
 }
 

@@ -8,8 +8,6 @@ pub mod sprite;
 pub mod font;
 pub mod error;
 pub mod colors;
-//pub mod extend;
-//pub mod loader;
 pub mod game;
 pub mod accessors;
 pub mod primitive_canvas;
@@ -17,7 +15,7 @@ pub mod shaders;
 pub mod types;
 
 pub mod constants {
-    #[cfg(feature="freetype-atlas")]
+    #[cfg(feature="freetype")]
     pub static SOURCE_CODE_PRO_REGULAR: &'static[u8] =
         include_bytes!("../../resources/SourceCodePro-Regular.ttf");
 
