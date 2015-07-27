@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `DrawParameters` struct in crate `glium`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, DrawParameters">
+
+    <title>glium::draw_parameters::DrawParameters - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>glium</a>::<wbr><a href='index.html'>draw_parameters</a></p><script>window.sidebarCurrent = {name: 'DrawParameters', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>glium</a>::<wbr><a href='index.html'>draw_parameters</a>::<wbr><a class='struct' href=''>DrawParameters</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-21297' class='srclink' href='../../src/glium/draw_parameters/mod.rs.html#546-788' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct DrawParameters&lt;'a&gt; {
+    pub depth_test: <a class='enum' href='../../glium/draw_parameters/enum.DepthTest.html' title='glium::draw_parameters::DepthTest'>DepthTest</a>,
+    pub depth_write: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub depth_range: <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</a>,
+    pub stencil_test_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilTest.html' title='glium::draw_parameters::StencilTest'>StencilTest</a>,
+    pub stencil_reference_value_clockwise: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,
+    pub stencil_write_mask_clockwise: <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>,
+    pub stencil_fail_operation_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilOperation.html' title='glium::draw_parameters::StencilOperation'>StencilOperation</a>,
+    pub stencil_pass_depth_fail_operation_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilOperation.html' title='glium::draw_parameters::StencilOperation'>StencilOperation</a>,
+    pub stencil_depth_pass_operation_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilOperation.html' title='glium::draw_parameters::StencilOperation'>StencilOperation</a>,
+    pub stencil_test_counter_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilTest.html' title='glium::draw_parameters::StencilTest'>StencilTest</a>,
+    pub stencil_reference_value_counter_clockwise: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,
+    pub stencil_write_mask_counter_clockwise: <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>,
+    pub stencil_fail_operation_counter_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilOperation.html' title='glium::draw_parameters::StencilOperation'>StencilOperation</a>,
+    pub stencil_pass_depth_fail_operation_counter_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilOperation.html' title='glium::draw_parameters::StencilOperation'>StencilOperation</a>,
+    pub stencil_depth_pass_operation_counter_clockwise: <a class='enum' href='../../glium/draw_parameters/enum.StencilOperation.html' title='glium::draw_parameters::StencilOperation'>StencilOperation</a>,
+    pub blending_function: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../glium/draw_parameters/enum.BlendingFunction.html' title='glium::draw_parameters::BlendingFunction'>BlendingFunction</a>&gt;,
+    pub color_mask: <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</a>,
+    pub line_width: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,
+    pub point_size: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,
+    pub backface_culling: <a class='enum' href='../../glium/draw_parameters/enum.BackfaceCullingMode.html' title='glium::draw_parameters::BackfaceCullingMode'>BackfaceCullingMode</a>,
+    pub polygon_mode: <a class='enum' href='../../glium/draw_parameters/enum.PolygonMode.html' title='glium::draw_parameters::PolygonMode'>PolygonMode</a>,
+    pub multisampling: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub dithering: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub viewport: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../glium/struct.Rect.html' title='glium::Rect'>Rect</a>&gt;,
+    pub scissor: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../glium/struct.Rect.html' title='glium::Rect'>Rect</a>&gt;,
+    pub draw_primitives: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub samples_passed_query: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../glium/draw_parameters/enum.SamplesQueryParam.html' title='glium::draw_parameters::SamplesQueryParam'>SamplesQueryParam</a>&lt;'a&gt;&gt;,
+    pub time_elapsed_query: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='../../glium/draw_parameters/struct.TimeElapsedQuery.html' title='glium::draw_parameters::TimeElapsedQuery'>TimeElapsedQuery</a>&gt;,
+    pub primitives_generated_query: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='../../glium/draw_parameters/struct.PrimitivesGeneratedQuery.html' title='glium::draw_parameters::PrimitivesGeneratedQuery'>PrimitivesGeneratedQuery</a>&gt;,
+    pub transform_feedback_primitives_written_query: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='../../glium/draw_parameters/struct.TransformFeedbackPrimitivesWrittenQuery.html' title='glium::draw_parameters::TransformFeedbackPrimitivesWrittenQuery'>TransformFeedbackPrimitivesWrittenQuery</a>&gt;,
+    pub condition: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../glium/draw_parameters/struct.ConditionalRendering.html' title='glium::draw_parameters::ConditionalRendering'>ConditionalRendering</a>&lt;'a&gt;&gt;,
+    pub transform_feedback: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='../../glium/vertex/struct.TransformFeedbackSession.html' title='glium::vertex::TransformFeedbackSession'>TransformFeedbackSession</a>&lt;'a&gt;&gt;,
+    pub smooth: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../glium/draw_parameters/enum.Smooth.html' title='glium::draw_parameters::Smooth'>Smooth</a>&gt;,
+}</pre><div class='docblock'><p>Represents the parameters to use when drawing.</p>
+
+<p>Example:</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='ident'>params</span> <span class='op'>=</span> <span class='ident'>glium</span>::<span class='ident'>DrawParameters</span> {
+    <span class='ident'>depth_test</span>: <span class='ident'>glium</span>::<span class='ident'>DepthTest</span>::<span class='ident'>IfLess</span>,
+    <span class='ident'>depth_write</span>: <span class='boolval'>true</span>,
+    .. <span class='ident'>Default</span>::<span class='ident'>default</span>()
+};
+</pre>
+</div><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.depth_test'><code>depth_test</code></td><td><div class='docblock'><p>The function that the GPU will use to determine whether to write over an existing pixel
+on the target. Don&#39;t forget to set <code>depth_write</code> appropriately if you use a depth test.</p>
+
+<p>See the <code>DepthTest</code> documentation for more details.</p>
+
+<p>The default is <code>Overwrite</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.depth_write'><code>depth_write</code></td><td><div class='docblock'><p>Sets whether the GPU will write the depth values on the depth buffer if they pass the
+depth test.</p>
+
+<p>The default is <code>false</code>. You most likely want <code>true</code> if you&#39;re doing depth testing.</p>
+
+<p>If you pass <code>true</code> but don&#39;t have a depth buffer available, drawing will produce
+a <code>NoDepthBuffer</code> error.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.depth_range'><code>depth_range</code></td><td><div class='docblock'><p>The range of possible Z values in surface coordinates.</p>
+
+<p>Just like OpenGL turns X and Y coordinates between <code>-1.0</code> and <code>1.0</code> into surface
+coordinates, it will also map your Z coordinates to a certain range which you can
+specify here.</p>
+
+<p>The two values must be between <code>0.0</code> and <code>1.0</code>, anything outside this range will result
+in a panic. By default the depth range is <code>(0.0, 1.0)</code>.</p>
+
+<p>The first value of the tuple must be the &quot;near&quot; value, where <code>-1.0</code> will be mapped.
+The second value must be the &quot;far&quot; value, where <code>1.0</code> will be mapped.
+It is possible for the &quot;near&quot; value to be greater than the &quot;far&quot; value.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_test_clockwise'><code>stencil_test_clockwise</code></td><td><div class='docblock'><p>A comparaison against the existing value in the stencil buffer.</p>
+
+<p>Only relevant for faces that are clockwise on the target surface. Other faces, points and
+lines use <code>stencil_test_counter_clockwise</code> instead.</p>
+
+<p>The default value is <code>AlwaysPass</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_reference_value_clockwise'><code>stencil_reference_value_clockwise</code></td><td><div class='docblock'><p>Reference value that is used by <code>stencil_test_clockwise</code>, <code>stencil_fail_operation_clockwise</code>,
+<code>stencil_pass_depth_fail_operation_clockwise</code> and <code>stencil_depth_pass_operation_clockwise</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_write_mask_clockwise'><code>stencil_write_mask_clockwise</code></td><td><div class='docblock'><p>Allows specifying a mask when writing data on the stencil buffer.</p>
+
+<p>Only relevant for faces that are clockwise on the target surface. Other faces, points and
+lines use <code>stencil_write_mask_counter_clockwise</code> instead.</p>
+
+<p>The default value is <code>0xffffffff</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_fail_operation_clockwise'><code>stencil_fail_operation_clockwise</code></td><td><div class='docblock'><p>Specifies the operation to do when a fragment fails the stencil test.</p>
+
+<p>The stencil test is the test specified by <code>stencil_test_clockwise</code>.</p>
+
+<p>Only relevant for faces that are clockwise on the target surface. Other faces, points and
+lines use <code>stencil_fail_operation_counter_clockwise</code> instead.</p>
+
+<p>The default value is <code>Keep</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_pass_depth_fail_operation_clockwise'><code>stencil_pass_depth_fail_operation_clockwise</code></td><td><div class='docblock'><p>Specifies the operation to do when a fragment passes the stencil test but fails
+the depth test.</p>
+
+<p>The stencil test is the test specified by <code>stencil_test_clockwise</code>.</p>
+
+<p>Only relevant for faces that are clockwise on the target surface. Other faces, points and
+lines use <code>stencil_pass_depth_fail_operation_counter_clockwise</code> instead.</p>
+
+<p>The default value is <code>Keep</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_depth_pass_operation_clockwise'><code>stencil_depth_pass_operation_clockwise</code></td><td><div class='docblock'><p>Specifies the operation to do when a fragment passes both the stencil and depth tests.</p>
+
+<p>The stencil test is the test specified by <code>stencil_test_clockwise</code>.</p>
+
+<p>Only relevant for faces that are clockwise on the target surface. Other faces, points and
+lines use <code>stencil_depth_pass_operation_counter_clockwise</code> instead.</p>
+
+<p>The default value is <code>Keep</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_test_counter_clockwise'><code>stencil_test_counter_clockwise</code></td><td><div class='docblock'><p>A comparaison against the existing value in the stencil buffer.</p>
+
+<p>Only relevant for points, lines and faces that are counter-clockwise on the target surface.
+Other faces use <code>stencil_test_counter_clockwise</code> instead.</p>
+
+<p>The default value is <code>AlwaysPass</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_reference_value_counter_clockwise'><code>stencil_reference_value_counter_clockwise</code></td><td><div class='docblock'><p>Reference value that is used by <code>stencil_test_counter_clockwise</code>,
+<code>stencil_fail_operation_counter_clockwise</code>,
+<code>stencil_pass_depth_fail_operation_counter_clockwise</code> and
+<code>stencil_depth_pass_operation_counter_clockwise</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_write_mask_counter_clockwise'><code>stencil_write_mask_counter_clockwise</code></td><td><div class='docblock'><p>Allows specifying a mask when writing data on the stencil buffer.</p>
+
+<p>Only relevant for points, lines and faces that are counter-clockwise on the target surface.
+Other faces use <code>stencil_write_mask_clockwise</code> instead.</p>
+
+<p>The default value is <code>0xffffffff</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_fail_operation_counter_clockwise'><code>stencil_fail_operation_counter_clockwise</code></td><td><div class='docblock'><p>Specifies the operation to do when a fragment fails the stencil test.</p>
+
+<p>The stencil test is the test specified by <code>stencil_test_counter_clockwise</code>.</p>
+
+<p>Only relevant for faces that are counter-clockwise on the target surface. Other faces
+use <code>stencil_fail_operation_clockwise</code> instead.</p>
+
+<p>The default value is <code>Keep</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_pass_depth_fail_operation_counter_clockwise'><code>stencil_pass_depth_fail_operation_counter_clockwise</code></td><td><div class='docblock'><p>Specifies the operation to do when a fragment passes the stencil test but fails
+the depth test.</p>
+
+<p>The stencil test is the test specified by <code>stencil_test_counter_clockwise</code>.</p>
+
+<p>Only relevant for faces that are counter-clockwise on the target surface. Other faces
+use <code>stencil_pass_depth_fail_operation_clockwise</code> instead.</p>
+
+<p>The default value is <code>Keep</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.stencil_depth_pass_operation_counter_clockwise'><code>stencil_depth_pass_operation_counter_clockwise</code></td><td><div class='docblock'><p>Specifies the operation to do when a fragment passes both the stencil and depth tests.</p>
+
+<p>The stencil test is the test specified by <code>stencil_test_counter_clockwise</code>.</p>
+
+<p>Only relevant for faces that are counter-clockwise on the target surface. Other faces
+use <code>stencil_depth_pass_operation_clockwise</code> instead.</p>
+
+<p>The default value is <code>Keep</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.blending_function'><code>blending_function</code></td><td><div class='docblock'><p>The function that the GPU will use to merge the existing pixel with the pixel that is
+being written.</p>
+
+<p><code>None</code> means &quot;don&#39;t care&quot; (usually when you know that the alpha is always 1).</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.color_mask'><code>color_mask</code></td><td><div class='docblock'><p>Allows you to disable some color components.</p>
+
+<p>This affects all attachments to the framebuffer. It&#39;s at the same level as the
+blending function.</p>
+
+<p>The parameters are in order: red, green, blue, alpha. <code>true</code> means that the given
+component will be written, <code>false</code> means that it will be ignored. The default value
+is <code>(true, true, true, true)</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.line_width'><code>line_width</code></td><td><div class='docblock'><p>Width in pixels of the lines to draw when drawing lines.</p>
+
+<p><code>None</code> means &quot;don&#39;t care&quot;. Use this when you don&#39;t draw lines.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.point_size'><code>point_size</code></td><td><div class='docblock'><p>Diameter in pixels of the points to draw when drawing points.</p>
+
+<p><code>None</code> means &quot;don&#39;t care&quot;. Use this when you don&#39;t draw points.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.backface_culling'><code>backface_culling</code></td><td><div class='docblock'><p>Whether or not the GPU should filter out some faces.</p>
+
+<p>After the vertex shader stage, the GPU will try to remove the faces that aren&#39;t facing
+the camera.</p>
+
+<p>See the <code>BackfaceCullingMode</code> documentation for more infos.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.polygon_mode'><code>polygon_mode</code></td><td><div class='docblock'><p>How to render polygons. The default value is <code>Fill</code>.</p>
+
+<p>See the documentation of <code>PolygonMode</code> for more infos.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.multisampling'><code>multisampling</code></td><td><div class='docblock'><p>Whether multisample antialiasing (MSAA) should be used. Default value is <code>true</code>.</p>
+
+<p>Note that you will need to set the appropriate option when creating the window.
+The recommended way to do is to leave this to <code>true</code>, and adjust the option when
+creating the window.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.dithering'><code>dithering</code></td><td><div class='docblock'><p>Whether dithering is activated. Default value is <code>true</code>.</p>
+
+<p>Dithering will smoothen the transition between colors in your color buffer.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.viewport'><code>viewport</code></td><td><div class='docblock'><p>The viewport to use when drawing.</p>
+
+<p>The X and Y positions of your vertices are mapped to the viewport so that <code>(-1, -1)</code>
+corresponds to the lower-left hand corner and <code>(1, 1)</code> corresponds to the top-right
+hand corner. Any pixel outside of the viewport is discarded.</p>
+
+<p>You can specify a viewport greater than the target if you want to stretch the image.</p>
+
+<p><code>None</code> means &quot;use the whole surface&quot;.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.scissor'><code>scissor</code></td><td><div class='docblock'><p>If specified, only pixels in this rect will be displayed. Default is <code>None</code>.</p>
+
+<p>This is different from a viewport. The image will stretch to fill the viewport, but
+not the scissor box.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.draw_primitives'><code>draw_primitives</code></td><td><div class='docblock'><p>If <code>false</code>, the pipeline will stop after the primitives generation stage. The default
+value is <code>true</code>.</p>
+
+<p>If <code>false</code>, the fragment shader of your program won&#39;t be executed.</p>
+
+<p>If <code>false</code>, drawing may return <code>TransformFeedbackNotSupported</code> if the backend doesn&#39;t
+support this feature.</p>
+
+<p>This parameter may seem pointless, but it can be useful when you use transform
+feedback or if you just use your shaders to write to a buffer.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.samples_passed_query'><code>samples_passed_query</code></td><td><div class='docblock'><p>If set, each sample (ie. usually each pixel) written to the output adds one to the
+counter of the <code>SamplesPassedQuery</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.time_elapsed_query'><code>time_elapsed_query</code></td><td><div class='docblock'><p>If set, the time it took for the GPU to execute this draw command is added to the total
+stored inside the <code>TimeElapsedQuery</code>.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.primitives_generated_query'><code>primitives_generated_query</code></td><td><div class='docblock'><p>If set, the number of primitives generated is added to the total stored inside the query.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.transform_feedback_primitives_written_query'><code>transform_feedback_primitives_written_query</code></td><td><div class='docblock'><p>If set, the number of vertices written by transform feedback.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.condition'><code>condition</code></td><td><div class='docblock'><p>If set, the commands will only be executed if the specified query contains <code>true</code> or
+a number different than 0.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.transform_feedback'><code>transform_feedback</code></td><td><div class='docblock'><p>If set, then the generated primitives will be written back to a buffer.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.smooth'><code>smooth</code></td><td><div class='docblock'><p>If set, then the generated primitives will be smoothed.</p>
+
+<p>Note that blending needs to be enabled for this to work.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;F&gt;(facade: &amp;'a F) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt; <span class='where'>where F: <a class='trait' href='../../glium/backend/trait.Facade.html' title='glium::backend::Facade'>Facade</a></span></code></h4>
+<div class='docblock'><p>Start building draw parameters.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/default/trait.Default.html#method.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h3><div class='impl-items'></div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "glium";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

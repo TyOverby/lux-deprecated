@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Context","Stores the state and information required for glium to execute commands. Most public glium functions require passing a `Rc<Context>`."]]});

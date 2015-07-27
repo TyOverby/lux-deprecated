@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Item","An element that logically came from a PoisonPool."],["PoisonPool","A pool that contains elements that can be recycled when they are finished being used."]]});

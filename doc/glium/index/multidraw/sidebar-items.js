@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["DrawCommandIndices",""],["DrawCommandNoIndices",""],["DrawCommandsIndicesBuffer","A buffer containing a list of draw commands."],["DrawCommandsNoIndicesBuffer","A buffer containing a list of draw commands."]]});

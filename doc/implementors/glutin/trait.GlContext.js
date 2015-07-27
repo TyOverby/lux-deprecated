@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['lux'] = [];
+implementors['glutin'] = [];implementors['lux'] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['lux'] = [];
+implementors['winapi'] = [];implementors['glium'] = [];implementors['lux'] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

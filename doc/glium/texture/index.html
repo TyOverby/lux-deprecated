@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `texture` mod in crate `glium`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, texture">
+
+    <title>glium::texture - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>glium</a></p><script>window.sidebarCurrent = {name: 'texture', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>glium</a>::<wbr><a class='mod' href=''>texture</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-60251' class='srclink' href='../../src/glium/texture/mod.rs.html#1-541' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>A texture is an image loaded in video memory, which can be sampled in your shaders.</p>
+
+<p>Textures come in ten different dimensions:</p>
+
+<ul>
+<li>Textures with one dimension.</li>
+<li>Textures with two dimensions.</li>
+<li>Textures with two dimensions and multisampling enabled.</li>
+<li>Textures with three dimensions.</li>
+<li>Cube textures, which are arrays of six two-dimensional textures
+corresponding to the six faces of a cube.</li>
+<li>Arrays of one-dimensional textures.</li>
+<li>Arrays of two-dimensional textures.</li>
+<li>Arrays of two-dimensional textures with multisampling enabled.</li>
+<li>Arrays of cube textures.</li>
+<li>Buffer textures, which are one-dimensional textures that are mapped to a buffer.</li>
+</ul>
+
+<p>In addition to this, there are six kinds of texture formats:</p>
+
+<ul>
+<li>The texture contains floating-point data,
+with either the <code>Compressed</code> prefix or no prefix at all.</li>
+<li>The texture contains signed integers, with the <code>Integral</code> prefix.</li>
+<li>The texture contains unsigned integers, with the <code>Unsigned</code> prefix.</li>
+<li>The texture contains depth information, with the <code>Depth</code> prefix.</li>
+<li>The texture contains stencil information, with the <code>Stencil</code> prefix.</li>
+<li>The texture contains depth and stencil information, with the <code>DepthStencil</code> prefix.</li>
+</ul>
+
+<p>Each combination of dimensions and format corresponds to a sampler type in GLSL. For example,
+an <code>IntegralTexture3d</code> can only be bound to an <code>isampler3D</code> uniform in GLSL. Some combinations
+don&#39;t exist, like <code>DepthBufferTexture</code>.</p>
+
+<p>The difference between compressed textures and uncompressed textures is that you can&#39;t do
+render-to-texture on the former.</p>
+
+<p>The most common types of textures are <code>CompressedTexture2d</code> and <code>Texture2d</code> (the two dimensions
+being the width and height). These are what you will use most of the time.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BindlessTexturesNotSupportedError.html'
+                               title='glium::texture::BindlessTexturesNotSupportedError'>BindlessTexturesNotSupportedError</a></td>
+                        <td class='docblock short'>
+                             <p>Bindless textures are not supported.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture1d.html'
+                               title='glium::texture::CompressedSrgbTexture1d'>CompressedSrgbTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A compressed one-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture1dArray.html'
+                               title='glium::texture::CompressedSrgbTexture1dArray'>CompressedSrgbTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of compressed one-dimensional textures  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture1dArrayLayer.html'
+                               title='glium::texture::CompressedSrgbTexture1dArrayLayer'>CompressedSrgbTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>CompressedSrgbTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture1dArrayMipmap.html'
+                               title='glium::texture::CompressedSrgbTexture1dArrayMipmap'>CompressedSrgbTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedSrgbTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture1dMipmap.html'
+                               title='glium::texture::CompressedSrgbTexture1dMipmap'>CompressedSrgbTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedSrgbTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture2d.html'
+                               title='glium::texture::CompressedSrgbTexture2d'>CompressedSrgbTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A compressed two-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture2dArray.html'
+                               title='glium::texture::CompressedSrgbTexture2dArray'>CompressedSrgbTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of compressed two-dimensional textures  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture2dArrayLayer.html'
+                               title='glium::texture::CompressedSrgbTexture2dArrayLayer'>CompressedSrgbTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>CompressedSrgbTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture2dArrayMipmap.html'
+                               title='glium::texture::CompressedSrgbTexture2dArrayMipmap'>CompressedSrgbTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedSrgbTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture2dMipmap.html'
+                               title='glium::texture::CompressedSrgbTexture2dMipmap'>CompressedSrgbTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedSrgbTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture3d.html'
+                               title='glium::texture::CompressedSrgbTexture3d'>CompressedSrgbTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A compressed three-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedSrgbTexture3dMipmap.html'
+                               title='glium::texture::CompressedSrgbTexture3dMipmap'>CompressedSrgbTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedSrgbTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture1d.html'
+                               title='glium::texture::CompressedTexture1d'>CompressedTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A compressed one-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture1dArray.html'
+                               title='glium::texture::CompressedTexture1dArray'>CompressedTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of compressed one-dimensional textures  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture1dArrayLayer.html'
+                               title='glium::texture::CompressedTexture1dArrayLayer'>CompressedTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>CompressedTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture1dArrayMipmap.html'
+                               title='glium::texture::CompressedTexture1dArrayMipmap'>CompressedTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture1dMipmap.html'
+                               title='glium::texture::CompressedTexture1dMipmap'>CompressedTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture2d.html'
+                               title='glium::texture::CompressedTexture2d'>CompressedTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A compressed two-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture2dArray.html'
+                               title='glium::texture::CompressedTexture2dArray'>CompressedTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of compressed two-dimensional textures  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture2dArrayLayer.html'
+                               title='glium::texture::CompressedTexture2dArrayLayer'>CompressedTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>CompressedTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture2dArrayMipmap.html'
+                               title='glium::texture::CompressedTexture2dArrayMipmap'>CompressedTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture2dMipmap.html'
+                               title='glium::texture::CompressedTexture2dMipmap'>CompressedTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture3d.html'
+                               title='glium::texture::CompressedTexture3d'>CompressedTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A compressed three-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CompressedTexture3dMipmap.html'
+                               title='glium::texture::CompressedTexture3dMipmap'>CompressedTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>CompressedTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture1d.html'
+                               title='glium::texture::DepthStencilTexture1d'>DepthStencilTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture1dArray.html'
+                               title='glium::texture::DepthStencilTexture1dArray'>DepthStencilTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture1dArrayLayer.html'
+                               title='glium::texture::DepthStencilTexture1dArrayLayer'>DepthStencilTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>DepthStencilTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture1dArrayMipmap.html'
+                               title='glium::texture::DepthStencilTexture1dArrayMipmap'>DepthStencilTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture1dMipmap.html'
+                               title='glium::texture::DepthStencilTexture1dMipmap'>DepthStencilTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2d.html'
+                               title='glium::texture::DepthStencilTexture2d'>DepthStencilTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dArray.html'
+                               title='glium::texture::DepthStencilTexture2dArray'>DepthStencilTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dArrayLayer.html'
+                               title='glium::texture::DepthStencilTexture2dArrayLayer'>DepthStencilTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>DepthStencilTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dArrayMipmap.html'
+                               title='glium::texture::DepthStencilTexture2dArrayMipmap'>DepthStencilTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dMipmap.html'
+                               title='glium::texture::DepthStencilTexture2dMipmap'>DepthStencilTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dMultisample.html'
+                               title='glium::texture::DepthStencilTexture2dMultisample'>DepthStencilTexture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dMultisampleArray.html'
+                               title='glium::texture::DepthStencilTexture2dMultisampleArray'>DepthStencilTexture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::DepthStencilTexture2dMultisampleArrayMipmap'>DepthStencilTexture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture2dMultisampleMipmap.html'
+                               title='glium::texture::DepthStencilTexture2dMultisampleMipmap'>DepthStencilTexture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture3d.html'
+                               title='glium::texture::DepthStencilTexture3d'>DepthStencilTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing both depth and stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthStencilTexture3dMipmap.html'
+                               title='glium::texture::DepthStencilTexture3dMipmap'>DepthStencilTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthStencilTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture1d.html'
+                               title='glium::texture::DepthTexture1d'>DepthTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture1dArray.html'
+                               title='glium::texture::DepthTexture1dArray'>DepthTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture1dArrayLayer.html'
+                               title='glium::texture::DepthTexture1dArrayLayer'>DepthTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>DepthTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture1dArrayMipmap.html'
+                               title='glium::texture::DepthTexture1dArrayMipmap'>DepthTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture1dMipmap.html'
+                               title='glium::texture::DepthTexture1dMipmap'>DepthTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2d.html'
+                               title='glium::texture::DepthTexture2d'>DepthTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dArray.html'
+                               title='glium::texture::DepthTexture2dArray'>DepthTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dArrayLayer.html'
+                               title='glium::texture::DepthTexture2dArrayLayer'>DepthTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>DepthTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dArrayMipmap.html'
+                               title='glium::texture::DepthTexture2dArrayMipmap'>DepthTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dMipmap.html'
+                               title='glium::texture::DepthTexture2dMipmap'>DepthTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dMultisample.html'
+                               title='glium::texture::DepthTexture2dMultisample'>DepthTexture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dMultisampleArray.html'
+                               title='glium::texture::DepthTexture2dMultisampleArray'>DepthTexture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::DepthTexture2dMultisampleArrayMipmap'>DepthTexture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture2dMultisampleMipmap.html'
+                               title='glium::texture::DepthTexture2dMultisampleMipmap'>DepthTexture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture3d.html'
+                               title='glium::texture::DepthTexture3d'>DepthTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing depth data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DepthTexture3dMipmap.html'
+                               title='glium::texture::DepthTexture3dMipmap'>DepthTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>DepthTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture1d.html'
+                               title='glium::texture::IntegralTexture1d'>IntegralTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture1dArray.html'
+                               title='glium::texture::IntegralTexture1dArray'>IntegralTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture1dArrayLayer.html'
+                               title='glium::texture::IntegralTexture1dArrayLayer'>IntegralTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>IntegralTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture1dArrayMipmap.html'
+                               title='glium::texture::IntegralTexture1dArrayMipmap'>IntegralTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture1dMipmap.html'
+                               title='glium::texture::IntegralTexture1dMipmap'>IntegralTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2d.html'
+                               title='glium::texture::IntegralTexture2d'>IntegralTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dArray.html'
+                               title='glium::texture::IntegralTexture2dArray'>IntegralTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dArrayLayer.html'
+                               title='glium::texture::IntegralTexture2dArrayLayer'>IntegralTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>IntegralTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dArrayMipmap.html'
+                               title='glium::texture::IntegralTexture2dArrayMipmap'>IntegralTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dMipmap.html'
+                               title='glium::texture::IntegralTexture2dMipmap'>IntegralTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dMultisample.html'
+                               title='glium::texture::IntegralTexture2dMultisample'>IntegralTexture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dMultisampleArray.html'
+                               title='glium::texture::IntegralTexture2dMultisampleArray'>IntegralTexture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::IntegralTexture2dMultisampleArrayMipmap'>IntegralTexture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture2dMultisampleMipmap.html'
+                               title='glium::texture::IntegralTexture2dMultisampleMipmap'>IntegralTexture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture3d.html'
+                               title='glium::texture::IntegralTexture3d'>IntegralTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.IntegralTexture3dMipmap.html'
+                               title='glium::texture::IntegralTexture3dMipmap'>IntegralTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>IntegralTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.RawImage1d.html'
+                               title='glium::texture::RawImage1d'>RawImage1d</a></td>
+                        <td class='docblock short'>
+                             <p>Represents raw data for a two-dimensional image.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.RawImage2d.html'
+                               title='glium::texture::RawImage2d'>RawImage2d</a></td>
+                        <td class='docblock short'>
+                             <p>Represents raw data for a two-dimensional image.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.RawImage3d.html'
+                               title='glium::texture::RawImage3d'>RawImage3d</a></td>
+                        <td class='docblock short'>
+                             <p>Represents raw data for a two-dimensional image.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ResidentTexture.html'
+                               title='glium::texture::ResidentTexture'>ResidentTexture</a></td>
+                        <td class='docblock short'>
+                             <p>A texture that is resident in video memory. This allows you to use bindless textures in your
+shaders.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture1d.html'
+                               title='glium::texture::SrgbTexture1d'>SrgbTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture1dArray.html'
+                               title='glium::texture::SrgbTexture1dArray'>SrgbTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture1dArrayLayer.html'
+                               title='glium::texture::SrgbTexture1dArrayLayer'>SrgbTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>SrgbTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture1dArrayMipmap.html'
+                               title='glium::texture::SrgbTexture1dArrayMipmap'>SrgbTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture1dMipmap.html'
+                               title='glium::texture::SrgbTexture1dMipmap'>SrgbTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2d.html'
+                               title='glium::texture::SrgbTexture2d'>SrgbTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dArray.html'
+                               title='glium::texture::SrgbTexture2dArray'>SrgbTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dArrayLayer.html'
+                               title='glium::texture::SrgbTexture2dArrayLayer'>SrgbTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>SrgbTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dArrayMipmap.html'
+                               title='glium::texture::SrgbTexture2dArrayMipmap'>SrgbTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dMipmap.html'
+                               title='glium::texture::SrgbTexture2dMipmap'>SrgbTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dMultisample.html'
+                               title='glium::texture::SrgbTexture2dMultisample'>SrgbTexture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dMultisampleArray.html'
+                               title='glium::texture::SrgbTexture2dMultisampleArray'>SrgbTexture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::SrgbTexture2dMultisampleArrayMipmap'>SrgbTexture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture2dMultisampleMipmap.html'
+                               title='glium::texture::SrgbTexture2dMultisampleMipmap'>SrgbTexture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture3d.html'
+                               title='glium::texture::SrgbTexture3d'>SrgbTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing sRGB floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SrgbTexture3dMipmap.html'
+                               title='glium::texture::SrgbTexture3dMipmap'>SrgbTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>SrgbTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture1d.html'
+                               title='glium::texture::StencilTexture1d'>StencilTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture1dArray.html'
+                               title='glium::texture::StencilTexture1dArray'>StencilTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture1dArrayLayer.html'
+                               title='glium::texture::StencilTexture1dArrayLayer'>StencilTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>StencilTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture1dArrayMipmap.html'
+                               title='glium::texture::StencilTexture1dArrayMipmap'>StencilTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture1dMipmap.html'
+                               title='glium::texture::StencilTexture1dMipmap'>StencilTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2d.html'
+                               title='glium::texture::StencilTexture2d'>StencilTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dArray.html'
+                               title='glium::texture::StencilTexture2dArray'>StencilTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dArrayLayer.html'
+                               title='glium::texture::StencilTexture2dArrayLayer'>StencilTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>StencilTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dArrayMipmap.html'
+                               title='glium::texture::StencilTexture2dArrayMipmap'>StencilTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dMipmap.html'
+                               title='glium::texture::StencilTexture2dMipmap'>StencilTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dMultisample.html'
+                               title='glium::texture::StencilTexture2dMultisample'>StencilTexture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dMultisampleArray.html'
+                               title='glium::texture::StencilTexture2dMultisampleArray'>StencilTexture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::StencilTexture2dMultisampleArrayMipmap'>StencilTexture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture2dMultisampleMipmap.html'
+                               title='glium::texture::StencilTexture2dMultisampleMipmap'>StencilTexture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture3d.html'
+                               title='glium::texture::StencilTexture3d'>StencilTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing stencil data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.StencilTexture3dMipmap.html'
+                               title='glium::texture::StencilTexture3dMipmap'>StencilTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>StencilTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture1d.html'
+                               title='glium::texture::Texture1d'>Texture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture1dArray.html'
+                               title='glium::texture::Texture1dArray'>Texture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture1dArrayLayer.html'
+                               title='glium::texture::Texture1dArrayLayer'>Texture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>Texture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture1dArrayMipmap.html'
+                               title='glium::texture::Texture1dArrayMipmap'>Texture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture1dMipmap.html'
+                               title='glium::texture::Texture1dMipmap'>Texture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2d.html'
+                               title='glium::texture::Texture2d'>Texture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dArray.html'
+                               title='glium::texture::Texture2dArray'>Texture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dArrayLayer.html'
+                               title='glium::texture::Texture2dArrayLayer'>Texture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>Texture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dArrayMipmap.html'
+                               title='glium::texture::Texture2dArrayMipmap'>Texture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dMipmap.html'
+                               title='glium::texture::Texture2dMipmap'>Texture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dMultisample.html'
+                               title='glium::texture::Texture2dMultisample'>Texture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dMultisampleArray.html'
+                               title='glium::texture::Texture2dMultisampleArray'>Texture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::Texture2dMultisampleArrayMipmap'>Texture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture2dMultisampleMipmap.html'
+                               title='glium::texture::Texture2dMultisampleMipmap'>Texture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture3d.html'
+                               title='glium::texture::Texture3d'>Texture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing floating-point data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Texture3dMipmap.html'
+                               title='glium::texture::Texture3dMipmap'>Texture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>Texture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TextureAny.html'
+                               title='glium::texture::TextureAny'>TextureAny</a></td>
+                        <td class='docblock short'>
+                             <p>A texture whose type isn&#39;t fixed at compile-time.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TextureAnyMipmap.html'
+                               title='glium::texture::TextureAnyMipmap'>TextureAnyMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a specific mipmap of a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.TextureHandle.html'
+                               title='glium::texture::TextureHandle'>TextureHandle</a></td>
+                        <td class='docblock short'>
+                             <p>Handle to a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture1d.html'
+                               title='glium::texture::UnsignedTexture1d'>UnsignedTexture1d</a></td>
+                        <td class='docblock short'>
+                             <p>A one-dimensional texture  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture1dArray.html'
+                               title='glium::texture::UnsignedTexture1dArray'>UnsignedTexture1dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of one-dimensional textures  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture1dArrayLayer.html'
+                               title='glium::texture::UnsignedTexture1dArrayLayer'>UnsignedTexture1dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>UnsignedTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture1dArrayMipmap.html'
+                               title='glium::texture::UnsignedTexture1dArrayMipmap'>UnsignedTexture1dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture1dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture1dMipmap.html'
+                               title='glium::texture::UnsignedTexture1dMipmap'>UnsignedTexture1dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture1d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2d.html'
+                               title='glium::texture::UnsignedTexture2d'>UnsignedTexture2d</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dArray.html'
+                               title='glium::texture::UnsignedTexture2dArray'>UnsignedTexture2dArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dArrayLayer.html'
+                               title='glium::texture::UnsignedTexture2dArrayLayer'>UnsignedTexture2dArrayLayer</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single layer of a <code>UnsignedTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dArrayMipmap.html'
+                               title='glium::texture::UnsignedTexture2dArrayMipmap'>UnsignedTexture2dArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture2dArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dMipmap.html'
+                               title='glium::texture::UnsignedTexture2dMipmap'>UnsignedTexture2dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture2d</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dMultisample.html'
+                               title='glium::texture::UnsignedTexture2dMultisample'>UnsignedTexture2dMultisample</a></td>
+                        <td class='docblock short'>
+                             <p>A two-dimensional texture  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dMultisampleArray.html'
+                               title='glium::texture::UnsignedTexture2dMultisampleArray'>UnsignedTexture2dMultisampleArray</a></td>
+                        <td class='docblock short'>
+                             <p>An array of two-dimensional textures  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dMultisampleArrayMipmap.html'
+                               title='glium::texture::UnsignedTexture2dMultisampleArrayMipmap'>UnsignedTexture2dMultisampleArrayMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture2dMultisampleArray</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture2dMultisampleMipmap.html'
+                               title='glium::texture::UnsignedTexture2dMultisampleMipmap'>UnsignedTexture2dMultisampleMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture2dMultisample</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture3d.html'
+                               title='glium::texture::UnsignedTexture3d'>UnsignedTexture3d</a></td>
+                        <td class='docblock short'>
+                             <p>A three-dimensional texture  containing unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.UnsignedTexture3dMipmap.html'
+                               title='glium::texture::UnsignedTexture3dMipmap'>UnsignedTexture3dMipmap</a></td>
+                        <td class='docblock short'>
+                             <p>Represents a single mipmap level of a <code>UnsignedTexture3d</code>.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.ClientFormat.html'
+                               title='glium::texture::ClientFormat'>ClientFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of client-side pixel formats.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.CompressedFormat.html'
+                               title='glium::texture::CompressedFormat'>CompressedFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of compressed texture formats.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.CompressedMipmapsOption.html'
+                               title='glium::texture::CompressedMipmapsOption'>CompressedMipmapsOption</a></td>
+                        <td class='docblock short'>
+                             <p>Describes what to do about mipmaps during compressed texture creation.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.CompressedSrgbFormat.html'
+                               title='glium::texture::CompressedSrgbFormat'>CompressedSrgbFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of compressed pixel formats in the sRGB color space.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.DepthFormat.html'
+                               title='glium::texture::DepthFormat'>DepthFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of formats available for depth textures.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.DepthStencilFormat.html'
+                               title='glium::texture::DepthStencilFormat'>DepthStencilFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of formats available for depth-stencil textures.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.Dimensions.html'
+                               title='glium::texture::Dimensions'>Dimensions</a></td>
+                        <td class='docblock short'>
+                             <p>Type of a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.GetFormatError.html'
+                               title='glium::texture::GetFormatError'>GetFormatError</a></td>
+                        <td class='docblock short'>
+                             <p>Error that can happen when retrieving the internal format of a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.InternalFormat.html'
+                               title='glium::texture::InternalFormat'>InternalFormat</a></td>
+                        <td class='docblock short'>
+                             <p>Internal format of a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.InternalFormatType.html'
+                               title='glium::texture::InternalFormatType'>InternalFormatType</a></td>
+                        <td class='docblock short'>
+                             <p>Format of a component of an internal format.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.MipmapsOption.html'
+                               title='glium::texture::MipmapsOption'>MipmapsOption</a></td>
+                        <td class='docblock short'>
+                             <p>Describes what to do about mipmaps during texture creation.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.SrgbFormat.html'
+                               title='glium::texture::SrgbFormat'>SrgbFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of uncompressed pixel formats that contain floating-point data in the sRGB color space.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.StencilFormat.html'
+                               title='glium::texture::StencilFormat'>StencilFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of formats available for stencil textures.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.TextureCreationError.html'
+                               title='glium::texture::TextureCreationError'>TextureCreationError</a></td>
+                        <td class='docblock short'>
+                             <p>Error that can happen when creating a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.TextureFormat.html'
+                               title='glium::texture::TextureFormat'>TextureFormat</a></td>
+                        <td class='docblock short'>
+                             <p>Format of the internal representation of a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.UncompressedFloatFormat.html'
+                               title='glium::texture::UncompressedFloatFormat'>UncompressedFloatFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of uncompressed pixel formats that contain floating-point-like data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.UncompressedIntFormat.html'
+                               title='glium::texture::UncompressedIntFormat'>UncompressedIntFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of uncompressed pixel formats that contain signed integral data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.UncompressedUintFormat.html'
+                               title='glium::texture::UncompressedUintFormat'>UncompressedUintFormat</a></td>
+                        <td class='docblock short'>
+                             <p>List of uncompressed pixel formats that contain unsigned integral data.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.PixelValue.html'
+                               title='glium::texture::PixelValue'>PixelValue</a></td>
+                        <td class='docblock short'>
+                             <p>A trait that must be implemented for any type that can represent the value of a pixel.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture.html'
+                               title='glium::texture::Texture'>Texture</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes a texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture1dDataSink.html'
+                               title='glium::texture::Texture1dDataSink'>Texture1dDataSink</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes types that can be built from one-dimensional texture data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture1dDataSource.html'
+                               title='glium::texture::Texture1dDataSource'>Texture1dDataSource</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes data for a one-dimensional texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture2dDataSink.html'
+                               title='glium::texture::Texture2dDataSink'>Texture2dDataSink</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes types that can be built from two-dimensional texture data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture2dDataSource.html'
+                               title='glium::texture::Texture2dDataSource'>Texture2dDataSource</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes data for a two-dimensional texture.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture3dDataSink.html'
+                               title='glium::texture::Texture3dDataSink'>Texture3dDataSink</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes types that can be built from one-dimensional texture data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Texture3dDataSource.html'
+                               title='glium::texture::Texture3dDataSource'>Texture3dDataSource</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that describes data for a two-dimensional texture.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "glium";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

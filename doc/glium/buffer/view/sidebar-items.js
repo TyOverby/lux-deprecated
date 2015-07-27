@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BufferView","Represents a view of a buffer."],["BufferViewAny","Represents a sub-part of a buffer."],["BufferViewAnySlice","Slice of a `BufferView` without any type info."],["BufferViewMutSlice","Represents a sub-part of a buffer."],["BufferViewSlice","Represents a sub-part of a buffer."]]});

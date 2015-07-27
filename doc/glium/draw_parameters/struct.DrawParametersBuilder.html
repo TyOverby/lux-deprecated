@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `DrawParametersBuilder` struct in crate `glium`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, DrawParametersBuilder">
+
+    <title>glium::draw_parameters::DrawParametersBuilder - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>glium</a>::<wbr><a href='index.html'>draw_parameters</a></p><script>window.sidebarCurrent = {name: 'DrawParametersBuilder', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>glium</a>::<wbr><a href='index.html'>draw_parameters</a>::<wbr><a class='struct' href=''>DrawParametersBuilder</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-22216' class='srclink' href='../../src/glium/draw_parameters/mod.rs.html#869-872' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct DrawParametersBuilder&lt;'a&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>This is what the new API of <code>DrawParameters</code> will look like in a future version.</p>
+
+<p>FIXME: add the missing functions (with a better API)</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.with_depth' class='method'><code>fn <a href='#method.with_depth' class='fnname'>with_depth</a>(self, test: <a class='enum' href='../../glium/draw_parameters/enum.DepthTest.html' title='glium::draw_parameters::DepthTest'>DepthTest</a>, write: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, range: <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the depth operation to use while drawing.</p>
+
+<p>For a simple depth buffer usage, the common parameters
+are <code>(DepthTest::IfLess, true, (0.0, 1.0))</code>.</p>
+</div><h4 id='method.with_blending_function' class='method'><code>fn <a href='#method.with_blending_function' class='fnname'>with_blending_function</a>(self, blending: <a class='enum' href='../../glium/draw_parameters/enum.BlendingFunction.html' title='glium::draw_parameters::BlendingFunction'>BlendingFunction</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the function that the GPU will use to merge the existing pixel with the pixel that is
+being written.</p>
+</div><h4 id='method.with_backface_culling' class='method'><code>fn <a href='#method.with_backface_culling' class='fnname'>with_backface_culling</a>(self, culling: <a class='enum' href='../../glium/draw_parameters/enum.BackfaceCullingMode.html' title='glium::draw_parameters::BackfaceCullingMode'>BackfaceCullingMode</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets whether to cull faces, and which ones.</p>
+</div><h4 id='method.with_viewport' class='method'><code>fn <a href='#method.with_viewport' class='fnname'>with_viewport</a>(self, viewport: <a class='struct' href='../../glium/struct.Rect.html' title='glium::Rect'>Rect</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the viewport to use.</p>
+
+<p>By default, the whole surface is used.</p>
+</div><h4 id='method.with_scissor' class='method'><code>fn <a href='#method.with_scissor' class='fnname'>with_scissor</a>(self, scissor: <a class='struct' href='../../glium/struct.Rect.html' title='glium::Rect'>Rect</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the scissor box to use.</p>
+
+<p>By default, no scissor box is used.</p>
+</div><h4 id='method.with_rasterizer_discard_if_supported' class='method'><code>fn <a href='#method.with_rasterizer_discard_if_supported' class='fnname'>with_rasterizer_discard_if_supported</a>(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;, <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;&gt;</code></h4>
+<div class='docblock'><p>Sets that the output of the rasterized must be discarded.</p>
+
+<p>It is not discarded by default.</p>
+
+<p>Returns <code>Err</code> if the backend doesn&#39;t support this operation.</p>
+</div><h4 id='method.without_multisampling' class='method'><code>fn <a href='#method.without_multisampling' class='fnname'>without_multisampling</a>(self) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets that multisampling must not be used.</p>
+
+<p>Multisampling is active by default.</p>
+</div><h4 id='method.without_dithering' class='method'><code>fn <a href='#method.without_dithering' class='fnname'>without_dithering</a>(self) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets that dithering must not be used.</p>
+
+<p>Dithering is active by default.</p>
+</div><h4 id='method.with_samples_passed_query' class='method'><code>fn <a href='#method.with_samples_passed_query' class='fnname'>with_samples_passed_query</a>&lt;Q&gt;(self, query: Q) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt; <span class='where'>where Q: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='enum' href='../../glium/draw_parameters/enum.SamplesQueryParam.html' title='glium::draw_parameters::SamplesQueryParam'>SamplesQueryParam</a>&lt;'a&gt;&gt;</span></code></h4>
+<div class='docblock'><p>Sets the query to store the number of samples that are written to the output.</p>
+</div><h4 id='method.with_time_elapsed_query' class='method'><code>fn <a href='#method.with_time_elapsed_query' class='fnname'>with_time_elapsed_query</a>(self, query: &amp;'a <a class='struct' href='../../glium/draw_parameters/struct.TimeElapsedQuery.html' title='glium::draw_parameters::TimeElapsedQuery'>TimeElapsedQuery</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the query to store the time that it takes to execute the commands.</p>
+</div><h4 id='method.with_primitives_generated_query' class='method'><code>fn <a href='#method.with_primitives_generated_query' class='fnname'>with_primitives_generated_query</a>(self, query: &amp;'a <a class='struct' href='../../glium/draw_parameters/struct.PrimitivesGeneratedQuery.html' title='glium::draw_parameters::PrimitivesGeneratedQuery'>PrimitivesGeneratedQuery</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the query to store the number of primitives generated by the commands.</p>
+</div><h4 id='method.with_transform_feedback_primitives_written_query' class='method'><code>fn <a href='#method.with_transform_feedback_primitives_written_query' class='fnname'>with_transform_feedback_primitives_written_query</a>(self, query: &amp;'a <a class='struct' href='../../glium/draw_parameters/struct.TransformFeedbackPrimitivesWrittenQuery.html' title='glium::draw_parameters::TransformFeedbackPrimitivesWrittenQuery'>TransformFeedbackPrimitivesWrittenQuery</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Sets the query to store the number of vertices generated by transform feedback in
+the commands.</p>
+</div><h4 id='method.with_conditional_rendering' class='method'><code>fn <a href='#method.with_conditional_rendering' class='fnname'>with_conditional_rendering</a>&lt;Q&gt;(self, query: Q, wait: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, per_region: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt; <span class='where'>where Q: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='enum' href='../../glium/draw_parameters/enum.SamplesQueryParam.html' title='glium::draw_parameters::SamplesQueryParam'>SamplesQueryParam</a>&lt;'a&gt;&gt;</span></code></h4>
+<div class='docblock'><p>See the <code>ConditionalRendering</code> struct.</p>
+</div></div><h2 id='deref-methods'>Methods from <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a>&lt;Target=<a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;&gt;</h2><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;F&gt;(facade: &amp;'a F) -&gt; <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt; <span class='where'>where F: <a class='trait' href='../../glium/backend/trait.Facade.html' title='glium::backend::Facade'>Facade</a></span></code></h4>
+<div class='docblock'><p>Start building draw parameters.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a> for <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='assoc_type.Target' class='type'><code>type Target = <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h4>
+<h4 id='method.deref' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Deref.html#method.deref' class='fnname'>deref</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h4>
+</div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html' title='core::ops::DerefMut'>DerefMut</a> for <a class='struct' href='../../glium/draw_parameters/struct.DrawParametersBuilder.html' title='glium::draw_parameters::DrawParametersBuilder'>DrawParametersBuilder</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.deref_mut' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html#method.deref_mut' class='fnname'>deref_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../../glium/draw_parameters/struct.DrawParameters.html' title='glium::draw_parameters::DrawParameters'>DrawParameters</a>&lt;'a&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "glium";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["FD_SETSIZE",""],["WINSOCK_VERSION",""]],"struct":[["fd_set",""],["timeval",""]],"type":[["SOCKET",""],["u_char",""],["u_int",""],["u_int64",""],["u_long",""],["u_short",""]]});
