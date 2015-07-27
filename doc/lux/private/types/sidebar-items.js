@@ -1,0 +1,1 @@
+initSidebarItems({"type":[["Float","The floating point type used for positions and colors."],["Idx","The type for indexing into vertices when drawing shapes."]]});

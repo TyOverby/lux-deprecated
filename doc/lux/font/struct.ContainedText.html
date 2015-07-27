@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ContainedText` struct in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ContainedText">
+
+    <title>lux::font::ContainedText - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>font</a></p><script>window.sidebarCurrent = {name: 'ContainedText', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>lux</a>::<wbr><a href='index.html'>font</a>::<wbr><a class='struct' href=''>ContainedText</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-9534' class='srclink' href='../../src/lux/private/font.rs.html#25-35' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>#[must_use = "text references just contains a drawing context, and must be drawn with `draw()`"]
+pub struct ContainedText&lt;'a, C: 'a + HasDisplay + HasFontCache + <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a>, S: 'a + <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>A context that contains information about the text that can be drawn to the screen.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a, C: 'a + HasDisplay + HasFontCache + <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a>, S: 'a + <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;&gt; <a class='struct' href='../../lux/font/struct.ContainedText.html' title='lux::font::ContainedText'>ContainedText</a>&lt;'a, C, S&gt;</code></h3><div class='impl-items'><h4 id='method.size' class='method'><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;mut self, size: <a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>) -&gt; &amp;mut <a class='struct' href='../../lux/font/struct.ContainedText.html' title='lux::font::ContainedText'>ContainedText</a>&lt;'a, C, S&gt;</code></h4>
+<div class='docblock'><p>Sets the size of the font.</p>
+</div><h4 id='method.font' class='method'><code>fn <a href='#method.font' class='fnname'>font</a>&lt;A: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, font_family: A) -&gt; &amp;mut <a class='struct' href='../../lux/font/struct.ContainedText.html' title='lux::font::ContainedText'>ContainedText</a>&lt;'a, C, S&gt;</code></h4>
+<div class='docblock'><p>Sets the font to be used.</p>
+</div><h4 id='method.draw' class='method'><code>fn <a href='#method.draw' class='fnname'>draw</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<div class='docblock'><p>Draws the font to the screen.</p>
+</div><h4 id='method.line_height' class='method'><code>fn <a href='#method.line_height' class='fnname'>line_height</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;</code></h4>
+<div class='docblock'><p>Returns the height of one line of text with the selected font.</p>
+</div><h4 id='method.max_advance' class='method'><code>fn <a href='#method.max_advance' class='fnname'>max_advance</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;</code></h4>
+<div class='docblock'><p>Returns the maximum horizontal distance that a character can move the pen
+while drawing.</p>
+</div><h4 id='method.absolute_positions' class='method'><code>fn <a href='#method.absolute_positions' class='fnname'>absolute_positions</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../font_atlas/struct.OutputPosition.html' title='font_atlas::OutputPosition'>OutputPosition</a>&gt;&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator containing each character in the input text along
+with the position and the size.</p>
+
+<p>These positions are absolute, and are not relative to the position that
+the text will be drawn on the screen. (they start at position (0, 0))</p>
+</div><h4 id='method.positions' class='method'><code>fn <a href='#method.positions' class='fnname'>positions</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.char.html'>char</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>)</a>&gt;&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator containing each character in the input text along
+with the position and the size.</p>
+
+<p>These positions are relative to the providex (x, y) coordinates that
+the text will be drawn at.</p>
+</div><h4 id='method.bounding_box' class='method'><code>fn <a href='#method.bounding_box' class='fnname'>bounding_box</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>)</a>&gt;</code></h4>
+<div class='docblock'><p>Returns the bounding box around this text.</p>
+
+<p><code>((start_x, start_y), (width, height))</code></p>
+
+<p><code>start_x</code> and <code>start_y</code> are oriented to the top-left of the screen.</p>
+
+<p><code>width</code> and <code>height</code> are pointing down and to the right.</p>
+</div><h4 id='method.get_length' class='method'><code>fn <a href='#method.get_length' class='fnname'>get_length</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/type.LuxResult.html' title='lux::LuxResult'>LuxResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;</code></h4>
+<div class='docblock'><p>Returns the length in pixels of the rendered string.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a, A, B: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;&gt; <a class='trait' href='../../lux/modifiers/trait.Transform.html' title='lux::modifiers::Transform'>Transform</a> for <a class='struct' href='../../lux/font/struct.ContainedText.html' title='lux::font::ContainedText'>ContainedText</a>&lt;'a, A, B&gt; <span class='where'>where A: HasDisplay + HasFontCache + <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a></span></code></h3><div class='impl-items'><h4 id='method.current_matrix' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.current_matrix' class='fnname'>current_matrix</a>(&amp;self) -&gt; &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>; 4]</a>; 4]</a></code></h4>
+<h4 id='method.current_matrix_mut' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.current_matrix_mut' class='fnname'>current_matrix_mut</a>(&amp;mut self) -&gt; &amp;mut <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>; 4]</a>; 4]</a></code></h4>
+<h4 id='method.apply_matrix' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.apply_matrix' class='fnname'>apply_matrix</a>(&amp;mut self, other: <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>; 4]</a>; 4]</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.translate' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.translate' class='fnname'>translate</a>(&amp;mut self, dx: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, dy: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.scale' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.scale' class='fnname'>scale</a>(&amp;mut self, sx: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, sy: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.shear' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.shear' class='fnname'>shear</a>(&amp;mut self, sx: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, sy: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.rotate' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.rotate' class='fnname'>rotate</a>(&amp;mut self, theta: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.rotate_around' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.rotate_around' class='fnname'>rotate_around</a>(&amp;mut self, point: <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>, theta: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.with_matrix' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.with_matrix' class='fnname'>with_matrix</a>&lt;F, R&gt;(&amp;mut self, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h4>
+<h4 id='method.with_rotation' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.with_rotation' class='fnname'>with_rotation</a>&lt;F, R&gt;(&amp;mut self, rotation: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h4>
+<h4 id='method.with_translate' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.with_translate' class='fnname'>with_translate</a>&lt;F, R&gt;(&amp;mut self, dx: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, dy: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h4>
+<h4 id='method.with_scale' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.with_scale' class='fnname'>with_scale</a>&lt;F, R&gt;(&amp;mut self, scale_x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, scale_y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h4>
+<h4 id='method.with_shear' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.with_shear' class='fnname'>with_shear</a>&lt;F, R&gt;(&amp;mut self, sx: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, sy: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h4>
+<h4 id='method.with_rotate_around' class='method'><code>fn <a href='../../lux/modifiers/trait.Transform.html#method.with_rotate_around' class='fnname'>with_rotate_around</a>&lt;F, R&gt;(&amp;mut self, point: <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>, theta: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h4>
+</div><h3 class='impl'><code>impl&lt;'a, A, B: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;&gt; <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/font/struct.ContainedText.html' title='lux::font::ContainedText'>ContainedText</a>&lt;'a, A, B&gt; <span class='where'>where A: HasDisplay + HasFontCache + <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a></span></code></h3><div class='impl-items'><h4 id='method.get_color' class='method'><code>fn <a href='../../lux/modifiers/trait.Colored.html#method.get_color' class='fnname'>get_color</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>; 4]</a></code></h4>
+<h4 id='method.color' class='method'><code>fn <a href='../../lux/modifiers/trait.Colored.html#method.color' class='fnname'>color</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.with_color' class='method'><code>fn <a href='../../lux/modifiers/trait.Colored.html#method.with_color' class='fnname'>with_color</a>&lt;F, C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C, f: F) <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self)</span></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

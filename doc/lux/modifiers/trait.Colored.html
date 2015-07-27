@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Colored` trait in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Colored">
+
+    <title>lux::modifiers::Colored - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>modifiers</a></p><script>window.sidebarCurrent = {name: 'Colored', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>lux</a>::<wbr><a href='index.html'>modifiers</a>::<wbr><a class='trait' href=''>Colored</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-4351' class='srclink' href='../../src/lux/private/raw.rs.html#156-179' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Colored {
+    fn <a href='#tymethod.get_color' class='fnname'>get_color</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>; 4]</a>;
+    fn <a href='#tymethod.color' class='fnname'>color</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C) -&gt; &amp;mut Self;
+
+    fn <a href='#method.with_color' class='fnname'>with_color</a>&lt;F, C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C, f: F) <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self)</span> { ... }
+}</pre><div class='docblock'><p>A trait representing objects that can be colored with
+seperate fill colors and stroke colors.</p>
+
+<p>The basic representation of a color is an array of 4 floats
+where each value goes from 0.0 to 1.0 and is of the form
+[r, b, b, a].</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.get_color' class='method stab '><code>fn <a href='#tymethod.get_color' class='fnname'>get_color</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>; 4]</a></code></h3><div class='docblock'><p>Returns the current color.</p>
+</div><h3 id='tymethod.color' class='method stab '><code>fn <a href='#tymethod.color' class='fnname'>color</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C) -&gt; &amp;mut Self</code></h3><div class='docblock'><p>Sets the color.</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.with_color' class='method stab '><code>fn <a href='#method.with_color' class='fnname'>with_color</a>&lt;F, C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C, f: F) <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self)</span></code></h3><div class='docblock'><p>Executes a closure with the given color, then resets it to what it was before.</p>
+
+<h3 id="example" class='section-header'><a
+                           href="#example">Example</a></h3><pre id='rust-example-rendered' class='rust '>
+<span class='ident'>frame</span>.<span class='ident'>with_color</span>(<span class='ident'>rgb</span>(<span class='number'>255</span>, <span class='number'>0</span>, <span class='number'>0</span>), <span class='op'>|</span><span class='ident'>frame</span><span class='op'>|</span> {
+    <span class='ident'>frame</span>.<span class='ident'>rect</span>(<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>50.0</span>, <span class='number'>50.0</span>).<span class='ident'>fill</span>();
+    <span class='ident'>frame</span>.<span class='ident'>rect</span>(<span class='number'>0.0</span>, <span class='number'>51.0</span>, <span class='number'>50.0</span>, <span class='number'>50.0</span>).<span class='ident'>fill</span>();
+    <span class='ident'>frame</span>.<span class='ident'>rect</span>(<span class='number'>51.0</span>, <span class='number'>0.0</span>, <span class='number'>50.0</span>, <span class='number'>50.0</span>).<span class='ident'>fill</span>();
+});
+</pre>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl&lt;'a, C&gt; <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/graphics/struct.Ellipse.html' title='lux::graphics::Ellipse'>Ellipse</a>&lt;'a, C&gt;</code></li>
+<li><code>impl&lt;'a, C&gt; <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/graphics/struct.Rectangle.html' title='lux::graphics::Rectangle'>Rectangle</a>&lt;'a, C&gt;</code></li>
+<li><code>impl&lt;'a, C&gt; <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/graphics/struct.ContainedSprite.html' title='lux::graphics::ContainedSprite'>ContainedSprite</a>&lt;'a, C&gt;</code></li>
+<li><code>impl <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/window/struct.Frame.html' title='lux::window::Frame'>Frame</a></code></li>
+<li><code>impl&lt;'a, D&gt; <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/graphics/struct.DrawableTexture.html' title='lux::graphics::DrawableTexture'>DrawableTexture</a>&lt;'a, D&gt; <span class='where'>where D: HasDisplay + HasPrograms</span></code></li>
+<li><code>impl&lt;'a, A, B: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;&gt; <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> for <a class='struct' href='../../lux/font/struct.ContainedText.html' title='lux::font::ContainedText'>ContainedText</a>&lt;'a, A, B&gt; <span class='where'>where A: HasDisplay + HasFontCache + <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a></span></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/lux/modifiers/trait.Colored.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>
