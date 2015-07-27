@@ -11,7 +11,7 @@ extern crate image;
 extern crate num;
 extern crate clock_ticks;
 extern crate font_atlas;
-#[cfg(feature="font-atlas-freetype")]
+#[cfg(feature="freetype")]
 extern crate font_atlas_freetype as freetype_atlas;
 extern crate font_atlas_image as image_atlas;
 extern crate poison_pool;
@@ -99,9 +99,9 @@ pub mod font {
 
     pub use image_atlas::{load_atlas, read_atlas, save_atlas, write_atlas};
 
-    #[cfg(feature="freetype-atlas")]
+    #[cfg(feature="freetype")]
     pub use freetype_atlas::{render};
-    #[cfg(feature="freetype-atlas")]
+    #[cfg(feature="freetype")]
     pub use private::constants::SOURCE_CODE_PRO_REGULAR;
 }
 
