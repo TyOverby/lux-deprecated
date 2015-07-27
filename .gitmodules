@@ -1,0 +1,4 @@
+[submodule "website/out"]
+	path = website/out
+	url = git@github.com:TyOverby/lux.git
+	branch = gh-pages
