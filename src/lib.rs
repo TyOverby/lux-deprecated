@@ -94,6 +94,10 @@ pub mod game {
 
 pub mod font {
     //! Text drawing and loading functionality.
+    //!
+    //! # WARNING
+    //! The `render` function and the `SOURCE_CODE_PRO_REGULAR` static variable
+    //! is only available when lux is compiled with the `freetype` cargo feature enabled.
 
     pub use private::font::{ContainedText, TextDraw, TextLoad};
 
