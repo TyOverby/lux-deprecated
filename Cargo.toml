@@ -15,18 +15,12 @@ path = "src/test_runner.rs"
 [features]
 default = [ ]
 
-[dependencies.fontcache]
-path = "./font-cache"
-
-[dependencies.image-atlas]
-path = "./font-cache/image-atlas"
-
-[dependencies.freetype-atlas]
-path = "./font-cache/freetype-atlas"
+[dependencies.font-atlas-freetype]
 optional = true
+version = "0.1.0"
 
-[dependencies.reuse-cache]
-path = "./reuse-cache"
+[dependencies.poison-pool]
+version = "0.1.0"
 
 [dependencies.glium]
 version = "0.8.0"
@@ -35,6 +29,8 @@ features = ["image", "glutin"]
 
 
 [dependencies]
+font-atlas = "0.1.0"
+font-atlas-image = "0.1.0"
 glutin = "0.3.1"
 image = "0.3.11"
 num = "0.1.25"

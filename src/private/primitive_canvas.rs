@@ -11,7 +11,7 @@ use super::error::LuxResult;
 
 use vecmath;
 use glium;
-use reuse_cache;
+use poison_pool;
 
 // TODO: Come up with a better name for this enum and varients.
 /// When modifying a stencil or clearing the stencil buffer,
@@ -48,9 +48,9 @@ pub struct CachedColorDraw {
     /// The type of primitive that is being used to draw.
     pub typ: PrimitiveType,
     /// A cache of colored vertices.
-    pub points: reuse_cache::Item<Vec<ColorVertex>>,
+    pub points: poison_pool::Item<Vec<ColorVertex>>,
     /// A cache of indices indexing into the points cache.
-    pub idxs: reuse_cache::Item<Vec<Idx>>,
+    pub idxs: poison_pool::Item<Vec<Idx>>,
 }
 
 /// A cache for batching texture drawing commands.
@@ -61,11 +61,11 @@ pub struct CachedTexDraw {
     /// The type of primitive that is being used to draw.
     pub typ: PrimitiveType,
     /// A cache of colored vertices.
-    pub points: reuse_cache::Item<Vec<TexVertex>>,
+    pub points: poison_pool::Item<Vec<TexVertex>>,
     /// The texture that is going to be bound for the draw call.
     pub texture: Rc<glium::texture::Texture2d>,
     /// A cache of indices indexing into the points cache.
-    pub idxs: reuse_cache::Item<Vec<Idx>>,
+    pub idxs: poison_pool::Item<Vec<Idx>>,
     /// A color that will be multiplied against the values in the texture
     /// to give the texture color.
     pub color_mult: [Float; 4],

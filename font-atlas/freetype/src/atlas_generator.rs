@@ -1,5 +1,5 @@
-extern crate freetype_atlas;
-extern crate image_atlas;
+extern crate font_atlas_freetype;
+extern crate font_atlas_image;
 extern crate freetype;
 extern crate image;
 
@@ -56,10 +56,10 @@ fn render_face(library: &freetype::Library, file: String, sizes: Vec<u32>) {
         // TODO: change this to try once freetype::error::Error implements Error
         face.set_pixel_sizes(0, size).unwrap();
         // TODO: change this to try once freetype::error::Error implements Error
-        let rendered = freetype_atlas::render(&mut face, ascii(), true).unwrap();
+        let rendered = font_atlas_freetype::render(&mut face, ascii(), true).unwrap();
         let name = file.split('.').nth(0).unwrap_or(&file[..]);
         let img_path = format!("{}-{}.png", name, size);
         let meta_path = format!("{}-{}.bincode", name, size);
-        image_atlas::save_atlas(rendered, image::ImageFormat::PNG, img_path, meta_path).unwrap();
+        font_atlas_image::save_atlas(rendered, image::ImageFormat::PNG, img_path, meta_path).unwrap();
     }
 }

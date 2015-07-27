@@ -10,11 +10,11 @@ extern crate vecmath;
 extern crate image;
 extern crate num;
 extern crate clock_ticks;
-extern crate fontcache;
-#[cfg(feature="freetype-atlas")]
-extern crate freetype_atlas;
-extern crate image_atlas;
-extern crate reuse_cache;
+extern crate font_atlas;
+#[cfg(feature="font-atlas-freetype")]
+extern crate font_atlas_freetype as freetype_atlas;
+extern crate font_atlas_image as image_atlas;
+extern crate poison_pool;
 
 mod private;
 
