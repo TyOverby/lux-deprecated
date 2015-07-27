@@ -4,32 +4,32 @@ use std::ops::{Deref, DerefMut};
 
 /// A pool that contains elements that can be recycled when they are finished being used.
 #[derive(Clone)]
-pub struct ReusePool<T> {
+pub struct PoisonPool<T> {
     all: Rc<Vec<RefCell<(bool, Option<T>)>>>
 }
 
-/// An element that logically came from a ReusePool.
+/// An element that logically came from a PoisonPool.
 ///
-/// If this item came from `ReusePool::get*()`, then when this Item is
+/// If this item came from `PoisonPool::get*()`, then when this Item is
 /// Dropped, it will be recycled into the pool.
 ///
 /// If this item came from the `from_value` constructor, then when this Item is
 /// Dropped, the contained value will be dropped as well.
 pub struct Item<T> {
     /// Maybe have this be a weak reference instead?
-    parent_pool: Option<ReusePool<T>>,
+    parent_pool: Option<PoisonPool<T>>,
     idx: usize,
     item: Option<T>,
     poisoned: bool
 }
 
-impl <T> ReusePool<T> {
-    /// Creates a new ReusePool with a given size and where each element is
+impl <T> PoisonPool<T> {
+    /// Creates a new PoisonPool with a given size and where each element is
     /// initialized by the init function.
-    pub fn new<F: FnMut() -> T>(count: usize, mut init: F) -> ReusePool<T> {
+    pub fn new<F: FnMut() -> T>(count: usize, mut init: F) -> PoisonPool<T> {
         let mut v = Vec::new();
         v.extend((0 .. count).map(|_| RefCell::new((false, Some(init())))));
-        ReusePool { all: Rc::new(v) }
+        PoisonPool { all: Rc::new(v) }
     }
 
     /// Returns an unpoisoned item from the pool if possible.
@@ -37,7 +37,7 @@ impl <T> ReusePool<T> {
         for (i, slot) in self.all.iter().enumerate() {
             if !slot.borrow().0 && slot.borrow().1.is_some() {
                 return Some(Item {
-                    parent_pool: Some(ReusePool{all: self.all.clone()}),
+                    parent_pool: Some(PoisonPool{all: self.all.clone()}),
                     idx: i,
                     item: slot.borrow_mut().1.take(),
                     poisoned: false
@@ -123,19 +123,19 @@ impl <T> Drop for Item<T> {
 
 #[test]
 fn test_empty() {
-    let rc = ReusePool::new(0, || 0u32);
+    let rc = PoisonPool::new(0, || 0u32);
     assert!(rc.get().is_none())
 }
 
 #[test]
 fn test_single() {
-    let rc = ReusePool::new(1, || 5u32);
+    let rc = PoisonPool::new(1, || 5u32);
     assert!(&*rc.get().unwrap() == &5u32)
 }
 
 #[test]
 fn test_reuse() {
-    let rc = ReusePool::new(1, || 5u32);
+    let rc = PoisonPool::new(1, || 5u32);
 
     {
         let mut it = rc.get().unwrap();
@@ -150,7 +150,7 @@ fn test_reuse() {
 
 #[test]
 fn test_taken() {
-    let rc = ReusePool::new(1, || 5u32);
+    let rc = PoisonPool::new(1, || 5u32);
     let it1 = rc.get();
     assert!(it1.is_some());
     let it2 = rc.get();
@@ -159,7 +159,7 @@ fn test_taken() {
 
 #[test]
 fn test_replace() {
-    let rc = ReusePool::new(1, || 5u32);
+    let rc = PoisonPool::new(1, || 5u32);
     {
         let mut it = rc.get().unwrap();
         assert!(it.replace(4) == 5);
@@ -173,7 +173,7 @@ fn test_replace() {
 
 #[test]
 fn test_poison() {
-    let rc = ReusePool::new(1, || 5u32);
+    let rc = PoisonPool::new(1, || 5u32);
 
     {
         let mut it = rc.get().unwrap();
@@ -188,7 +188,7 @@ fn test_poison() {
 
 #[test]
 fn test_unpoison() {
-    let rc = ReusePool::new(1, || 5u32);
+    let rc = PoisonPool::new(1, || 5u32);
 
     {
         let mut it = rc.get().unwrap();

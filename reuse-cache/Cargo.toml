@@ -1,4 +1,7 @@
 [package]
-name = "reuse-cache"
+name = "poison-pool"
 version = "0.1.0"
 authors = ["Ty Overby <ty@pre-alpha.com>"]
+
+description = "A generic object pool that supports poisioning items before they are released back into the pool."
+license = "MIT"
