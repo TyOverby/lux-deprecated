@@ -10,7 +10,6 @@ dependencies = [
  "glutin 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "image-atlas 0.1.0",
- "lux-constants 0.0.1",
  "nd_iter 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "num 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -345,10 +344,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "lux-constants"
-version = "0.0.1"
 
 [[package]]
 name = "lzw"

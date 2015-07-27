@@ -10,7 +10,6 @@ extern crate vecmath;
 extern crate image;
 extern crate num;
 extern crate clock_ticks;
-extern crate lux_constants;
 extern crate fontcache;
 #[cfg(feature="freetype-atlas")]
 extern crate freetype_atlas;
@@ -102,6 +101,8 @@ pub mod font {
 
     #[cfg(feature="freetype-atlas")]
     pub use freetype_atlas::{render};
+    #[cfg(feature="freetype-atlas")]
+    pub use private::constants::SOURCE_CODE_PRO_REGULAR;
 }
 
 pub mod prelude {

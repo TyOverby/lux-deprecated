@@ -15,9 +15,6 @@ path = "src/test_runner.rs"
 [features]
 default = [ ]
 
-[dependencies.lux-constants]
-path = "./constants"
-
 [dependencies.fontcache]
 path = "./font-cache"
 

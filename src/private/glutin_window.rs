@@ -6,7 +6,7 @@ use glutin;
 use vecmath;
 use glium;
 use reuse_cache;
-use lux_constants;
+use super::constants as lux_constants;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
