@@ -1,15 +1,12 @@
 [package]
-name = "image-atlas"
+name = "font-atlas-image"
 version = "0.1.0"
 authors = ["Ty Overby <ty@pre-alpha.com>"]
+license = "MIT"
+description = "An image based loader for font-atlas."
 
 [dependencies]
 rustc-serialize = "*"
 image = "*"
 bincode = "0.3.0"
-
-[dependencies.fontcache]
-path = "../"
-
-[lib]
-name = "image_atlas"
+font-atlas = "0.1.0"

@@ -1,9 +1,9 @@
 extern crate rustc_serialize;
 extern crate image;
-extern crate fontcache;
+extern crate font_atlas;
 extern crate bincode;
 
-use fontcache::RenderedFont;
+use font_atlas::RenderedFont;
 use bincode::{encode_into};
 use std::io::{Read, Write};
 use std::path::Path;

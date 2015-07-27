@@ -15,18 +15,11 @@ path = "src/test_runner.rs"
 [features]
 default = [ ]
 
-[dependencies.fontcache]
-path = "./font-cache"
+[dependencies.font-atlas]
+version = "0.1.0"
 
-[dependencies.image-atlas]
-path = "./font-cache/image-atlas"
-
-[dependencies.freetype-atlas]
-path = "./font-cache/freetype-atlas"
-optional = true
-
-[dependencies.reuse-cache]
-path = "./reuse-cache"
+[dependencies.poison-pool]
+version = "0.1.0"
 
 [dependencies.glium]
 version = "0.8.0"

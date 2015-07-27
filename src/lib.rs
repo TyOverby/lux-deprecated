@@ -10,7 +10,7 @@ extern crate vecmath;
 extern crate image;
 extern crate num;
 extern crate clock_ticks;
-extern crate fontcache;
+extern crate font_atlas;
 #[cfg(feature="freetype-atlas")]
 extern crate freetype_atlas;
 extern crate image_atlas;
