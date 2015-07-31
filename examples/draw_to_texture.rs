@@ -1,6 +1,4 @@
 extern crate lux;
-extern crate glium;
-extern crate image;
 
 use lux::prelude::*;
 use lux::color;

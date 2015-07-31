@@ -5,9 +5,7 @@ use lux::color;
 use std::path::Path;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
-
-    // A full sprite
+    let mut window = Window::new().unwrap();
     let sprite1 = lux.load_texture_file(&Path::new("./test/test.png")).unwrap().to_sprite();
 
     // A sprite made by chopping off parts of the other one.
@@ -24,3 +22,4 @@ fn main() {
         frame.sprite(&sprite1, x - 32.0, y-32.0).size(32.0, 32.0).draw();
     }
 }
+
