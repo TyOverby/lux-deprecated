@@ -15,7 +15,7 @@ fn main() {
             tex.circle(150.0, 50.0, 50.0).color(rgb(255, 0, 0)).fill();
             tex.rect(50.0, 150.0, 200.0, 25.0).color(rgb(255, 0, 0)).fill();
         }
-        tex.to_sprite()
+        tex.into_sprite()
     };
 
     while lux.is_open() {

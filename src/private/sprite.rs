@@ -115,18 +115,12 @@ impl IntoSprite for Sprite {
     }
 }
 
-impl IntoSprite for Texture {
-    fn into_sprite<D: HasDisplay>(self, _display: &D) -> LuxResult<Sprite> {
-        Ok(Sprite::new(Rc::new(self.backing)))
-    }
-}
-
 impl IntoSprite for image::DynamicImage {
     fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite> {
         let img = self.flipv();
         let img = try!(glium::texture::Texture2d::new(display.borrow_display(), img));
         let tex: Texture = Texture::new(img);
-        tex.into_sprite(display)
+        Ok(tex.into_sprite())
     }
 }
 
@@ -177,7 +171,7 @@ impl Texture {
     }
 
     /// Converts this texture into a `Sprite`.
-    pub fn to_sprite(self) -> Sprite {
+    pub fn into_sprite(self) -> Sprite {
         Sprite::new(Rc::new(self.backing))
     }
 
@@ -334,6 +328,21 @@ impl Sprite {
             texture_size: (1.0, 1.0),
             texture_pos: (0.0, 0.0)
         }
+    }
+
+    /// Returns the size of this sprite.
+    pub fn size(&self) -> (f32, f32) {
+        (self.size.0 as f32, self.size.1 as f32)
+    }
+
+    /// Returns the width of this sprite.
+    pub fn width(&self) -> f32 {
+        self.size().0
+    }
+
+    /// Returns the height of this sprite.
+    pub fn height(&self) -> f32 {
+        self.size().1
     }
 
     /// Returns the size of this sprite given the size of the image in pixels

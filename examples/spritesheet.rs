@@ -2,16 +2,15 @@ extern crate lux;
 
 use lux::prelude::*;
 use lux::color;
-use std::path::Path;
 
 fn main() {
     let mut lux = Window::new().unwrap();
 
     // A sprite made from an image
     let texture =
-        lux.load_texture_file(&Path::new("./test/minecraft_fixedwidth_font.png"))
+        lux.load_texture_file("./test/minecraft_fixedwidth_font.png")
            .unwrap()
-           .to_sprite();
+           .into_sprite();
     let sheet = texture.as_uniform_sprite_sheet(16, 16);
 
     while lux.is_open() {
