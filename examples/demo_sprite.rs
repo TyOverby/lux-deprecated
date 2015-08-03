@@ -1,25 +1,20 @@
 extern crate lux;
-
 use lux::prelude::*;
-use lux::color;
-use std::path::Path;
 
 fn main() {
+    let mut t = 0.0;
     let mut window = Window::new().unwrap();
-    let sprite1 = lux.load_texture_file(&Path::new("./test/test.png")).unwrap().to_sprite();
+    let logo = window.load_texture_file("./test/test.png").unwrap().into_sprite();
+    let half = logo.width() / 2.0; // image is square, so this is fine
 
-    // A sprite made by chopping off parts of the other one.
-    let sprite2 = sprite1.sub_sprite((0, 0), (256 / 2, 255)).unwrap();
-
-    while lux.is_open() {
-        let mut frame = lux.cleared_frame(color::WHITE);
-        let (x, y) = lux.mouse_pos();
-
-        frame.sprite(&sprite1, 0.0, 0.0).draw();
-        frame.sprite(&sprite2, x, y).draw();
-
-        // Set a special size
-        frame.sprite(&sprite1, x - 32.0, y-32.0).size(32.0, 32.0).draw();
+    while window.is_open() {
+        let mut frame = window.cleared_frame(lux::color::WHITE);
+        let (x, y) = window.mouse_pos();
+        frame.sprite(&logo, x, y)
+             .translate(-half, -half)
+             .rotate_around((half, half), t)
+             .draw();
+        t += 0.01;
     }
 }
 
