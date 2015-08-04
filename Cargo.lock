@@ -10,7 +10,6 @@ dependencies = [
  "glium 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glutin 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "nd_iter 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "num 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "poison-pool 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -369,11 +368,6 @@ dependencies = [
  "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempdir 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "nd_iter"
-version = "0.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "noise"

@@ -42,7 +42,6 @@ freetype-rs = "0.1.0"
 
 [dev-dependencies]
 noise = "0.1.5"
-nd_iter = "0.0.4"
 
 [profile.dev]
 opt-level = 1
