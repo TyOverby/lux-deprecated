@@ -18,9 +18,9 @@ use poison_pool;
 /// operations require a StencilType.
 #[derive(Clone, Copy)]
 pub enum StencilType {
-    /// Deny blacklists pixels on the screen when drawing or clearing.
+    /// Blacklists pixels on the screen when drawing.
     Deny,
-    /// Deny whitelists pixels on the screen when drawing or clearing.
+    /// Whitelists pixels on the screen when drawing.
     Allow,
 }
 
@@ -397,10 +397,10 @@ Fetch<Vec<ColorVertex>>
         // Look at all this awful code for handling something that should
         // be dead simple!
         if self.tex_draw_cache().is_some() {
-            let mut same_type;
-            let mut coherant_group;
-            let mut same_color_mult;
-            let mut same_tex;
+            let same_type;
+            let coherant_group;
+            let same_color_mult;
+            let same_tex;
             {
                 let draw_cache = self.tex_draw_cache().as_ref().unwrap();
                 same_type = draw_cache.typ == n_typ;
