@@ -1,6 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
+use std::error::Error;
 
 use glutin;
 use vecmath;
@@ -183,14 +184,12 @@ impl Window {
 
         let display = try!(window_builder.build_glium().map_err(|e| {
             match e {
-                glium::GliumCreationError::BackendCreationError(
-                    glutin::CreationError::OsError(s)) =>
-                        LuxError::WindowError(s),
-                glium::GliumCreationError::BackendCreationError(
-                    glutin::CreationError::NotSupported)  =>
-                        LuxError::WindowError("Window creation is not supported.".to_string()),
-                glium::GliumCreationError::IncompatibleOpenGl(m) =>
+                glium::GliumCreationError::BackendCreationError(e) => {
+                        LuxError::WindowError(String::from(e.description()))
+                }
+                glium::GliumCreationError::IncompatibleOpenGl(m) => {
                     LuxError::OpenGlError(m)
+                }
             }
         }));
 
