@@ -1,11 +1,9 @@
 extern crate lux;
-extern crate nd_iter;
 
 use lux::prelude::*;
 use lux::color;
 use lux::graphics::{PrimitiveCanvas, ColorVertex};
 use lux::graphics::TrianglesList;
-use nd_iter::iter_2d;
 
 fn main() {
     let mut lux = Window::new().unwrap();
@@ -22,11 +20,13 @@ fn main() {
         delta += 0.1;
 
         frame.with_rotation(delta, |frame|{
-            for (x, y) in iter_2d(0..40, 0..40) {
-                let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
-                frame.rect(x, y, 30.0, 30.0)
-                     .color(color::BLUE)
-                     .fill();
+            for x in 0..40 {
+                for y in 0..40 {
+                    let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
+                    frame.rect(x, y, 30.0, 30.0)
+                         .color(color::BLUE)
+                         .fill();
+                }
             }
 
             // Create some vertices for a triangle.
