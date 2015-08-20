@@ -170,7 +170,8 @@ pub trait Colored {
     ///     frame.rect(51.0, 0.0, 50.0, 50.0).fill();
     /// });
     /// ```
-    fn with_color<F, C: Color>(&mut self, color: C, f: F) where F: FnOnce(&mut Self) {
+    fn with_color<F, R, C: Color>(&mut self, color: C, f: F)
+    where F: FnOnce(&mut Self) -> R {
         let prev = self.get_color();
         self.color(color);
         f(self);
