@@ -1,10 +1,10 @@
-extern crate fontcache;
+extern crate font_atlas;
 extern crate glyph_packer;
 extern crate image;
 extern crate freetype;
 
 use std::collections::HashMap;
-use fontcache::{RenderedFont, CharInfo};
+use font_atlas::{RenderedFont, CharInfo};
 
 struct Advance(i32, i32);
 struct BitmapOffset(i32, i32);
@@ -15,7 +15,7 @@ pub type FreetypeResult<T> = Result<T, FreetypeError>;
 /// Given a freetype face, this function generates a RenderedFont with the
 /// a `DynamicImage` backing it.
 pub fn render<I: Iterator<Item=char>>(face: &mut freetype::Face, chars: I, kerning: bool)
--> FreetypeResult<fontcache::RenderedFont<image::DynamicImage>> {
+-> FreetypeResult<font_atlas::RenderedFont<image::DynamicImage>> {
     let chars_vec: Vec<_> = chars.collect();
 
     let (image, char_info) = try!(merge_all(chars_vec.iter().cloned().map(|c| (c, char_to_img(face, c)))));

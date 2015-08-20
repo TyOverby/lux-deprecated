@@ -1,6 +1,7 @@
 ///! All of the wc3 named colors.
 
 // Two bitcoins to the person that makes this file not look like utter garbage.
+
 pub static ALICEBLUE: [f32; 4] = [0xF0u8 as f32 / 255.0f32, 0xF8u8 as f32 / 255.0f32, 0xFFu8 as f32 / 255.0f32, 0xFFu8 as f32 / 255.0f32];
 pub static ANTIQUEWHITE: [f32; 4] = [0xFAu8 as f32 / 255.0f32, 0xEBu8 as f32 / 255.0f32, 0xD7u8 as f32 / 255.0f32, 0xFFu8 as f32 / 255.0f32];
 pub static AQUA: [f32; 4] = [0x00u8 as f32 / 255.0f32, 0xFFu8 as f32 / 255.0f32, 0xFFu8 as f32 / 255.0f32, 0xFFu8 as f32 / 255.0f32];

@@ -4,9 +4,9 @@ use std::convert::{Into, AsRef};
 use super::types::Float;
 
 use vecmath;
-use fontcache;
+use font_atlas;
 
-pub use fontcache::OutputPosition;
+pub use font_atlas::OutputPosition;
 
 use super::accessors::{HasDisplay, HasFontCache};
 use super::color::Color;
@@ -16,7 +16,7 @@ use super::canvas::Canvas;
 use super::sprite::{Sprite, IntoSprite};
 
 pub struct FontCache {
-    rendered: HashMap<(String, u16), fontcache::RenderedFont<Sprite>>,
+    rendered: HashMap<(String, u16), font_atlas::RenderedFont<Sprite>>,
     current: Option<(String, u16)>
 }
 
@@ -64,7 +64,7 @@ pub trait TextDraw: TextLoad + Canvas {
 /// Fonts must be loaded before they can be drawn with `TextDraw`.
 pub trait TextLoad: Sized + HasDisplay + HasFontCache {
     /// Adds a rendered font to the font cache.
-    fn cache<F: IntoSprite>(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<F>) -> LuxResult<()> {
+    fn cache<F: IntoSprite>(&mut self, name: &str, size: u16, rendered: font_atlas::RenderedFont<F>) -> LuxResult<()> {
         let rendered = rendered.map(|i| i.into_sprite(self.borrow_display()))
                                .reskin();
         self.font_cache().cache(name, size, try!(rendered));
@@ -222,14 +222,14 @@ impl FontCache {
         Ok(fc)
     }
 
-    fn cache(&mut self, name: &str, size: u16, rendered: fontcache::RenderedFont<Sprite>) {
+    fn cache(&mut self, name: &str, size: u16, rendered: font_atlas::RenderedFont<Sprite>) {
         self.rendered.insert((name.to_string(), size), rendered);
     }
     fn clear(&mut self, name: &str, size: u16) {
         self.rendered.remove(&(name.to_string(), size));
     }
 
-    fn use_font<'a>(&'a mut self, name: &str, size: u16) -> LuxResult<&'a fontcache::RenderedFont<Sprite>> {
+    fn use_font<'a>(&'a mut self, name: &str, size: u16) -> LuxResult<&'a font_atlas::RenderedFont<Sprite>> {
         let tup = (name.to_string(), size);
         let res = self.rendered.get(&tup).ok_or_else(|| LuxError::FontNotLoaded(name.to_string()));
         self.current = Some(tup);

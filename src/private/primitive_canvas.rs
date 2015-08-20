@@ -11,16 +11,16 @@ use super::error::LuxResult;
 
 use vecmath;
 use glium;
-use reuse_cache;
+use poison_pool;
 
 // TODO: Come up with a better name for this enum and varients.
 /// When modifying a stencil or clearing the stencil buffer,
 /// operations require a StencilType.
 #[derive(Clone, Copy)]
 pub enum StencilType {
-    /// Deny blacklists pixels on the screen when drawing or clearing.
+    /// Blacklists pixels on the screen when drawing.
     Deny,
-    /// Deny whitelists pixels on the screen when drawing or clearing.
+    /// Whitelists pixels on the screen when drawing.
     Allow,
 }
 
@@ -48,9 +48,9 @@ pub struct CachedColorDraw {
     /// The type of primitive that is being used to draw.
     pub typ: PrimitiveType,
     /// A cache of colored vertices.
-    pub points: reuse_cache::Item<Vec<ColorVertex>>,
+    pub points: poison_pool::Item<Vec<ColorVertex>>,
     /// A cache of indices indexing into the points cache.
-    pub idxs: reuse_cache::Item<Vec<Idx>>,
+    pub idxs: poison_pool::Item<Vec<Idx>>,
 }
 
 /// A cache for batching texture drawing commands.
@@ -61,11 +61,11 @@ pub struct CachedTexDraw {
     /// The type of primitive that is being used to draw.
     pub typ: PrimitiveType,
     /// A cache of colored vertices.
-    pub points: reuse_cache::Item<Vec<TexVertex>>,
+    pub points: poison_pool::Item<Vec<TexVertex>>,
     /// The texture that is going to be bound for the draw call.
     pub texture: Rc<glium::texture::Texture2d>,
     /// A cache of indices indexing into the points cache.
-    pub idxs: reuse_cache::Item<Vec<Idx>>,
+    pub idxs: poison_pool::Item<Vec<Idx>>,
     /// A color that will be multiplied against the values in the texture
     /// to give the texture color.
     pub color_mult: [Float; 4],
@@ -397,10 +397,10 @@ Fetch<Vec<ColorVertex>>
         // Look at all this awful code for handling something that should
         // be dead simple!
         if self.tex_draw_cache().is_some() {
-            let mut same_type;
-            let mut coherant_group;
-            let mut same_color_mult;
-            let mut same_tex;
+            let same_type;
+            let coherant_group;
+            let same_color_mult;
+            let same_tex;
             {
                 let draw_cache = self.tex_draw_cache().as_ref().unwrap();
                 same_type = draw_cache.typ == n_typ;

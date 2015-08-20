@@ -380,6 +380,15 @@ impl <'a, C> Transform for Ellipse<'a, C> {
     }
 }
 
+impl <'a, C> Transform for ContainedSprite<'a, C> {
+    fn current_matrix(&self) -> &[[Float; 4]; 4] {
+        &self.fields.transform
+    }
+    fn current_matrix_mut(&mut self) -> &mut[[Float; 4]; 4] {
+        &mut self.fields.transform
+    }
+}
+
 impl <'a, C> Colored for Ellipse<'a, C> {
     fn get_color(&self) -> [Float; 4] {
         self.fields.fill_color

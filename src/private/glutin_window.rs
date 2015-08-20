@@ -1,12 +1,13 @@
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
+use std::error::Error;
 
 use glutin;
 use vecmath;
 use glium;
-use reuse_cache;
-use lux_constants;
+use poison_pool;
+use super::constants as lux_constants;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
@@ -55,9 +56,9 @@ pub struct Window {
     title: String,
 
     // CACHES
-    idx_cache: reuse_cache::ReuseCache<Vec<Idx>>,
-    tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
-    color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
+    idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
+    tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
+    color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
 
     // EVENT
     event_store: VecDeque<Event>,
@@ -93,9 +94,9 @@ pub struct Frame {
     tex_draw_cache: Option<CachedTexDraw>,
 
     // CACHES
-    idx_cache: reuse_cache::ReuseCache<Vec<Idx>>,
-    tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
-    color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
+    idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
+    tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
+    color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
 
     // Raw
     basis_matrix: Mat4f,
@@ -111,9 +112,9 @@ impl Frame {
     fn new(display: &glium::Display,
            color_program: Rc<glium::Program>,
            tex_program: Rc<glium::Program>,
-           idx_cache: reuse_cache::ReuseCache<Vec<Idx>>,
-           tex_vtx_cache: reuse_cache::ReuseCache<Vec<TexVertex>>,
-           color_vtx_cache: reuse_cache::ReuseCache<Vec<ColorVertex>>,
+           idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
+           tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
+           color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
            clear_color: Option<[f32; 4]>,
            font_cache: Rc<RefCell<FontCache>>) -> Frame {
         use glium::Surface;
@@ -183,14 +184,12 @@ impl Window {
 
         let display = try!(window_builder.build_glium().map_err(|e| {
             match e {
-                glium::GliumCreationError::BackendCreationError(
-                    glutin::CreationError::OsError(s)) =>
-                        LuxError::WindowError(s),
-                glium::GliumCreationError::BackendCreationError(
-                    glutin::CreationError::NotSupported)  =>
-                        LuxError::WindowError("Window creation is not supported.".to_string()),
-                glium::GliumCreationError::IncompatibleOpenGl(m) =>
+                glium::GliumCreationError::BackendCreationError(e) => {
+                        LuxError::WindowError(String::from(e.description()))
+                }
+                glium::GliumCreationError::IncompatibleOpenGl(m) => {
                     LuxError::OpenGlError(m)
+                }
             }
         }));
 
@@ -207,9 +206,9 @@ impl Window {
             tex_program: Rc::new(tex_program),
             closed: false,
             title: "Lux".to_string(),
-            idx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
-            tex_vtx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
-            color_vtx_cache: reuse_cache::ReuseCache::new(4, || vec![]),
+            idx_cache: poison_pool::PoisonPool::new(4, || vec![]),
+            tex_vtx_cache: poison_pool::PoisonPool::new(4, || vec![]),
+            color_vtx_cache: poison_pool::PoisonPool::new(4, || vec![]),
             event_store: VecDeque::new(),
             mouse_pos: (0, 0),
             window_pos: (0, 0),
@@ -555,7 +554,7 @@ impl HasPrograms for Frame {
 }
 
 impl Fetch<Vec<Idx>> for Frame {
-    fn fetch(&self) -> reuse_cache::Item<Vec<Idx>> {
+    fn fetch(&self) -> poison_pool::Item<Vec<Idx>> {
         let mut ret = self.idx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret
@@ -563,7 +562,7 @@ impl Fetch<Vec<Idx>> for Frame {
 }
 
 impl Fetch<Vec<TexVertex>> for Frame {
-    fn fetch(&self) -> reuse_cache::Item<Vec<TexVertex>> {
+    fn fetch(&self) -> poison_pool::Item<Vec<TexVertex>> {
         let mut ret = self.tex_vtx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret
@@ -571,7 +570,7 @@ impl Fetch<Vec<TexVertex>> for Frame {
 }
 
 impl Fetch<Vec<ColorVertex>> for Frame {
-    fn fetch(&self) -> reuse_cache::Item<Vec<ColorVertex>> {
+    fn fetch(&self) -> poison_pool::Item<Vec<ColorVertex>> {
         let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret
