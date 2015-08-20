@@ -1,6 +1,6 @@
 # Lux
 
-## A 2d game engine built with a focus on user-frendliness and speed.
+### A 2d game engine built with a focus on user-frendliness and speed.
 
 Lux is a Rust library with no external dependencies that provides three main
 pieces of functinoality.
