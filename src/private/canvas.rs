@@ -266,21 +266,69 @@ pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
 
     /// Draws a single line from `start` to `end` with a
     /// thickness of `line_size`.
-    fn draw_line(&mut self, _x1: Float, _y1: Float, _x2: Float, _y2: Float, _line_size: Float) {
-        unimplemented!();
+    fn draw_line(&mut self, x1: Float, y1: Float, x2: Float, y2: Float, line_size: Float) {
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let dist = (dx * dx + dy * dy).sqrt();
+        let angle = dy.atan2(dx);
+
+        self.rect(0.0, 0.0, dist, line_size)
+            .translate(x1, y1)
+            .rotate(angle)
+            .translate(0.0, -line_size / 2.0)
+            .fill();
     }
 
     /// Draws a series of lines from each point to the next with a thickness
     /// of `line_size`.
-    fn draw_lines<I: Iterator<Item = (Float, Float)>>(&mut self, mut _positions: I, _line_size: Float) {
-        unimplemented!();
+    fn draw_lines<I: Iterator<Item = (Float, Float)>>(&mut self, mut positions: I, line_size: Float) {
+        let mut prev = match positions.next() {
+            Some(p) => p,
+            None => return
+        };
+
+        for p in positions {
+            self.draw_line(prev.0, prev.1, p.0, p.1, line_size);
+            prev = p;
+        }
     }
 
     /// Draws an arc centered at `pos` from `angle1` to `angle_2` with a
     /// thickness of `line_size`.
-    fn draw_arc(&mut self, _pos: (Float, Float), _radius: Float, _angle1: Float,
-                _angle2: Float, _line_size: Float) {
-        unimplemented!();
+    fn draw_arc(&mut self, pos: (Float, Float), radius: Float, angle1: Float,
+                angle2: Float, line_size: Float) {
+
+        use std::f32::consts::PI;
+
+        const PI_2: f32 = PI * 2.0;
+
+        fn norm(mut value: f32) -> Float {
+            value %= PI_2;
+            value = (value + PI_2) % PI_2;
+            value
+        }
+
+        fn gen_point(offset: (Float, Float), radius: Float, angle: Float) -> (Float, Float) {
+            (angle.sin() * radius + offset.0, angle.cos() * radius + offset.1)
+        }
+
+        let angle1 = norm(angle1);
+        let angle2 = norm(angle2);
+        let delta = norm(angle2 - angle1);
+        let circumfrence = radius * delta;
+
+        let mut points = vec![];
+
+        let mut theta = 0.0;
+        while theta <= delta {
+            points.push(gen_point(pos, radius, theta));
+            theta += 0.4; // TODO: fix this.
+        }
+        points.push(gen_point(pos, radius, theta));
+
+        self.with_rotate_around(pos, -angle1, |c| {
+            c.draw_lines(points.into_iter(), line_size);
+        });
     }
 
     /// Draws a sprite  to the screen.

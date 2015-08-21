@@ -178,7 +178,7 @@ impl Window {
             .with_dimensions(600, 500)
             .with_vsync()
             .with_gl_debug_flag(false)
-            .with_multisampling(8)
+            //.with_multisampling(8)
             .with_visibility(true);
 
 
