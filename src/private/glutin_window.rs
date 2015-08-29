@@ -162,11 +162,6 @@ impl Drop for Frame {
 }
 
 impl Window {
-    /// Panics if an OpenGL error has occurred.
-    pub fn assert_no_error(&self)  {
-        self.display.assert_no_error(None);
-    }
-
     /// Constructs a new window with the default settings.
     pub fn new() -> LuxResult<Window> {
         use glium::DisplayBuild;

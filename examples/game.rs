@@ -65,7 +65,7 @@ impl Game for MyGame {
 
         frame.circle(px + vx * lag, py + vy * lag, PLAYER_SIZE)
              .rotate_around((PLAYER_SIZE / 2.0, PLAYER_SIZE / 2.0), self.rotation)
-             .spokes(6)
+             .segments(6)
              .fill();
 
         Ok(())

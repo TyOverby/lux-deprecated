@@ -10,6 +10,27 @@ use glium::index::PrimitiveType::{TriangleFan, TrianglesList, Points};
 
 use vecmath;
 
+const OPT_LINE_LENGTH: u16 = 15;
+
+fn calc_delta_theta(segments: Option<u16>,
+                    line_length: Option<u16>,
+                    width: Float,
+                    height: Float) -> Float
+{
+    use std::f32::consts::PI;
+    let largest_radius = width.max(height);
+    match (segments, line_length.unwrap_or(OPT_LINE_LENGTH)) {
+        (Some(segment_count), _) => {
+            (2.0 * PI) / (segment_count as Float)
+        }
+        (None, line_length) => {
+            // = (2 pi) / ((2pi r) / (line_len))
+            // = line_len / r
+            line_length as Float / largest_radius
+        }
+    }
+}
+
 struct BasicFields<'a, C: 'a> {
     fill_color: [Float; 4],
     stroke_color: Option<[Float; 4]>,
@@ -22,10 +43,11 @@ struct BasicFields<'a, C: 'a> {
 }
 
 /// An ellipse that can be drawn to the screen.
-#[must_use = "Ellipses only contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
+#[must_use = "Ellipses only contain context, and must be drawn with `fill()`"]
 pub struct Ellipse<'a, C: 'a> {
     fields: BasicFields<'a, C>,
-    spokes: u16
+    segments: Option<u16>,
+    opt_line_len: Option<u16>
 }
 
 /// A Rectangle that can be drawn to the screen.
@@ -47,6 +69,12 @@ pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (Float, Float);
 
+    /// Returns the size of the canvas in integer form.
+    fn size_i(&self) -> (i32, i32) {
+        let (w, h) = self.size();
+        (w as i32, h as i32)
+    }
+
     /// Returns the width of the canvas.
     fn width(&self) -> Float {
         match self.size() {
@@ -59,6 +87,16 @@ pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
         match self.size() {
             (_, h) => h
         }
+    }
+
+    /// Returns the width of the canvas in integer form.
+    fn width_i(&self) -> i32 {
+        self.width() as i32
+    }
+
+    /// Returns the height of the canvas in integer form.
+    fn height_i(&self) -> i32 {
+        self.width() as i32
     }
 
     /// Clears the canvas with a solid color.
@@ -315,14 +353,17 @@ pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
         let angle1 = norm(angle1);
         let angle2 = norm(angle2);
         let delta = norm(angle2 - angle1);
-        let circumfrence = radius * delta;
+
+        // TODO: When you switch this over to being state based, switch
+        // these None valuse
+        let delta_theta = calc_delta_theta(None, None, radius, radius);
 
         let mut points = vec![];
 
         let mut theta = 0.0;
         while theta <= delta {
             points.push(gen_point(pos, radius, theta));
-            theta += 0.4; // TODO: fix this.
+            theta += delta_theta;
         }
         points.push(gen_point(pos, radius, theta));
 
@@ -376,7 +417,8 @@ impl <'a, C> Ellipse<'a, C> {
     fn new(c: &'a mut C, pos: (Float, Float), size: (Float, Float), color: [Float; 4]) -> Ellipse<'a, C> {
         Ellipse {
             fields: BasicFields::new(pos, size, c, color),
-            spokes: 90
+            segments: None,
+            opt_line_len: None
         }
     }
 
@@ -393,11 +435,17 @@ impl <'a, C> Ellipse<'a, C> {
     /// let mut frame = window.frame();
     /// let (x, y, size) = (10.0, 10.0, 50.0);
     /// // draw a pentagon
-    /// frame.circle(x, y, size).spokes(5).draw();
+    /// frame.circle(x, y, size).segments(5).draw();
     ///# }
     /// ```
-    pub fn spokes(&mut self, spokes: u16) -> &mut Self {
-        self.spokes = spokes;
+    pub fn segments(&mut self, segments: u16) -> &mut Self {
+        self.segments = Some(segments);
+        self
+    }
+
+    /// Instead of
+    pub fn line_length(&mut self, line_length: u16) -> &mut Self {
+        self.opt_line_len = Some(line_length);
         self
     }
 }
@@ -476,15 +524,18 @@ impl <'a, C> Ellipse<'a, C> where C: Canvas + 'a {
         use std::f32::consts::PI;
         use num::traits::Float as Nfloat;
 
+        let delta_theta = calc_delta_theta(self.segments,
+                                           self.opt_line_len,
+                                           self.fields.size.0,
+                                           self.fields.size.1);
         let color = self.get_color();
-        let spokes = self.spokes;
         let mut vertices = vec![];
 
         let mut theta = 0.0;
         while theta <= 2.0 * PI {
             let p = [theta.sin(), theta.cos()];
             vertices.push(ColorVertex { pos: p, color: color });
-            theta += (2.0 * PI) / (spokes as Float);
+            theta += delta_theta;
         }
 
         //let mut trx = vecmath::mat4_id();
