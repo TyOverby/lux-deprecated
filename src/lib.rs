@@ -89,7 +89,7 @@ pub mod game {
     //! you structure your app, this module contains structure and a game loop
     //! implementation
 
-    pub use private::game::{Game, GameRunner};
+    pub use private::game::{Game, GameRunner, Loader};
 }
 
 pub mod font {

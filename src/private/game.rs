@@ -1,4 +1,3 @@
-
 use super::glutin_window::{Window, Frame};
 use super::interactive::EventIterator;
 use super::color::{rgba, rgb};
@@ -9,9 +8,20 @@ use super::raw::{Transform, Colored};
 use super::font::TextDraw;
 
 use std::collections::VecDeque;
+use std::mem::transmute;
+use std::thread;
 use clock_ticks;
 
 const FRAMES_TO_TRACK: usize = 80;
+
+/// A struct that stores closures which load assets and prepare the game for
+/// running.
+pub struct Loader<G> {
+    async_tasks: Vec<(String, Box<Fn() -> LuxResult<Box<Option<()>>> + Send + 'static>)>,
+    apply_tasks: Vec<(String, Box<Fn(Box<Option<()>>, &mut Window, &mut G) -> LuxResult<()>>)>,
+
+    real_async_count: u32
+}
 
 /// A trait that represents basic game functionality.
 ///
@@ -69,14 +79,6 @@ pub trait Game {
         !window.was_open()
     }
 
-    /// Called once when the GameRunner is set up, this function can be
-    /// overridden to set properties on the Window.
-    ///
-    /// Defaults to doing nothing.
-    fn prepare_window(&mut self, _window: &mut Window) -> LuxResult<()> {
-        Ok(())
-    }
-
     /// Called once before terminating the window.
     ///
     /// Defaults to doing nothing.
@@ -111,6 +113,80 @@ pub trait Game {
         let mut runner = try!(GameRunner::new(self));
         runner.run_until_end()
     }
+
+    /// All asset loading and window preparation code can be done here.
+    ///
+    /// Loading and preparing assets can typically be done in parallel, but
+    /// preparing the window and loading the textures into OpenGL should be
+    /// done one at a time.  Because of this, the loader can take jobs that
+    /// have an asyncronous component and jobs that are entirely synchronous.
+    ///
+    /// For more information, read the docs for `Loader`.
+    ///
+    /// Defaults to loading nothing.
+    fn load(_loader: &mut Loader<Self>) { }
+
+    /// Draws the loading screen that shows progress when the game is loading.
+    fn draw_loading_screen<S: AsRef<str>>(what: S) {
+        println!("{}", what.as_ref());
+    }
+}
+
+impl <G> Loader<G> {
+    fn new() -> Loader<G> {
+        Loader {
+            async_tasks: vec![],
+            apply_tasks: vec![],
+            real_async_count: 0
+        }
+    }
+
+    /// Performs part of a job asynchronously and then applies the result
+    /// of that loading to the game.
+    ///
+    /// The two closures are separate parts of the same loading job.
+    ///
+    /// * `load`: Does the bulk of the loading work.  Returns a `LuxResult` with a
+    ///           return value.
+    /// * `apply`: Takes the return value and applies it to the `Window` and `Game` object.
+    ///
+    /// The `load` closures are all run in separate threads, but the apply closures
+    /// must run sequentially in the same thread in order to share the Game and
+    /// Window objects.
+    pub fn do_async<R, FL, FA, S: Into<String>>(&mut self, desc: S, load: FL, apply: FA)
+    where FL: Fn() -> LuxResult<R> + Send + 'static,
+          FA: Fn(R, &mut Window, &mut G) -> LuxResult<()> + 'static {
+
+        let new_load: Box<Fn() -> LuxResult<Box<Option<()>>> + Send> = Box::new(move || {
+            unsafe { transmute(load().map(|a| Box::new(Some(a)))) }
+        });
+
+        let new_apply: Box<Fn(Box<Option<()>>, &mut Window, &mut G) -> LuxResult<()>> = Box::new(move |r, w, g| {
+            let mut res: Box<Option<R>> = unsafe { transmute(r) };
+            apply(res.take().unwrap(), w, g)
+        });
+
+        let desc = desc.into();
+
+        self.async_tasks.push((desc.clone(), new_load));
+        self.apply_tasks.push((desc, new_apply));
+        self.real_async_count += 1;
+    }
+
+    /// Performs a job without an asynchronous component.
+    ///
+    /// The closure is executued on the main thread, and is called along with
+    /// the `apply` closures from the `do_async` method.
+    pub fn do_sync<F, S: Into<String>>(&mut self, desc: S, load: F)
+    where F: Fn(&mut Window, &mut G) -> LuxResult<()> + 'static {
+        self.async_tasks.push(("".into(), Box::new(|| Ok(Box::new(Some(()))))));
+
+        let new_apply: Box<Fn(Box<Option<()>>, &mut Window, &mut G) -> LuxResult<()>> = Box::new(move |_, w, g| {
+            load(w, g)
+        });
+
+        self.apply_tasks.push((desc.into(), new_apply));
+    }
 }
 
 /// A struct that wraps a `Game` and a `Window` and implementes a game loop.
@@ -119,7 +195,13 @@ pub struct GameRunner<G: Game> {
     pub window: Window,
     /// The wrapped game.
     pub game: G,
-    frame_timings: VecDeque<FrameTiming>
+    frame_timings: VecDeque<FrameTiming>,
+
+    previous: f64,
+    lag: f64,
+    // This is required because otherwise, we get weird time
+    // reporting when creating and dropping frames.
+    next_frame: Option<Frame>
 }
 
 struct FrameTiming {
@@ -146,8 +228,90 @@ impl <G: Game> GameRunner<G> {
         Ok(GameRunner {
             game: game,
             window: try!(Window::new()),
-            frame_timings: VecDeque::with_capacity(FRAMES_TO_TRACK + 1)
+            frame_timings: VecDeque::with_capacity(FRAMES_TO_TRACK + 1),
+
+            previous: 0.0,
+            lag: 0.0,
+            next_frame: None
         })
+    }
+
+    /// Moves the game forward one "step".
+    ///
+    /// A "step" has two main phases
+    ///
+    /// * Update Phase: The Games `update()` function is called any number of times (including 0).
+    /// * Render Phase: The Games `render()` function is called exactly once.
+    ///
+    /// The game runner keeps track of lag manually, so `update()` might be called more than once
+    /// per step.  If you are calling `step` manually and you stop the game (for example, to pause
+    /// the game), you must call `reset_lag` so that `step` doesn't think that the game lagged for
+    /// a very long time.
+    pub fn step(&mut self) -> LuxResult<()> {
+        let mut frame = self.next_frame.take().unwrap_or_else(|| self.window.cleared_frame(rgb(255, 255, 255)));
+
+        //
+        // Preframe setup
+        //
+        let mut events = self.window.events();
+
+        //
+        // Core loop.
+        //
+        let current = clock_ticks::precise_time_s();
+        let current_ns = clock_ticks::precise_time_ns();
+        let elapsed = current - self.previous;
+        self.previous = current;
+        self.lag += elapsed;
+
+        let s_p_u = self.game.s_per_update();
+
+        let mut update_durations = vec![];
+        while self.lag >= s_p_u {
+            let (tu, r) = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
+            try!(r);
+            update_durations.push(tu);
+            self.lag -= s_p_u;
+        }
+
+        let (tr, r) = time(|| self.game.render(self.lag as f32, &mut self.window, &mut frame));
+        try!(r);
+
+        let (t_timing, _) = time(|| {
+            if self.game.show_fps(&self.window) {
+                self.draw_timings(&mut frame);
+            }
+        });
+
+        let (tpublish, _) = time(|| {
+            ::std::mem::drop(frame);
+            let next_frame = self.window.cleared_frame(self.game.clear_color().unwrap_or(rgb(255,255,255)));
+            self.next_frame = Some(next_frame);
+        });
+
+        //
+        // Postframe cleanup and recording
+        //
+        if !events.is_empty() {
+            self.window.restock_events(events);
+        }
+
+        let now = clock_ticks::precise_time_ns();
+        let timing = FrameTiming {
+            update_durations: update_durations,
+            render_duration: tr,
+            render_publish: tpublish,
+            debug_drawing: t_timing,
+            timestamp_start: current_ns,
+            timestamp_end: now
+        };
+
+        self.frame_timings.push_front(timing);
+        if self.frame_timings.len() > FRAMES_TO_TRACK {
+            self.frame_timings.pop_back();
+        }
+
+        Ok(())
     }
 
     /// Runs the game until the game is terminated.
@@ -165,78 +329,49 @@ impl <G: Game> GameRunner<G> {
     /// 4. The amount of "lag" time is passed in to the render function so that
     ///    the user can accomodate for lag.
     pub fn run_until_end(&mut self) -> LuxResult<()> {
-        let mut previous = clock_ticks::precise_time_s();
-        let mut lag = 0.0;
-        let mut frame = Some(self.window.cleared_frame(rgb(255, 255, 255)));
-
-        try!(self.game.prepare_window(&mut self.window));
-
+        try!(self.do_load());
+        self.previous = clock_ticks::precise_time_s();
+        self.lag = 0.0;
         while !self.game.should_close(&self.window) {
-            //
-            // Preframe setup
-            //
-            let mut events = self.window.events();
-
-            //
-            // Core loop.
-            //
-            let current = clock_ticks::precise_time_s();
-            let current_ns = clock_ticks::precise_time_ns();
-            let elapsed = current - previous;
-            previous = current;
-            lag += elapsed;
-
-            let s_p_u = self.game.s_per_update();
-
-            let mut update_durations = vec![];
-            while lag >= s_p_u {
-                let (tu, r) = time(|| self.game.update(s_p_u as f32, &mut self.window, &mut events));
-                try!(r);
-                update_durations.push(tu);
-                lag -= s_p_u;
-            }
-
-            let (tr, r) = time(|| self.game.render(lag as f32, &mut self.window, frame.as_mut().unwrap()));
-            try!(r);
-
-            let (t_timing, _) = time(|| {
-                if self.game.show_fps(&self.window) {
-                    self.draw_timings(frame.as_mut().unwrap());
-                }
-            });
-
-            let (tpublish, _) = time(|| {
-                ::std::mem::drop(frame.take());
-                frame = Some(if let Some(c) = self.game.clear_color() {
-                            self.window.cleared_frame(c)
-                        } else {
-                            self.window.frame()
-                        });
-            });
-
-            //
-            // Postframe cleanup and recording
-            //
-            if !events.is_empty() {
-                self.window.restock_events(events);
-            }
-
-            let now = clock_ticks::precise_time_ns();
-            let timing = FrameTiming {
-                update_durations: update_durations,
-                render_duration: tr,
-                render_publish: tpublish,
-                debug_drawing: t_timing,
-                timestamp_start: current_ns,
-                timestamp_end: now
-            };
-
-            self.frame_timings.push_front(timing);
-            if self.frame_timings.len() > FRAMES_TO_TRACK {
-                self.frame_timings.pop_back();
-            }
+            try!(self.step());
         }
         self.game.on_close(&mut self.window)
+    }
+
+    /// Resets the stored lag.
+    ///
+    /// This function should only be called when resuming calls to `step`
+    /// after not calling it regularly.
+    pub fn reset_lag(&mut self) {
+        self.lag = 0.0;
+        self.previous = clock_ticks::precise_time_s();
+    }
+
+    /// Execute the game loading closures that would be
+    /// generated by `Game::load`.
+    pub fn do_load(&mut self) -> LuxResult<()> {
+        let mut loader = Loader::new();
+        G::load(&mut loader);
+
+        let Loader{async_tasks, apply_tasks, ..} = loader;
+        let mut handles = vec![];
+
+        for (name, async_t) in async_tasks {
+            handles.push(thread::spawn(move || async_t()));
+            G::draw_loading_screen("starting ".to_string() + &name);
+        }
+
+        let results = handles.into_iter()
+                             .map(|h| h.join())
+                             .map(|r| r.unwrap());
+
+        for ((name, apply_t), res) in apply_tasks.into_iter().zip(results.into_iter()) {
+            let res = try!(res);
+            G::draw_loading_screen("applying ".to_string() + &name);
+            try!(apply_t(res, &mut self.window, &mut self.game));
+            G::draw_loading_screen("finished ".to_string() + &name);
+        }
+        Ok(())
     }
 
     fn calc_fps(&self) -> (u32, u32) {
