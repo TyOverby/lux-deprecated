@@ -10,31 +10,45 @@ struct MyGame {
     text: Option<String>
 }
 
+fn long_random_time() -> u32 {
+    // 3 seconds.
+    3000
+}
+
+fn small_random_time() -> u32 {
+    1000
+}
+
 impl Game for MyGame {
     fn load(loader: &mut Loader<MyGame>) {
-        loader.do_async("One",
-        ||{
-            std::thread::sleep_ms(100);
-            Ok(1u32)
-        }, |res, _window, game| {
-            game.one = Some(res);
-            Ok(())
-        });
+        for _ in 0 .. 5 {
+            loader.do_async("load the number 1",
+            ||{
+                std::thread::sleep_ms(long_random_time());
+                Ok(1u32)
+            }, |res, _window, game| {
+                std::thread::sleep_ms(small_random_time());
+                game.one = Some(res);
+                Ok(())
+            });
+        }
 
-        loader.do_async("Two",
+        loader.do_async("load the number 2.0",
         ||{
-            std::thread::sleep_ms(200);
+            std::thread::sleep_ms(long_random_time());
             Ok(2.0f64)
         }, |res, _window, game| {
+            std::thread::sleep_ms(small_random_time());
             game.two= Some(res);
             Ok(())
         });
 
-        loader.do_async("Text",
+        loader.do_async("load an intro message",
         ||{
-            std::thread::sleep_ms(100);
+            std::thread::sleep_ms(long_random_time());
             Ok("Hello World".into())
         }, |res, _window, game| {
+            std::thread::sleep_ms(small_random_time());
             game.text = Some(res);
             Ok(())
         });

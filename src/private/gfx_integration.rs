@@ -1,5 +1,5 @@
 use glium::texture::Texture2d;
-use glium::uniforms;
+use glium::uniforms::{self, /*SamplerWrapFunction, MinifySamplerFilter, MagnifySamplerFilter*/};
 
 /// A colored vertex.
 #[derive(Copy, Debug, Clone)]
@@ -39,6 +39,10 @@ impl uniforms::Uniforms for ColorParams {
 pub struct TexParams<'a> {
     pub matrix: [[f32; 4]; 4],
     pub tex: &'a Texture2d,
+/*  pub wrap_function: SamplerWrapFunction,
+    pub minify_filter: MinifySamplerFilter,
+    pub magnify_filter: MagnifySamplerFilter,
+*/
     pub color_mult: [f32; 4]
 }
 
