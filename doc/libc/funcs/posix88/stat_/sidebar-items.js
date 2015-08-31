@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["chmod",""],["fstat",""],["mkdir",""],["stat",""],["wchmod",""],["wrmdir",""],["wstat",""],["wutime",""]]});
+initSidebarItems({"fn":[["chmod",""],["fchmod",""],["fstat",""],["mkdir",""],["mkfifo",""],["stat",""]]});

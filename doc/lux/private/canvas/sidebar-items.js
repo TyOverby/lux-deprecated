@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ContainedSprite","A sprite that can be drawn to the screen."],["Ellipse","An ellipse that can be drawn to the screen."],["Rectangle","A Rectangle that can be drawn to the screen."]],"trait":[["Canvas","Canvas is the main trait for drawing in Lux.  It supports all operations that paint to the screen or to a buffer."]]});

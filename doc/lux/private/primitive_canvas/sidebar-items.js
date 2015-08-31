@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["StencilType","When modifying a stencil or clearing the stencil buffer, operations require a StencilType."]],"trait":[["PrimitiveCanvas","A Primitive canvas is a trait that is implemented by objects that can have draw commands issued to them."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ComputeShader","A combination of compute shaders linked together."]]});

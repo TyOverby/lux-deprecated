@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Frame","A frame is a render target that can be drawn on."],["Window","A 1 to 1 correlation with a window shown on your desktop."]]});

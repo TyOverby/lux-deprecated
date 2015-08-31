@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["accept",""],["bind",""],["closesocket",""],["connect",""],["getpeername",""],["getsockname",""],["listen",""],["recv",""],["recvfrom",""],["send",""],["sendto",""],["setsockopt",""],["shutdown",""],["socket",""]]});
+initSidebarItems({"fn":[["accept",""],["bind",""],["connect",""],["freeifaddrs",""],["getifaddrs",""],["getpeername",""],["getsockname",""],["listen",""],["recv",""],["recvfrom",""],["send",""],["sendto",""],["setsockopt",""],["shutdown",""],["socket",""]]});

@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['winapi'] = [];implementors['glium'] = [];implementors['lux'] = [];
+implementors['shared_library'] = [];implementors['tempfile'] = [];implementors['glutin'] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

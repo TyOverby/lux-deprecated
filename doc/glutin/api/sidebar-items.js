@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["egl",""],["wgl",""]]});
+initSidebarItems({"mod":[["egl",""],["wayland",""],["x11",""]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"type":[["DOUBLE",""],["LPCOLESTR",""],["LPOLESTR",""],["OLECHAR",""],["PSCODE",""],["SCODE",""]]});

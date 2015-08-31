@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["fcntl",""],["stat_",""],["stdio",""],["unistd",""]]});
+initSidebarItems({"mod":[["dirent",""],["fcntl",""],["mman",""],["net",""],["signal",""],["stat_",""],["stdio",""],["unistd",""]]});

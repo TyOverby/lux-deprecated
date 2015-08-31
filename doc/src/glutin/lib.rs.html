@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `c:/Users/Ty\.cargo\registry\src\github.com-1ecc6299db9ec823\glutin-0.3.1\src\lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/ty/.multirust/toolchains/stable/cargo/registry/src/github.com-0a35038f75765ae4/glutin-0.3.5/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -526,6 +526,83 @@
 <span id="484">484</span>
 <span id="485">485</span>
 <span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! The purpose of this library is to provide an OpenGL context on as many</span>
 <span class='doccomment'>//!  platforms as possible.</span>
@@ -597,6 +674,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>native_monitor</span>::<span class='ident'>NativeMonitorId</span>;
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>Ordering</span>;
 
 <span class='kw'>mod</span> <span class='ident'>api</span>;
 <span class='kw'>mod</span> <span class='ident'>platform</span>;
@@ -637,7 +715,11 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>CreationError</span> {
     <span class='ident'>OsError</span>(<span class='ident'>String</span>),
+    <span class='doccomment'>/// TODO: remove this error</span>
     <span class='ident'>NotSupported</span>,
+    <span class='ident'>RobustnessNotSupported</span>,
+    <span class='ident'>OpenGlVersionNotSupported</span>,
+    <span class='ident'>NoAvailablePixelFormat</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>CreationError</span> {
@@ -645,6 +727,12 @@
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>CreationError</span>::<span class='ident'>OsError</span>(<span class='kw-2'>ref</span> <span class='ident'>text</span>) <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>text</span>,
             <span class='ident'>CreationError</span>::<span class='ident'>NotSupported</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Some of the requested attributes are not supported&quot;</span>,
+            <span class='ident'>CreationError</span>::<span class='ident'>RobustnessNotSupported</span> <span class='op'>=&gt;</span> <span class='string'>&quot;You requested robustness, but it is \
+                                                      not supported.&quot;</span>,
+            <span class='ident'>CreationError</span>::<span class='ident'>OpenGlVersionNotSupported</span> <span class='op'>=&gt;</span> <span class='string'>&quot;The requested OpenGL version is not \
+                                                         supported.&quot;</span>,
+            <span class='ident'>CreationError</span>::<span class='ident'>NoAvailablePixelFormat</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Couldn&#39;t find any pixel format that matches \
+                                                      the criterias.&quot;</span>,
         }
     }
 }
@@ -666,6 +754,28 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>ContextError</span> {
     <span class='ident'>IoError</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
     <span class='ident'>ContextLost</span>,
+}
+
+<span class='kw'>impl</span> <span class='ident'>ContextError</span> {
+    <span class='kw'>fn</span> <span class='ident'>to_string</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
+        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
+        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+            <span class='ident'>ContextError</span>::<span class='ident'>IoError</span>(<span class='kw-2'>ref</span> <span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='ident'>err</span>.<span class='ident'>description</span>(),
+            <span class='ident'>ContextError</span>::<span class='ident'>ContextLost</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Context lost&quot;</span>
+        }
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>ContextError</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>formatter</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='ident'>formatter</span>.<span class='ident'>write_str</span>(<span class='self'>self</span>.<span class='ident'>to_string</span>())
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>std</span>::<span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>for</span> <span class='ident'>ContextError</span> {
+    <span class='kw'>fn</span> <span class='ident'>description</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
+        <span class='self'>self</span>.<span class='ident'>to_string</span>()
+    }
 }
 
 <span class='doccomment'>/// All APIs related to OpenGL that you can possibly get while using glutin.</span>
@@ -852,6 +962,7 @@
 
 <span class='doccomment'>/// Attributes</span>
 <span class='comment'>// FIXME: remove `pub` (https://github.com/rust-lang/rust/issues/23585)</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>BuilderAttribs</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
@@ -944,63 +1055,107 @@
     <span class='kw'>fn</span> <span class='ident'>choose_pixel_format</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>I</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(<span class='ident'>T</span>, <span class='ident'>PixelFormat</span>), <span class='ident'>CreationError</span><span class='op'>&gt;</span>
                                  <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span>(<span class='ident'>T</span>, <span class='ident'>PixelFormat</span>)<span class='op'>&gt;</span>, <span class='ident'>T</span>: <span class='ident'>Clone</span>
     {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>current_result</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>current_software_result</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
-
-        <span class='comment'>// TODO: do this more properly</span>
-        <span class='kw'>for</span> (<span class='ident'>id</span>, <span class='ident'>format</span>) <span class='kw'>in</span> <span class='ident'>iter</span> {
+        <span class='comment'>// filtering formats that don&#39;t match the requirements</span>
+        <span class='kw'>let</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>into_iter</span>().<span class='ident'>filter</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(_, <span class='kw-2'>ref</span> <span class='ident'>format</span>)<span class='op'>|</span> {
             <span class='kw'>if</span> <span class='ident'>format</span>.<span class='ident'>color_bits</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>color_bits</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span>) {
-                <span class='kw'>continue</span>;
+                <span class='kw'>return</span> <span class='boolval'>false</span>;
             }
 
             <span class='kw'>if</span> <span class='ident'>format</span>.<span class='ident'>alpha_bits</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>alpha_bits</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span>) {
-                <span class='kw'>continue</span>;
+                <span class='kw'>return</span> <span class='boolval'>false</span>;
             }
 
             <span class='kw'>if</span> <span class='ident'>format</span>.<span class='ident'>depth_bits</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>depth_bits</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span>) {
-                <span class='kw'>continue</span>;
+                <span class='kw'>return</span> <span class='boolval'>false</span>;
             }
 
             <span class='kw'>if</span> <span class='ident'>format</span>.<span class='ident'>stencil_bits</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>stencil_bits</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span>) {
-                <span class='kw'>continue</span>;
+                <span class='kw'>return</span> <span class='boolval'>false</span>;
             }
 
             <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>format</span>.<span class='ident'>stereoscopy</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>stereoscopy</span> {
-                <span class='kw'>continue</span>;
+                <span class='kw'>return</span> <span class='boolval'>false</span>;
             }
 
             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>req_ms</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>multisampling</span> {
                 <span class='kw'>match</span> <span class='ident'>format</span>.<span class='ident'>multisampling</span> {
                     <span class='prelude-val'>Some</span>(<span class='ident'>val</span>) <span class='kw'>if</span> <span class='ident'>val</span> <span class='op'>&gt;=</span> <span class='ident'>req_ms</span> <span class='op'>=&gt;</span> (),
-                    _ <span class='op'>=&gt;</span> <span class='kw'>continue</span>
+                    _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='boolval'>false</span>
                 }
             } <span class='kw'>else</span> {
                 <span class='kw'>if</span> <span class='ident'>format</span>.<span class='ident'>multisampling</span>.<span class='ident'>is_some</span>() {
-                    <span class='kw'>continue</span>;
+                    <span class='kw'>return</span> <span class='boolval'>false</span>;
                 }
             }
 
             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>srgb</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>srgb</span> {
                 <span class='kw'>if</span> <span class='ident'>srgb</span> <span class='op'>!=</span> <span class='ident'>format</span>.<span class='ident'>srgb</span> {
-                    <span class='kw'>continue</span>;
+                    <span class='kw'>return</span> <span class='boolval'>false</span>;
                 }
             }
 
-            <span class='ident'>current_software_result</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>((<span class='ident'>id</span>.<span class='ident'>clone</span>(), <span class='ident'>format</span>.<span class='ident'>clone</span>()));
-            <span class='kw'>if</span> <span class='ident'>format</span>.<span class='ident'>hardware_accelerated</span> {
-                <span class='ident'>current_result</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>((<span class='ident'>id</span>, <span class='ident'>format</span>));
-            }
-        }
+            <span class='boolval'>true</span>
+        });
 
-        <span class='ident'>current_result</span>.<span class='ident'>or</span>(<span class='ident'>current_software_result</span>)
-                      .<span class='ident'>ok_or</span>(<span class='ident'>CreationError</span>::<span class='ident'>NotSupported</span>)
+        <span class='comment'>// sorting so that the preferred format comes first</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>formats</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+        <span class='ident'>formats</span>.<span class='ident'>sort_by</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(_, <span class='kw-2'>ref</span> <span class='ident'>left</span>), <span class='kw-2'>&amp;</span>(_, <span class='kw-2'>ref</span> <span class='ident'>right</span>)<span class='op'>|</span> {
+            <span class='comment'>// prefer hardware-accelerated formats</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>hardware_accelerated</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>right</span>.<span class='ident'>hardware_accelerated</span> {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Less</span>;
+            } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>right</span>.<span class='ident'>hardware_accelerated</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>left</span>.<span class='ident'>hardware_accelerated</span> {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Greater</span>;
+            }
+
+            <span class='comment'>// prefer sRGB formats</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>srgb</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>right</span>.<span class='ident'>srgb</span> {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Less</span>;
+            } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>right</span>.<span class='ident'>srgb</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>left</span>.<span class='ident'>srgb</span> {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Greater</span>;
+            }
+
+            <span class='comment'>// prefer formats with the highest color+alpha bits</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>color_bits</span> <span class='op'>+</span> <span class='ident'>left</span>.<span class='ident'>alpha_bits</span> <span class='op'>!=</span> <span class='ident'>right</span>.<span class='ident'>color_bits</span> <span class='op'>+</span> <span class='ident'>right</span>.<span class='ident'>alpha_bits</span> {
+                <span class='kw'>return</span> (<span class='ident'>right</span>.<span class='ident'>color_bits</span> <span class='op'>+</span> <span class='ident'>right</span>.<span class='ident'>alpha_bits</span>)
+                                                        .<span class='ident'>cmp</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>left</span>.<span class='ident'>color_bits</span> <span class='op'>+</span> <span class='ident'>left</span>.<span class='ident'>alpha_bits</span>));
+            }
+
+            <span class='comment'>// prefer double-buffering formats</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>double_buffer</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>right</span>.<span class='ident'>double_buffer</span> {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Less</span>;
+            } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>right</span>.<span class='ident'>double_buffer</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>left</span>.<span class='ident'>double_buffer</span> {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Greater</span>;
+            }
+
+            <span class='comment'>// prefer formats with the highest depth bits</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>depth_bits</span> <span class='op'>!=</span> <span class='ident'>right</span>.<span class='ident'>depth_bits</span> {
+                <span class='kw'>return</span> (<span class='ident'>right</span>.<span class='ident'>depth_bits</span>).<span class='ident'>cmp</span>(<span class='kw-2'>&amp;</span><span class='ident'>left</span>.<span class='ident'>depth_bits</span>);
+            }
+
+            <span class='comment'>// prefer formats with the highest stencil bits</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>stencil_bits</span> <span class='op'>!=</span> <span class='ident'>right</span>.<span class='ident'>stencil_bits</span> {
+                <span class='kw'>return</span> (<span class='ident'>right</span>.<span class='ident'>stencil_bits</span>).<span class='ident'>cmp</span>(<span class='kw-2'>&amp;</span><span class='ident'>left</span>.<span class='ident'>stencil_bits</span>);
+            }
+
+            <span class='comment'>// prefer formats with multisampling</span>
+            <span class='kw'>if</span> <span class='ident'>left</span>.<span class='ident'>multisampling</span>.<span class='ident'>is_some</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>right</span>.<span class='ident'>multisampling</span>.<span class='ident'>is_none</span>() {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Less</span>;
+            } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>right</span>.<span class='ident'>multisampling</span>.<span class='ident'>is_some</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>left</span>.<span class='ident'>multisampling</span>.<span class='ident'>is_none</span>() {
+                <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Greater</span>;
+            }
+
+            <span class='comment'>// default</span>
+            <span class='kw'>return</span> <span class='ident'>Ordering</span>::<span class='ident'>Equal</span>;
+        });
+
+        <span class='ident'>formats</span>.<span class='ident'>into_iter</span>().<span class='ident'>next</span>().<span class='ident'>ok_or</span>(<span class='ident'>CreationError</span>::<span class='ident'>NoAvailablePixelFormat</span>)
     }
 }
 
 <span class='kw'>mod</span> <span class='ident'>native_monitor</span> {
     <span class='doccomment'>/// Native platform identifier for a monitor. Different platforms use fundamentally different types</span>
     <span class='doccomment'>/// to represent a monitor ID.</span>
-    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>NativeMonitorId</span> {
         <span class='doccomment'>/// Cocoa and X11 use a numeric identifier to represent a monitor.</span>
         <span class='ident'>Numeric</span>(<span class='ident'>u32</span>),
@@ -1012,7 +1167,6 @@
         <span class='ident'>Unavailable</span>
     }
 }
-
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["creat",""],["open",""],["wopen",""]]});
+initSidebarItems({"fn":[["creat",""],["fcntl",""],["open",""]]});

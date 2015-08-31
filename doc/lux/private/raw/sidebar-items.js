@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["Colored","A trait representing objects that can be colored with seperate fill colors and stroke colors."],["Transform","A trait for objects that can be \"transformed\".  Transformations include scaling, translation, shearing, rotating, and general purpose matrix application."]]});
