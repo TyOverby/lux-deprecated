@@ -3,56 +3,53 @@
 <html>
     <head>
         <title> Lux </title>
-        <link href='http://fonts.googleapis.com/css?family=Syncopate:400,700|Chivo:400,900|Open+Sans:300' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" href="./style.css">
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,900,300' rel='stylesheet' type='text/css'>
     </head>
 
     <body>
         <header>
-            <span id="logo"> LUX <span id="logo-alpha"> /ALPHA </span> </span>
-            <ul id="links">
-                <li> <a href="./doc/lux/index.html"> Docs </a> </li>
-                <li> <a href="#"> Examples </a> </li>
-                <li> <a href="#"> Blog </a> </li>
-                <li> <a href="#"> Source </a> </li>
+            <ul>
+                <li> Docs </li>
+                <li> Examples </li>
+                <li> Blog </li>
+                <li> Source </li>
             </ul>
         </header>
-
-
-        <section id="demo">
-            <!-- These demos should be written in JS :P -->
-            <span class="demo-slug">
-                A 2d graphics library.
-            </span>
-            <br/>
-            <span class="demo-slug">
-                Built on modern ground.
-            </span>
-            <br/>
-            <span class="demo-slug">
-                (Currently in Alpha)
+        <section id="intro">
+            <img src="./rays.svg" />
+            <span id="tagline">
+                A <strong> 2d game engine </strong> built with a
+                <br/>
+                focus on <strong> user-friendliness </strong> and  <strong> speed </strong>
             </span>
         </section>
-        <section>
-            <p>
-                <!-- Off to the side of this, you should have instructions for
-                     installing the library. -->
+        <section id="about">
+            <div>
+                <h2> Windowing </h2>
+                <img src="./placeholder.png"/>
+                <p>
+                    Lux uses Glutin to create windows with a suitable OpenGL context inside of them.
+                    All mouse and keyboard input is captured and given to the user as both a stream
+                    of events and as current data values that can be queried (eg calling window.mouse_pos()
+                    will return the current mouse position).
+                </p>
 
-                Lux is a 2d graphics framework written in Rust that handles
-                <strong> window-creation </strong>,
-                <strong> event handling </strong>, and common
-                <strong> 2d graphics drawing </strong>
-                operations.  Simple tasks should be
-                easy to accomplish, while more complicated functionality like custom
-                shaders can be made possible by reaching under the hood.  Lux is
-                built on top of <a href="">Glium</a> and <a href="#">Glutin</a>,
-                both created by the excelent <a href="#">Tomaka</a>.
-            </p>
+                <h2> Graphics </h2>
+                <img src="./placeholder.png"/>
+                <p>
+                    Lux uses Glium behind the scenes as a layer on top of modern OpenGL, but has it's own
+                    2d graphics api that you can use to easily draw primitives, sprites, and text.
+                </p>
 
-            <p>
-
-            </p>
-
+                <h2> Game Loop (optional) </h2>
+                <img src="./placeholder.png"/>
+                <p>
+                    Simply by implementing the Game trait, you'll be given a robust game loop with a
+                    fixed-time update and lag compensation. The Game trait has some advanced configuration
+                    options, but only requires the programmer to implement the render(...) and update(...) functions.
+                </p>
+            </div>
         </section>
     </body>
 </html>

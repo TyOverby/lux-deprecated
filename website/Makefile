@@ -1,6 +1,7 @@
+.PHONY: site docs publish
 
-site:
-	cp-r ./site/* out/
+site: ./site/*
+	cp -r ./site/* out/
 
 docs:
 	cargo doc --features="freetype"; true

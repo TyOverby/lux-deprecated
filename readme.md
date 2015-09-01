@@ -2,8 +2,9 @@
 
 ### A 2d game engine built with a focus on user-frendliness and speed.
 
-Lux is a Rust library with no external dependencies that provides three main
-pieces of functinoality.
+Lux is a 2d game engine for Rust programmers that makes deploying as
+simple as `cargo build`.  The entire Lux dependency stack can be built
+using Cargo, so never worry about dependency hell ever again!
 
 ### Windowing
 Lux uses [Glutin](https://github.com/tomaka/glutin) to create windows with
