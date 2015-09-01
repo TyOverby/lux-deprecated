@@ -25,7 +25,31 @@
             </span>
         </section>
         <section id="about">
+            <div>
+                <h2> Windowing </h2>
+                <img src="./placeholder.png"/>
+                <p>
+                    Lux uses Glutin to create windows with a suitable OpenGL context inside of them.
+                    All mouse and keyboard input is captured and given to the user as both a stream
+                    of events and as current data values that can be queried (eg calling window.mouse_pos()
+                    will return the current mouse position).
+                </p>
 
+                <h2> Graphics </h2>
+                <img src="./placeholder.png"/>
+                <p>
+                    Lux uses Glium behind the scenes as a layer on top of modern OpenGL, but has it's own
+                    2d graphics api that you can use to easily draw primitives, sprites, and text.
+                </p>
+
+                <h2> Game Loop (optional) </h2>
+                <img src="./placeholder.png"/>
+                <p>
+                    Simply by implementing the Game trait, you'll be given a robust game loop with a
+                    fixed-time update and lag compensation. The Game trait has some advanced configuration
+                    options, but only requires the programmer to implement the render(...) and update(...) functions.
+                </p>
+            </div>
         </section>
     </body>
 </html>
