@@ -155,7 +155,6 @@ pub trait PrimitiveCanvas {
 }
 
 fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
-        use glium::LinearBlendingFactor::*;
         use glium::draw_parameters::{StencilOperation, StencilTest};
         let defaults: glium::DrawParameters = ::std::default::Default::default();
 
@@ -201,11 +200,13 @@ fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
         };
 
         glium::DrawParameters {
-            depth_test: glium::DepthTest::Overwrite,
-            blending_function: Some(glium::BlendingFunction::Addition{
-                source: SourceAlpha,
-                destination: OneMinusSourceAlpha
-            }),
+            depth: glium::Depth {
+                test: glium::DepthTest::Overwrite,
+                write: false,
+                range: (0.0, 1.0),
+                clamp: glium::draw_parameters::DepthClamp::NoClamp
+            },
+            blend: glium::Blend::alpha_blending(),
             backface_culling: glium::BackfaceCullingMode::CullingDisabled,
             multisampling: true,
 
@@ -221,20 +222,25 @@ fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
             // STENCIL
             color_mask: color_mask,
 
-            stencil_test_clockwise: stencil_test,
-            stencil_test_counter_clockwise: stencil_test,
+            stencil: glium::draw_parameters::Stencil {
+                write_mask_clockwise: 0xffffffff,
+                write_mask_counter_clockwise: 0xffffffff,
 
-            stencil_reference_value_clockwise: stencil_ref_value,
-            stencil_reference_value_counter_clockwise: stencil_ref_value,
+                test_clockwise: stencil_test,
+                test_counter_clockwise: stencil_test,
 
-            stencil_fail_operation_clockwise: s_fail,
-            stencil_fail_operation_counter_clockwise: s_fail,
+                reference_value_clockwise: stencil_ref_value,
+                reference_value_counter_clockwise: stencil_ref_value,
 
-            stencil_pass_depth_fail_operation_clockwise: dp_fail,
-            stencil_pass_depth_fail_operation_counter_clockwise: dp_fail,
+                fail_operation_clockwise: s_fail,
+                fail_operation_counter_clockwise: s_fail,
 
-            stencil_depth_pass_operation_clockwise: dp_pass,
-            stencil_depth_pass_operation_counter_clockwise: dp_pass,
+                pass_depth_fail_operation_clockwise: dp_fail,
+                pass_depth_fail_operation_counter_clockwise: dp_fail,
+
+                depth_pass_operation_clockwise: dp_pass,
+                depth_pass_operation_counter_clockwise: dp_pass,
+            },
 
             ..defaults
         }
