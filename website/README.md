@@ -5,5 +5,3 @@ The `out` directory is actually a git submodule that links up to the gh-pages br
 Human-written content should never be placed inside `out`; `out` is only for machine generated or
 machine moved files.  For example, the documentation generation script throws the files directly
 in `out`.
-
-The `publish` script simply goes into that submodule, `git-add`s, `git-commit`s, and pushes.

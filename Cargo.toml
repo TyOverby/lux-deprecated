@@ -30,7 +30,7 @@ default-features = false
 features = ["image", "glutin"]
 
 [dependencies]
-poison-pool = "0.1.0"
+#poison-pool = "0.1.0"
 font-atlas = "0.1.0"
 font-atlas-image = "0.1.0"
 glutin = "=0.3.7"
@@ -39,6 +39,8 @@ num = "0.1.25"
 clock_ticks = "0.0.6"
 vecmath = "0.1.1"
 freetype-rs = "0.1.0"
+
+[dependencies.poison-pool]
 
 [dev-dependencies]
 noise = "0.1.5"

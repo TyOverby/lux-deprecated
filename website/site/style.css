@@ -97,6 +97,7 @@ header a {
 }
 
 #about p {
+    font-size: 1.25em;
     line-height: 2em;
     color: white;
 
