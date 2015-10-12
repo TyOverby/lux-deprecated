@@ -3,7 +3,7 @@ extern crate lux;
 use lux::prelude::*;
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     let mut a = 0.5;
     let mut b = 0.0;
     while window.is_open() {

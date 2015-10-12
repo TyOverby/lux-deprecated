@@ -4,7 +4,7 @@ use lux::prelude::*;
 use lux::color;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let mut lux = Window::new_with_defaults().unwrap();
 
     // A full sprite
     let sprite1 = lux.load_texture_file("./test/test.png").unwrap().into_sprite();

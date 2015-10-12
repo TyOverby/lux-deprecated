@@ -70,6 +70,19 @@ impl From<image_atlas::DecodingError> for LuxError {
     }
 }
 
+impl From<glium::GliumCreationError<glium::glutin::CreationError>> for LuxError {
+    fn from(e: glium::GliumCreationError<glium::glutin::CreationError>) -> LuxError {
+        match e {
+            glium::GliumCreationError::BackendCreationError(e) => {
+                    LuxError::WindowError(String::from(e.description()))
+            }
+            glium::GliumCreationError::IncompatibleOpenGl(m) => {
+                LuxError::OpenGlError(m)
+            }
+        }
+    }
+}
+
 impl From<glium::ProgramCreationError> for LuxError {
     fn from(e: glium::ProgramCreationError) -> LuxError {
         LuxError::ShaderError(e)

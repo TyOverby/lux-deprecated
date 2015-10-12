@@ -6,7 +6,7 @@ use lux::graphics::{PrimitiveCanvas, TrianglesList, ColorVertex};
 use lux::color;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let mut lux = Window::new_with_defaults().unwrap();
 
     while lux.is_open() {
         let mut frame = lux.cleared_frame(color::WHITE);

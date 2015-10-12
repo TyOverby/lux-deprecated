@@ -8,7 +8,7 @@ const MESSAGE: &'static str =
     "Press [space] [esc] or [a] to change the background color";
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     while window.is_open() {
 
         // You can check keys by the character that they

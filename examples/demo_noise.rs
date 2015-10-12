@@ -8,7 +8,7 @@ use lux::color;
 const SCALE: f32 = 20.0;
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     let seed = noise::Seed::new(0);
     let mut t = 0.0;
 

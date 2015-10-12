@@ -1,7 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::cell::{RefCell, RefMut};
-use std::error::Error;
 
 use glutin;
 use vecmath;
@@ -27,7 +26,7 @@ use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::Canvas;
 use super::color::Color;
 use super::raw::{Colored, Transform};
-use super::error::{LuxResult, LuxError};
+use super::error::LuxResult;
 use super::shaders::{gen_texture_shader, gen_color_shader};
 use super::primitive_canvas::{
     PrimitiveCanvas,
@@ -42,10 +41,30 @@ use glutin::WindowBuilder;
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
 
+/// A set of options that can be applied to a window
+#[derive(Clone, PartialEq, Eq)]
+pub struct WindowOptions {
+    /// The size of the window in pixels.
+    pub dimensions: (u32, u32),
+    /// The title displayed on the top of the window.
+    pub title: String,
+    // pub fullscreen: bool,
+    /// If Vsync is enabled
+    pub vsync: bool,
+    /// The number of multisampling passes. Must be a power of 2.
+    pub multisampling: u16,
+    /// True if the window should be transparent.
+    pub transparent: bool,
+    /// True if the window should have no border or title-bar.
+    pub decorations: bool
+}
+
 /// A 1 to 1 correlation with a window shown on your desktop.
 ///
 /// Lux uses Glutin for the window implementation.
 pub struct Window {
+    // OPTIONS
+    options: WindowOptions,
     // CANVAS
     display: glium::Display,
     color_program: Rc<glium::Program>,
@@ -161,32 +180,52 @@ impl Drop for Frame {
     }
 }
 
+impl WindowOptions {
+    fn into_window_builder(self) -> glium::glutin::WindowBuilder<'static> {
+        let WindowOptions {
+            dimensions,
+            title,
+            //fullscreen,
+            vsync,
+            multisampling,
+            transparent,
+            decorations
+        } = self;
+
+        let builder = glium::glutin::WindowBuilder::new()
+            .with_dimensions(dimensions.0, dimensions.1)
+            .with_title(title)
+            .with_multisampling(multisampling)
+            .with_transparency(transparent)
+            .with_decorations(decorations);
+        if vsync {
+            builder.with_vsync()
+        } else { builder }
+    }
+}
+
+impl Default for WindowOptions {
+    fn default() -> WindowOptions {
+        WindowOptions {
+            dimensions: (800, 500),
+            title: "Lux".to_string(),
+            multisampling: 0,
+            vsync: true,
+            transparent: false,
+            decorations: true
+        }
+    }
+}
+
 impl Window {
-    /// Constructs a new window with the default settings.
-    pub fn new() -> LuxResult<Window> {
+    /// Creates a new lux Window with the provided window settings.
+    pub fn new(options: WindowOptions) -> LuxResult<Window> {
         use glium::DisplayBuild;
         use std::io::Cursor;
 
-        let window_builder =
-            WindowBuilder::new()
-            .with_title("Lux".to_string())
-            .with_dimensions(600, 500)
-            .with_vsync()
-            .with_gl_debug_flag(false)
-            //.with_multisampling(8)
-            .with_visibility(true);
+        let window_builder = options.clone().into_window_builder();
 
-
-        let display = try!(window_builder.build_glium().map_err(|e| {
-            match e {
-                glium::GliumCreationError::BackendCreationError(e) => {
-                        LuxError::WindowError(String::from(e.description()))
-                }
-                glium::GliumCreationError::IncompatibleOpenGl(m) => {
-                    LuxError::OpenGlError(m)
-                }
-            }
-        }));
+        let display = try!(window_builder.build_glium());
 
         let color_program = try!(gen_color_shader(&display));
         let tex_program = try!(gen_texture_shader(&display));
@@ -196,6 +235,7 @@ impl Window {
         let font_cache = try!(FontCache::new());
 
         let mut window = Window {
+            options: options,
             display: display,
             color_program: Rc::new(color_program),
             tex_program: Rc::new(tex_program),
@@ -230,6 +270,24 @@ impl Window {
 
 
         Ok(window)
+
+    }
+    /// Constructs a new window with the default settings.
+    pub fn new_with_defaults() -> LuxResult<Window> {
+        Window::new(Default::default())
+    }
+
+    /// Executes a closure that can modify the window settings.
+    ///
+    /// Changes to the window are applied after the closure is done executing.
+    pub fn change_window_options<F: FnOnce(&mut WindowOptions)>(&mut self, f: F) -> LuxResult<()> {
+        use glium::DisplayBuild;
+        let copy = self.options.clone();
+        f(&mut self.options);
+        if copy != self.options {
+            try!(self.options.clone().into_window_builder().rebuild_glium(&self.display));
+        }
+        Ok(())
     }
 
     /// Add the events from an iterator of events back to the internal event queue.

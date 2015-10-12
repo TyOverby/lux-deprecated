@@ -6,7 +6,7 @@ use lux::graphics::{PrimitiveCanvas, ColorVertex};
 use lux::graphics::TrianglesList;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let mut lux = Window::new_with_defaults().unwrap();
     let mut delta = 0.0f32;
 
     // Create a series of points that will be laid out in a diagonal line.

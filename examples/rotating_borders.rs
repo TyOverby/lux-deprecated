@@ -4,7 +4,7 @@ use lux::prelude::*;
 
 fn main() {
     let mut rot = 0.0;
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     while window.is_open() {
         rot += 0.05;
         let mut frame = window.cleared_frame([0.9, 0.9, 0.9, 0.001]);

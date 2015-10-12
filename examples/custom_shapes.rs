@@ -7,7 +7,7 @@ use lux::graphics::{PrimitiveCanvas, TrianglesList, ColorVertex};
 // Standard RGB triangle
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     let vtxs = [
         ColorVertex {pos: [0.0, 0.0], color: color::RED},
         ColorVertex {pos: [0.0, 200.0], color: color::GREEN},

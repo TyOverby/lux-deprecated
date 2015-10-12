@@ -4,7 +4,7 @@ use lux::prelude::*;
 use lux::color::{BLUE, RED, GRAY};
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     while window.is_open() {
         // Query the mouse position
         let (x, y) = window.mouse_pos();

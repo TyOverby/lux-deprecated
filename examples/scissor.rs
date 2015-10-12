@@ -7,7 +7,7 @@ use lux::color;
 use num::Float;
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     let mut theta:f32 = 0.0;
     while window.is_open() {
         let mut frame = window.cleared_frame(rgb(0.9, 0.9, 0.9));

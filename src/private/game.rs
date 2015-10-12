@@ -132,7 +132,7 @@ pub trait Game {
     /// For more information, read the docs for `Loader`.
     ///
     /// Defaults to loading nothing.
-    fn load(_loader: &mut Loader<Self>) { }
+    fn load(_loader: &mut Loader<Self>) where Self: Sized { }
 
     /// Draws the loading screen that shows progress when the game is loading.
     fn draw_loading_screen<'a, I>(status: I, progress: (usize, usize ), mut frame: Frame)
@@ -273,7 +273,7 @@ impl <G: Game> GameRunner<G> {
     pub fn new(game: G) -> LuxResult<GameRunner<G>> {
         Ok(GameRunner {
             game: game,
-            window: try!(Window::new()),
+            window: try!(Window::new_with_defaults()),
             frame_timings: VecDeque::with_capacity(FRAMES_TO_TRACK + 1),
 
             previous: 0.0,

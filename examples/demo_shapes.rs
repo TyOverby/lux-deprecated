@@ -5,7 +5,7 @@ use lux::color;
 use lux::graphics::{PrimitiveCanvas, TrianglesList, ColorVertex};
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
 
     let vtxs = [
         ColorVertex {pos: [0.0, 0.0],   color: color::RED},

@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 ///! All of the wc3 named colors.
 
 // Two bitcoins to the person that makes this file not look like utter garbage.

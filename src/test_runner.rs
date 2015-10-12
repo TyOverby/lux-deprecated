@@ -21,7 +21,7 @@ impl TestRunner {
     }
 
     fn display(&mut self) -> LuxResult<()> {
-        let mut window = try!(Window::new());
+        let mut window = try!(Window::new_with_defaults());
 
         let mut current = self.tests.pop_front();
         while window.is_open() && current.is_some() {

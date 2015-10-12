@@ -4,7 +4,7 @@ use lux::prelude::*;
 use lux::color;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let mut lux = Window::new_with_defaults().unwrap();
 
     // A sprite made from an image
     let texture =

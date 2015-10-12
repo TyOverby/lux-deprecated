@@ -34,7 +34,7 @@ fn draw_field(
 }
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
 
     let mut theta: f32 = 0.0;
     let (x, y) = (0.0, 0.0);

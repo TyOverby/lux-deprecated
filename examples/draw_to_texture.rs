@@ -5,7 +5,7 @@ use lux::color;
 use lux::graphics::Texture;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let mut lux = Window::new_with_defaults().unwrap();
 
     let sprite = {
         let mut tex = Texture::empty(&lux, 256, 256).unwrap();

@@ -6,7 +6,7 @@ use lux::color;
 use std::path::Path;
 
 fn main() {
-    let mut lux = Window::new().unwrap();
+    let mut lux = Window::new_with_defaults().unwrap();
 
     lux.load_font("Pacifico", &Path::new("./resources/Pacifico.ttf")).unwrap();
     lux.load_font("cbt", &Path::new("./resources/cbt.ttf")).unwrap();

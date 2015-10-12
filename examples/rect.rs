@@ -4,7 +4,7 @@ use lux::prelude::*;
 use lux::color;
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     while window.is_open() {
         let mut frame = window.cleared_frame(rgb(0.9, 0.9, 0.9));
         frame.rect(10.0, 20.0, 15.0, 25.0).fill();

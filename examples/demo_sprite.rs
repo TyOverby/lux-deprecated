@@ -3,7 +3,7 @@ use lux::prelude::*;
 
 fn main() {
     let mut t = 0.0;
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     let logo = window.load_texture_file("./test/test.png").unwrap().into_sprite();
     let half = logo.width() / 2.0; // image is square, so this is fine
 

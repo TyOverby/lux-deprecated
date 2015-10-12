@@ -13,7 +13,7 @@ fn bound(low: f32, value: f32, high: f32) -> (f32, bool) {
 }
 
 fn main() {
-    let mut window = Window::new().unwrap();
+    let mut window = Window::new_with_defaults().unwrap();
     let size = 10.0f32;
     let (mut x, mut y) = (20.0, 50.0);
     let (mut vx, mut vy) = (1.5, 1.5);
