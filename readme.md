@@ -17,14 +17,17 @@ developer in two ways:
 
 ### 2d Graphics
 Lux offers an intuitive and safe graphics API that makes developing 2d games
-completely painless!  We use OpenGL and OpenGL ES under the hood, so most
-platforms are supported already, or are in the works.
+completely painless!
+The API can be used in an entirely stateless maner, and resources are
+automatically cleaned up when no longer in use.
+We use OpenGL and OpenGL ES under the hood, so most platforms are supported
+already or are being planned.
 
-### Game Loop
-Simply by implementing the `Game` trait, you'll be given a robust game loop
-with a fixed-time update and lag compensation.  The `Game` trait has some
-advanced configuration options, but only requires the programmer to implement
-the `render(...)` and `update(...)` functions.
+### Game Loop (optional)
+Simply by implementing the `update(..)` and `render(..)` methods on the
+`Game` trait, you'll be given a robust game loop with a fixed-time
+update and lag compensation.
+
 
 ## Credits
 
