@@ -209,7 +209,7 @@ impl Default for WindowOptions {
         WindowOptions {
             dimensions: (800, 500),
             title: "Lux".to_string(),
-            multisampling: 0,
+            multisampling: 1,
             vsync: true,
             transparent: false,
             decorations: true
@@ -280,7 +280,7 @@ impl Window {
     /// Executes a closure that can modify the window settings.
     ///
     /// Changes to the window are applied after the closure is done executing.
-    pub fn change_window_options<F: FnOnce(&mut WindowOptions)>(&mut self, f: F) -> LuxResult<()> {
+    pub fn change_options<F: FnOnce(&mut WindowOptions)>(&mut self, f: F) -> LuxResult<()> {
         use glium::DisplayBuild;
         let copy = self.options.clone();
         f(&mut self.options);

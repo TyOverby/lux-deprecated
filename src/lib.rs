@@ -73,7 +73,7 @@ pub mod window {
     //!
     //! The window is created by the Glutin library.
 
-    pub use private::glutin_window::{Window, Frame};
+    pub use private::glutin_window::{Window, Frame, WindowOptions};
 }
 
 pub mod modifiers {
