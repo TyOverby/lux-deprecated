@@ -117,7 +117,8 @@ impl IntoSprite for Sprite {
 
 impl IntoSprite for image::DynamicImage {
     fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite> {
-        let img = self.flipv();
+        use image::GenericImage;
+        let img = glium::texture::RawImage2d::from_raw_rgba_reversed(self.raw_pixels(), self.dimensions());
         let img = try!(glium::texture::Texture2d::new(display.borrow_display(), img));
         let tex: Texture = Texture::new(img);
         Ok(tex.into_sprite())
@@ -133,14 +134,17 @@ impl <'a> IntoSprite for &'a Path {
 
 impl <T> TextureLoader for T where T: HasDisplay {
     fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, LuxError> {
-        let img = try!(image::open(path)).flipv();
+        use image::GenericImage;
+        let img = try!(image::open(path));
+        let img = glium::texture::RawImage2d::from_raw_rgba_reversed(img.raw_pixels(), img.dimensions());
         let img = try!(glium::texture::Texture2d::new(self.borrow_display(), img));
         let tex = Texture::new(img);
         Ok(tex)
     }
 
     fn texture_from_image(&self, img: image::DynamicImage) -> Result<Texture, LuxError> {
-        let img = img.flipv();
+        use image::GenericImage;
+        let img = glium::texture::RawImage2d::from_raw_rgba_reversed(img.raw_pixels(), img.dimensions());
         let img = try!(glium::texture::Texture2d::new(self.borrow_display(), img));
         Ok(Texture::new(img))
     }

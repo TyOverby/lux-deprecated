@@ -21,7 +21,8 @@ use super::accessors::{
 
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
 use super::font::{FontCache, TextLoad};
-use ::font::read_atlas;
+// TODO(font)
+// use ::font::read_atlas;
 use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::Canvas;
 use super::color::Color;
@@ -232,7 +233,7 @@ impl Window {
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
-        let font_cache = try!(FontCache::new());
+        let font_cache = FontCache; //try!(FontCache);
 
         let mut window = Window {
             options: options,
@@ -258,6 +259,8 @@ impl Window {
             font_cache: Rc::new(RefCell::new(font_cache))
         };
 
+        // TODO(font)
+        /*
         let loaded_12 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_12_PNG),
                                         &mut Cursor::new(lux_constants::SCP_12_BINCODE)));
         let loaded_20 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_20_PNG),
@@ -268,6 +271,7 @@ impl Window {
         try!(window.cache("SourceCodePro", 20, loaded_20));
         try!(window.cache("SourceCodePro", 30, loaded_30));
 
+        */
 
         Ok(window)
 

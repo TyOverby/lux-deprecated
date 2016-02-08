@@ -5,7 +5,7 @@ use super::error::LuxResult;
 use super::interactive::Interactive;
 use super::canvas::Canvas;
 use super::raw::{Transform, Colored};
-use super::font::TextDraw;
+//use super::font::TextDraw;
 
 use std::collections::VecDeque;
 use std::mem::transmute;
@@ -147,6 +147,7 @@ pub trait Game {
         let percent = progress.0 as f32 / progress.1 as f32;
         let pos = percent * w;
 
+        /*
         frame.text(&buf, 10.0, 0.0)
              .color(rgb(255, 0, 0))
              .size(30)
@@ -158,12 +159,14 @@ pub trait Game {
              .size(30)
              .draw()
              .unwrap();
+         */
 
         frame.rect(0.0, 0.0, pos, h)
              .color(rgb(255, 0, 0))
              .fill();
 
         frame.with_scissor(0, 0, pos as u32, h as u32, |frame| {
+            /*
             frame.text(&buf, 10.0, 0.0)
                  .color(rgb(255, 255, 255))
                  .size(30)
@@ -175,6 +178,7 @@ pub trait Game {
                  .size(30)
                  .draw()
                  .unwrap();
+             */
         });
 
     }
@@ -532,9 +536,11 @@ impl <G: Game> GameRunner<G> {
         let (fps, ups) = self.calc_fps();
         frame.with_translate(WIDTH, h, |frame| {
             frame.with_rotation(-3.1415 / 2.0, |frame| {
+                /*
                 frame.text(format!("FPS {} UPS {}", fps, ups), 0.0, 0.0)
                      .size(12)
                      .draw().unwrap();
+                     */
             })
         });
     }

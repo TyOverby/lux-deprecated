@@ -10,10 +10,6 @@ extern crate vecmath;
 extern crate image;
 extern crate num;
 extern crate clock_ticks;
-extern crate font_atlas;
-#[cfg(feature="freetype")]
-extern crate font_atlas_freetype as freetype_atlas;
-extern crate font_atlas_image as image_atlas;
 extern crate poison_pool;
 
 mod private;
@@ -93,6 +89,7 @@ pub mod game {
 }
 
 pub mod font {
+    /*
     //! Text drawing and loading functionality.
     //!
     //! # WARNING
@@ -107,6 +104,7 @@ pub mod font {
     pub use freetype_atlas::{render};
     #[cfg(feature="freetype")]
     pub use private::constants::SOURCE_CODE_PRO_REGULAR;
+    */
 }
 
 pub mod prelude {
@@ -119,7 +117,7 @@ pub mod prelude {
     pub use window::{Window, Frame};
     pub use interactive::EventIterator;
     pub use modifiers::{Colored, Transform};
-    pub use font::{TextDraw};
+    //pub use font::{TextDraw};
     pub use graphics::TextureLoader;
 
     pub use LuxError;

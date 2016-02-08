@@ -6,11 +6,15 @@ use std::convert::From;
 use std;
 
 use glium;
-use image_atlas;
-use image_atlas::image_atlas_bincode as bincode;
 
 /// A result returning either a value or a lux-generated error.
 pub type LuxResult<A> = Result<A, LuxError>;
+
+#[derive(Debug)]
+pub enum ShaderError {
+    Creation(glium::ProgramCreationError),
+    Chooser(glium::program::ProgramChooserCreationError),
+}
 
 /// Any error that Lux might run into.
 #[derive(Debug)]
@@ -22,7 +26,7 @@ pub enum LuxError {
     /// An error related to image decoding.
     ImageError(ImageError),
     /// An error that can occur when compiling or linking shaders.
-    ShaderError(glium::ProgramCreationError),
+    ShaderError(ShaderError),
     /// An error that can occur when required I/O fails.
     IoError(IoError),
     /// An error that can occur when attempting to use a font that hasn't
@@ -36,8 +40,6 @@ pub enum LuxError {
     IndexBufferCreationError,
     /// An error creating an vertex buffer occured
     VertexBufferCreationError,
-    /// An error occurred when reading the metadata of a font
-    FontMetadataError(bincode::DecodingError)
 }
 
 impl Error for LuxError {
@@ -45,7 +47,10 @@ impl Error for LuxError {
         match self {
             &LuxError::WindowError(ref s) => &s[..],
             &LuxError::OpenGlError(ref s) => &s[..],
-            &LuxError::ShaderError(ref e) => e.description(),
+            &LuxError::ShaderError(ref e) => match e {
+                &ShaderError::Creation(ref e) => e.description(),
+                &ShaderError::Chooser(ref e) => e.description(),
+            },
             &LuxError::IoError(ref ioe) => Error::description(ioe),
             &LuxError::FontNotLoaded(ref s) => &s[..],
             // TODO: implement this when glium/959 is finished.
@@ -54,18 +59,6 @@ impl Error for LuxError {
             &LuxError::TextureCreationError(_) => "",
             &LuxError::IndexBufferCreationError => "An index buffer could not be created",
             &LuxError::VertexBufferCreationError => "A vertex buffer could not be created",
-            &LuxError::FontMetadataError(ref e) => e.description()
-        }
-    }
-}
-
-impl From<image_atlas::DecodingError> for LuxError {
-    fn from(e: image_atlas::DecodingError) -> LuxError {
-        use image_atlas::DecodingError::*;
-        match e {
-            ImageDecodingError(e) => LuxError::ImageError(e),
-            BincodeDecodingError(e) => LuxError::FontMetadataError(e),
-            IoError(e) => LuxError::IoError(e)
         }
     }
 }
@@ -83,9 +76,15 @@ impl From<glium::GliumCreationError<glium::glutin::CreationError>> for LuxError 
     }
 }
 
-impl From<glium::ProgramCreationError> for LuxError {
-    fn from(e: glium::ProgramCreationError) -> LuxError {
-        LuxError::ShaderError(e)
+impl From<glium::program::ProgramCreationError> for LuxError {
+    fn from(e: glium::program::ProgramCreationError) -> LuxError {
+        LuxError::ShaderError(ShaderError::Creation(e))
+    }
+}
+
+impl From<glium::program::ProgramChooserCreationError> for LuxError {
+    fn from(e: glium::program::ProgramChooserCreationError) -> LuxError {
+        LuxError::ShaderError(ShaderError::Chooser(e))
     }
 }
 
@@ -131,7 +130,10 @@ impl std::fmt::Display for LuxError {
         match self {
             &LuxError::WindowError(ref s) => s.fmt(f),
             &LuxError::OpenGlError(ref s) => s.fmt(f),
-            &LuxError::ShaderError(ref e) => e.fmt(f),
+            &LuxError::ShaderError(ref e) => match e {
+                &ShaderError::Creation(ref e) => e.fmt(f),
+                &ShaderError::Chooser(ref e) => e.fmt(f),
+            },
             &LuxError::IoError(ref e) => e.fmt(f),
             &LuxError::FontNotLoaded(ref s) => s.fmt(f),
             &LuxError::DrawError(ref e) => e.fmt(f),
@@ -139,7 +141,6 @@ impl std::fmt::Display for LuxError {
             &LuxError::TextureCreationError(ref e) => std::fmt::Debug::fmt(&e, f),
             &LuxError::IndexBufferCreationError => "An index buffer could not be created".fmt(f),
             &LuxError::VertexBufferCreationError => "A vertex buffer could not be created".fmt(f),
-            &LuxError::FontMetadataError(ref e) => e.fmt(f)
         }
     }
 }
