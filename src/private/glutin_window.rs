@@ -1,28 +1,22 @@
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
-use std::cell::{RefCell, RefMut};
 
 use glutin;
 use vecmath;
 use glium;
 use poison_pool;
-use super::constants as lux_constants;
 
 use super::interactive::keycodes::VirtualKeyCode;
 use super::accessors::{
     HasDrawCache,
     HasPrograms,
     HasDisplay,
-    HasFontCache,
     HasSurface,
     DrawParamMod,
     Fetch,
 };
 
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
-use super::font::{FontCache, TextLoad};
-// TODO(font)
-// use ::font::read_atlas;
 use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::Canvas;
 use super::color::Color;
@@ -36,8 +30,6 @@ use super::primitive_canvas::{
     DrawParamModifier
 };
 use super::types::{Float, Idx};
-
-use glutin::WindowBuilder;
 
 type Mat4f = [[f32; 4]; 4];
 type BaseColor = [f32; 4];
@@ -94,9 +86,6 @@ pub struct Window {
     chars_pressed: HashMap<char, bool>,
     virtual_keys_pressed: HashMap<VirtualKeyCode, bool>,
     code_to_char: HashMap<usize, char>,
-
-    // FONT
-    font_cache: Rc<RefCell<FontCache>>,
 }
 
 /// A frame is a render target that can be drawn on.
@@ -123,7 +112,6 @@ pub struct Frame {
     color: [f32; 4],
 
     // Misc
-    font_cache: Rc<RefCell<FontCache>>,
     draw_mod: DrawParamModifier,
 }
 
@@ -135,8 +123,7 @@ impl Frame {
            idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
            tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
            color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
-           clear_color: Option<[f32; 4]>,
-           font_cache: Rc<RefCell<FontCache>>) -> Frame {
+           clear_color: Option<[f32; 4]>) -> Frame {
         use glium::Surface;
 
         let mut frm = display.draw();
@@ -168,7 +155,6 @@ impl Frame {
             tex_draw_cache: None,
             basis_matrix: basis,
             color: [0.0, 0.0, 0.0, 1.0],
-            font_cache: font_cache,
             draw_mod: DrawParamModifier::new()
         }
     }
@@ -222,8 +208,6 @@ impl Window {
     /// Creates a new lux Window with the provided window settings.
     pub fn new(options: WindowOptions) -> LuxResult<Window> {
         use glium::DisplayBuild;
-        use std::io::Cursor;
-
         let window_builder = options.clone().into_window_builder();
 
         let display = try!(window_builder.build_glium());
@@ -233,9 +217,7 @@ impl Window {
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
-        let font_cache = FontCache; //try!(FontCache);
-
-        let mut window = Window {
+        let window = Window {
             options: options,
             display: display,
             color_program: Rc::new(color_program),
@@ -256,22 +238,7 @@ impl Window {
             chars_pressed: HashMap::new(),
             virtual_keys_pressed: HashMap::new(),
             code_to_char: HashMap::new(),
-            font_cache: Rc::new(RefCell::new(font_cache))
         };
-
-        // TODO(font)
-        /*
-        let loaded_12 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_12_PNG),
-                                        &mut Cursor::new(lux_constants::SCP_12_BINCODE)));
-        let loaded_20 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_20_PNG),
-                                        &mut Cursor::new(lux_constants::SCP_20_BINCODE)));
-        let loaded_30 = try!(read_atlas(&mut Cursor::new(lux_constants::SCP_30_PNG),
-                                        &mut Cursor::new(lux_constants::SCP_30_BINCODE)));
-        try!(window.cache("SourceCodePro", 12, loaded_12));
-        try!(window.cache("SourceCodePro", 20, loaded_20));
-        try!(window.cache("SourceCodePro", 30, loaded_30));
-
-        */
 
         Ok(window)
 
@@ -412,6 +379,9 @@ impl Window {
             glevent::Touch(_) => {
                 // TODO: -- high priority -- handle this.
             }
+            glevent::TouchpadPressure(_, _) => {
+
+            }
         }}
     }
 
@@ -423,8 +393,7 @@ impl Window {
                    self.idx_cache.clone(),
                    self.tex_vtx_cache.clone(),
                    self.color_vtx_cache.clone(),
-                   Some(clear_color.to_rgba()),
-                   self.font_cache.clone())
+                   Some(clear_color.to_rgba()))
     }
 
     /// Produce a frame that has not been cleared.
@@ -435,8 +404,7 @@ impl Window {
                    self.idx_cache.clone(),
                    self.tex_vtx_cache.clone(),
                    self.color_vtx_cache.clone(),
-                   None,
-                   self.font_cache.clone())
+                   None)
     }
 }
 
@@ -540,21 +508,9 @@ impl HasDisplay for Window {
     }
 }
 
-impl HasFontCache for Window {
-    fn font_cache(&self) -> RefMut<FontCache> {
-        self.font_cache.borrow_mut()
-    }
-}
-
 impl HasDisplay for Frame {
     fn borrow_display(&self) -> &glium::Display {
         &self.display
-    }
-}
-
-impl HasFontCache for Frame {
-    fn font_cache(&self) -> RefMut<FontCache> {
-        self.font_cache.borrow_mut()
     }
 }
 

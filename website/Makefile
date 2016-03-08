@@ -4,7 +4,7 @@ site: ./site/*
 	cp -r ./site/* out/
 
 docs:
-	cargo doc --features="freetype"; true
+	cargo doc; true
 	rm -rf ./out/doc
 	cp -r ../target/doc ./out
 

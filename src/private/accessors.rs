@@ -2,8 +2,6 @@
 //! enable code-reuse between components that share behaviors or
 //! capabilities.
 
-use std::cell::RefMut;
-use super::font::FontCache;
 use super::primitive_canvas::{
     CachedColorDraw,
     CachedTexDraw,
@@ -69,12 +67,6 @@ pub trait HasPrograms {
     fn texture_shader(&self) -> &glium::Program;
     /// Returns a reference to the color shader.
     fn color_shader(&self) -> &glium::Program;
-}
-
-/// Implemented on objects that have a font cache.
-pub trait HasFontCache {
-    /// Returns a mutable reference to the owned fontcache.
-    fn font_cache(&self) -> RefMut<FontCache>;
 }
 
 /// Implemented on objects that contain a gluium `Surface`.

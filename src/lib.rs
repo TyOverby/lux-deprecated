@@ -88,25 +88,6 @@ pub mod game {
     pub use private::game::{Game, GameRunner, Loader};
 }
 
-pub mod font {
-    /*
-    //! Text drawing and loading functionality.
-    //!
-    //! # WARNING
-    //! The `render` function and the `SOURCE_CODE_PRO_REGULAR` static variable
-    //! is only available when lux is compiled with the `freetype` cargo feature enabled.
-
-    pub use private::font::{ContainedText, TextDraw, TextLoad};
-
-    pub use image_atlas::{load_atlas, read_atlas, save_atlas, write_atlas};
-
-    #[cfg(feature="freetype")]
-    pub use freetype_atlas::{render};
-    #[cfg(feature="freetype")]
-    pub use private::constants::SOURCE_CODE_PRO_REGULAR;
-    */
-}
-
 pub mod prelude {
     //! A collection of common traits, structs and functions that are
     //! recommended for average Lux usage.

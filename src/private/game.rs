@@ -1,3 +1,5 @@
+#![allow(unused_imports, unused_variables)]
+
 use super::glutin_window::{Window, Frame};
 use super::interactive::EventIterator;
 use super::color::{rgba, rgb};
@@ -5,7 +7,6 @@ use super::error::LuxResult;
 use super::interactive::Interactive;
 use super::canvas::Canvas;
 use super::raw::{Transform, Colored};
-//use super::font::TextDraw;
 
 use std::collections::VecDeque;
 use std::mem::transmute;
