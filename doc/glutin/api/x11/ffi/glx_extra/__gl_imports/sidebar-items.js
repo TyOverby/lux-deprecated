@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["mem","Basic functions for dealing with memory"]],"trait":[["Send","Types able to be transferred across thread boundaries."]]});

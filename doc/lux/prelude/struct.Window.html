@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Window` struct in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Window">
+
+    <title>lux::prelude::Window - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>prelude</a></p><script>window.sidebarCurrent = {name: 'Window', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>lux</a>::<wbr><a href='index.html'>prelude</a>::<wbr><a class='struct' href=''>Window</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-1017' class='srclink' href='../../src/lux/private/glutin_window.rs.html#58-89' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Window {
+    // some fields omitted
+}</pre><div class='docblock'><p>A 1 to 1 correlation with a window shown on your desktop.</p>
+
+<p>Lux uses Glutin for the window implementation.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../lux/window/struct.Window.html' title='lux::window::Window'>Window</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(options: <a class='struct' href='../../lux/window/struct.WindowOptions.html' title='lux::window::WindowOptions'>WindowOptions</a>) -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='struct' href='../../lux/window/struct.Window.html' title='lux::window::Window'>Window</a>&gt;</code></h4>
+<div class='docblock'><p>Creates a new lux Window with the provided window settings.</p>
+</div><h4 id='method.new_with_defaults' class='method'><code>fn <a href='#method.new_with_defaults' class='fnname'>new_with_defaults</a>() -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='struct' href='../../lux/window/struct.Window.html' title='lux::window::Window'>Window</a>&gt;</code></h4>
+<div class='docblock'><p>Constructs a new window with the default settings.</p>
+</div><h4 id='method.change_options' class='method'><code>fn <a href='#method.change_options' class='fnname'>change_options</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut <a class='struct' href='../../lux/window/struct.WindowOptions.html' title='lux::window::WindowOptions'>WindowOptions</a>)&gt;(&amp;mut self, f: F) -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<div class='docblock'><p>Executes a closure that can modify the window settings.</p>
+
+<p>Changes to the window are applied after the closure is done executing.</p>
+</div><h4 id='method.restock_events' class='method'><code>fn <a href='#method.restock_events' class='fnname'>restock_events</a>&lt;I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.DoubleEndedIterator.html' title='core::iter::DoubleEndedIterator'>DoubleEndedIterator</a>&lt;Item=<a class='enum' href='../../lux/interactive/enum.Event.html' title='lux::interactive::Event'>Event</a>&gt;&gt;(&amp;mut self, i: I)</code></h4>
+<div class='docblock'><p>Add the events from an iterator of events back to the internal event queue.</p>
+</div><h4 id='method.process_events' class='method'><code>fn <a href='#method.process_events' class='fnname'>process_events</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Query the underlying window system for events and add them to the
+the interal event queue.</p>
+
+<p>This function is automatically called by <code>is_open()</code>, <code>events()</code>.</p>
+</div><h4 id='method.cleared_frame' class='method'><code>fn <a href='#method.cleared_frame' class='fnname'>cleared_frame</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, clear_color: C) -&gt; <a class='struct' href='../../lux/window/struct.Frame.html' title='lux::window::Frame'>Frame</a></code></h4>
+<div class='docblock'><p>Produce a frame that has been cleared with a color.</p>
+</div><h4 id='method.frame' class='method'><code>fn <a href='#method.frame' class='fnname'>frame</a>(&amp;mut self) -&gt; <a class='struct' href='../../lux/window/struct.Frame.html' title='lux::window::Frame'>Frame</a></code></h4>
+<div class='docblock'><p>Produce a frame that has not been cleared.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../lux/interactive/trait.Interactive.html' title='lux::interactive::Interactive'>Interactive</a> for <a class='struct' href='../../lux/window/struct.Window.html' title='lux::window::Window'>Window</a></code></h3><div class='impl-items'><h4 id='method.is_open' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.is_open' class='fnname'>is_open</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.was_open' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.was_open' class='fnname'>was_open</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.title' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.title' class='fnname'>title</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<h4 id='method.set_title' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.set_title' class='fnname'>set_title</a>(&amp;mut self, _title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<h4 id='method.set_size' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.set_size' class='fnname'>set_size</a>(&amp;mut self, _width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, _height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</code></h4>
+<h4 id='method.get_size_u' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.get_size_u' class='fnname'>get_size_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</a></code></h4>
+<h4 id='method.get_size' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.get_size' class='fnname'>get_size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a></code></h4>
+<h4 id='method.is_focused' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.is_focused' class='fnname'>is_focused</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.mouse_pos_i' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.mouse_pos_i' class='fnname'>mouse_pos_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
+<h4 id='method.mouse_pos' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.mouse_pos' class='fnname'>mouse_pos</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</a></code></h4>
+<h4 id='method.is_mouse_down' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.is_mouse_down' class='fnname'>is_mouse_down</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.events' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.events' class='fnname'>events</a>(&amp;mut self) -&gt; <a class='struct' href='../../lux/interactive/struct.EventIterator.html' title='lux::interactive::EventIterator'>EventIterator</a></code></h4>
+<h4 id='method.is_key_pressed' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.is_key_pressed' class='fnname'>is_key_pressed</a>&lt;K: <a class='trait' href='../../lux/interactive/trait.AbstractKey.html' title='lux::interactive::AbstractKey'>AbstractKey</a>&gt;(&amp;self, k: K) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.width' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
+<h4 id='method.height' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
+<h4 id='method.width_u' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.width_u' class='fnname'>width_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<h4 id='method.height_u' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.height_u' class='fnname'>height_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<h4 id='method.mouse_x' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.mouse_x' class='fnname'>mouse_x</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a></code></h4>
+<h4 id='method.mouse_x_i' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.mouse_x_i' class='fnname'>mouse_x_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+<h4 id='method.mouse_y' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.mouse_y' class='fnname'>mouse_y</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a></code></h4>
+<h4 id='method.mouse_y_i' class='method'><code>fn <a href='../../lux/interactive/trait.Interactive.html#method.mouse_y_i' class='fnname'>mouse_y_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

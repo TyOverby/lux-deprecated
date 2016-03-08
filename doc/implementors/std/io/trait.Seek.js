@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['shared_library'] = [];implementors['tempfile'] = ["impl <a class='trait' href='http://doc.rust-lang.org/nightly/std/io/trait.Seek.html' title='std::io::Seek'>Seek</a> for <a class='struct' href='tempfile/struct.NamedTempFile.html' title='tempfile::NamedTempFile'>NamedTempFile</a>","impl <a class='trait' href='http://doc.rust-lang.org/nightly/std/io/trait.Seek.html' title='std::io::Seek'>Seek</a> for <a class='struct' href='tempfile/struct.TempFile.html' title='tempfile::TempFile'>TempFile</a>",];implementors['glutin'] = [];
+implementors['gleam'] = [];implementors['shared_library'] = [];implementors['glium'] = [];implementors['lux'] = ["impl&lt;R&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Seek.html' title='std::io::Seek'>Seek</a> for <a class='struct' href='image/tiff/decoder/stream/struct.SmartReader.html' title='image::tiff::decoder::stream::SmartReader'>SmartReader</a>&lt;R&gt; <span class='where'>where R: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Seek.html' title='std::io::Seek'>Seek</a></span>",];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `LuxError` enum in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, LuxError">
+
+    <title>lux::prelude::LuxError - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>prelude</a></p><script>window.sidebarCurrent = {name: 'LuxError', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>lux</a>::<wbr><a href='index.html'>prelude</a>::<wbr><a class='enum' href=''>LuxError</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-1732' class='srclink' href='../../src/lux/private/error.rs.html#21-43' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum LuxError {
+    WindowError(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
+    OpenGlError(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
+    ImageError(<a class='enum' href='../../image/image/enum.ImageError.html' title='image::image::ImageError'>ImageError</a>),
+    ShaderError(ShaderError),
+    IoError(<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html' title='std::io::error::Error'>IoError</a>),
+    FontNotLoaded(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
+    DrawError(<a class='enum' href='../../glium/enum.DrawError.html' title='glium::DrawError'>DrawError</a>),
+    TextureCreationError(<a class='enum' href='../../glium/texture/enum.TextureCreationError.html' title='glium::texture::TextureCreationError'>TextureCreationError</a>),
+    IndexBufferCreationError,
+    VertexBufferCreationError,
+}</pre><div class='docblock'><p>Any error that Lux might run into.</p>
+</div><h2 class='variants'>Variants</h2>
+<table><tr><td id='variant.WindowError'><code>WindowError</code></td><td><div class='docblock'><p>An error that can occur when creating a window.</p>
+</div></td></tr><tr><td id='variant.OpenGlError'><code>OpenGlError</code></td><td><div class='docblock'><p>An error that can occur when creating an opengl context.</p>
+</div></td></tr><tr><td id='variant.ImageError'><code>ImageError</code></td><td><div class='docblock'><p>An error related to image decoding.</p>
+</div></td></tr><tr><td id='variant.ShaderError'><code>ShaderError</code></td><td><div class='docblock'><p>An error that can occur when compiling or linking shaders.</p>
+</div></td></tr><tr><td id='variant.IoError'><code>IoError</code></td><td><div class='docblock'><p>An error that can occur when required I/O fails.</p>
+</div></td></tr><tr><td id='variant.FontNotLoaded'><code>FontNotLoaded</code></td><td><div class='docblock'><p>An error that can occur when attempting to use a font that hasn&#39;t
+been loaded yet.</p>
+</div></td></tr><tr><td id='variant.DrawError'><code>DrawError</code></td><td><div class='docblock'><p>An error that was produced while submitting a draw call</p>
+</div></td></tr><tr><td id='variant.TextureCreationError'><code>TextureCreationError</code></td><td><div class='docblock'><p>An error occured while creating a texture</p>
+</div></td></tr><tr><td id='variant.IndexBufferCreationError'><code>IndexBufferCreationError</code></td><td><div class='docblock'><p>An error creating an index buffer occured</p>
+</div></td></tr><tr><td id='variant.VertexBufferCreationError'><code>VertexBufferCreationError</code></td><td><div class='docblock'><p>An error creating an vertex buffer occured</p>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a> for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.description' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.description' class='fnname'>description</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<h4 id='method.cause' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.cause' class='fnname'>cause</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a>&gt;</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/enum.GliumCreationError.html' title='glium::GliumCreationError'>GliumCreationError</a>&lt;<a class='enum' href='../../glutin/enum.CreationError.html' title='glutin::CreationError'>CreationError</a>&gt;&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(e: <a class='enum' href='../../glium/enum.GliumCreationError.html' title='glium::GliumCreationError'>GliumCreationError</a>&lt;<a class='enum' href='../../glutin/enum.CreationError.html' title='glutin::CreationError'>CreationError</a>&gt;) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/program/enum.ProgramCreationError.html' title='glium::program::ProgramCreationError'>ProgramCreationError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-1' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(e: <a class='enum' href='../../glium/program/enum.ProgramCreationError.html' title='glium::program::ProgramCreationError'>ProgramCreationError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/program/enum.ProgramChooserCreationError.html' title='glium::program::ProgramChooserCreationError'>ProgramChooserCreationError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-2' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(e: <a class='enum' href='../../glium/program/enum.ProgramChooserCreationError.html' title='glium::program::ProgramChooserCreationError'>ProgramChooserCreationError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/texture/enum.TextureCreationError.html' title='glium::texture::TextureCreationError'>TextureCreationError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-3' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(e: <a class='enum' href='../../glium/texture/enum.TextureCreationError.html' title='glium::texture::TextureCreationError'>TextureCreationError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html' title='std::io::error::Error'>IoError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-4' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(ioe: <a class='struct' href='https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html' title='std::io::error::Error'>IoError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/enum.DrawError.html' title='glium::DrawError'>DrawError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-5' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(e: <a class='enum' href='../../glium/enum.DrawError.html' title='glium::DrawError'>DrawError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../image/image/enum.ImageError.html' title='image::image::ImageError'>ImageError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-6' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(e: <a class='enum' href='../../image/image/enum.ImageError.html' title='image::image::ImageError'>ImageError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/vertex/buffer/enum.CreationError.html' title='glium::vertex::buffer::CreationError'>BufferCreationError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-7' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(_: <a class='enum' href='../../glium/vertex/buffer/enum.CreationError.html' title='glium::vertex::buffer::CreationError'>BufferCreationError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../../glium/index/buffer/enum.CreationError.html' title='glium::index::buffer::CreationError'>BufferCreationError</a>&gt; for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.from-8' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(_: <a class='enum' href='../../glium/index/buffer/enum.CreationError.html' title='glium::index::buffer::CreationError'>BufferCreationError</a>) -&gt; <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Error.html' title='core::fmt::Error'>Error</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../../lux/enum.LuxError.html' title='lux::LuxError'>LuxError</a></code></h3><div class='impl-items'><h4 id='method.fmt-1' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

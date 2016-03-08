@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `CGFont` struct in crate `core_graphics`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, CGFont">
+
+    <title>core_graphics::font::CGFont - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>core_graphics</a>::<wbr><a href='index.html'>font</a></p><script>window.sidebarCurrent = {name: 'CGFont', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>core_graphics</a>::<wbr><a href='index.html'>font</a>::<wbr><a class='struct' href=''>CGFont</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-270' class='srclink' href='../../src/core_graphics/font.rs.html#27-29' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct CGFont {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'><h4 id='method.from_data_provider' class='method'><code>fn <a href='#method.from_data_provider' class='fnname'>from_data_provider</a>(provider: <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.from_name' class='method'><code>fn <a href='#method.from_name' class='fnname'>from_name</a>(name: &amp;<a class='struct' href='../../core_foundation/string/struct.CFString.html' title='core_foundation::string::CFString'>CFString</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.postscript_name' class='method'><code>fn <a href='#method.postscript_name' class='fnname'>postscript_name</a>(&amp;self) -&gt; <a class='struct' href='../../core_foundation/string/struct.CFString.html' title='core_foundation::string::CFString'>CFString</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='../../serde/ser/trait.Serialize.html' title='serde::ser::Serialize'>Serialize</a> for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'><h4 id='method.serialize' class='method'><code>fn <a href='../../serde/ser/trait.Serialize.html#method.serialize' class='fnname'>serialize</a>&lt;S&gt;(&amp;self, serializer: &amp;mut S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, S::Error&gt; <span class='where'>where S: <a class='trait' href='../../serde/ser/trait.Serializer.html' title='serde::ser::Serializer'>Serializer</a></span></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../../serde/de/trait.Deserialize.html' title='serde::de::Deserialize'>Deserialize</a> for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'><h4 id='method.deserialize' class='method'><code>fn <a href='../../serde/de/trait.Deserialize.html#method.deserialize' class='fnname'>deserialize</a>&lt;D&gt;(deserializer: &amp;mut D) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, D::Error&gt; <span class='where'>where D: <a class='trait' href='../../serde/de/trait.Deserializer.html' title='serde::de::Deserializer'>Deserializer</a></span></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../../core_foundation/base/trait.TCFType.html' title='core_foundation::base::TCFType'>TCFType</a>&lt;<a class='type' href='../../core_graphics/font/type.CGFontRef.html' title='core_graphics::font::CGFontRef'>CGFontRef</a>&gt; for <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h3><div class='impl-items'><h4 id='method.as_concrete_TypeRef' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.as_concrete_TypeRef' class='fnname'>as_concrete_TypeRef</a>(&amp;self) -&gt; <a class='type' href='../../core_graphics/font/type.CGFontRef.html' title='core_graphics::font::CGFontRef'>CGFontRef</a></code></h4>
+<h4 id='method.wrap_under_get_rule' class='method'><code>unsafe fn <a href='../../core_foundation/base/trait.TCFType.html#method.wrap_under_get_rule' class='fnname'>wrap_under_get_rule</a>(reference: <a class='type' href='../../core_graphics/font/type.CGFontRef.html' title='core_graphics::font::CGFontRef'>CGFontRef</a>) -&gt; <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h4>
+<h4 id='method.as_CFTypeRef' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.as_CFTypeRef' class='fnname'>as_CFTypeRef</a>(&amp;self) -&gt; <a class='type' href='../../core_foundation_sys/base/type.CFTypeRef.html' title='core_foundation_sys::base::CFTypeRef'>CFTypeRef</a></code></h4>
+<h4 id='method.wrap_under_create_rule' class='method'><code>unsafe fn <a href='../../core_foundation/base/trait.TCFType.html#method.wrap_under_create_rule' class='fnname'>wrap_under_create_rule</a>(obj: <a class='type' href='../../core_graphics/font/type.CGFontRef.html' title='core_graphics::font::CGFontRef'>CGFontRef</a>) -&gt; <a class='struct' href='../../core_graphics/font/struct.CGFont.html' title='core_graphics::font::CGFont'>CGFont</a></code></h4>
+<h4 id='method.type_id' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.type_id' class='fnname'>type_id</a>() -&gt; <a class='type' href='../../core_foundation_sys/base/type.CFTypeID.html' title='core_foundation_sys::base::CFTypeID'>CFTypeID</a></code></h4>
+<h4 id='method.as_CFType' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.as_CFType' class='fnname'>as_CFType</a>(&amp;self) -&gt; <a class='struct' href='../../core_foundation/base/struct.CFType.html' title='core_foundation::base::CFType'>CFType</a></code></h4>
+<h4 id='method.retain_count' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.retain_count' class='fnname'>retain_count</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a></code></h4>
+<h4 id='method.type_of' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.type_of' class='fnname'>type_of</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
+<h4 id='method.show' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.show' class='fnname'>show</a>(&amp;self)</code></h4>
+<h4 id='method.instance_of' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.instance_of' class='fnname'>instance_of</a>&lt;OtherConcreteTypeRef, OtherCFType&gt;(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a> <span class='where'>where OtherCFType: <a class='trait' href='../../core_foundation/base/trait.TCFType.html' title='core_foundation::base::TCFType'>TCFType</a>&lt;OtherConcreteTypeRef&gt;</span></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "core_graphics";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Interactive` trait in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Interactive">
+
+    <title>lux::interactive::Interactive - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>interactive</a></p><script>window.sidebarCurrent = {name: 'Interactive', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>lux</a>::<wbr><a href='index.html'>interactive</a>::<wbr><a class='trait' href=''>Interactive</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-251' class='srclink' href='../../src/lux/private/interactive.rs.html#72-184' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Interactive {
+    fn <a href='#tymethod.is_open' class='fnname'>is_open</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.was_open' class='fnname'>was_open</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.title' class='fnname'>title</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>;
+    fn <a href='#tymethod.set_title' class='fnname'>set_title</a>(&amp;mut self, title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>);
+    fn <a href='#tymethod.set_size' class='fnname'>set_size</a>(&amp;mut self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>);
+    fn <a href='#tymethod.get_size_u' class='fnname'>get_size_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</a>;
+    fn <a href='#tymethod.is_focused' class='fnname'>is_focused</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.is_mouse_down' class='fnname'>is_mouse_down</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.mouse_pos' class='fnname'>mouse_pos</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>;
+    fn <a href='#tymethod.mouse_pos_i' class='fnname'>mouse_pos_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a>;
+    fn <a href='#tymethod.is_key_pressed' class='fnname'>is_key_pressed</a>&lt;K: <a class='trait' href='../../lux/interactive/trait.AbstractKey.html' title='lux::interactive::AbstractKey'>AbstractKey</a>&gt;(&amp;self, k: K) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.events' class='fnname'>events</a>(&amp;mut self) -&gt; <a class='struct' href='../../lux/interactive/struct.EventIterator.html' title='lux::interactive::EventIterator'>EventIterator</a>;
+
+    fn <a href='#method.get_size' class='fnname'>get_size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</a> { ... }
+    fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a> { ... }
+    fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a> { ... }
+    fn <a href='#method.width_u' class='fnname'>width_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a> { ... }
+    fn <a href='#method.height_u' class='fnname'>height_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a> { ... }
+    fn <a href='#method.mouse_x' class='fnname'>mouse_x</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a> { ... }
+    fn <a href='#method.mouse_x_i' class='fnname'>mouse_x_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a> { ... }
+    fn <a href='#method.mouse_y' class='fnname'>mouse_y</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a> { ... }
+    fn <a href='#method.mouse_y_i' class='fnname'>mouse_y_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a> { ... }
+}</pre><div class='docblock'><p>A trait for objects that are interactive to the user.
+The only known impelementation for this trait is the glutin Window.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.is_open' class='method stab '><code>fn <a href='#tymethod.is_open' class='fnname'>is_open</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Returns true if the window is not yet closed.</p>
+
+<p>This function borrows self as &amp;mut because it must
+process events before determining if it has closed before.</p>
+
+<p><code>was_open</code> is a similar function, but without the event processing.
+However, you should prefer is_open if at all possible.</p>
+</div><h3 id='tymethod.was_open' class='method stab '><code>fn <a href='#tymethod.was_open' class='fnname'>was_open</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Returns true if the window wasn&#39;t closed the last time that input was
+polled.</p>
+</div><h3 id='tymethod.title' class='method stab '><code>fn <a href='#tymethod.title' class='fnname'>title</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h3><div class='docblock'><p>Returns the title of the object.</p>
+</div><h3 id='tymethod.set_title' class='method stab '><code>fn <a href='#tymethod.set_title' class='fnname'>set_title</a>(&amp;mut self, title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h3><div class='docblock'><p>Sets the title of the object.  If the object is a window,
+this title will be used to decorate the window.</p>
+</div><h3 id='tymethod.set_size' class='method stab '><code>fn <a href='#tymethod.set_size' class='fnname'>set_size</a>(&amp;mut self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</code></h3><div class='docblock'><p>Sets the size of the window if possible.</p>
+</div><h3 id='tymethod.get_size_u' class='method stab '><code>fn <a href='#tymethod.get_size_u' class='fnname'>get_size_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</a></code></h3><div class='docblock'><p>Returns the size of the window as an unsigned integer.</p>
+</div><h3 id='tymethod.is_focused' class='method stab '><code>fn <a href='#tymethod.is_focused' class='fnname'>is_focused</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Returns true if the operating system has given this object focus.</p>
+</div><h3 id='tymethod.is_mouse_down' class='method stab '><code>fn <a href='#tymethod.is_mouse_down' class='fnname'>is_mouse_down</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Returns true if any mouse button is down.</p>
+</div><h3 id='tymethod.mouse_pos' class='method stab '><code>fn <a href='#tymethod.mouse_pos' class='fnname'>mouse_pos</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a></code></h3><div class='docblock'><p>Returns the current position of the mouse.</p>
+
+<p>This function returns the position in floating point units
+for usability.  Use <code>mouse_pos_int</code> if you want integer units.</p>
+</div><h3 id='tymethod.mouse_pos_i' class='method stab '><code>fn <a href='#tymethod.mouse_pos_i' class='fnname'>mouse_pos_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h3><div class='docblock'><p>Returns the current position of the mouse in integer units.</p>
+</div><h3 id='tymethod.is_key_pressed' class='method stab '><code>fn <a href='#tymethod.is_key_pressed' class='fnname'>is_key_pressed</a>&lt;K: <a class='trait' href='../../lux/interactive/trait.AbstractKey.html' title='lux::interactive::AbstractKey'>AbstractKey</a>&gt;(&amp;self, k: K) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Returns true if a given key is currently being pressed.</p>
+</div><h3 id='tymethod.events' class='method stab '><code>fn <a href='#tymethod.events' class='fnname'>events</a>(&amp;mut self) -&gt; <a class='struct' href='../../lux/interactive/struct.EventIterator.html' title='lux::interactive::EventIterator'>EventIterator</a></code></h3><div class='docblock'><p>Consumes all unseen events and returns them in an iterator.</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.get_size' class='method stab '><code>fn <a href='#method.get_size' class='fnname'>get_size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</a></code></h3><div class='docblock'><p>Returns the size of the window.</p>
+</div><h3 id='method.width' class='method stab '><code>fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h3><div class='docblock'><p>Returns the width of the window.</p>
+</div><h3 id='method.height' class='method stab '><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h3><div class='docblock'><p>Returns the height of the window.</p>
+</div><h3 id='method.width_u' class='method stab '><code>fn <a href='#method.width_u' class='fnname'>width_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h3><div class='docblock'><p>Returns the width of the window as an unsigned integer.</p>
+</div><h3 id='method.height_u' class='method stab '><code>fn <a href='#method.height_u' class='fnname'>height_u</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h3><div class='docblock'><p>Returns the height of the window as an unsigned integer.</p>
+</div><h3 id='method.mouse_x' class='method stab '><code>fn <a href='#method.mouse_x' class='fnname'>mouse_x</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a></code></h3><div class='docblock'><p>Returns the x coordinate of the mouse.</p>
+</div><h3 id='method.mouse_x_i' class='method stab '><code>fn <a href='#method.mouse_x_i' class='fnname'>mouse_x_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h3><div class='docblock'><p>Returns the x coordinate of the mouse in integer units.</p>
+</div><h3 id='method.mouse_y' class='method stab '><code>fn <a href='#method.mouse_y' class='fnname'>mouse_y</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a></code></h3><div class='docblock'><p>Returns the y coordinate of the mouse.</p>
+</div><h3 id='method.mouse_y_i' class='method stab '><code>fn <a href='#method.mouse_y_i' class='fnname'>mouse_y_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h3><div class='docblock'><p>Returns the y coordinate of the mouse in integer units.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../lux/interactive/trait.Interactive.html' title='lux::interactive::Interactive'>Interactive</a> for <a class='struct' href='../../lux/window/struct.Window.html' title='lux::window::Window'>Window</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/lux/interactive/trait.Interactive.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

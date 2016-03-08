@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ImageError","An enumeration of Image errors"],["LuxError","Any error that Lux might run into."]],"type":[["LuxResult","A result returning either a value or a lux-generated error."]]});

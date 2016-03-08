@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['shared_library'] = [];implementors['tempfile'] = [];implementors['glutin'] = [];
+implementors['gleam'] = [];implementors['shared_library'] = [];implementors['glium'] = [];implementors['lux'] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

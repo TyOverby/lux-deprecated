@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Output","A physical output"],["OutputId","An opaque unique identifier to an output, can be tested for equality."],["OutputMode","Representation of an output mode"]]});

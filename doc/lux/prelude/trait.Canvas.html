@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Canvas` trait in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Canvas">
+
+    <title>lux::prelude::Canvas - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>prelude</a></p><script>window.sidebarCurrent = {name: 'Canvas', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>lux</a>::<wbr><a href='index.html'>prelude</a>::<wbr><a class='trait' href=''>Canvas</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-462' class='srclink' href='../../src/lux/private/canvas.rs.html#68-399' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Canvas: <a class='trait' href='../../lux/graphics/trait.PrimitiveCanvas.html' title='lux::graphics::PrimitiveCanvas'>PrimitiveCanvas</a> + <a class='trait' href='../../lux/modifiers/trait.Colored.html' title='lux::modifiers::Colored'>Colored</a> + <a class='trait' href='../../lux/modifiers/trait.Transform.html' title='lux::modifiers::Transform'>Transform</a> + DrawParamMod + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> {
+    fn <a href='#tymethod.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>;
+
+    fn <a href='#method.size_i' class='fnname'>size_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a> { ... }
+    fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a> { ... }
+    fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a> { ... }
+    fn <a href='#method.width_i' class='fnname'>width_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a> { ... }
+    fn <a href='#method.height_i' class='fnname'>height_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a> { ... }
+    fn <a href='#method.clear' class='fnname'>clear</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C) { ... }
+    fn <a href='#method.with_scissor' class='fnname'>with_scissor</a>&lt;F, R&gt;(&amp;mut self, x: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, y: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span> { ... }
+    fn <a href='#method.draw_to_stencil' class='fnname'>draw_to_stencil</a>&lt;R, S&gt;(&amp;mut self, typ: <a class='enum' href='../../lux/graphics/enum.StencilType.html' title='lux::graphics::StencilType'>StencilType</a>, stencil_fn: S) -&gt; R <span class='where'>where S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span> { ... }
+    fn <a href='#method.clear_stencil' class='fnname'>clear_stencil</a>(&amp;mut self, typ: <a class='enum' href='../../lux/graphics/enum.StencilType.html' title='lux::graphics::StencilType'>StencilType</a>) { ... }
+    fn <a href='#method.rect' class='fnname'>rect</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, w: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, h: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Rectangle.html' title='lux::graphics::Rectangle'>Rectangle</a>&lt;'a, Self&gt; { ... }
+    fn <a href='#method.square' class='fnname'>square</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Rectangle.html' title='lux::graphics::Rectangle'>Rectangle</a>&lt;'a, Self&gt; { ... }
+    fn <a href='#method.ellipse' class='fnname'>ellipse</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, w: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, h: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Ellipse.html' title='lux::graphics::Ellipse'>Ellipse</a>&lt;'a, Self&gt; { ... }
+    fn <a href='#method.circle' class='fnname'>circle</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Ellipse.html' title='lux::graphics::Ellipse'>Ellipse</a>&lt;'a, Self&gt; { ... }
+    fn <a href='#method.draw_point' class='fnname'>draw_point</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, color: C) { ... }
+    fn <a href='#method.draw_points' class='fnname'>draw_points</a>(&amp;mut self, pixels: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../lux/graphics/struct.ColorVertex.html' title='lux::graphics::ColorVertex'>ColorVertex</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) { ... }
+    fn <a href='#method.draw_line' class='fnname'>draw_line</a>(&amp;mut self, x1: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y1: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, x2: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y2: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, line_size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) { ... }
+    fn <a href='#method.draw_lines' class='fnname'>draw_lines</a>&lt;I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>&gt;&gt;(&amp;mut self, positions: I, line_size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) { ... }
+    fn <a href='#method.draw_arc' class='fnname'>draw_arc</a>(&amp;mut self, pos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>, radius: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, angle1: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, angle2: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, line_size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) { ... }
+    fn <a href='#method.sprite' class='fnname'>sprite</a>(&amp;mut self, sprite: &amp;<a class='struct' href='../../lux/graphics/struct.Sprite.html' title='lux::graphics::Sprite'>Sprite</a>, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.ContainedSprite.html' title='lux::graphics::ContainedSprite'>ContainedSprite</a>&lt;Self&gt; { ... }
+}</pre><div class='docblock'><p>Canvas is the main trait for drawing in Lux.  It supports all operations
+that paint to the screen or to a buffer.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.size' class='method stab '><code>fn <a href='#tymethod.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a></code></h3><div class='docblock'><p>Returns the size of the canvas as a pair of (width, height).</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.size_i' class='method stab '><code>fn <a href='#method.size_i' class='fnname'>size_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h3><div class='docblock'><p>Returns the size of the canvas in integer form.</p>
+</div><h3 id='method.width' class='method stab '><code>fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a></code></h3><div class='docblock'><p>Returns the width of the canvas.</p>
+</div><h3 id='method.height' class='method stab '><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a></code></h3><div class='docblock'><p>Returns the height of the canvas.</p>
+</div><h3 id='method.width_i' class='method stab '><code>fn <a href='#method.width_i' class='fnname'>width_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h3><div class='docblock'><p>Returns the width of the canvas in integer form.</p>
+</div><h3 id='method.height_i' class='method stab '><code>fn <a href='#method.height_i' class='fnname'>height_i</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h3><div class='docblock'><p>Returns the height of the canvas in integer form.</p>
+</div><h3 id='method.clear' class='method stab '><code>fn <a href='#method.clear' class='fnname'>clear</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, color: C)</code></h3><div class='docblock'><p>Clears the canvas with a solid color.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='comment'>// Clear the screen with purple.</span>
+ <span class='ident'>frame</span>.<span class='ident'>clear</span>(<span class='ident'>rgb</span>(<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>1.0</span>));</pre>
+</div><h3 id='method.with_scissor' class='method stab '><code>fn <a href='#method.with_scissor' class='fnname'>with_scissor</a>&lt;F, R&gt;(&amp;mut self, x: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, y: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, f: F) -&gt; R <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h3><div class='docblock'><p>Evaluates the function with a canvas that will only draw into the
+provided rectangle.</p>
+</div><h3 id='method.draw_to_stencil' class='method stab '><code>fn <a href='#method.draw_to_stencil' class='fnname'>draw_to_stencil</a>&lt;R, S&gt;(&amp;mut self, typ: <a class='enum' href='../../lux/graphics/enum.StencilType.html' title='lux::graphics::StencilType'>StencilType</a>, stencil_fn: S) -&gt; R <span class='where'>where S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;mut Self) -&gt; R</span></code></h3><div class='docblock'><p>Executes a drawing function where all drawing is done on the
+stencil buffer.</p>
+</div><h3 id='method.clear_stencil' class='method stab '><code>fn <a href='#method.clear_stencil' class='fnname'>clear_stencil</a>(&amp;mut self, typ: <a class='enum' href='../../lux/graphics/enum.StencilType.html' title='lux::graphics::StencilType'>StencilType</a>)</code></h3><div class='docblock'><p>Clears the stencil buffer allowing all draws to go though.</p>
+
+<p>When called with <code>StencilType::Allow</code>, the stencil buffer will
+be cleared allowing all future draws to pass through until
+<code>draw_to_stencil</code> is called with <code>StencilType::Deny</code>.</p>
+
+<p>Whene called with <code>StencilType::Deny</code>, the stencil buffer will be
+filled, preventing all future draws to fail until <code>draw_to_stencil</code>
+is called with <code>StencilType::Allow</code>.</p>
+</div><h3 id='method.rect' class='method stab '><code>fn <a href='#method.rect' class='fnname'>rect</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, w: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, h: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Rectangle.html' title='lux::graphics::Rectangle'>Rectangle</a>&lt;'a, Self&gt;</code></h3><div class='docblock'><p>Returns a rectangle with the given dimensions and position.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> (<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=</span> (<span class='number'>0.0</span>, <span class='number'>5.0</span>, <span class='number'>50.0</span>, <span class='number'>70.0</span>);
+ <span class='ident'>frame</span>.<span class='ident'>rect</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>w</span>, <span class='ident'>h</span>)
+      .<span class='ident'>color</span>(<span class='ident'>rgb</span>(<span class='number'>100</span>, <span class='number'>200</span>, <span class='number'>255</span>))
+      .<span class='ident'>fill</span>();</pre>
+</div><h3 id='method.square' class='method stab '><code>fn <a href='#method.square' class='fnname'>square</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Rectangle.html' title='lux::graphics::Rectangle'>Rectangle</a>&lt;'a, Self&gt;</code></h3><div class='docblock'><p>Returns a square with the given dimensions and position.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> (<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>size</span>) <span class='op'>=</span> (<span class='number'>0.0</span>, <span class='number'>5.0</span>, <span class='number'>50.0</span>);
+ <span class='ident'>frame</span>.<span class='ident'>square</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>size</span>)
+      .<span class='ident'>color</span>(<span class='ident'>rgb</span>(<span class='number'>100</span>, <span class='number'>200</span>, <span class='number'>255</span>))
+      .<span class='ident'>fill</span>();</pre>
+</div><h3 id='method.ellipse' class='method stab '><code>fn <a href='#method.ellipse' class='fnname'>ellipse</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, w: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, h: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Ellipse.html' title='lux::graphics::Ellipse'>Ellipse</a>&lt;'a, Self&gt;</code></h3><div class='docblock'><p>Returns an ellipse with the given dimensions and position.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> (<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=</span> (<span class='number'>0.0</span>, <span class='number'>5.0</span>, <span class='number'>50.0</span>, <span class='number'>70.0</span>);
+ <span class='ident'>frame</span>.<span class='ident'>ellipse</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>w</span>, <span class='ident'>h</span>)
+      .<span class='ident'>color</span>(<span class='ident'>rgb</span>(<span class='number'>100</span>, <span class='number'>200</span>, <span class='number'>255</span>))
+      .<span class='ident'>fill</span>();</pre>
+</div><h3 id='method.circle' class='method stab '><code>fn <a href='#method.circle' class='fnname'>circle</a>&lt;'a&gt;(&amp;'a mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.Ellipse.html' title='lux::graphics::Ellipse'>Ellipse</a>&lt;'a, Self&gt;</code></h3><div class='docblock'><p>Returns an circle with the given dimensions and position.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> (<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>size</span>) <span class='op'>=</span> (<span class='number'>0.0</span>, <span class='number'>5.0</span>, <span class='number'>50.0</span>);
+ <span class='ident'>frame</span>.<span class='ident'>circle</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>size</span>)
+      .<span class='ident'>color</span>(<span class='ident'>rgb</span>(<span class='number'>100</span>, <span class='number'>200</span>, <span class='number'>255</span>))
+      .<span class='ident'>fill</span>();</pre>
+</div><h3 id='method.draw_point' class='method stab '><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>&lt;C: <a class='trait' href='../../lux/color/trait.Color.html' title='lux::color::Color'>Color</a>&gt;(&amp;mut self, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, color: C)</code></h3><div class='docblock'><p>Draws a 1-pixel colored point to the screen at a position.</p>
+
+<p>This is <em>not</em> the same as setting a &quot;pixel&quot; because the point can
+ be moved by transformations on the Frame.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> (<span class='ident'>x</span>, <span class='ident'>y</span>) <span class='op'>=</span> (<span class='number'>10.0</span>, <span class='number'>20.0</span>);
+ <span class='ident'>frame</span>.<span class='ident'>draw_point</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>lux</span>::<span class='ident'>color</span>::<span class='ident'>RED</span>);</pre>
+</div><h3 id='method.draw_points' class='method stab '><code>fn <a href='#method.draw_points' class='fnname'>draw_points</a>(&amp;mut self, pixels: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../lux/graphics/struct.ColorVertex.html' title='lux::graphics::ColorVertex'>ColorVertex</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>)</code></h3><div class='docblock'><p>Draws a sequence of colored points with the size of 1 pixel.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>graphics</span>::<span class='ident'>ColorVertex</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> [
+     <span class='ident'>ColorVertex</span> {
+         <span class='ident'>pos</span>: [<span class='number'>10.0</span>, <span class='number'>15.0</span>],
+         <span class='ident'>color</span>: <span class='ident'>rgb</span>(<span class='number'>255</span>, <span class='number'>0</span>, <span class='number'>0</span>)
+     },
+     <span class='ident'>ColorVertex</span> {
+         <span class='ident'>pos</span>: [<span class='number'>15.0</span>, <span class='number'>10.0</span>],
+         <span class='ident'>color</span>: <span class='ident'>rgb</span>(<span class='number'>0</span>, <span class='number'>255</span>, <span class='number'>0</span>)
+     },
+ ];
+ <span class='ident'>frame</span>.<span class='ident'>draw_points</span>(<span class='kw-2'>&amp;</span><span class='ident'>points</span>[..]);</pre>
+</div><h3 id='method.draw_line' class='method stab '><code>fn <a href='#method.draw_line' class='fnname'>draw_line</a>(&amp;mut self, x1: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y1: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, x2: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y2: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, line_size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</code></h3><div class='docblock'><p>Draws a single line from <code>start</code> to <code>end</code> with a
+thickness of <code>line_size</code>.</p>
+</div><h3 id='method.draw_lines' class='method stab '><code>fn <a href='#method.draw_lines' class='fnname'>draw_lines</a>&lt;I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>&gt;&gt;(&amp;mut self, positions: I, line_size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</code></h3><div class='docblock'><p>Draws a series of lines from each point to the next with a thickness
+of <code>line_size</code>.</p>
+</div><h3 id='method.draw_arc' class='method stab '><code>fn <a href='#method.draw_arc' class='fnname'>draw_arc</a>(&amp;mut self, pos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</a>, radius: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, angle1: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, angle2: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, line_size: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>)</code></h3><div class='docblock'><p>Draws an arc centered at <code>pos</code> from <code>angle1</code> to <code>angle_2</code> with a
+thickness of <code>line_size</code>.</p>
+</div><h3 id='method.sprite' class='method stab '><code>fn <a href='#method.sprite' class='fnname'>sprite</a>(&amp;mut self, sprite: &amp;<a class='struct' href='../../lux/graphics/struct.Sprite.html' title='lux::graphics::Sprite'>Sprite</a>, x: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>, y: <a class='type' href='../../lux/types/type.Float.html' title='lux::types::Float'>Float</a>) -&gt; <a class='struct' href='../../lux/graphics/struct.ContainedSprite.html' title='lux::graphics::ContainedSprite'>ContainedSprite</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Draws a sprite  to the screen.</p>
+<pre class='rust rust-example-rendered'>
+ <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+ <span class='kw'>use</span> <span class='ident'>lux</span>::<span class='ident'>graphics</span>::<span class='ident'>ColorVertex</span>;
+
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Window</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>frame</span>();
+ <span class='kw'>let</span> <span class='ident'>logo</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>load_texture_file</span>(<span class='kw-2'>&amp;</span><span class='ident'>Path</span>::<span class='ident'>new</span>(<span class='string'>&quot;./logo.png&quot;</span>))
+                  .<span class='ident'>unwrap</span>()
+                  .<span class='ident'>into_sprite</span>();
+ <span class='kw'>let</span> (<span class='ident'>x</span>, <span class='ident'>y</span>) <span class='op'>=</span> (<span class='number'>20.0</span>, <span class='number'>50.0</span>);
+ <span class='ident'>frame</span>.<span class='ident'>sprite</span>(<span class='kw-2'>&amp;</span><span class='ident'>logo</span>, <span class='ident'>x</span>, <span class='ident'>y</span>).<span class='ident'>draw</span>();</pre>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a> for <a class='struct' href='../../lux/window/struct.Frame.html' title='lux::window::Frame'>Frame</a></code></li>
+<li><code>impl&lt;'a, D&gt; <a class='trait' href='../../lux/graphics/trait.Canvas.html' title='lux::graphics::Canvas'>Canvas</a> for <a class='struct' href='../../lux/graphics/struct.DrawableTexture.html' title='lux::graphics::DrawableTexture'>DrawableTexture</a>&lt;'a, D&gt; <span class='where'>where D: HasDisplay + HasPrograms</span></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/lux/prelude/trait.Canvas.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["CharInfo","Placement information about a specific character."],["OutputPosition","The position of a character when drawn from a string."],["RenderedFont","A representation of a fully-rendered font that contains a atlas image and the metadata required to draw from it."]]});

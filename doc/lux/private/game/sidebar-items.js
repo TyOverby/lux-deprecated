@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["GameRunner","A struct that wraps a `Game` and a `Window` and implementes a game loop."],["Loader","A struct that stores closures which load assets and prepare the game for running."]],"trait":[["Game","A trait that represents basic game functionality."]]});

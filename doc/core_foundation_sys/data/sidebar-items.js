@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["CFDataCreate",""],["CFDataGetBytePtr",""],["CFDataGetLength",""],["CFDataGetTypeID",""]],"type":[["CFDataRef",""]]});

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `prelude` mod in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, prelude">
+
+    <title>lux::prelude - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a></p><script>window.sidebarCurrent = {name: 'prelude', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>lux</a>::<wbr><a class='mod' href=''>prelude</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2712' class='srclink' href='../../src/lux/lib.rs.html#91-106' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>A collection of common traits, structs and functions that are
+recommended for average Lux usage.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.EventIterator.html'
+                               title='lux::prelude::EventIterator'>EventIterator</a></td>
+                        <td class='docblock short'>
+                             <p>An iterator for windowing events.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Frame.html'
+                               title='lux::prelude::Frame'>Frame</a></td>
+                        <td class='docblock short'>
+                             <p>A frame is a render target that can be drawn on.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Window.html'
+                               title='lux::prelude::Window'>Window</a></td>
+                        <td class='docblock short'>
+                             <p>A 1 to 1 correlation with a window shown on your desktop.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.LuxError.html'
+                               title='lux::prelude::LuxError'>LuxError</a></td>
+                        <td class='docblock short'>
+                             <p>Any error that Lux might run into.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Canvas.html'
+                               title='lux::prelude::Canvas'>Canvas</a></td>
+                        <td class='docblock short'>
+                             <p>Canvas is the main trait for drawing in Lux.  It supports all operations
+that paint to the screen or to a buffer.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Color.html'
+                               title='lux::prelude::Color'>Color</a></td>
+                        <td class='docblock short'>
+                             <p>A <code>Color</code> is any object that can be converted to a length-4 array of f32s.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Colored.html'
+                               title='lux::prelude::Colored'>Colored</a></td>
+                        <td class='docblock short'>
+                             <p>A trait representing objects that can be colored with
+seperate fill colors and stroke colors.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Interactive.html'
+                               title='lux::prelude::Interactive'>Interactive</a></td>
+                        <td class='docblock short'>
+                             <p>A trait for objects that are interactive to the user.
+The only known impelementation for this trait is the glutin Window.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.IntoSprite.html'
+                               title='lux::prelude::IntoSprite'>IntoSprite</a></td>
+                        <td class='docblock short'>
+                             <p>Implemented by any object that can be converted into a Sprite.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.TextureLoader.html'
+                               title='lux::prelude::TextureLoader'>TextureLoader</a></td>
+                        <td class='docblock short'>
+                             <p>TextureLoader is implemented on any object that can load textures.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Transform.html'
+                               title='lux::prelude::Transform'>Transform</a></td>
+                        <td class='docblock short'>
+                             <p>A trait for objects that can be &quot;transformed&quot;.  Transformations
+include scaling, translation, shearing, rotating, and general
+purpose matrix application.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.hsv.html'
+                               title='lux::prelude::hsv'>hsv</a></td>
+                        <td class='docblock short'>
+                             <p>Constructs a color from Hue, Saturation and Value components.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.hsva.html'
+                               title='lux::prelude::hsva'>hsva</a></td>
+                        <td class='docblock short'>
+                             <p>Same as <code>hsv</code> but with an alpha component.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.rgb.html'
+                               title='lux::prelude::rgb'>rgb</a></td>
+                        <td class='docblock short'>
+                             <p>Constructs a color from R, G, and B components.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.rgba.html'
+                               title='lux::prelude::rgba'>rgba</a></td>
+                        <td class='docblock short'>
+                             <p>Constructs a color from R, G, B, and A components.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LuxResult.html'
+                               title='lux::prelude::LuxResult'>LuxResult</a></td>
+                        <td class='docblock short'>
+                             <p>A result returning either a value or a lux-generated error.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

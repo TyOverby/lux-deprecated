@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `CGDataProvider` struct in crate `core_graphics`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, CGDataProvider">
+
+    <title>core_graphics::data_provider::CGDataProvider - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>core_graphics</a>::<wbr><a href='index.html'>data_provider</a></p><script>window.sidebarCurrent = {name: 'CGDataProvider', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>core_graphics</a>::<wbr><a href='index.html'>data_provider</a>::<wbr><a class='struct' href=''>CGDataProvider</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-164' class='srclink' href='../../src/core_graphics/data_provider.rs.html#33-35' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct CGDataProvider {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a></code></h3><div class='impl-items'><h4 id='method.from_buffer' class='method'><code>fn <a href='#method.from_buffer' class='fnname'>from_buffer</a>(buffer: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../../core_foundation/base/trait.TCFType.html' title='core_foundation::base::TCFType'>TCFType</a>&lt;<a class='type' href='../../core_graphics/data_provider/type.CGDataProviderRef.html' title='core_graphics::data_provider::CGDataProviderRef'>CGDataProviderRef</a>&gt; for <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a></code></h3><div class='impl-items'><h4 id='method.as_concrete_TypeRef' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.as_concrete_TypeRef' class='fnname'>as_concrete_TypeRef</a>(&amp;self) -&gt; <a class='type' href='../../core_graphics/data_provider/type.CGDataProviderRef.html' title='core_graphics::data_provider::CGDataProviderRef'>CGDataProviderRef</a></code></h4>
+<h4 id='method.wrap_under_get_rule' class='method'><code>unsafe fn <a href='../../core_foundation/base/trait.TCFType.html#method.wrap_under_get_rule' class='fnname'>wrap_under_get_rule</a>(reference: <a class='type' href='../../core_graphics/data_provider/type.CGDataProviderRef.html' title='core_graphics::data_provider::CGDataProviderRef'>CGDataProviderRef</a>) -&gt; <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a></code></h4>
+<h4 id='method.as_CFTypeRef' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.as_CFTypeRef' class='fnname'>as_CFTypeRef</a>(&amp;self) -&gt; <a class='type' href='../../core_foundation_sys/base/type.CFTypeRef.html' title='core_foundation_sys::base::CFTypeRef'>CFTypeRef</a></code></h4>
+<h4 id='method.wrap_under_create_rule' class='method'><code>unsafe fn <a href='../../core_foundation/base/trait.TCFType.html#method.wrap_under_create_rule' class='fnname'>wrap_under_create_rule</a>(obj: <a class='type' href='../../core_graphics/data_provider/type.CGDataProviderRef.html' title='core_graphics::data_provider::CGDataProviderRef'>CGDataProviderRef</a>) -&gt; <a class='struct' href='../../core_graphics/data_provider/struct.CGDataProvider.html' title='core_graphics::data_provider::CGDataProvider'>CGDataProvider</a></code></h4>
+<h4 id='method.type_id' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.type_id' class='fnname'>type_id</a>() -&gt; <a class='type' href='../../core_foundation_sys/base/type.CFTypeID.html' title='core_foundation_sys::base::CFTypeID'>CFTypeID</a></code></h4>
+<h4 id='method.as_CFType' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.as_CFType' class='fnname'>as_CFType</a>(&amp;self) -&gt; <a class='struct' href='../../core_foundation/base/struct.CFType.html' title='core_foundation::base::CFType'>CFType</a></code></h4>
+<h4 id='method.retain_count' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.retain_count' class='fnname'>retain_count</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a></code></h4>
+<h4 id='method.type_of' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.type_of' class='fnname'>type_of</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
+<h4 id='method.show' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.show' class='fnname'>show</a>(&amp;self)</code></h4>
+<h4 id='method.instance_of' class='method'><code>fn <a href='../../core_foundation/base/trait.TCFType.html#method.instance_of' class='fnname'>instance_of</a>&lt;OtherConcreteTypeRef, OtherCFType&gt;(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a> <span class='where'>where OtherCFType: <a class='trait' href='../../core_foundation/base/trait.TCFType.html' title='core_foundation::base::TCFType'>TCFType</a>&lt;OtherConcreteTypeRef&gt;</span></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "core_graphics";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

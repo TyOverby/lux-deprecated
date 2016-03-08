@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['shared_library'] = [];implementors['wayland_client'] = [];implementors['tempfile'] = [];implementors['wayland_window'] = [];implementors['wayland_kbd'] = [];implementors['glutin'] = [];
+implementors['libc'] = [];implementors['gleam'] = [];implementors['shared_library'] = [];implementors['enum_primitive'] = [];implementors['glium'] = [];implementors['lux'] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

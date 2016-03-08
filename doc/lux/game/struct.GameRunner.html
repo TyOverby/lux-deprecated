@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `GameRunner` struct in crate `lux`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, GameRunner">
+
+    <title>lux::game::GameRunner - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>lux</a>::<wbr><a href='index.html'>game</a></p><script>window.sidebarCurrent = {name: 'GameRunner', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>lux</a>::<wbr><a href='index.html'>game</a>::<wbr><a class='struct' href=''>GameRunner</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2106' class='srclink' href='../../src/lux/private/game.rs.html#244-256' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct GameRunner&lt;G: <a class='trait' href='../../lux/game/trait.Game.html' title='lux::game::Game'>Game</a>&gt; {
+    pub window: <a class='struct' href='../../lux/window/struct.Window.html' title='lux::window::Window'>Window</a>,
+    pub game: G,
+    // some fields omitted
+}</pre><div class='docblock'><p>A struct that wraps a <code>Game</code> and a <code>Window</code> and implementes a game loop.</p>
+</div><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.window'><code>window</code></td><td><div class='docblock'><p>The window being used to run the game.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.game'><code>game</code></td><td><div class='docblock'><p>The wrapped game.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;G: <a class='trait' href='../../lux/game/trait.Game.html' title='lux::game::Game'>Game</a>&gt; <a class='struct' href='../../lux/game/struct.GameRunner.html' title='lux::game::GameRunner'>GameRunner</a>&lt;G&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(game: G) -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='struct' href='../../lux/game/struct.GameRunner.html' title='lux::game::GameRunner'>GameRunner</a>&lt;G&gt;&gt;</code></h4>
+<div class='docblock'><p>Constructs a new GameRunner wrapping a game.</p>
+
+<p>Attempts to build a window as well.</p>
+</div><h4 id='method.step' class='method'><code>fn <a href='#method.step' class='fnname'>step</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<div class='docblock'><p>Moves the game forward one &quot;step&quot;.</p>
+
+<p>A &quot;step&quot; has two main phases</p>
+
+<ul>
+<li>Update Phase: The Games <code>update()</code> function is called any number of times (including 0).</li>
+<li>Render Phase: The Games <code>render()</code> function is called exactly once.</li>
+</ul>
+
+<p>The game runner keeps track of lag manually, so <code>update()</code> might be called more than once
+per step.  If you are calling <code>step</code> manually and you stop the game (for example, to pause
+the game), you must call <code>reset_lag</code> so that <code>step</code> doesn&#39;t think that the game lagged for
+a very long time.</p>
+</div><h4 id='method.run_until_end' class='method'><code>fn <a href='#method.run_until_end' class='fnname'>run_until_end</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<div class='docblock'><p>Runs the game until the game is terminated.</p>
+
+<p>The game loop is fairly complicated but is explained as the final example
+in this blog post: <a href="http://gameprogrammingpatterns.com/game-loop.html">http://gameprogrammingpatterns.com/game-loop.html</a></p>
+
+<h2 id='main-features' class='section-header'><a href='#main-features'>Main features</a></h2>
+<ol>
+<li>All updates happen in discrete time steps.</li>
+<li>Multiple updates can happen sequentially in order to handle lag and
+get back on step.</li>
+<li>Multiple renders can happen sequentially if the computer is too fast.
+Renders will keep occuring until enough time has built up to trigger
+another update.</li>
+<li>The amount of &quot;lag&quot; time is passed in to the render function so that
+the user can accomodate for lag.</li>
+</ol>
+</div><h4 id='method.reset_lag' class='method'><code>fn <a href='#method.reset_lag' class='fnname'>reset_lag</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Resets the stored lag.</p>
+
+<p>This function should only be called when resuming calls to <code>step</code>
+after not calling it regularly.</p>
+</div><h4 id='method.do_load' class='method'><code>fn <a href='#method.do_load' class='fnname'>do_load</a>(&amp;mut self) -&gt; <a class='type' href='../../lux/prelude/type.LuxResult.html' title='lux::prelude::LuxResult'>LuxResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<div class='docblock'><p>Execute the game loading closures that would be
+generated by <code>Game::load</code>.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "lux";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

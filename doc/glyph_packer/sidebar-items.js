@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Rect",""],["SkylinePacker",""]],"trait":[["Buffer2d",""],["GrowingPacker",""],["Packer",""],["ResizeBuffer",""]]});

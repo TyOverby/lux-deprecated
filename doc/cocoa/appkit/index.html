@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `appkit` mod in crate `cocoa`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, appkit">
+
+    <title>cocoa::appkit - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>cocoa</a></p><script>window.sidebarCurrent = {name: 'appkit', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>cocoa</a>::<wbr><a class='mod' href=''>appkit</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-8' class='srclink' href='../../src/cocoa/appkit.rs.html#10-2447' title='goto source code'>[src]</a></span></h1>
+<h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSApplicationActivationPolicy.html' title='cocoa::appkit::NSApplicationActivationPolicy'>NSApplicationActivationPolicy</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSApplicationActivationOptions.html' title='cocoa::appkit::NSApplicationActivationOptions'>NSApplicationActivationOptions</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSWindowMask.html' title='cocoa::appkit::NSWindowMask'>NSWindowMask</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSBackingStoreType.html' title='cocoa::appkit::NSBackingStoreType'>NSBackingStoreType</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSOpenGLPixelFormatAttribute.html' title='cocoa::appkit::NSOpenGLPixelFormatAttribute'>NSOpenGLPixelFormatAttribute</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSOpenGLPFAOpenGLProfiles.html' title='cocoa::appkit::NSOpenGLPFAOpenGLProfiles'>NSOpenGLPFAOpenGLProfiles</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../cocoa/appkit/enum.NSEventType.html' title='cocoa::appkit::NSEventType'>NSEventType</a>::*;</code></td></tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CGPoint.html'
+                               title='cocoa::appkit::CGPoint'>CGPoint</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSAlignmentOptions.html'
+                               title='cocoa::appkit::NSAlignmentOptions'>NSAlignmentOptions</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSEventMask.html'
+                               title='cocoa::appkit::NSEventMask'>NSEventMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSEventModifierFlags.html'
+                               title='cocoa::appkit::NSEventModifierFlags'>NSEventModifierFlags</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSEventPhase.html'
+                               title='cocoa::appkit::NSEventPhase'>NSEventPhase</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSEventSwipeTrackingOptions.html'
+                               title='cocoa::appkit::NSEventSwipeTrackingOptions'>NSEventSwipeTrackingOptions</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSTouchPhase.html'
+                               title='cocoa::appkit::NSTouchPhase'>NSTouchPhase</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSWindowCollectionBehavior.html'
+                               title='cocoa::appkit::NSWindowCollectionBehavior'>NSWindowCollectionBehavior</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSWindowOcclusionState.html'
+                               title='cocoa::appkit::NSWindowOcclusionState'>NSWindowOcclusionState</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NSWindowOrderingMode.html'
+                               title='cocoa::appkit::NSWindowOrderingMode'>NSWindowOrderingMode</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSApplicationActivationOptions.html'
+                               title='cocoa::appkit::NSApplicationActivationOptions'>NSApplicationActivationOptions</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSApplicationActivationPolicy.html'
+                               title='cocoa::appkit::NSApplicationActivationPolicy'>NSApplicationActivationPolicy</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSApplicationTerminateReply.html'
+                               title='cocoa::appkit::NSApplicationTerminateReply'>NSApplicationTerminateReply</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSBackingStoreType.html'
+                               title='cocoa::appkit::NSBackingStoreType'>NSBackingStoreType</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSEventButtonMask.html'
+                               title='cocoa::appkit::NSEventButtonMask'>NSEventButtonMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSEventGestureAxis.html'
+                               title='cocoa::appkit::NSEventGestureAxis'>NSEventGestureAxis</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSEventSubtype.html'
+                               title='cocoa::appkit::NSEventSubtype'>NSEventSubtype</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSEventType.html'
+                               title='cocoa::appkit::NSEventType'>NSEventType</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSOpenGLContextParameter.html'
+                               title='cocoa::appkit::NSOpenGLContextParameter'>NSOpenGLContextParameter</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSOpenGLPFAOpenGLProfiles.html'
+                               title='cocoa::appkit::NSOpenGLPFAOpenGLProfiles'>NSOpenGLPFAOpenGLProfiles</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSOpenGLPixelFormatAttribute.html'
+                               title='cocoa::appkit::NSOpenGLPixelFormatAttribute'>NSOpenGLPixelFormatAttribute</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSPointingDeviceType.html'
+                               title='cocoa::appkit::NSPointingDeviceType'>NSPointingDeviceType</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSWindowButton.html'
+                               title='cocoa::appkit::NSWindowButton'>NSWindowButton</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSWindowMask.html'
+                               title='cocoa::appkit::NSWindowMask'>NSWindowMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.NSWindowTitleVisibility.html'
+                               title='cocoa::appkit::NSWindowTitleVisibility'>NSWindowTitleVisibility</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignAllEdgesInward.html'
+                               title='cocoa::appkit::NSAlignAllEdgesInward'>NSAlignAllEdgesInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignAllEdgesNearest.html'
+                               title='cocoa::appkit::NSAlignAllEdgesNearest'>NSAlignAllEdgesNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignAllEdgesOutward.html'
+                               title='cocoa::appkit::NSAlignAllEdgesOutward'>NSAlignAllEdgesOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignHeightInward.html'
+                               title='cocoa::appkit::NSAlignHeightInward'>NSAlignHeightInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignHeightNearest.html'
+                               title='cocoa::appkit::NSAlignHeightNearest'>NSAlignHeightNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignHeightOutward.html'
+                               title='cocoa::appkit::NSAlignHeightOutward'>NSAlignHeightOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMaxXInward.html'
+                               title='cocoa::appkit::NSAlignMaxXInward'>NSAlignMaxXInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMaxXNearest.html'
+                               title='cocoa::appkit::NSAlignMaxXNearest'>NSAlignMaxXNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMaxXOutward.html'
+                               title='cocoa::appkit::NSAlignMaxXOutward'>NSAlignMaxXOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMaxYInward.html'
+                               title='cocoa::appkit::NSAlignMaxYInward'>NSAlignMaxYInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMaxYNearest.html'
+                               title='cocoa::appkit::NSAlignMaxYNearest'>NSAlignMaxYNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMaxYOutward.html'
+                               title='cocoa::appkit::NSAlignMaxYOutward'>NSAlignMaxYOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMinXInward.html'
+                               title='cocoa::appkit::NSAlignMinXInward'>NSAlignMinXInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMinXNearest.html'
+                               title='cocoa::appkit::NSAlignMinXNearest'>NSAlignMinXNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMinXOutward.html'
+                               title='cocoa::appkit::NSAlignMinXOutward'>NSAlignMinXOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMinYInward.html'
+                               title='cocoa::appkit::NSAlignMinYInward'>NSAlignMinYInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMinYNearest.html'
+                               title='cocoa::appkit::NSAlignMinYNearest'>NSAlignMinYNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignMinYOutward.html'
+                               title='cocoa::appkit::NSAlignMinYOutward'>NSAlignMinYOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignRectFlipped.html'
+                               title='cocoa::appkit::NSAlignRectFlipped'>NSAlignRectFlipped</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignWidthInward.html'
+                               title='cocoa::appkit::NSAlignWidthInward'>NSAlignWidthInward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignWidthNearest.html'
+                               title='cocoa::appkit::NSAlignWidthNearest'>NSAlignWidthNearest</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlignWidthOutward.html'
+                               title='cocoa::appkit::NSAlignWidthOutward'>NSAlignWidthOutward</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlphaShiftKeyMask.html'
+                               title='cocoa::appkit::NSAlphaShiftKeyMask'>NSAlphaShiftKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAlternateKeyMask.html'
+                               title='cocoa::appkit::NSAlternateKeyMask'>NSAlternateKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAnyEventMask.html'
+                               title='cocoa::appkit::NSAnyEventMask'>NSAnyEventMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitDefinedMask.html'
+                               title='cocoa::appkit::NSAppKitDefinedMask'>NSAppKitDefinedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_0.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_0'>NSAppKitVersionNumber10_0</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_1.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_1'>NSAppKitVersionNumber10_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_2.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_2'>NSAppKitVersionNumber10_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_2_3.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_2_3'>NSAppKitVersionNumber10_2_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_3.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_3'>NSAppKitVersionNumber10_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_3_2.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_3_2'>NSAppKitVersionNumber10_3_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_3_3.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_3_3'>NSAppKitVersionNumber10_3_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_3_5.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_3_5'>NSAppKitVersionNumber10_3_5</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_3_7.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_3_7'>NSAppKitVersionNumber10_3_7</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_3_9.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_3_9'>NSAppKitVersionNumber10_3_9</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_4.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_4'>NSAppKitVersionNumber10_4</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_4_1.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_4_1'>NSAppKitVersionNumber10_4_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_4_3.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_4_3'>NSAppKitVersionNumber10_4_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_4_4.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_4_4'>NSAppKitVersionNumber10_4_4</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_4_7.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_4_7'>NSAppKitVersionNumber10_4_7</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_5.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_5'>NSAppKitVersionNumber10_5</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_5_2.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_5_2'>NSAppKitVersionNumber10_5_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_5_3.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_5_3'>NSAppKitVersionNumber10_5_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_6.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_6'>NSAppKitVersionNumber10_6</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_7.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_7'>NSAppKitVersionNumber10_7</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_7_2.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_7_2'>NSAppKitVersionNumber10_7_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_7_3.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_7_3'>NSAppKitVersionNumber10_7_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_7_4.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_7_4'>NSAppKitVersionNumber10_7_4</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_8.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_8'>NSAppKitVersionNumber10_8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSAppKitVersionNumber10_9.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber10_9'>NSAppKitVersionNumber10_9</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSApplicationDefinedMask.html'
+                               title='cocoa::appkit::NSApplicationDefinedMask'>NSApplicationDefinedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSBeginFunctionKey.html'
+                               title='cocoa::appkit::NSBeginFunctionKey'>NSBeginFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSBreakFunctionKey.html'
+                               title='cocoa::appkit::NSBreakFunctionKey'>NSBreakFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSClearDisplayFunctionKey.html'
+                               title='cocoa::appkit::NSClearDisplayFunctionKey'>NSClearDisplayFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSClearLineFunctionKey.html'
+                               title='cocoa::appkit::NSClearLineFunctionKey'>NSClearLineFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSCommandKeyMask.html'
+                               title='cocoa::appkit::NSCommandKeyMask'>NSCommandKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSControlKeyMask.html'
+                               title='cocoa::appkit::NSControlKeyMask'>NSControlKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSCursorUpdateMask.html'
+                               title='cocoa::appkit::NSCursorUpdateMask'>NSCursorUpdateMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSDeleteCharFunctionKey.html'
+                               title='cocoa::appkit::NSDeleteCharFunctionKey'>NSDeleteCharFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSDeleteFunctionKey.html'
+                               title='cocoa::appkit::NSDeleteFunctionKey'>NSDeleteFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSDeleteLineFunctionKey.html'
+                               title='cocoa::appkit::NSDeleteLineFunctionKey'>NSDeleteLineFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSDeviceIndependentModifierFlagsMask.html'
+                               title='cocoa::appkit::NSDeviceIndependentModifierFlagsMask'>NSDeviceIndependentModifierFlagsMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSDownArrowFunctionKey.html'
+                               title='cocoa::appkit::NSDownArrowFunctionKey'>NSDownArrowFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEndFunctionKey.html'
+                               title='cocoa::appkit::NSEndFunctionKey'>NSEndFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventMaskBeginGesture.html'
+                               title='cocoa::appkit::NSEventMaskBeginGesture'>NSEventMaskBeginGesture</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventMaskEndGesture.html'
+                               title='cocoa::appkit::NSEventMaskEndGesture'>NSEventMaskEndGesture</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventMaskGesture.html'
+                               title='cocoa::appkit::NSEventMaskGesture'>NSEventMaskGesture</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventMaskPressure.html'
+                               title='cocoa::appkit::NSEventMaskPressure'>NSEventMaskPressure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventMaskRotate.html'
+                               title='cocoa::appkit::NSEventMaskRotate'>NSEventMaskRotate</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventMaskSwipe.html'
+                               title='cocoa::appkit::NSEventMaskSwipe'>NSEventMaskSwipe</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseBegan.html'
+                               title='cocoa::appkit::NSEventPhaseBegan'>NSEventPhaseBegan</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseCancelled.html'
+                               title='cocoa::appkit::NSEventPhaseCancelled'>NSEventPhaseCancelled</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseChanged.html'
+                               title='cocoa::appkit::NSEventPhaseChanged'>NSEventPhaseChanged</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseEnded.html'
+                               title='cocoa::appkit::NSEventPhaseEnded'>NSEventPhaseEnded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseMayBegin.html'
+                               title='cocoa::appkit::NSEventPhaseMayBegin'>NSEventPhaseMayBegin</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseNone.html'
+                               title='cocoa::appkit::NSEventPhaseNone'>NSEventPhaseNone</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventPhaseStationary.html'
+                               title='cocoa::appkit::NSEventPhaseStationary'>NSEventPhaseStationary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventSwipeTrackingClampGestureAmount.html'
+                               title='cocoa::appkit::NSEventSwipeTrackingClampGestureAmount'>NSEventSwipeTrackingClampGestureAmount</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSEventSwipeTrackingLockDirection.html'
+                               title='cocoa::appkit::NSEventSwipeTrackingLockDirection'>NSEventSwipeTrackingLockDirection</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSExecuteFunctionKey.html'
+                               title='cocoa::appkit::NSExecuteFunctionKey'>NSExecuteFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF10FunctionKey.html'
+                               title='cocoa::appkit::NSF10FunctionKey'>NSF10FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF11FunctionKey.html'
+                               title='cocoa::appkit::NSF11FunctionKey'>NSF11FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF12FunctionKey.html'
+                               title='cocoa::appkit::NSF12FunctionKey'>NSF12FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF13FunctionKey.html'
+                               title='cocoa::appkit::NSF13FunctionKey'>NSF13FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF14FunctionKey.html'
+                               title='cocoa::appkit::NSF14FunctionKey'>NSF14FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF15FunctionKey.html'
+                               title='cocoa::appkit::NSF15FunctionKey'>NSF15FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF16FunctionKey.html'
+                               title='cocoa::appkit::NSF16FunctionKey'>NSF16FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF17FunctionKey.html'
+                               title='cocoa::appkit::NSF17FunctionKey'>NSF17FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF18FunctionKey.html'
+                               title='cocoa::appkit::NSF18FunctionKey'>NSF18FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF19FunctionKey.html'
+                               title='cocoa::appkit::NSF19FunctionKey'>NSF19FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF1FunctionKey.html'
+                               title='cocoa::appkit::NSF1FunctionKey'>NSF1FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF20FunctionKey.html'
+                               title='cocoa::appkit::NSF20FunctionKey'>NSF20FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF21FunctionKey.html'
+                               title='cocoa::appkit::NSF21FunctionKey'>NSF21FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF22FunctionKey.html'
+                               title='cocoa::appkit::NSF22FunctionKey'>NSF22FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF23FunctionKey.html'
+                               title='cocoa::appkit::NSF23FunctionKey'>NSF23FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF24FunctionKey.html'
+                               title='cocoa::appkit::NSF24FunctionKey'>NSF24FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF25FunctionKey.html'
+                               title='cocoa::appkit::NSF25FunctionKey'>NSF25FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF26FunctionKey.html'
+                               title='cocoa::appkit::NSF26FunctionKey'>NSF26FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF27FunctionKey.html'
+                               title='cocoa::appkit::NSF27FunctionKey'>NSF27FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF28FunctionKey.html'
+                               title='cocoa::appkit::NSF28FunctionKey'>NSF28FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF29FunctionKey.html'
+                               title='cocoa::appkit::NSF29FunctionKey'>NSF29FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF2FunctionKey.html'
+                               title='cocoa::appkit::NSF2FunctionKey'>NSF2FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF30FunctionKey.html'
+                               title='cocoa::appkit::NSF30FunctionKey'>NSF30FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF31FunctionKey.html'
+                               title='cocoa::appkit::NSF31FunctionKey'>NSF31FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF32FunctionKey.html'
+                               title='cocoa::appkit::NSF32FunctionKey'>NSF32FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF33FunctionKey.html'
+                               title='cocoa::appkit::NSF33FunctionKey'>NSF33FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF34FunctionKey.html'
+                               title='cocoa::appkit::NSF34FunctionKey'>NSF34FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF35FunctionKey.html'
+                               title='cocoa::appkit::NSF35FunctionKey'>NSF35FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF3FunctionKey.html'
+                               title='cocoa::appkit::NSF3FunctionKey'>NSF3FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF4FunctionKey.html'
+                               title='cocoa::appkit::NSF4FunctionKey'>NSF4FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF5FunctionKey.html'
+                               title='cocoa::appkit::NSF5FunctionKey'>NSF5FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF6FunctionKey.html'
+                               title='cocoa::appkit::NSF6FunctionKey'>NSF6FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF7FunctionKey.html'
+                               title='cocoa::appkit::NSF7FunctionKey'>NSF7FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF8FunctionKey.html'
+                               title='cocoa::appkit::NSF8FunctionKey'>NSF8FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSF9FunctionKey.html'
+                               title='cocoa::appkit::NSF9FunctionKey'>NSF9FunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSFindFunctionKey.html'
+                               title='cocoa::appkit::NSFindFunctionKey'>NSFindFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSFlagsChangedMask.html'
+                               title='cocoa::appkit::NSFlagsChangedMask'>NSFlagsChangedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSFunctionKeyMask.html'
+                               title='cocoa::appkit::NSFunctionKeyMask'>NSFunctionKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSHelpFunctionKey.html'
+                               title='cocoa::appkit::NSHelpFunctionKey'>NSHelpFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSHelpKeyMask.html'
+                               title='cocoa::appkit::NSHelpKeyMask'>NSHelpKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSHomeFunctionKey.html'
+                               title='cocoa::appkit::NSHomeFunctionKey'>NSHomeFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSInsertCharFunctionKey.html'
+                               title='cocoa::appkit::NSInsertCharFunctionKey'>NSInsertCharFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSInsertFunctionKey.html'
+                               title='cocoa::appkit::NSInsertFunctionKey'>NSInsertFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSInsertLineFunctionKey.html'
+                               title='cocoa::appkit::NSInsertLineFunctionKey'>NSInsertLineFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSKeyDownMask.html'
+                               title='cocoa::appkit::NSKeyDownMask'>NSKeyDownMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSKeyUpMask.html'
+                               title='cocoa::appkit::NSKeyUpMask'>NSKeyUpMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSLeftArrowFunctionKey.html'
+                               title='cocoa::appkit::NSLeftArrowFunctionKey'>NSLeftArrowFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSLeftMouseDownMask.html'
+                               title='cocoa::appkit::NSLeftMouseDownMask'>NSLeftMouseDownMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSLeftMouseDraggedMask.html'
+                               title='cocoa::appkit::NSLeftMouseDraggedMask'>NSLeftMouseDraggedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSLeftMouseUpMask.html'
+                               title='cocoa::appkit::NSLeftMouseUpMask'>NSLeftMouseUpMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSMenuFunctionKey.html'
+                               title='cocoa::appkit::NSMenuFunctionKey'>NSMenuFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSModeSwitchFunctionKey.html'
+                               title='cocoa::appkit::NSModeSwitchFunctionKey'>NSModeSwitchFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSMouseEnteredMask.html'
+                               title='cocoa::appkit::NSMouseEnteredMask'>NSMouseEnteredMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSMouseExitedMask.html'
+                               title='cocoa::appkit::NSMouseExitedMask'>NSMouseExitedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSMouseMovedMask.html'
+                               title='cocoa::appkit::NSMouseMovedMask'>NSMouseMovedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSNextFunctionKey.html'
+                               title='cocoa::appkit::NSNextFunctionKey'>NSNextFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSNumericPadKeyMask.html'
+                               title='cocoa::appkit::NSNumericPadKeyMask'>NSNumericPadKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSOtherMouseDownMask.html'
+                               title='cocoa::appkit::NSOtherMouseDownMask'>NSOtherMouseDownMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSOtherMouseDraggedMask.html'
+                               title='cocoa::appkit::NSOtherMouseDraggedMask'>NSOtherMouseDraggedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSOtherMouseUpMask.html'
+                               title='cocoa::appkit::NSOtherMouseUpMask'>NSOtherMouseUpMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPageDownFunctionKey.html'
+                               title='cocoa::appkit::NSPageDownFunctionKey'>NSPageDownFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPageUpFunctionKey.html'
+                               title='cocoa::appkit::NSPageUpFunctionKey'>NSPageUpFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPauseFunctionKey.html'
+                               title='cocoa::appkit::NSPauseFunctionKey'>NSPauseFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPeriodicMask.html'
+                               title='cocoa::appkit::NSPeriodicMask'>NSPeriodicMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPrevFunctionKey.html'
+                               title='cocoa::appkit::NSPrevFunctionKey'>NSPrevFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPrintFunctionKey.html'
+                               title='cocoa::appkit::NSPrintFunctionKey'>NSPrintFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSPrintScreenFunctionKey.html'
+                               title='cocoa::appkit::NSPrintScreenFunctionKey'>NSPrintScreenFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSRedoFunctionKey.html'
+                               title='cocoa::appkit::NSRedoFunctionKey'>NSRedoFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSResetFunctionKey.html'
+                               title='cocoa::appkit::NSResetFunctionKey'>NSResetFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSRightArrowFunctionKey.html'
+                               title='cocoa::appkit::NSRightArrowFunctionKey'>NSRightArrowFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSRightMouseDownMask.html'
+                               title='cocoa::appkit::NSRightMouseDownMask'>NSRightMouseDownMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSRightMouseDraggedMask.html'
+                               title='cocoa::appkit::NSRightMouseDraggedMask'>NSRightMouseDraggedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSRightMouseUpMask.html'
+                               title='cocoa::appkit::NSRightMouseUpMask'>NSRightMouseUpMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSScrollLockFunctionKey.html'
+                               title='cocoa::appkit::NSScrollLockFunctionKey'>NSScrollLockFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSScrollWheelMask.html'
+                               title='cocoa::appkit::NSScrollWheelMask'>NSScrollWheelMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSSelectFunctionKey.html'
+                               title='cocoa::appkit::NSSelectFunctionKey'>NSSelectFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSShiftKeyMask.html'
+                               title='cocoa::appkit::NSShiftKeyMask'>NSShiftKeyMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSSquareStatusItemLength.html'
+                               title='cocoa::appkit::NSSquareStatusItemLength'>NSSquareStatusItemLength</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSStopFunctionKey.html'
+                               title='cocoa::appkit::NSStopFunctionKey'>NSStopFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSSysReqFunctionKey.html'
+                               title='cocoa::appkit::NSSysReqFunctionKey'>NSSysReqFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSSystemDefinedMask.html'
+                               title='cocoa::appkit::NSSystemDefinedMask'>NSSystemDefinedMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSSystemFunctionKey.html'
+                               title='cocoa::appkit::NSSystemFunctionKey'>NSSystemFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTabletPointMask.html'
+                               title='cocoa::appkit::NSTabletPointMask'>NSTabletPointMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTabletProximityMask.html'
+                               title='cocoa::appkit::NSTabletProximityMask'>NSTabletProximityMask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseAny.html'
+                               title='cocoa::appkit::NSTouchPhaseAny'>NSTouchPhaseAny</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseBegan.html'
+                               title='cocoa::appkit::NSTouchPhaseBegan'>NSTouchPhaseBegan</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseCancelled.html'
+                               title='cocoa::appkit::NSTouchPhaseCancelled'>NSTouchPhaseCancelled</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseEnded.html'
+                               title='cocoa::appkit::NSTouchPhaseEnded'>NSTouchPhaseEnded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseMoved.html'
+                               title='cocoa::appkit::NSTouchPhaseMoved'>NSTouchPhaseMoved</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseStationary.html'
+                               title='cocoa::appkit::NSTouchPhaseStationary'>NSTouchPhaseStationary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSTouchPhaseTouching.html'
+                               title='cocoa::appkit::NSTouchPhaseTouching'>NSTouchPhaseTouching</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSUndoFunctionKey.html'
+                               title='cocoa::appkit::NSUndoFunctionKey'>NSUndoFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSUpArrowFunctionKey.html'
+                               title='cocoa::appkit::NSUpArrowFunctionKey'>NSUpArrowFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSUserFunctionKey.html'
+                               title='cocoa::appkit::NSUserFunctionKey'>NSUserFunctionKey</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSVariableStatusItemLength.html'
+                               title='cocoa::appkit::NSVariableStatusItemLength'>NSVariableStatusItemLength</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowAbove.html'
+                               title='cocoa::appkit::NSWindowAbove'>NSWindowAbove</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowBelow.html'
+                               title='cocoa::appkit::NSWindowBelow'>NSWindowBelow</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorCanJoinAllSpaces.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorCanJoinAllSpaces'>NSWindowCollectionBehaviorCanJoinAllSpaces</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorDefault.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorDefault'>NSWindowCollectionBehaviorDefault</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorFullScreenAuxiliary.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorFullScreenAuxiliary'>NSWindowCollectionBehaviorFullScreenAuxiliary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorFullScreenPrimary.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorFullScreenPrimary'>NSWindowCollectionBehaviorFullScreenPrimary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorIgnoresCycle.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorIgnoresCycle'>NSWindowCollectionBehaviorIgnoresCycle</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorManaged.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorManaged'>NSWindowCollectionBehaviorManaged</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorMoveToActiveSpace.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorMoveToActiveSpace'>NSWindowCollectionBehaviorMoveToActiveSpace</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorParticipatesInCycle.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorParticipatesInCycle'>NSWindowCollectionBehaviorParticipatesInCycle</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorStationary.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorStationary'>NSWindowCollectionBehaviorStationary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowCollectionBehaviorTransient.html'
+                               title='cocoa::appkit::NSWindowCollectionBehaviorTransient'>NSWindowCollectionBehaviorTransient</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowOcclusionStateVisible.html'
+                               title='cocoa::appkit::NSWindowOcclusionStateVisible'>NSWindowOcclusionStateVisible</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NSWindowOut.html'
+                               title='cocoa::appkit::NSWindowOut'>NSWindowOut</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='statics' class='section-header'><a href="#statics">Statics</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.NSAppKitVersionNumber.html'
+                               title='cocoa::appkit::NSAppKitVersionNumber'>NSAppKitVersionNumber</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.NSMainMenuWindowLevel.html'
+                               title='cocoa::appkit::NSMainMenuWindowLevel'>NSMainMenuWindowLevel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSApplication.html'
+                               title='cocoa::appkit::NSApplication'>NSApplication</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSButton.html'
+                               title='cocoa::appkit::NSButton'>NSButton</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSEvent.html'
+                               title='cocoa::appkit::NSEvent'>NSEvent</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSImage.html'
+                               title='cocoa::appkit::NSImage'>NSImage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSMenu.html'
+                               title='cocoa::appkit::NSMenu'>NSMenu</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSMenuItem.html'
+                               title='cocoa::appkit::NSMenuItem'>NSMenuItem</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSOpenGLContext.html'
+                               title='cocoa::appkit::NSOpenGLContext'>NSOpenGLContext</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSOpenGLPixelFormat.html'
+                               title='cocoa::appkit::NSOpenGLPixelFormat'>NSOpenGLPixelFormat</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSOpenGLView.html'
+                               title='cocoa::appkit::NSOpenGLView'>NSOpenGLView</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSRunningApplication.html'
+                               title='cocoa::appkit::NSRunningApplication'>NSRunningApplication</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSScreen.html'
+                               title='cocoa::appkit::NSScreen'>NSScreen</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSStatusBar.html'
+                               title='cocoa::appkit::NSStatusBar'>NSStatusBar</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSStatusItem.html'
+                               title='cocoa::appkit::NSStatusItem'>NSStatusItem</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSView.html'
+                               title='cocoa::appkit::NSView'>NSView</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.NSWindow.html'
+                               title='cocoa::appkit::NSWindow'>NSWindow</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.NSApp.html'
+                               title='cocoa::appkit::NSApp'>NSApp</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.CGFloat.html'
+                               title='cocoa::appkit::CGFloat'>CGFloat</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.CGLContextObj.html'
+                               title='cocoa::appkit::CGLContextObj'>CGLContextObj</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.GLint.html'
+                               title='cocoa::appkit::GLint'>GLint</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.NSWindowDepth.html'
+                               title='cocoa::appkit::NSWindowDepth'>NSWindowDepth</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "cocoa";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

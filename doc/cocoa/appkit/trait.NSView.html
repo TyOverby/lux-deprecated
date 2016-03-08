@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `NSView` trait in crate `cocoa`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, NSView">
+
+    <title>cocoa::appkit::NSView - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>cocoa</a>::<wbr><a href='index.html'>appkit</a></p><script>window.sidebarCurrent = {name: 'NSView', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>cocoa</a>::<wbr><a href='index.html'>appkit</a>::<wbr><a class='trait' href=''>NSView</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2912' class='srclink' href='../../src/cocoa/appkit.rs.html#1253-1268' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait NSView {
+    unsafe fn <a href='#tymethod.init' class='fnname'>init</a>(self) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>;
+    unsafe fn <a href='#tymethod.initWithFrame_' class='fnname'>initWithFrame_</a>(self, frameRect: <a class='struct' href='../../cocoa/foundation/struct.NSRect.html' title='cocoa::foundation::NSRect'>NSRect</a>) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>;
+    unsafe fn <a href='#tymethod.bounds' class='fnname'>bounds</a>(self) -&gt; <a class='struct' href='../../cocoa/foundation/struct.NSRect.html' title='cocoa::foundation::NSRect'>NSRect</a>;
+    unsafe fn <a href='#tymethod.frame' class='fnname'>frame</a>(self) -&gt; <a class='struct' href='../../cocoa/foundation/struct.NSRect.html' title='cocoa::foundation::NSRect'>NSRect</a>;
+    unsafe fn <a href='#tymethod.display_' class='fnname'>display_</a>(self);
+    unsafe fn <a href='#tymethod.setWantsBestResolutionOpenGLSurface_' class='fnname'>setWantsBestResolutionOpenGLSurface_</a>(self, flag: <a class='type' href='../../cocoa/base/type.BOOL.html' title='cocoa::base::BOOL'>BOOL</a>);
+    unsafe fn <a href='#tymethod.convertPoint_fromView_' class='fnname'>convertPoint_fromView_</a>(self, point: <a class='struct' href='../../cocoa/foundation/struct.NSPoint.html' title='cocoa::foundation::NSPoint'>NSPoint</a>, view: <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>) -&gt; <a class='struct' href='../../cocoa/foundation/struct.NSPoint.html' title='cocoa::foundation::NSPoint'>NSPoint</a>;
+    unsafe fn <a href='#tymethod.addSubview_' class='fnname'>addSubview_</a>(self, view: <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>);
+    unsafe fn <a href='#tymethod.superview' class='fnname'>superview</a>(self) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>;
+    unsafe fn <a href='#tymethod.removeFromSuperview' class='fnname'>removeFromSuperview</a>(self);
+
+    unsafe fn <a href='#method.alloc' class='fnname'>alloc</a>(_: Self) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a> { ... }
+}</pre>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.init' class='method stab '><code>unsafe fn <a href='#tymethod.init' class='fnname'>init</a>(self) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a></code></h3><h3 id='tymethod.initWithFrame_' class='method stab '><code>unsafe fn <a href='#tymethod.initWithFrame_' class='fnname'>initWithFrame_</a>(self, frameRect: <a class='struct' href='../../cocoa/foundation/struct.NSRect.html' title='cocoa::foundation::NSRect'>NSRect</a>) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a></code></h3><h3 id='tymethod.bounds' class='method stab '><code>unsafe fn <a href='#tymethod.bounds' class='fnname'>bounds</a>(self) -&gt; <a class='struct' href='../../cocoa/foundation/struct.NSRect.html' title='cocoa::foundation::NSRect'>NSRect</a></code></h3><h3 id='tymethod.frame' class='method stab '><code>unsafe fn <a href='#tymethod.frame' class='fnname'>frame</a>(self) -&gt; <a class='struct' href='../../cocoa/foundation/struct.NSRect.html' title='cocoa::foundation::NSRect'>NSRect</a></code></h3><h3 id='tymethod.display_' class='method stab '><code>unsafe fn <a href='#tymethod.display_' class='fnname'>display_</a>(self)</code></h3><h3 id='tymethod.setWantsBestResolutionOpenGLSurface_' class='method stab '><code>unsafe fn <a href='#tymethod.setWantsBestResolutionOpenGLSurface_' class='fnname'>setWantsBestResolutionOpenGLSurface_</a>(self, flag: <a class='type' href='../../cocoa/base/type.BOOL.html' title='cocoa::base::BOOL'>BOOL</a>)</code></h3><h3 id='tymethod.convertPoint_fromView_' class='method stab '><code>unsafe fn <a href='#tymethod.convertPoint_fromView_' class='fnname'>convertPoint_fromView_</a>(self, point: <a class='struct' href='../../cocoa/foundation/struct.NSPoint.html' title='cocoa::foundation::NSPoint'>NSPoint</a>, view: <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>) -&gt; <a class='struct' href='../../cocoa/foundation/struct.NSPoint.html' title='cocoa::foundation::NSPoint'>NSPoint</a></code></h3><h3 id='tymethod.addSubview_' class='method stab '><code>unsafe fn <a href='#tymethod.addSubview_' class='fnname'>addSubview_</a>(self, view: <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a>)</code></h3><h3 id='tymethod.superview' class='method stab '><code>unsafe fn <a href='#tymethod.superview' class='fnname'>superview</a>(self) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a></code></h3><h3 id='tymethod.removeFromSuperview' class='method stab '><code>unsafe fn <a href='#tymethod.removeFromSuperview' class='fnname'>removeFromSuperview</a>(self)</code></h3></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.alloc' class='method stab '><code>unsafe fn <a href='#method.alloc' class='fnname'>alloc</a>(_: Self) -&gt; <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a></code></h3></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../cocoa/appkit/trait.NSView.html' title='cocoa::appkit::NSView'>NSView</a> for <a class='type' href='../../cocoa/base/type.id.html' title='cocoa::base::id'>id</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/cocoa/appkit/trait.NSView.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "cocoa";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>
