@@ -11,6 +11,7 @@ section, div, img, ul, p {
 }
 
 header {
+    z-index: 5;
     background-color: #33c6f4;
     color: white;
     font-weight: 700;
