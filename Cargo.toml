@@ -29,6 +29,9 @@ clock_ticks = "^0.1"
 vecmath = "^0.1"
 poison-pool = "0.1.0"
 
+[dependencies.font-atlas]
+path = "../font-atlas"
+
 [dev-dependencies]
 noise = "0.1.5"
 

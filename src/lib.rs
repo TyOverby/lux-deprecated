@@ -93,7 +93,7 @@ pub mod prelude {
     //! recommended for average Lux usage.
 
     pub use color::{Color, rgb, rgba, hsv, hsva};
-    pub use graphics::{Canvas, IntoSprite};
+    pub use graphics::{Canvas, IntoSprite, Sprite, Texture};
     pub use interactive::Interactive;
     pub use window::{Window, Frame};
     pub use interactive::EventIterator;
