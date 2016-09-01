@@ -17,12 +17,12 @@ name = "test_runner"
 path = "src/test_runner.rs"
 
 [dependencies.glium]
-version = "^0.13"
+version = "^0.15"
 default-features = false
 features = ["glutin"]
 
 [dependencies]
-glutin = "^0.4"
+glutin = "^0.6"
 image = "^0.6"
 num = "^0.1"
 clock_ticks = "^0.1"

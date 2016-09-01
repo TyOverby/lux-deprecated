@@ -291,7 +291,7 @@ impl Window {
         let mut last_char = None;
         for event in self.display.poll_events() {
             match event {
-            glevent::MouseMoved((x, y)) => {
+            glevent::MouseMoved(x, y) => {
                 self.mouse_pos = (x as i32, y as i32);
                 self.event_store.push_back(MouseMoved((x as i32, y as i32)))
             }
@@ -315,7 +315,7 @@ impl Window {
                 self.window_pos = (x as i32, y as i32);
                 self.event_store.push_back(WindowMoved(self.window_pos));
             }
-            glevent::MouseWheel(wheel_delta) => {
+            glevent::MouseWheel(wheel_delta, _) => {
                 // TODO: remove this when this code breaks.
                 let wheel_delta = match wheel_delta {
                     glutin::MouseScrollDelta::LineDelta(x, y) => MouseScrollDelta::LineDelta(x, y),
