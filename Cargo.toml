@@ -23,14 +23,15 @@ features = ["glutin"]
 
 [dependencies]
 glutin = "^0.6"
-image = "^0.6"
+image = "^0.10"
 num = "^0.1"
 clock_ticks = "^0.1"
 vecmath = "^0.1"
 poison-pool = "0.1.0"
 
 [dependencies.font-atlas]
-path = "../font-atlas"
+version = "0.1.3"
+#path = "../font-atlas"
 
 [dev-dependencies]
 noise = "0.1.5"
