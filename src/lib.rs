@@ -1,6 +1,6 @@
 //! # Lux
 
-#![warn(missing_docs)]
+//#![warn(missing_docs)]
 
 #[macro_use]
 extern crate glium;
@@ -11,6 +11,7 @@ extern crate image;
 extern crate num;
 extern crate clock_ticks;
 extern crate poison_pool;
+extern crate font_atlas;
 
 mod private;
 
@@ -34,7 +35,8 @@ pub mod graphics {
     //! The two objects that can be drawn to are are `Frame` and
     //! `DrawableTexture`.
 
-    pub use private::canvas::{Canvas, Rectangle, Ellipse, ContainedSprite};
+    //pub use private::canvas::{Canvas, Rectangle, Ellipse, ContainedSprite};
+    pub use private::canvas::{Canvas, Rectangle, Square, Ellipse, Circle, Picture, Line, Pixels};
     pub use private::gfx_integration::{ColorVertex, TexVertex};
     pub use private::primitive_canvas::{PrimitiveCanvas, StencilType};
     pub use private::sprite::{
@@ -75,9 +77,10 @@ pub mod window {
 pub mod modifiers {
     //! Many contexts can be modified and chained together in a logical way.
 
-    pub use private::raw::{Colored, Transform};
+    pub use private::raw::Transform;
 }
 
+/*
 pub mod game {
     //! A game loop implementation using Lux for windowing and graphics.
     //!
@@ -86,18 +89,18 @@ pub mod game {
     //! implementation
 
     pub use private::game::{Game, GameRunner, Loader};
-}
+}*/
 
 pub mod prelude {
     //! A collection of common traits, structs and functions that are
     //! recommended for average Lux usage.
 
     pub use color::{Color, rgb, rgba, hsv, hsva};
-    pub use graphics::{Canvas, IntoSprite, Sprite, Texture};
+    pub use graphics::{Canvas, IntoSprite, Sprite, Texture, Rectangle, Square, Ellipse, Circle, Picture, Line, Pixels};
     pub use interactive::Interactive;
     pub use window::{Window, Frame};
     pub use interactive::EventIterator;
-    pub use modifiers::{Colored, Transform};
+    pub use modifiers::Transform;
     //pub use font::{TextDraw};
     pub use graphics::TextureLoader;
 

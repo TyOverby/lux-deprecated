@@ -1,26 +1,22 @@
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
+use std::cell::RefCell;
 
 use glutin;
 use vecmath;
 use glium;
 use poison_pool;
+use font_atlas::cache::FontCache;
 
 use super::interactive::keycodes::VirtualKeyCode;
-use super::accessors::{
-    HasDrawCache,
-    HasPrograms,
-    HasDisplay,
-    HasSurface,
-    DrawParamMod,
-    Fetch,
-};
 
+use super::accessors::{Fetch, DrawLike};
 use super::interactive::{EventIterator, AbstractKey, Event, Interactive};
 use super::gfx_integration::{ColorVertex, TexVertex};
 use super::canvas::Canvas;
+use super::sprite::Sprite;
 use super::color::Color;
-use super::raw::{Colored, Transform};
+use super::raw::Transform;
 use super::error::LuxResult;
 use super::shaders::{gen_texture_shader, gen_color_shader};
 use super::primitive_canvas::{
@@ -71,6 +67,7 @@ pub struct Window {
     idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
     tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
     color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
+    font_cache: Rc<RefCell<FontCache<Sprite>>>,
 
     // EVENT
     event_store: VecDeque<Event>,
@@ -106,10 +103,10 @@ pub struct Frame {
     idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
     tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
     color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
+    font_cache: Rc<RefCell<FontCache<Sprite>>>,
 
     // Raw
     basis_matrix: Mat4f,
-    color: [f32; 4],
 
     // Misc
     draw_mod: DrawParamModifier,
@@ -123,6 +120,7 @@ impl Frame {
            idx_cache: poison_pool::PoisonPool<Vec<Idx>>,
            tex_vtx_cache: poison_pool::PoisonPool<Vec<TexVertex>>,
            color_vtx_cache: poison_pool::PoisonPool<Vec<ColorVertex>>,
+           font_cache: Rc<RefCell<FontCache<Sprite>>>,
            clear_color: Option<[f32; 4]>) -> Frame {
         use glium::Surface;
 
@@ -150,11 +148,11 @@ impl Frame {
             idx_cache: idx_cache,
             tex_vtx_cache: tex_vtx_cache,
             color_vtx_cache: color_vtx_cache,
+            font_cache: font_cache,
             f: frm,
             color_draw_cache: None,
             tex_draw_cache: None,
             basis_matrix: basis,
-            color: [0.0, 0.0, 0.0, 1.0],
             draw_mod: DrawParamModifier::new()
         }
     }
@@ -217,6 +215,8 @@ impl Window {
 
         let (width, height): (u32, u32) = display.get_framebuffer_dimensions();
 
+        let font_cache = Rc::new(RefCell::new(FontCache::new()));
+
         let window = Window {
             options: options,
             display: display,
@@ -227,6 +227,7 @@ impl Window {
             idx_cache: poison_pool::PoisonPool::new(4, || vec![]),
             tex_vtx_cache: poison_pool::PoisonPool::new(4, || vec![]),
             color_vtx_cache: poison_pool::PoisonPool::new(4, || vec![]),
+            font_cache: font_cache,
             event_store: VecDeque::new(),
             mouse_pos: (0, 0),
             window_pos: (0, 0),
@@ -393,6 +394,7 @@ impl Window {
                    self.idx_cache.clone(),
                    self.tex_vtx_cache.clone(),
                    self.color_vtx_cache.clone(),
+                   self.font_cache.clone(),
                    Some(clear_color.to_rgba()))
     }
 
@@ -404,6 +406,7 @@ impl Window {
                    self.idx_cache.clone(),
                    self.tex_vtx_cache.clone(),
                    self.color_vtx_cache.clone(),
+                   self.font_cache.clone(),
                    None)
     }
 }
@@ -491,80 +494,6 @@ impl Transform for Frame {
     }
 }
 
-impl Colored for Frame {
-    fn get_color(&self) -> [f32; 4] {
-        self.color
-    }
-
-    fn color<C: Color>(&mut self, color: C) -> &mut Frame {
-        self.color = color.to_rgba();
-        self
-    }
-}
-
-impl HasDisplay for Window {
-    fn borrow_display(&self) -> &glium::Display {
-        &self.display
-    }
-}
-
-impl HasDisplay for Frame {
-    fn borrow_display(&self) -> &glium::Display {
-        &self.display
-    }
-}
-
-impl HasSurface for Frame {
-    type Out = glium::Frame;
-
-    fn surface(&mut self) -> &mut Self::Out {
-        &mut self.f
-    }
-
-    fn surface_and_texture_shader(&mut self) -> (&mut Self::Out, &glium::Program) {
-        (&mut self.f, &*self.tex_program)
-    }
-
-    fn surface_and_color_shader(&mut self) -> (&mut Self::Out, &glium::Program) {
-        (&mut self.f, &*self.color_program)
-    }
-}
-
-impl HasDrawCache for Frame {
-    fn color_draw_cache(&self) -> &Option<CachedColorDraw> {
-        &self.color_draw_cache
-    }
-    fn tex_draw_cache(&self) -> &Option<CachedTexDraw> {
-        &self.tex_draw_cache
-    }
-
-    fn color_draw_cache_mut(&mut self) -> &mut Option<CachedColorDraw> {
-        &mut self.color_draw_cache
-    }
-    fn tex_draw_cache_mut(&mut self) -> &mut Option<CachedTexDraw> {
-        &mut self.tex_draw_cache
-    }
-}
-
-impl HasPrograms for Window {
-    fn texture_shader(&self) -> &glium::Program {
-        &*self.tex_program
-    }
-
-    fn color_shader(&self) -> &glium::Program {
-        &*self.color_program
-    }
-}
-
-impl HasPrograms for Frame {
-    fn texture_shader(&self) -> &glium::Program {
-        &*self.tex_program
-    }
-
-    fn color_shader(&self) -> &glium::Program {
-        &*self.color_program
-    }
-}
 
 impl Fetch<Vec<Idx>> for Frame {
     fn fetch(&self) -> poison_pool::Item<Vec<Idx>> {
@@ -587,14 +516,5 @@ impl Fetch<Vec<ColorVertex>> for Frame {
         let mut ret = self.color_vtx_cache.get_or_else(|| vec![]);
         ret.clear();
         ret
-    }
-}
-
-impl DrawParamMod for Frame {
-    fn draw_param_mod(&self) -> &DrawParamModifier {
-        &self.draw_mod
-    }
-    fn draw_param_mod_mut(&mut self) -> &mut DrawParamModifier {
-        &mut self.draw_mod
     }
 }

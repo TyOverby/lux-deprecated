@@ -6,19 +6,11 @@ fn main() {
     let mut window = Window::new_with_defaults().unwrap();
     while window.is_open() {
         let mut frame = window.cleared_frame([0.9, 0.9, 0.9]);
-        frame.color(rgba(0.0, 0.0, 0.0, 0.8));
-
-        frame.circle(20.0, 20.0, 45.0)
-             .fill();
+        frame.draw(Circle { x: 20.0, y: 20.0, size: 45.0, .. Default::default()}).unwrap();
 
         // Manually set the number of segments to build the ellipse out of.
-        frame.ellipse(100.0, 20.0, 100.0, 50.0)
-             .segments(8)
-             .fill();
+        frame.draw(Circle { x: 80.0, y: 80.0, size: 45.0, segments: Some(5), .. Default::default()}).unwrap();
 
-        // Manually set the length of each line segment in the ellipse.
-        frame.circle(20.0, 100.0, 200.0)
-             .line_length(15)
-             .fill();
+        frame.draw(Ellipse { x: 20.0, y: 20.0, w: 50.0, h: 200.0, .. Default::default()}).unwrap();
     }
 }

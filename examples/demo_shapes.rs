@@ -19,13 +19,8 @@ fn main() {
 
         frame.draw_colored(TrianglesList, &vtxs[..], None, None).unwrap();
 
-        frame.circle(50.0, 50.0, 300.0)
-             .color(color::CADETBLUE)
-             .fill();
+        frame.draw(Circle {x: 50.0, y: 50.0, size: 300.0, color: color::CADETBLUE, .. Default::default()}).unwrap();
 
-        frame.rect(50.0, 50.0, 150.0, 150.0) // (x, y, w, h)
-             .color(color::BLUE)
-             .border(10.0, color::CADETBLUE)
-             .fill_and_stroke();
+        frame.draw(Square {x: 50.0, y: 50.0, size: 150.0, color: color::ROYALBLUE, .. Default::default()}).unwrap();
     }
 }

@@ -12,10 +12,10 @@ fn main() {
     let seed = noise::Seed::new(0);
     let mut t = 0.0;
 
-    // Set up the point buffer
+    // Set up the point buffer with black pixels
     let mut points = Vec::with_capacity(255 * 255);
-    for x in 0 .. 255 {
-        for y in 0 .. 255 {
+    for x in 0u16 .. 255 {
+        for y in 0u16 .. 255 {
             points.push(ColorVertex {
                 pos: [x as f32, y as f32],
                 color: rgb(0, 0, 0)
@@ -33,7 +33,7 @@ fn main() {
             pt.color = hsv(value * 360.0, 1.0, 1.0);
         }
 
-        frame.draw_points(&points);
+        frame.draw(Pixels {pixels: &points, .. Default::default()});
         t += 1.0;
     }
 }

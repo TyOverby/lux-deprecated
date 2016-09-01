@@ -5,7 +5,7 @@ use lux::interactive::Event;
 use lux::prelude::*;
 use lux::color;
 
-const msg: &'static = "press space to increase the size of the window";
+const msg: &'static str = "press space to increase the size of the window";
 
 fn main() {
     let window = Window::new(WindowOptions {
@@ -18,7 +18,7 @@ fn main() {
 
     while window.is_open() {
         let mut frame = window.cleared_frame(color::WHITE);
-        frame.text(msg, 0.0, 0.0).draw();
+        //frame.text(msg, 0.0, 0.0).draw();
         for event in window.events() {
             if let Event::KeyPressed(_, Some(' '), _) = event {
 

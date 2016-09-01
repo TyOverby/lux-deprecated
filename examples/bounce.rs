@@ -14,9 +14,9 @@ fn bound(low: f32, value: f32, high: f32) -> (f32, bool) {
 
 fn main() {
     let mut window = Window::new_with_defaults().unwrap();
-    let size = 10.0f32;
+    let size = 50.0f32;
     let (mut x, mut y) = (20.0, 50.0);
-    let (mut vx, mut vy) = (1.5, 1.5);
+    let (mut vx, mut vy) = (5.5, 5.5);
     while window.is_open() {
         let mut frame = window.cleared_frame([0.9, 0.9, 0.9, 0.001]);
         x += vx;
@@ -34,6 +34,6 @@ fn main() {
             vy = - vy;
         }
 
-        frame.square(x, y, size).fill();
+        frame.draw(Square { x: x, y: y, size: size, .. Default::default() }).unwrap();
     }
 }

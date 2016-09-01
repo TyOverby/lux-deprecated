@@ -2,6 +2,7 @@ use glium;
 use image;
 
 use std::rc::Rc;
+use std::cell::RefCell;
 use std::ops::Deref;
 use std::collections::HashMap;
 use std::borrow::Borrow;
@@ -12,23 +13,19 @@ use std::cmp::Eq;
 use std::hash::Hash;
 
 use super::types::{Float, Idx};
-use super::accessors::{
-    HasDisplay,
-    HasPrograms,
-    HasSurface,
-    HasDrawCache,
-    Fetch,
-    DrawParamMod
-};
+use super::accessors::{Fetch, DrawLike, StateLike};
+
 use super::error::{LuxError, LuxResult};
+use super::color::rgb;
 use super::gfx_integration::{TexVertex, ColorVertex};
-use super::canvas::Canvas;
-use super::raw::{Transform, Colored};
+use super::canvas::{Canvas, Rectangle};
+use super::raw::Transform;
 use super::color::Color;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw, DrawParamModifier};
 
 use vecmath;
 use poison_pool;
+use font_atlas::cache::FontCache;
 
 /// An owned texture on the hardware.
 pub struct Texture {
@@ -56,7 +53,7 @@ pub struct Sprite {
 ///
 /// A DrawableTexture can be obtained by calling `as_drawable` on a `Texture`
 /// object.
-pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
+pub struct DrawableTexture<'a, D: 'a> {
     texture: glium::framebuffer::SimpleFrameBuffer<'a>,
     d: &'a D,
 
@@ -65,6 +62,7 @@ pub struct DrawableTexture<'a, D: 'a + HasDisplay + HasPrograms> {
 
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
+    font_cache: Rc<RefCell<FontCache<Sprite>>>,
     draw_mod: DrawParamModifier
 }
 
@@ -97,7 +95,7 @@ pub struct NonUniformSpriteSheet<K: Hash + Eq> {
 /// Implemented by any object that can be converted into a Sprite.
 pub trait IntoSprite {
     /// Attempts to convert itself into a sprite.
-    fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite>;
+    fn into_sprite<D: StateLike>(self, display: &D) -> LuxResult<Sprite>;
 }
 
 /// TextureLoader is implemented on any object that can load textures.
@@ -110,13 +108,13 @@ pub trait TextureLoader {
 }
 
 impl IntoSprite for Sprite {
-    fn into_sprite<D: HasDisplay>(self, _display: &D) -> LuxResult<Sprite> {
+    fn into_sprite<D: StateLike>(self, _display: &D) -> LuxResult<Sprite> {
         Ok(self)
     }
 }
 
 impl IntoSprite for image::DynamicImage {
-    fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite> {
+    fn into_sprite<D: StateLike>(self, display: &D) -> LuxResult<Sprite> {
         use image::GenericImage;
         let img = glium::texture::RawImage2d::from_raw_rgba_reversed(self.raw_pixels(), self.dimensions());
         let img = try!(glium::texture::Texture2d::new(display.borrow_display(), img));
@@ -126,13 +124,13 @@ impl IntoSprite for image::DynamicImage {
 }
 
 impl <'a> IntoSprite for &'a Path {
-    fn into_sprite<D: HasDisplay>(self, display: &D) -> LuxResult<Sprite> {
+    fn into_sprite<D: StateLike>(self, display: &D) -> LuxResult<Sprite> {
         let img = try!(image::open(self)).flipv();
         img.into_sprite(display)
     }
 }
 
-impl <T> TextureLoader for T where T: HasDisplay {
+impl <T> TextureLoader for T where T: StateLike{
     fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, LuxError> {
         use image::GenericImage;
         let img = try!(image::open(path));
@@ -155,7 +153,7 @@ impl Texture {
     ///
     /// Depending on the graphics card, the width and height might need
     /// to be powers of two.
-    pub fn empty<D: HasDisplay>(d: &D, width: u32, height: u32) -> Result<Texture, LuxError> {
+    pub fn empty<D: StateLike>(d: &D, width: u32, height: u32) -> Result<Texture, LuxError> {
         use glium::Surface;
         let backing = try!(glium::texture::Texture2d::empty(d.borrow_display(), width, height));
         {
@@ -163,9 +161,12 @@ impl Texture {
             s.clear_depth(0.0);
             s.clear_stencil(0);
         }
-        Ok(Texture {
-            backing: backing
-        })
+        let mut result = Texture{ backing: backing };
+        {
+            let mut texture = result.as_drawable(d);
+            try!(texture.draw(Rectangle{w: width as f32, h: height as f32, color: rgb(1.0, 1.0, 1.0), .. Default::default()}));
+        }
+        Ok(result)
     }
 
     fn new(texture: glium::texture::Texture2d) -> Texture {
@@ -180,13 +181,12 @@ impl Texture {
     }
 
     /// Returns a reference to this texture with a drawable context.
-    pub fn as_drawable<'a, D>(&'a mut self, d: &'a D) -> DrawableTexture<'a, D>
-    where D: HasDisplay + HasPrograms {
+    pub fn as_drawable<'a, D: StateLike>(&'a mut self, d: &'a D) -> DrawableTexture<'a, D> {
         DrawableTexture::new(self.backing.as_surface(), d)
     }
 }
 
-impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
+impl <'a, D: StateLike> DrawableTexture<'a, D> {
     fn new(texture: glium::framebuffer::SimpleFrameBuffer<'a>, d: &'a D)
     -> DrawableTexture<'a, D> {
         use glium::Surface;
@@ -211,34 +211,14 @@ impl <'a, D> DrawableTexture<'a, D>  where D: HasDisplay + HasPrograms {
             matrix: basis,
             color_draw_cache: None,
             tex_draw_cache: None,
+            font_cache: d.font_cache().clone(),
             color: [0.0, 0.0, 0.0, 1.0],
             draw_mod: DrawParamModifier::new()
         }
     }
 }
 
-impl <'a, D> DrawParamMod for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    fn draw_param_mod(&self) -> &DrawParamModifier {
-        &self.draw_mod
-    }
-
-    fn draw_param_mod_mut(&mut self) -> &mut DrawParamModifier {
-        &mut self.draw_mod
-    }
-}
-
-impl <'a, D> Colored for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms{
-    fn get_color(&self) -> [Float; 4] {
-        self.color
-    }
-
-    fn color<C: Color>(&mut self, color: C) -> &mut DrawableTexture<'a, D> {
-        self.color = color.to_rgba();
-        self
-    }
-}
-
-impl <'a, D> Transform for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+impl <'a, D: StateLike> Transform for DrawableTexture<'a, D> {
     fn current_matrix(&self) -> &[[Float; 4]; 4] {
         &self.matrix
     }
@@ -247,64 +227,25 @@ impl <'a, D> Transform for DrawableTexture<'a, D> where D: HasDisplay + HasProgr
     }
 }
 
-impl <'a, D> HasDisplay for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    fn borrow_display(&self) -> &glium::Display {
-        &self.d.borrow_display()
-    }
-}
-
-impl <'a, D> HasSurface for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
-    type Out = glium::framebuffer::SimpleFrameBuffer<'a>;
-
-    fn surface(&mut self) -> &mut Self::Out {
-        &mut self.texture
-    }
-
-    fn surface_and_texture_shader(&mut self) -> (&mut Self::Out, &glium::Program) {
-        (&mut self.texture, self.d.texture_shader())
-    }
-    fn surface_and_color_shader(&mut self) -> (&mut Self::Out, &glium::Program) {
-        (&mut self.texture, self.d.color_shader())
-    }
-}
-
-impl <'a, D> HasDrawCache for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
-    fn color_draw_cache(&self) -> &Option<CachedColorDraw> {
-        &self.color_draw_cache
-    }
-
-    fn tex_draw_cache(&self) -> &Option<CachedTexDraw> {
-        &self.tex_draw_cache
-    }
-
-    fn color_draw_cache_mut(&mut self) -> &mut Option<CachedColorDraw> {
-        &mut self.color_draw_cache
-    }
-
-    fn tex_draw_cache_mut(&mut self) -> &mut Option<CachedTexDraw> {
-        &mut self.tex_draw_cache
-    }
-}
-
-impl <'a, D> Fetch<Vec<Idx>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+impl <'a, D> Fetch<Vec<Idx>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<Idx>> {
         poison_pool::Item::from_value(vec![])
     }
 }
 
-impl <'a, D> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+impl <'a, D> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<TexVertex>> {
         poison_pool::Item::from_value(vec![])
     }
 }
 
-impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> where D: HasPrograms + HasDisplay {
+impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<ColorVertex>> {
         poison_pool::Item::from_value(vec![])
     }
 }
 
-impl <'a, D> Canvas for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+impl <'a, D> Canvas for DrawableTexture<'a, D> {
     fn size(&self) -> (Float, Float) {
         use glium::Surface;
         let (w, h) = self.texture.get_dimensions();
@@ -312,7 +253,7 @@ impl <'a, D> Canvas for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms
     }
 }
 
-impl <'a, D> Drop for DrawableTexture<'a, D> where D: HasDisplay + HasPrograms {
+impl <'a, D> Drop for DrawableTexture<'a, D> {
     fn drop(&mut self) {
         use super::primitive_canvas::PrimitiveCanvas;
         self.flush_draw().unwrap();

@@ -12,9 +12,9 @@ name = "lux"
 path = "src/lib.rs"
 crate-type = ["dylib", "rlib"]
 
-[[bin]]
-name = "test_runner"
-path = "src/test_runner.rs"
+#[[bin]]
+#name = "test_runner"
+#path = "src/test_runner.rs"
 
 [dependencies.glium]
 version = "^0.13"

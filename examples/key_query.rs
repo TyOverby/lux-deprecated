@@ -25,6 +25,6 @@ fn main() {
         };
 
         let mut frame = window.cleared_frame(bg_color);
-        frame.text(MESSAGE, 0.0, 50.0).color(text_color).draw().unwrap();
+        // frame.text(MESSAGE, 0.0, 50.0).color(text_color).draw().unwrap();
     }
 }

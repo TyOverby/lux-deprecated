@@ -10,10 +10,13 @@ fn main() {
     while window.is_open() {
         let mut frame = window.cleared_frame(lux::color::WHITE);
         let (x, y) = window.mouse_pos();
+        frame.draw(Picture { sprite: Some(&logo), x: x, y:y, .. Default::default()}).unwrap();
+        /*
         frame.sprite(&logo, x, y)
              .translate(-half, -half)
              .rotate_around((half, half), t)
              .draw();
+         */
         t += 0.01;
     }
 }

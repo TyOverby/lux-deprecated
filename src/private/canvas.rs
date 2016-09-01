@@ -1,71 +1,26 @@
 use super::primitive_canvas::{PrimitiveCanvas, StencilState, StencilType};
-use super::accessors::DrawParamMod;
 use super::types::Float;
 use super::gfx_integration::{ColorVertex, TexVertex};
-use super::color::Color;
-use super::raw::{Colored, Transform};
+use super::color::{Color, rgb};
+use super::raw::Transform;
 use super::sprite::Sprite;
+use ::LuxResult;
+
+use ::vecmath;
 
 use glium::index::PrimitiveType::{TriangleFan, TrianglesList, Points};
 
-use vecmath;
-
-const OPT_LINE_LENGTH: u16 = 15;
-
-fn calc_delta_theta(segments: Option<u16>,
-                    line_length: Option<u16>,
-                    width: Float,
-                    height: Float) -> Float
-{
-    use std::f32::consts::PI;
-    let largest_radius = width.max(height);
-    match (segments, line_length.unwrap_or(OPT_LINE_LENGTH)) {
-        (Some(segment_count), _) => {
-            (2.0 * PI) / (segment_count as Float)
-        }
-        (None, line_length) => {
-            // = (2 pi) / ((2pi r) / (line_len))
-            // = line_len / r
-            line_length as Float / largest_radius
-        }
-    }
-}
-
-struct BasicFields<'a, C: 'a> {
-    fill_color: [Float; 4],
-    stroke_color: Option<[Float; 4]>,
-    border: Float,
-    transform: [[Float; 4]; 4],
-
-    pos: (Float, Float),
-    size: (Float, Float),
-    canvas: &'a mut C
-}
-
-/// An ellipse that can be drawn to the screen.
-#[must_use = "Ellipses only contain context, and must be drawn with `fill()`"]
-pub struct Ellipse<'a, C: 'a> {
-    fields: BasicFields<'a, C>,
-    segments: Option<u16>,
-    opt_line_len: Option<u16>
-}
-
-/// A Rectangle that can be drawn to the screen.
-#[must_use = "Rectangles only contain context, and must be drawn with `fill()`, `stroke()`, or `fill_stroke()`"]
-pub struct Rectangle<'a, C: 'a> {
-    fields: BasicFields<'a, C>,
-}
-
-/// A sprite that can be drawn to the screen.
-#[must_use = "Sprites only contain context, and must be drawn with `draw()`"]
-pub struct ContainedSprite<'a, C: 'a>  {
-    fields: BasicFields<'a, C>,
-    sprite: Sprite
+pub trait Drawable {
+    fn draw<C: Canvas>(self, target: &mut C) -> LuxResult<()>;
 }
 
 /// Canvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
+pub trait Canvas: Sized {
+    fn draw<O: Drawable>(&mut self, subject: O) -> LuxResult<()> {
+        subject.draw(self)
+    }
+
     /// Returns the size of the canvas as a pair of (width, height).
     fn size(&self) -> (Float, Float);
 
@@ -168,502 +123,283 @@ pub trait Canvas: PrimitiveCanvas + Colored + Transform + DrawParamMod+ Sized {
             }
         }
     }
-
-    /// Returns a rectangle with the given dimensions and position.
-    ///
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use lux::prelude::*;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let (x, y, w, h) = (0.0, 5.0, 50.0, 70.0);
-    /// frame.rect(x, y, w, h)
-    ///      .color(rgb(100, 200, 255))
-    ///      .fill();
-    ///# }
-    /// ```
-    fn rect<'a>(&'a mut self, x: Float, y: Float, w: Float, h: Float) -> Rectangle<'a, Self> {
-        let c = self.get_color();
-        Rectangle::new(self, (x, y), (w, h), c)
-    }
-
-    /// Returns a square with the given dimensions and position.
-    ///
-    /// ```rust,no_run
-    /// use lux::prelude::*;
-    ///# extern crate lux;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let (x, y, size) = (0.0, 5.0, 50.0);
-    /// frame.square(x, y, size)
-    ///      .color(rgb(100, 200, 255))
-    ///      .fill();
-    ///# }
-    /// ```
-    fn square<'a>(&'a mut self, x: Float, y: Float, size: Float) -> Rectangle<'a, Self> {
-        let c = self.get_color();
-        Rectangle::new(self, (x, y), (size, size), c)
-    }
-
-    /// Returns an ellipse with the given dimensions and position.
-    ///
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use lux::prelude::*;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let (x, y, w, h) = (0.0, 5.0, 50.0, 70.0);
-    /// frame.ellipse(x, y, w, h)
-    ///      .color(rgb(100, 200, 255))
-    ///      .fill();
-    ///# }
-    /// ```
-    fn ellipse<'a>(&'a mut self, x: Float, y: Float, w: Float, h: Float) -> Ellipse<'a, Self> {
-        let c = self.get_color();
-        Ellipse::new(self, (x, y), (w, h), c)
-    }
-
-    /// Returns an circle with the given dimensions and position.
-    ///
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use lux::prelude::*;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let (x, y, size) = (0.0, 5.0, 50.0);
-    /// frame.circle(x, y, size)
-    ///      .color(rgb(100, 200, 255))
-    ///      .fill();
-    ///# }
-    /// ```
-    fn circle<'a>(&'a mut self, x: Float, y: Float, size: Float) -> Ellipse<'a, Self> {
-        let c = self.get_color();
-        Ellipse::new(self, (x, y), (size, size), c)
-    }
-
-    /// Draws a 1-pixel colored point to the screen at a position.
-    ///
-    /// This is *not* the same as setting a "pixel" because the point can
-    /// be moved by transformations on the Frame.
-    ///
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use lux::prelude::*;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let (x, y) = (10.0, 20.0);
-    /// frame.draw_point(x, y, lux::color::RED);
-    ///# }
-    /// ```
-    fn draw_point<C: Color>(&mut self, x: Float, y: Float, color: C) {
-        let vertex = ColorVertex {
-            pos: [x, y],
-            color: color.to_rgba(),
-        };
-        self.draw_colored(Points, &[vertex][..], None, None).unwrap();
-    }
-
-    /// Draws a sequence of colored points with the size of 1 pixel.
-    ///
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use lux::prelude::*;
-    /// use lux::graphics::ColorVertex;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let points = [
-    ///     ColorVertex {
-    ///         pos: [10.0, 15.0],
-    ///         color: rgb(255, 0, 0)
-    ///     },
-    ///     ColorVertex {
-    ///         pos: [15.0, 10.0],
-    ///         color: rgb(0, 255, 0)
-    ///     },
-    /// ];
-    /// frame.draw_points(&points[..]);
-    ///# }
-    /// ```
-    fn draw_points(&mut self, pixels: &[ColorVertex]) {
-        let mut transf = vecmath::mat4_id();
-        transf.translate(0.5, 0.5); // Correctly align
-        self.draw_colored(Points, &pixels[..], None, Some(transf)).unwrap();
-    }
-
-    /// Draws a single line from `start` to `end` with a
-    /// thickness of `line_size`.
-    fn draw_line(&mut self, x1: Float, y1: Float, x2: Float, y2: Float, line_size: Float) {
-        let dx = x2 - x1;
-        let dy = y2 - y1;
-        let dist = (dx * dx + dy * dy).sqrt();
-        let angle = dy.atan2(dx);
-
-        self.rect(0.0, 0.0, dist, line_size)
-            .translate(x1, y1)
-            .rotate(angle)
-            .translate(0.0, -line_size / 2.0)
-            .fill();
-    }
-
-    /// Draws a series of lines from each point to the next with a thickness
-    /// of `line_size`.
-    fn draw_lines<I: Iterator<Item = (Float, Float)>>(&mut self, mut positions: I, line_size: Float) {
-        let mut prev = match positions.next() {
-            Some(p) => p,
-            None => return
-        };
-
-        for p in positions {
-            self.draw_line(prev.0, prev.1, p.0, p.1, line_size);
-            prev = p;
-        }
-    }
-
-    /// Draws an arc centered at `pos` from `angle1` to `angle_2` with a
-    /// thickness of `line_size`.
-    fn draw_arc(&mut self, pos: (Float, Float), radius: Float, angle1: Float,
-                angle2: Float, line_size: Float) {
-
-        use std::f32::consts::PI;
-
-        const PI_2: f32 = PI * 2.0;
-
-        fn norm(mut value: f32) -> Float {
-            value %= PI_2;
-            value = (value + PI_2) % PI_2;
-            value
-        }
-
-        fn gen_point(offset: (Float, Float), radius: Float, angle: Float) -> (Float, Float) {
-            (angle.sin() * radius + offset.0, angle.cos() * radius + offset.1)
-        }
-
-        let angle1 = norm(angle1);
-        let angle2 = norm(angle2);
-        let delta = norm(angle2 - angle1);
-
-        // TODO: When you switch this over to being state based, switch
-        // these None valuse
-        let delta_theta = calc_delta_theta(None, None, radius, radius);
-
-        let mut points = vec![];
-
-        let mut theta = 0.0;
-        while theta <= delta {
-            points.push(gen_point(pos, radius, theta));
-            theta += delta_theta;
-        }
-        points.push(gen_point(pos, radius, theta));
-
-        self.with_rotate_around(pos, -angle1, |c| {
-            c.draw_lines(points.into_iter(), line_size);
-        });
-    }
-
-    /// Draws a sprite  to the screen.
-    ///
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use std::path::Path;
-    /// use lux::prelude::*;
-    /// use lux::graphics::ColorVertex;
-    ///# fn main() {
-    ///
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let logo = window.load_texture_file(&Path::new("./logo.png"))
-    ///                  .unwrap()
-    ///                  .into_sprite();
-    /// let (x, y) = (20.0, 50.0);
-    /// frame.sprite(&logo, x, y).draw();
-    ///# }
-    /// ```
-    fn sprite(&mut self, sprite: &Sprite, x: Float, y: Float) -> ContainedSprite<Self> {
-        ContainedSprite {
-            fields: BasicFields::new((x, y), sprite.ideal_size(), self, [1.0, 1.0, 1.0, 1.0]),
-            sprite: sprite.clone()
-        }
-    }
 }
 
-impl <'a, C: 'a> BasicFields<'a, C> {
-    fn new(pos: (Float, Float), size: (Float, Float), c: &'a mut C, color: [Float; 4]) -> BasicFields<'a, C> {
-        BasicFields {
-            fill_color: color,
-            stroke_color: None,
-            border: 0.0,
-            transform: vecmath::mat4_id(),
-
-            pos: pos,
-            size: size,
-            canvas: c
-        }
-    }
+#[derive(Copy, Clone, PartialEq)]
+pub struct Rectangle {
+    pub x: Float,
+    pub y: Float,
+    pub w: Float,
+    pub h: Float,
+    pub color: [f32; 4],
+    pub transform: Option<[[Float; 4]; 4]>
 }
 
-impl <'a, C> Ellipse<'a, C> {
-    fn new(c: &'a mut C, pos: (Float, Float), size: (Float, Float), color: [Float; 4]) -> Ellipse<'a, C> {
-        Ellipse {
-            fields: BasicFields::new(pos, size, c, color),
-            segments: None,
-            opt_line_len: None
-        }
-    }
-
-    /// Sets the number of segments that are used to approximate a circle.
-    ///
-    /// ### Example
-    /// ```rust,no_run
-    ///# extern crate lux;
-    /// use lux::prelude::*;
-    /// use lux::graphics::ColorVertex;
-    ///
-    ///# fn main() {
-    /// let mut window = Window::new().unwrap();
-    /// let mut frame = window.frame();
-    /// let (x, y, size) = (10.0, 10.0, 50.0);
-    /// // draw a pentagon
-    /// frame.circle(x, y, size).segments(5).draw();
-    ///# }
-    /// ```
-    pub fn segments(&mut self, segments: u16) -> &mut Self {
-        self.segments = Some(segments);
-        self
-    }
-
-    /// Instead of
-    pub fn line_length(&mut self, line_length: u16) -> &mut Self {
-        self.opt_line_len = Some(line_length);
-        self
-    }
-}
-
-impl <'a, C> Rectangle<'a, C> {
-    fn new(c: &'a mut C, pos: (Float, Float), size: (Float, Float), color: [Float; 4]) -> Rectangle<'a, C> {
+impl Default for Rectangle {
+    fn default() -> Rectangle {
         Rectangle {
-            fields: BasicFields::new(pos, size, c, color),
+            x: 0.0,
+            y: 0.0,
+            w: 0.0,
+            h: 0.0,
+            color: rgb(0.0, 0.0, 0.0),
+            transform: None
         }
     }
 }
 
-impl <'a, C> Transform for Rectangle<'a, C> {
-    fn current_matrix(&self) -> &[[Float; 4]; 4] {
-        &self.fields.transform
-    }
-    fn current_matrix_mut(&mut self) -> &mut[[Float; 4]; 4] {
-        &mut self.fields.transform
+impl Drawable for Rectangle {
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        let vertices = [
+            ColorVertex{ pos: [self.x + self.w, self.y], color: self.color },
+            ColorVertex{ pos: [self.x, self.y], color: self.color },
+            ColorVertex{ pos: [self.x, self.y + self.h], color: self.color },
+            ColorVertex{ pos: [self.x + self.w, self.y + self.h], color: self.color },
+        ];
+
+        let idxs = [0, 1, 2, 0, 2, 3];
+
+        canvas.draw_colored(TrianglesList, &vertices[..], Some(&idxs[..]), self.transform)
     }
 }
 
-impl <'a, C> Transform for Ellipse<'a, C> {
-    fn current_matrix(&self) -> &[[Float; 4]; 4] {
-        &self.fields.transform
-    }
-    fn current_matrix_mut(&mut self) -> &mut[[Float; 4]; 4] {
-        &mut self.fields.transform
+#[derive(Copy, Clone, PartialEq)]
+pub struct Square {
+    pub x: Float,
+    pub y: Float,
+    pub size: Float,
+    pub color: [f32; 4],
+    pub transform: Option<[[Float; 4]; 4]>
+}
+
+impl Default for Square {
+    fn default() -> Square {
+        Square {
+            x: 0.0,
+            y: 0.0,
+            size: 0.0,
+            color: rgb(0.0, 0.0, 0.0),
+            transform: None
+        }
     }
 }
 
-impl <'a, C> Transform for ContainedSprite<'a, C> {
-    fn current_matrix(&self) -> &[[Float; 4]; 4] {
-        &self.fields.transform
-    }
-    fn current_matrix_mut(&mut self) -> &mut[[Float; 4]; 4] {
-        &mut self.fields.transform
+impl Drawable for Square{
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        Rectangle {x: self.x, y: self.y, w: self.size, h: self.size, color: self.color, transform: self.transform}.draw(canvas)
     }
 }
 
-impl <'a, C> Colored for Ellipse<'a, C> {
-    fn get_color(&self) -> [Float; 4] {
-        self.fields.fill_color
-    }
+#[derive(Copy, Clone, PartialEq)]
+pub struct Ellipse {
+    pub x: Float,
+    pub y: Float,
+    pub w: Float,
+    pub h: Float,
+    pub color: [f32; 4],
+    pub segments: Option<u32>,
+    pub transform: Option<[[Float; 4]; 4]>
+}
 
-    fn color<A: Color>(&mut self, color: A) -> &mut Self {
-        self.fields.fill_color = color.to_rgba();
-        self
+
+impl Default for Ellipse {
+    fn default() -> Ellipse {
+        Ellipse {
+            x: 0.0,
+            y: 0.0,
+            w: 0.0,
+            h: 0.0,
+            color: rgb(0.0, 0.0, 0.0),
+            segments: None,
+            transform: None,
+        }
     }
 }
 
-impl <'a, C> Colored for Rectangle<'a, C> {
-    fn get_color(&self) -> [Float; 4] {
-        self.fields.fill_color
-    }
+impl Drawable for Ellipse {
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        const OPT_LINE_LENGTH: u16 = 15;
 
-    fn color<A: Color>(&mut self, color: A) -> &mut Self{
-        self.fields.fill_color = color.to_rgba();
-        self
-    }
-}
-
-impl <'a, C> Colored for ContainedSprite<'a, C> {
-    fn get_color(&self) -> [Float; 4] {
-        self.fields.fill_color
-    }
-
-    fn color<A: Color>(&mut self, color: A) -> &mut Self{
-        self.fields.fill_color = color.to_rgba();
-        self
-    }
-}
-
-impl <'a, C> Ellipse<'a, C> where C: Canvas + 'a {
-    /// Fills in the ellipse with a solid color.
-    pub fn fill(&mut self) {
         use std::f32::consts::PI;
-        use num::traits::Float as Nfloat;
 
-        let delta_theta = calc_delta_theta(self.segments,
-                                           self.opt_line_len,
-                                           self.fields.size.0,
-                                           self.fields.size.1);
-        let color = self.get_color();
+        let largest_radius = self.w.max(self.h);
+        let delta_theta = self.segments.map(|segment_count| (2.0 * PI) / (segment_count as Float))
+                                       .unwrap_or(OPT_LINE_LENGTH as f32 / largest_radius);
         let mut vertices = vec![];
 
         let mut theta = 0.0;
         while theta <= 2.0 * PI {
-            let p = [theta.sin(), theta.cos()];
-            vertices.push(ColorVertex { pos: p, color: color });
+            let (mut x, mut y) = (theta.sin(), theta.cos());
+            x *= self.w / 2.0;
+            x += self.w;
+
+            y *= self.h / 2.0;
+            y += self.h;
+
+            vertices.push(ColorVertex { pos: [x + self.x, y + self.y], color: self.color });
             theta += delta_theta;
         }
 
-        //let mut trx = vecmath::mat4_id();
-        //trx.scale(0.5, 0.5);
-
-        let mut transform = generate_transform(&self.fields);
-
-        //trx = vecmath::col_mat4_mul(trx, transform);
-        transform.translate(0.5, 0.5);
-        transform.scale(0.5, 0.5);
-
-        self.fields.canvas.draw_colored(TriangleFan,
-                               &vertices[..],
-                               None,
-                               Some(transform)).unwrap()
+        canvas.draw_colored(TriangleFan, &vertices[..], None, self.transform)
     }
 }
 
-fn generate_transform<'a, C>(fields: &BasicFields<'a, C>) -> [[Float; 4]; 4] {
-        let (x, y) = fields.pos;
-        let (mut sx, mut sy) = fields.size;
-        sx -= fields.border * 2.0;
-        sy -= fields.border * 2.0;
-
-        if sx < 0.0 { sx = 0.0 }
-        if sy < 0.0 { sy = 0.0 }
-
-        let mut trx = vecmath::mat4_id();
-        trx.translate(x, y);
-        let mut trx = vecmath::col_mat4_mul(trx, fields.transform);
-        trx.translate(fields.border, fields.border);
-        trx.scale(sx, sy);
-        trx
+#[derive(Copy, Clone, PartialEq)]
+pub struct Circle {
+    pub x: Float,
+    pub y: Float,
+    pub size: Float,
+    pub color: [f32; 4],
+    pub segments: Option<u32>,
+    pub transform: Option<[[Float; 4]; 4]>
 }
 
-impl <'a, C> ContainedSprite<'a, C> where C: Canvas + 'a {
-    /// Sets the side of the sprite when drawn to the screen.
-    ///
-    /// The default size is the "ideal size", that is, 1 pixel in the texture
-    /// goes to 1 pixel on the screen.
-    pub fn size(&mut self, w: Float, h: Float) -> &mut ContainedSprite<'a, C> {
-        self.fields.size = (w, h);
-        self
-    }
 
-    /// Draws the sprite to the screen.
-    pub fn draw(&mut self) {
-        let bounds = self.sprite.bounds();
+impl Default for Circle {
+    fn default() -> Circle {
+        Circle {
+            x: 0.0,
+            y: 0.0,
+            size: 0.0,
+            color: rgb(0.0, 0.0, 0.0),
+            segments: None,
+            transform: None,
+        }
+    }
+}
+
+impl Drawable for Circle {
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        Ellipse { x: self.x, y: self.y, w: self.size, h: self.size, color: self.color, segments: self.segments, transform: self.transform }.draw(canvas)
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct Picture<'a> {
+    pub sprite: Option<&'a Sprite>,
+    pub x: Float,
+    pub y: Float,
+    pub size: Option<(Float, Float)>,
+    pub color: [f32; 4],
+    pub transform: Option<[[Float; 4]; 4]>,
+}
+
+impl Default for Picture<'static> {
+    fn default() -> Picture<'static> {
+        Picture {
+            sprite: None,
+            x: 0.0,
+            y: 0.0,
+            size: None,
+            color: [1.0, 1.0, 1.0, 1.0],
+            transform: None,
+        }
+    }
+}
+
+impl <'a> Drawable for Picture<'a> {
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        let sprite = match self.sprite {
+            Some(sprite) => sprite,
+            None => return Ok(()),
+        };
+
+        let bounds = sprite.bounds();
 
         let top_left = bounds[0];
         let top_right = bounds[1];
         let bottom_left = bounds[2];
         let bottom_right = bounds[3];
 
+        let (w, h) = match self.size {
+            Some((w, h)) => (w, h),
+            None => (sprite.width(), sprite.height()),
+        };
+        let (x, y) = (self.x, self.y);
+
         let tex_vs = vec![
-            TexVertex {pos: [1.0, 0.0], tex_coords: top_right},
-            TexVertex {pos: [0.0, 0.0], tex_coords: top_left},
-            TexVertex {pos: [0.0, 1.0], tex_coords: bottom_left},
-            TexVertex {pos: [1.0, 1.0], tex_coords: bottom_right},
+            TexVertex {pos: [x + w, y], tex_coords: top_right},
+            TexVertex {pos: [x, y], tex_coords: top_left},
+            TexVertex {pos: [x, y + h], tex_coords: bottom_left},
+            TexVertex {pos: [x + w, y + h], tex_coords: bottom_right},
         ];
 
         let idxs = [0, 1, 2, 0, 2, 3];
 
-        let transform = generate_transform(&self.fields);
-
-        self.fields.canvas.draw_tex(TrianglesList,
-                      &tex_vs[..],
-                      Some(&idxs[..]),
-                      Some(transform),
-                      self.sprite.texture(),
-                      Some(self.fields.fill_color)).unwrap();
+        canvas.draw_tex(
+            TrianglesList,
+            &tex_vs[..],
+            Some(&idxs[..]),
+            self.transform,
+            sprite.texture(),
+            Some(self.color))
     }
 }
 
-impl <'a, C> Rectangle<'a, C> where C: Canvas + 'a {
-    /// Fills the rectangle with a solid color.
-    pub fn fill(&mut self) {
-        let color = self.get_color();
-        let vertices = [
-            ColorVertex{ pos: [1.0, 0.0], color: color },
-            ColorVertex{ pos: [0.0, 0.0], color: color },
-            ColorVertex{ pos: [0.0, 1.0], color: color },
-            ColorVertex{ pos: [1.0, 1.0], color: color },
-        ];
+#[derive(Copy, Clone)]
+pub struct Line {
+    pub start: (Float, Float),
+    pub end: (Float, Float),
+    pub thickness: Float,
+    pub color: [Float; 4],
+    pub transform: Option<[[Float; 4]; 4]>
+}
 
-        let idxs = [0, 1, 2, 0, 2, 3];
-
-        let transform = generate_transform(&self.fields);
-
-        self.fields.canvas.draw_colored(TrianglesList,
-                               &vertices[..], Some(&idxs[..]),
-                               Some(transform)).unwrap();
+impl Default for Line {
+    fn default() -> Line {
+        Line {
+            start: (0.0, 0.0),
+            end: (0.0, 0.0),
+            thickness: 1.0,
+            color: rgb(0.0, 0.0, 0.0),
+            transform: None,
+        }
     }
+}
 
-    /// Draws a border around the rectangle.
-    pub fn stroke(&mut self) {
-        let offset_pos = self.fields.pos;
-        let size = self.fields.size;
-        let border = self.fields.border;
-        let transform = self.fields.transform;
-        let color = self.fields.stroke_color.unwrap_or(self.get_color());
+impl Drawable for Line {
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        let (x1, y1) = self.start;
+        let (x2, y2) = self.end;
 
-        self.fields.border = 0.0;
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let dist = (dx * dx + dy * dy).sqrt();
+        let angle = dy.atan2(dx);
 
-        self.fields.canvas.with_matrix(|canvas| {
-            canvas.translate(offset_pos.0, offset_pos.1);
-            canvas.apply_matrix(transform);
-            canvas.with_color(color, |canvas| {
-                // TOP
-                canvas.rect(0.0, 0.0, size.0, border).fill();
-                canvas.rect(0.0, size.1 - border, size.0, border).fill();
-                canvas.rect(0.0, border, border, size.1 - border * 2.0).fill();
-                canvas.rect(size.0 - border, border, border, size.1 - border * 2.0).fill();
-            });
-        });
+        let mut transformation = vecmath::mat4_id();
+        transformation.translate(x1, y1).rotate(angle).translate(0.0, - self.thickness / 2.0);
+        if let Some(other_trans) = self.transform {
+            transformation.apply_matrix(other_trans);
+        }
+
+        Rectangle { x: x1, y: y1, w: dist, h: self.thickness, transform: Some(transformation), color: self.color}.draw(canvas)
     }
+}
 
-    /// Both fills and strokes the rectangle.
-    pub fn fill_and_stroke(&mut self) {
-        self.fill();
-        self.stroke();
+#[derive(Copy, Clone)]
+pub struct Pixels<'a> {
+    pub pixels: &'a [ColorVertex],
+    pub transform: Option<[[Float; 4]; 4]>
+}
+
+impl Default for Pixels<'static> {
+    fn default() -> Pixels<'static> {
+        Pixels {
+            pixels: &[],
+            transform: None,
+        }
     }
+}
 
-    /// Sets the size of the border.  The border is drawn using the
-    /// `stroke()` function.
-    pub fn border<A: Color>(&mut self, border_size: Float, color: A) -> &mut Rectangle<'a, C> {
-        self.fields.border = border_size;
-        self.fields.stroke_color = Some(color.to_rgba());
-        self
+impl <'a> Drawable for Pixels<'a> {
+    fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
+        let mut transf = vecmath::mat4_id();
+        transf.translate(0.5, 0.5); // Correctly align
+        if let Some(other_trans) = self.transform {
+            transf.apply_matrix(other_trans);
+        }
+
+        canvas.draw_colored(Points, self.pixels, None, Some(transf))
     }
 }

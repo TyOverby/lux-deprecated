@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use super::accessors::{Fetch, HasDisplay, HasSurface, HasDrawCache, DrawParamMod};
+use super::accessors::{Fetch, DrawLike};
 use super::gfx_integration::{ColorVertex, TexVertex};
 use glium::index::PrimitiveType;
 use super::color::Color;
@@ -76,7 +76,7 @@ pub struct CachedTexDraw {
 ///
 /// As the name implies, this is a lower-level API and you should probably
 /// be using methods on the `Canvas` trait instead.
-pub trait PrimitiveCanvas {
+pub trait PrimitiveCanvas: DrawLike {
     /// Clears the canvas with a color.
     fn clear<C: Color>(&mut self, color: C);
 
@@ -154,7 +154,7 @@ pub trait PrimitiveCanvas {
     fn flush_draw(&mut self) -> LuxResult<()>;
 }
 
-fn draw_params<C: DrawParamMod>(c: &C) -> glium::DrawParameters<'static> {
+fn draw_params<C: DrawLike>(c: &C) -> glium::DrawParameters<'static> {
         use glium::draw_parameters::{StencilOperation, StencilTest};
         let defaults: glium::DrawParameters = ::std::default::Default::default();
 
@@ -255,9 +255,7 @@ impl DrawParamModifier {
     }
 }
 
-impl <T> PrimitiveCanvas for T where T: HasDisplay + HasSurface + HasDrawCache +
-DrawParamMod + Transform + Fetch<Vec<Idx>> + Fetch<Vec<TexVertex>> +
-Fetch<Vec<ColorVertex>>
+impl <T: DrawLike> PrimitiveCanvas for T
 {
     fn clear<C: Color>(&mut self, color: C) {
         use glium::Surface;
