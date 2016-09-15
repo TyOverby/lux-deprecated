@@ -13,7 +13,7 @@ use std::cmp::Eq;
 use std::hash::Hash;
 
 use super::types::{Float, Idx};
-use super::accessors::{Fetch, DrawLike, StateLike};
+use super::accessors::{Fetch, DrawLike, StateLike, StateFields, DrawFields, DrawFieldsRef};
 
 use super::error::{LuxError, LuxResult};
 use super::color::rgb;
@@ -117,7 +117,7 @@ impl IntoSprite for image::DynamicImage {
     fn into_sprite<D: StateLike>(self, display: &D) -> LuxResult<Sprite> {
         use image::GenericImage;
         let img = glium::texture::RawImage2d::from_raw_rgba_reversed(self.raw_pixels(), self.dimensions());
-        let img = try!(glium::texture::Texture2d::new(display.borrow_display(), img));
+        let img = try!(glium::texture::Texture2d::new(display.state_fields().display, img));
         let tex: Texture = Texture::new(img);
         Ok(tex.into_sprite())
     }
@@ -130,12 +130,12 @@ impl <'a> IntoSprite for &'a Path {
     }
 }
 
-impl <T> TextureLoader for T where T: StateLike{
+impl <T> TextureLoader for T where T: StateLike {
     fn load_texture_file<P: AsRef<Path> + ?Sized>(&self, path: &P) -> Result<Texture, LuxError> {
         use image::GenericImage;
         let img = try!(image::open(path));
         let img = glium::texture::RawImage2d::from_raw_rgba_reversed(img.raw_pixels(), img.dimensions());
-        let img = try!(glium::texture::Texture2d::new(self.borrow_display(), img));
+        let img = try!(glium::texture::Texture2d::new(self.state_fields().display, img));
         let tex = Texture::new(img);
         Ok(tex)
     }
@@ -143,7 +143,7 @@ impl <T> TextureLoader for T where T: StateLike{
     fn texture_from_image(&self, img: image::DynamicImage) -> Result<Texture, LuxError> {
         use image::GenericImage;
         let img = glium::texture::RawImage2d::from_raw_rgba_reversed(img.raw_pixels(), img.dimensions());
-        let img = try!(glium::texture::Texture2d::new(self.borrow_display(), img));
+        let img = try!(glium::texture::Texture2d::new(self.state_fields().display, img));
         Ok(Texture::new(img))
     }
 }
@@ -155,7 +155,7 @@ impl Texture {
     /// to be powers of two.
     pub fn empty<D: StateLike>(d: &D, width: u32, height: u32) -> Result<Texture, LuxError> {
         use glium::Surface;
-        let backing = try!(glium::texture::Texture2d::empty(d.borrow_display(), width, height));
+        let backing = try!(glium::texture::Texture2d::empty(d.state_fields().display, width, height));
         {
             let mut s = backing.as_surface();
             s.clear_depth(0.0);
@@ -211,7 +211,7 @@ impl <'a, D: StateLike> DrawableTexture<'a, D> {
             matrix: basis,
             color_draw_cache: None,
             tex_draw_cache: None,
-            font_cache: d.font_cache().clone(),
+            font_cache: d.state_fields().font_cache.clone(),
             color: [0.0, 0.0, 0.0, 1.0],
             draw_mod: DrawParamModifier::new()
         }
@@ -242,6 +242,22 @@ impl <'a, D> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> {
 impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<ColorVertex>> {
         poison_pool::Item::from_value(vec![])
+    }
+}
+
+impl <'a, D> StateLike for DrawableTexture<'a, D> {
+    fn state_fields(&self) -> StateFields {
+        unimplemented!();
+    }
+}
+
+impl <'a, D> DrawLike for DrawableTexture<'a, D> {
+    type Surface = glium::framebuffer::SimpleFrameBuffer<'a>;
+    fn draw_fields(&mut self) -> DrawFields<Self::Surface> {
+        unimplemented!();
+    }
+    fn draw_fields_ref(&self) -> DrawFieldsRef<Self::Surface> {
+        unimplemented!();
     }
 }
 

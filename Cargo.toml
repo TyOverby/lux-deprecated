@@ -1,6 +1,6 @@
 [package]
 name = "lux"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Ty Overby <ty@pre-alpha.com>"]
 description = "A super simple 2d-graphics engine that handles windowing and events for you!  Right now it's supposed to be a top secret! Shhhhh..."
 license = "MIT"
@@ -17,20 +17,21 @@ crate-type = ["dylib", "rlib"]
 #path = "src/test_runner.rs"
 
 [dependencies.glium]
-version = "^0.13"
+version = "^0.15"
 default-features = false
 features = ["glutin"]
 
 [dependencies]
-glutin = "^0.4"
-image = "^0.6"
+glutin = "^0.6"
+image = "^0.10"
 num = "^0.1"
 clock_ticks = "^0.1"
 vecmath = "^0.1"
 poison-pool = "0.1.0"
 
 [dependencies.font-atlas]
-path = "../font-atlas"
+version = "0.1.3"
+#path = "../font-atlas"
 
 [dev-dependencies]
 noise = "0.1.5"

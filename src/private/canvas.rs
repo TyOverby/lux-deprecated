@@ -4,6 +4,7 @@ use super::gfx_integration::{ColorVertex, TexVertex};
 use super::color::{Color, rgb};
 use super::raw::Transform;
 use super::sprite::Sprite;
+use super::accessors::DrawLike;
 use ::LuxResult;
 
 use ::vecmath;
@@ -16,7 +17,7 @@ pub trait Drawable {
 
 /// Canvas is the main trait for drawing in Lux.  It supports all operations
 /// that paint to the screen or to a buffer.
-pub trait Canvas: Sized {
+pub trait Canvas: DrawLike + Sized {
     fn draw<O: Drawable>(&mut self, subject: O) -> LuxResult<()> {
         subject.draw(self)
     }
@@ -79,12 +80,12 @@ pub trait Canvas: Sized {
         self.flush_draw().unwrap();
 
         let view_height = self.height() as u32;
-        let old = self.take_scissor();
+        let old = self.draw_fields().take_scissor();
         // TODO: merge these rectangles
-        self.set_scissor(Some((x, view_height - h - y, w, h)));
+        self.draw_fields().set_scissor(Some((x, view_height - h - y, w, h)));
         let res = f(self);
         self.flush_draw().unwrap();
-        self.set_scissor(old);
+        self.draw_fields().set_scissor(old);
         res
     }
 
@@ -93,11 +94,11 @@ pub trait Canvas: Sized {
     fn draw_to_stencil<R, S>(&mut self, typ: StencilType, stencil_fn: S) -> R
     where S: FnOnce(&mut Self) -> R {
         self.flush_draw().unwrap();
-        self.set_stencil_state(StencilState::DrawingStencil(typ));
+        self.draw_fields().set_stencil_state(StencilState::DrawingStencil(typ));
 
         let res1 = stencil_fn(self);
         self.flush_draw().unwrap();
-        self.set_stencil_state(StencilState::DrawingWithStencil);
+        self.draw_fields().set_stencil_state(StencilState::DrawingWithStencil);
         res1
     }
 
@@ -115,11 +116,11 @@ pub trait Canvas: Sized {
         match typ {
             StencilType::Allow => {
                 PrimitiveCanvas::clear_stencil(self, 1);
-                self.set_stencil_state(StencilState::None);
+                self.draw_fields().set_stencil_state(StencilState::None);
             }
             StencilType::Deny => {
                 PrimitiveCanvas::clear_stencil(self, 0);
-                self.set_stencil_state(StencilState::DrawingWithStencil);
+                self.draw_fields().set_stencil_state(StencilState::DrawingWithStencil);
             }
         }
     }

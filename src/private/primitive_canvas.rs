@@ -1,10 +1,9 @@
 use std::rc::Rc;
 
-use super::accessors::{Fetch, DrawLike};
+use super::accessors::{DrawLike, DrawFields};
 use super::gfx_integration::{ColorVertex, TexVertex};
 use glium::index::PrimitiveType;
 use super::color::Color;
-use super::raw::Transform;
 use super::gfx_integration;
 use super::types::{Idx, Float};
 use super::error::LuxResult;
@@ -69,6 +68,7 @@ pub struct CachedTexDraw {
     /// A color that will be multiplied against the values in the texture
     /// to give the texture color.
     pub color_mult: [Float; 4],
+
 }
 
 /// A Primitive canvas is a trait that is implemented by objects that
@@ -159,13 +159,13 @@ fn draw_params<C: DrawLike>(c: &C) -> glium::DrawParameters<'static> {
         let defaults: glium::DrawParameters = ::std::default::Default::default();
 
         // Don't draw colors when drawing out a stencil.
-        let color_mask = match c.stencil_state() {
+        let color_mask = match *c.draw_fields_ref().stencil_state {
             StencilState::DrawingStencil(_) => (false, false, false, false),
             StencilState::DrawingWithStencil | StencilState::None =>
                 (true, true, true, true)
         };
 
-        let stencil_test = match c.stencil_state() {
+        let stencil_test = match *c.draw_fields_ref().stencil_state {
             StencilState::DrawingStencil(_) =>
                 StencilTest::AlwaysFail,
             StencilState::DrawingWithStencil =>
@@ -174,14 +174,14 @@ fn draw_params<C: DrawLike>(c: &C) -> glium::DrawParameters<'static> {
                 StencilTest::AlwaysPass,
         };
 
-        let stencil_ref_value = match c.stencil_state() {
+        let stencil_ref_value = match *c.draw_fields_ref().stencil_state {
             StencilState::DrawingStencil(StencilType::Allow) => 1,
             StencilState::DrawingStencil(StencilType::Deny) => 0,
             StencilState::DrawingWithStencil => 1,
             StencilState::None => 0
         };
 
-        let (s_fail, dp_fail, dp_pass) = match c.stencil_state() {
+        let (s_fail, dp_fail, dp_pass) = match *c.draw_fields_ref().stencil_state {
             StencilState::DrawingStencil(_) => {
                 (StencilOperation::Replace,
                  StencilOperation::Keep,
@@ -211,7 +211,7 @@ fn draw_params<C: DrawLike>(c: &C) -> glium::DrawParameters<'static> {
             multisampling: true,
 
             // SCISSOR
-            scissor: c.scissor().map(|a|
+            scissor: c.draw_fields_ref().scissor.map(|a|
                 glium::Rect{
                     left: a.0,
                     bottom: a.1,
@@ -260,12 +260,12 @@ impl <T: DrawLike> PrimitiveCanvas for T
     fn clear<C: Color>(&mut self, color: C) {
         use glium::Surface;
         let c = color.to_rgba();
-        self.surface().clear_color(c[0], c[1], c[2], c[3]);
+        self.draw_fields().surface.clear_color(c[0], c[1], c[2], c[3]);
     }
 
     fn clear_stencil(&mut self, v: i32) {
         use glium::Surface;
-        self.surface().clear_stencil(v);
+        self.draw_fields().surface.clear_stencil(v);
     }
 
     fn draw_colored_now(&mut self,
@@ -276,23 +276,23 @@ impl <T: DrawLike> PrimitiveCanvas for T
         use glium::{Surface, IndexBuffer};
         use glium::index::NoIndices;
 
-        let vertex_buffer = try!(glium::VertexBuffer::new(self.borrow_display(), points));
+        let draw_params = draw_params(self as &T);
+
+        let DrawFields { display, color_shader, surface, ..  } = self.draw_fields();
+        let vertex_buffer = try!(glium::VertexBuffer::new(display, points));
 
         let uniform = gfx_integration::ColorParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id())
         };
 
-        let draw_params = draw_params(self as &T);
 
         match idxs {
             Some(idxs) => {
-                let idx_buf = try!(IndexBuffer::new(self.borrow_display(), typ, idxs));
-                let (frame, color_program) = self.surface_and_color_shader();
-                frame.draw(&vertex_buffer, &idx_buf, &color_program, &uniform, &draw_params).map_err(From::from)
+                let idx_buf = try!(IndexBuffer::new(display, typ, idxs));
+                surface.draw(&vertex_buffer, &idx_buf, &color_shader, &uniform, &draw_params).map_err(From::from)
             }
             None => {
-                let (frame, color_program) = self.surface_and_color_shader();
-                frame.draw(&vertex_buffer, &NoIndices(typ), &color_program, &uniform, &draw_params).map_err(From::from)
+                surface.draw(&vertex_buffer, &NoIndices(typ), &color_shader, &uniform, &draw_params).map_err(From::from)
             }
         }
     }
@@ -307,7 +307,10 @@ impl <T: DrawLike> PrimitiveCanvas for T
         use glium::{Surface, IndexBuffer};
         use glium::index::NoIndices;
 
-        let vertex_buffer = try!(glium::VertexBuffer::new(self.borrow_display(), points));
+        let draw_params = draw_params(self);
+
+        let DrawFields { display, texture_shader, surface, ..  } = self.draw_fields();
+        let vertex_buffer = try!(glium::VertexBuffer::new(display, points));
 
         let uniform = gfx_integration::TexParams {
             matrix: base_mat.unwrap_or(vecmath::mat4_id()),
@@ -315,17 +318,14 @@ impl <T: DrawLike> PrimitiveCanvas for T
             color_mult: color_mult
         };
 
-        let draw_params = draw_params(self);
 
         match idxs {
             Some(idxs) => {
-                let idx_buf = try!(IndexBuffer::new(self.borrow_display(), typ, idxs));
-                let (frame, tex_program) = self.surface_and_texture_shader();
-                frame.draw(&vertex_buffer, &idx_buf, &tex_program, &uniform, &draw_params).map_err(From::from)
+                let idx_buf = try!(IndexBuffer::new(display, typ, idxs));
+                surface.draw(&vertex_buffer, &idx_buf, &texture_shader, &uniform, &draw_params).map_err(From::from)
             }
             None => {
-                let (frame, tex_program) = self.surface_and_texture_shader();
-                frame.draw(&vertex_buffer, &NoIndices(typ), &tex_program, &uniform, &draw_params).map_err(From::from)
+                surface.draw(&vertex_buffer, &NoIndices(typ), &texture_shader, &uniform, &draw_params).map_err(From::from)
             }
         }
     }
@@ -333,13 +333,17 @@ impl <T: DrawLike> PrimitiveCanvas for T
     fn flush_draw(&mut self) -> LuxResult<()> {
         let mut first_result = None;
         let mut second_result = None;
-        if let Some(CachedColorDraw{typ, points, idxs}) = self.color_draw_cache_mut().take() {
+
+//        let DrawFields{color_draw_cache, tex_draw_cache, ..} = self.draw_fields();
+
+        if let Some(CachedColorDraw{typ, points, idxs}) = self.draw_fields().color_draw_cache.take() {
                 first_result = Some(self.draw_colored_now(typ, &points, Some(&idxs), None));
-        };
-        if let Some(CachedTexDraw{typ, points, texture, idxs, color_mult}) =
-            self.tex_draw_cache_mut().take() {
+        }
+
+        if let Some(CachedTexDraw{typ, points, texture, idxs, color_mult}) = self.draw_fields().tex_draw_cache.take() {
                 second_result = Some(self.draw_textured_now(typ, &points, Some(&idxs), None, &*texture, color_mult));
         }
+
         match (first_result, second_result) {
             (Some(Err(e)), _) => {
                 // Assume that the first error either was the cause of , or the
@@ -359,10 +363,12 @@ impl <T: DrawLike> PrimitiveCanvas for T
                            idxs: Option<&[Idx]>,
                            transform: Option<[[Float; 4]; 4]>) -> LuxResult<()> {
         try!(self.flush_draw());
+        let matrix = *self.draw_fields().matrix;
         let transform = match transform {
-            Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
-            None => *self.current_matrix()
+            Some(t) => vecmath::col_mat4_mul(matrix, t),
+            None => matrix,
         };
+
         self.draw_colored_now(n_typ, n_points, idxs, Some(transform))
     }
 
@@ -374,9 +380,10 @@ impl <T: DrawLike> PrimitiveCanvas for T
                            texture: &glium::texture::Texture2d,
                            color_mult: Option<[Float; 4]>) -> LuxResult<()> {
         try!(self.flush_draw());
+        let matrix = *self.draw_fields().matrix;
         let transform = match transform {
-            Some(t) => vecmath::col_mat4_mul(*self.current_matrix(), t),
-            None => *self.current_matrix()
+            Some(t) => vecmath::col_mat4_mul(matrix, t),
+            None => matrix,
         };
         let color_mult = color_mult.unwrap_or([1.0, 1.0, 1.0, 1.0]);
         self.draw_textured_now(n_typ, n_points, idxs, Some(transform), texture, color_mult)
@@ -393,47 +400,53 @@ impl <T: DrawLike> PrimitiveCanvas for T
         use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
         use std::mem::transmute;
 
-        if self.color_draw_cache().is_some() {
+
+        if self.draw_fields().color_draw_cache.is_some() {
             try!(self.flush_draw());
         }
+
+        //let DrawFields{color_draw_cache, tex_draw_cache, matrix, ..} = self.draw_fields();
+
         let color_mult = color_mult.unwrap_or([1.0, 1.0, 1.0, 1.0]);
 
         // Look at all this awful code for handling something that should
         // be dead simple!
-        if self.tex_draw_cache().is_some() {
+        if self.draw_fields().tex_draw_cache.is_some() {
             let same_type;
             let coherant_group;
             let same_color_mult;
             let same_tex;
             {
-                let draw_cache = self.tex_draw_cache().as_ref().unwrap();
-                same_type = draw_cache.typ == n_typ;
+                let tex_draw_cache = self.draw_fields().tex_draw_cache.as_ref().unwrap();
+                same_type = tex_draw_cache.typ == n_typ;
                 coherant_group = match n_typ {
                     Points | LinesList | TrianglesList => true,
                     _ => false
                 };
-                same_color_mult = draw_cache.color_mult == color_mult;
+                same_color_mult = tex_draw_cache.color_mult == color_mult;
 
-                let our_ptr: *mut () = unsafe {transmute(&*draw_cache.texture)};
+                let our_ptr: *mut () = unsafe {transmute(&*tex_draw_cache.texture)};
                 let otr_ptr: *mut () = unsafe {transmute(&*texture)};
                 same_tex = our_ptr == otr_ptr;
             }
 
             if !same_type || !coherant_group || !same_color_mult || !same_tex {
                 try!(self.flush_draw());
-                *self.tex_draw_cache_mut() = Some(CachedTexDraw {
+                *self.draw_fields().tex_draw_cache = Some(CachedTexDraw {
                     typ: n_typ,
-                    points: self.fetch(),
-                    idxs: self.fetch(),
+                    // TODO: use fetch API
+                    points: ::poison_pool::Item::from_value(Vec::new()),
+                    idxs: ::poison_pool::Item::from_value(Vec::new()),
                     texture: texture,
                     color_mult: color_mult,
                 });
             }
         } else {
-            *self.tex_draw_cache_mut() = Some(CachedTexDraw {
+            *self.draw_fields().tex_draw_cache = Some(CachedTexDraw {
                 typ: n_typ,
-                points: self.fetch(),
-                idxs: self.fetch(),
+                // TODO: use fetch API
+                points: ::poison_pool::Item::from_value(Vec::new()),
+                idxs: ::poison_pool::Item::from_value(Vec::new()),
                 texture: texture,
                 color_mult: color_mult
             });
@@ -445,8 +458,8 @@ impl <T: DrawLike> PrimitiveCanvas for T
         }
 
         let transform = transform.unwrap_or(vecmath::mat4_id());
-        let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
-        let draw_cache = self.tex_draw_cache_mut().as_mut().unwrap();
+        let mat = vecmath::col_mat4_mul(*self.draw_fields().matrix, transform);
+        let draw_cache = self.draw_fields().tex_draw_cache.as_mut().unwrap();
 
         let already_in = draw_cache.points.len() as Idx;
         let adding = n_points.len() as Idx;
@@ -486,32 +499,37 @@ impl <T: DrawLike> PrimitiveCanvas for T
                   transform: Option<[[Float; 4]; 4]>) -> LuxResult<()> {
         use glium::index::PrimitiveType::{Points, LinesList, TrianglesList};
 
-        if self.tex_draw_cache().is_some() {
+
+        if self.draw_fields().tex_draw_cache.is_some() {
             try!(self.flush_draw());
         }
 
         // Look at all this awful code for handling something that should
         // be dead simple!
-        if self.color_draw_cache().is_some() {
-            let same_type = self.color_draw_cache().as_ref().unwrap().typ == n_typ;
-            let coherant_group = match n_typ {
-                Points | LinesList | TrianglesList => true,
-                _ => false
+        if self.draw_fields().color_draw_cache.is_some() {
+            let (same_type, coherant_group) = {
+                let color_draw_cache = self.draw_fields().color_draw_cache.as_mut().unwrap();
+                let same_type = color_draw_cache.typ == n_typ;
+                let coherant_group = match n_typ {
+                    Points | LinesList | TrianglesList => true,
+                    _ => false
+                };
+                (same_type, coherant_group)
             };
+
             if !same_type || !coherant_group {
                 try!(self.flush_draw());
-                *self.color_draw_cache_mut() = Some(CachedColorDraw {
+                *self.draw_fields().color_draw_cache = Some(CachedColorDraw {
                     typ: n_typ,
-                    points: self.fetch(),
-                    idxs: self.fetch()
+                    points: ::poison_pool::Item::from_value(Vec::new()),
+                    idxs: ::poison_pool::Item::from_value(Vec::new()),
                 });
             }
         } else {
-            *self.color_draw_cache_mut() = Some(CachedColorDraw {
+            *self.draw_fields().color_draw_cache = Some(CachedColorDraw {
                 typ: n_typ,
-                points: self.fetch(),
-                idxs: self.fetch()
-
+                points: ::poison_pool::Item::from_value(Vec::new()),
+                idxs: ::poison_pool::Item::from_value(Vec::new()),
             });
         }
 
@@ -521,8 +539,8 @@ impl <T: DrawLike> PrimitiveCanvas for T
         }
 
         let transform = transform.unwrap_or(vecmath::mat4_id());
-        let mat = vecmath::col_mat4_mul(*self.current_matrix(), transform);
-        let draw_cache = self.color_draw_cache_mut().as_mut().unwrap();
+        let mat = vecmath::col_mat4_mul(*self.draw_fields().matrix, transform);
+        let draw_cache = self.draw_fields().color_draw_cache.as_mut().unwrap();
 
         let already_in = draw_cache.points.len() as Idx;
         let adding = n_points.len() as Idx;
