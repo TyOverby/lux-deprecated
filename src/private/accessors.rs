@@ -36,7 +36,6 @@ pub struct StateFields<'a> {
 
 pub struct DrawFields<'a, S: glium::Surface + 'a> {
     pub display: &'a mut glium::Display,
-    pub draw_param_mod: &'a mut DrawParamModifier,
     pub scissor: &'a mut Option<(u32, u32, u32, u32)>,
     pub stencil_state: &'a mut StencilState,
     pub font_cache: &'a Rc<RefCell<FontCache<Sprite>>>,
@@ -50,7 +49,6 @@ pub struct DrawFields<'a, S: glium::Surface + 'a> {
 
 pub struct DrawFieldsRef<'a, S: glium::Surface + 'a> {
     pub display: &'a glium::Display,
-    pub draw_param_mod: &'a DrawParamModifier,
     pub scissor: &'a Option<(u32, u32, u32, u32)>,
     pub stencil_state: &'a StencilState,
     pub font_cache: &'a Rc<RefCell<FontCache<Sprite>>>,

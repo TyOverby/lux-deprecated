@@ -413,17 +413,45 @@ impl Window {
 
 impl StateLike for Frame {
     fn state_fields(&self) -> StateFields {
-        unimplemented!();
+        StateFields {
+            display: &self.display,
+            font_cache: &self.font_cache,
+            texture_shader: &self.tex_program,
+            color_shader: &self.color_program,
+        }
     }
 }
 
 impl DrawLike for Frame {
     type Surface = glium::Frame;
     fn draw_fields(&mut self) -> DrawFields<Self::Surface> {
-        unimplemented!();
+        DrawFields {
+            display: &mut self.display,
+            scissor: &mut self.draw_mod.scissor,
+            stencil_state: &mut self.draw_mod.stencil_state,
+            font_cache: &mut self.font_cache,
+            texture_shader: &mut self.tex_program,
+            color_shader: &mut self.color_program,
+            color_draw_cache: &mut self.color_draw_cache,
+            tex_draw_cache: &mut self.tex_draw_cache,
+            surface: &mut self.f,
+            matrix: &mut self.basis_matrix,
+        }
     }
+
     fn draw_fields_ref(&self) -> DrawFieldsRef<Self::Surface> {
-        unimplemented!();
+        DrawFieldsRef {
+            display: &self.display,
+            scissor: &self.draw_mod.scissor,
+            stencil_state: &self.draw_mod.stencil_state,
+            font_cache: &self.font_cache,
+            texture_shader: &self.tex_program,
+            color_shader: &self.color_program,
+            color_draw_cache: &self.color_draw_cache,
+            tex_draw_cache: &self.tex_draw_cache,
+            surface: &self.f,
+            matrix: &self.basis_matrix,
+        }
     }
 }
 
