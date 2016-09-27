@@ -16,10 +16,24 @@ fn main() {
         let mut frame = lux.cleared_frame(color::WHITE);
         let (x, y) = lux.mouse_pos();
 
-        frame.sprite(&sprite1, 0.0, 0.0).draw();
-        frame.sprite(&sprite2, x, y).draw();
+        frame.draw(Picture{
+            x: 0.0, y: 0.0,
+           sprite: Some(&sprite1),
+            .. Default::default()
+        }).unwrap();
+
+        frame.draw(Picture {
+            x: x, y: y,
+            sprite: Some(&sprite2),
+            .. Default::default()
+        }).unwrap();
 
         // Set a special size
-        frame.sprite(&sprite1, x - 32.0, y-32.0).size(32.0, 32.0).draw();
+        frame.draw(Picture {
+            x: x - 32.0, y: y-32.0,
+            sprite: Some(&sprite1),
+            size: Some((32.0, 32.0)),
+            .. Default::default()
+        }).unwrap();
     }
 }

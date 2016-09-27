@@ -422,6 +422,17 @@ impl StateLike for Frame {
     }
 }
 
+impl StateLike for Window {
+    fn state_fields(&self) -> StateFields {
+        StateFields {
+            display: &self.display,
+            font_cache: &self.font_cache,
+            texture_shader: &self.tex_program,
+            color_shader: &self.color_program,
+        }
+    }
+}
+
 impl DrawLike for Frame {
     type Surface = glium::Frame;
     fn draw_fields(&mut self) -> DrawFields<Self::Surface> {

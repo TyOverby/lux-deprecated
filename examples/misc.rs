@@ -23,9 +23,12 @@ fn main() {
             for x in 0..40 {
                 for y in 0..40 {
                     let (x, y) = (x as f32 * 40.0, y as f32 * 40.0);
-                    frame.rect(x, y, 30.0, 30.0)
-                         .color(color::BLUE)
-                         .fill();
+                    frame.draw(Square {
+                        x: x, y: y,
+                        size: 30.0,
+                        color: color::BLUE,
+                        .. Default::default()
+                    }).unwrap(); 
                 }
             }
 
@@ -40,8 +43,12 @@ fn main() {
             frame.draw_colored(TrianglesList, &vtxs[..], Some(&idxs[..]), None).unwrap();
         });
 
-        frame.draw_points(&points);
-        frame.rect(100.0, 100.0, 50.0, 50.0).color(color::GREEN).fill();
-        frame.draw_point(110.5, 110.5, color::RED);
+        frame.draw(Pixels {pixels: &points, .. Default::default()}).unwrap();
+        frame.draw(Square {
+            x: 100.0, y: 100.0,
+            size: 50.0,
+            color: color::GREEN,
+            .. Default::default()
+        }).unwrap();
     }
 }

@@ -10,8 +10,8 @@ fn main() {
         let mut tex = Texture::empty(&lux, 256, 256).unwrap();
         {
             let mut tex = tex.as_drawable(&lux);
-            tex.draw(Circle { x: 50.0, y: 50.0, size: 50.0, color: color::RED, .. Default::default() }).unwrap();
-            tex.draw(Circle { x: 150.0, y: 50.0, size: 50.0, color: color::BLUE, .. Default::default() }).unwrap();
+            tex.draw(Circle { x: 50.0, y: 50.0, diameter: 50.0, color: color::RED, .. Default::default() }).unwrap();
+            tex.draw(Circle { x: 150.0, y: 50.0, diameter: 50.0, color: color::BLUE, .. Default::default() }).unwrap();
             tex.draw(Rectangle { x: 150.0, y: 50.0, w: 200.0, h: 25.0, color: color::BLUE, .. Default::default() }).unwrap();
         }
         tex.into_sprite()
@@ -21,15 +21,12 @@ fn main() {
         let mut frame = lux.cleared_frame(color::WHITE);
         let (x, y) = lux.mouse_pos();
 
-        frame.draw(Picture {sprite: Some(&sprite), x: 0.0, y: 0.0, .. Default::default()}).unwrap();
+        let picture = Picture { sprite: Some(&sprite), ..Default::default() };
 
-        /*
-        frame.sprite(&sprite, 0.0, 0.0).draw();
-        frame.sprite(&sprite, x, y).draw();
+        // Drawn at the origin
+        frame.draw(picture).unwrap();
 
-        frame.sprite(&sprite, x - 32.0, y - 32.0)
-             .size(32.0, 32.0) // resize
-             .draw();
-        */
+        // Drawn at the mouse
+        frame.draw(Picture{x: x, y: y, ..picture}).unwrap();
     }
 }

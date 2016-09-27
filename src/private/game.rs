@@ -5,8 +5,8 @@ use super::interactive::EventIterator;
 use super::color::{rgba, rgb};
 use super::error::LuxResult;
 use super::interactive::Interactive;
-use super::canvas::Canvas;
-use super::raw::{Transform, Colored};
+use super::canvas::{Canvas, Rectangle};
+use super::raw::Transform;
 
 use std::collections::VecDeque;
 use std::mem::transmute;
@@ -162,9 +162,12 @@ pub trait Game {
              .unwrap();
          */
 
-        frame.rect(0.0, 0.0, pos, h)
-             .color(rgb(255, 0, 0))
-             .fill();
+        frame.draw(Rectangle {
+            x: 0.0, y:0.0,
+            w: pos, h: h,
+            color: rgb(255, 0, 0),
+            .. Default::default()
+        }).unwrap();
 
         frame.with_scissor(0, 0, pos as u32, h as u32, |frame| {
             /*
@@ -497,7 +500,12 @@ impl <G: Game> GameRunner<G> {
                 let x = bar_width * i as f32;
                 let mut y = 0.0;
                 for (p, color) in bar {
-                    frame.rect(x, y, bar_width, p).color(color).fill();
+                    frame.draw(Rectangle {
+                        x: x, y: y,
+                        w: bar_width, h: p,
+                        color: color,
+                        .. Default::default()
+                    }).unwrap();
                     y += p;
                 }
             }
@@ -512,9 +520,12 @@ impl <G: Game> GameRunner<G> {
         let h = frame.height();
         frame.with_translate(WIDTH, h, |frame| {
             frame.with_scale(-WIDTH, -HEIGHT, |frame| {
-                frame.rect(0.0, 0.0, 1.0, 1.0)
-                     .color(rgba(1.0, 1.0, 0.0, 0.8))
-                     .fill();
+                frame.draw(Rectangle {
+                    x: 0.0, y: 0.0,
+                    w: 1.0, h: 1.0,
+                    color: rgba(1.0, 1.0, 0.0, 0.8),
+                    .. Default::default()
+                }).unwrap();
 
                 draw_bars(frame, self.frame_timings.iter().map(|timing| {
                     let update_colors = [rgb(0.0, 0.2, 0.9), rgb(0.2, 0.0, 0.9)];
@@ -532,7 +543,12 @@ impl <G: Game> GameRunner<G> {
             });
         });
 
-        frame.rect(0.0, h - HEIGHT, WIDTH, 1.0).color(rgb(0, 0, 0)).fill();
+        frame.draw(Rectangle{
+            x: 0.0, y: h - HEIGHT,
+            w: WIDTH, h: 1.0,
+            color: rgb(0, 0, 0),
+            .. Default::default()
+        }).unwrap();
 
         let (fps, ups) = self.calc_fps();
         frame.with_translate(WIDTH, h, |frame| {

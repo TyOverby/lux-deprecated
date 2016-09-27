@@ -8,7 +8,6 @@ use std::cell::RefCell;
 use super::primitive_canvas::{
     CachedColorDraw,
     CachedTexDraw,
-    DrawParamModifier,
     StencilState
 };
 
@@ -35,7 +34,7 @@ pub struct StateFields<'a> {
 }
 
 pub struct DrawFields<'a, S: glium::Surface + 'a> {
-    pub display: &'a mut glium::Display,
+    pub display: &'a glium::Display,
     pub scissor: &'a mut Option<(u32, u32, u32, u32)>,
     pub stencil_state: &'a mut StencilState,
     pub font_cache: &'a Rc<RefCell<FontCache<Sprite>>>,

@@ -7,7 +7,7 @@ pub mod color;
 pub mod sprite;
 pub mod error;
 pub mod colors;
-//pub mod game;
+pub mod game;
 pub mod accessors;
 pub mod primitive_canvas;
 pub mod shaders;

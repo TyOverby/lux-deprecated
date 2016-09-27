@@ -11,15 +11,15 @@ fn main() {
 
         frame.translate(200.0, 200.0);
 
-        frame.color(rgb(255, 0, 0));
-
-        for i in (0 .. 5) {
-            let border = i as f32 * 10.0;
-            let pos = i as f32 * 100.0;
-            frame.square(pos, 0.0, 50.0)
-                 .border(border / 2.0, rgba(0, 0, 255, 255))
-                 .rotate_around((25.0, 25.0), rot)
-                 .fill_and_stroke();
+        for i in 0 .. 5 {
+            let pos = i as f32 * 100.0 + 50.0;
+            frame.draw(
+                Square {
+                    x: pos, y: 50.0,
+                    size: 50.0,
+                    transform: Some(*mat4_id().rotate_around((50.0, 50.0), rot)),
+                    .. Default::default()
+                }).unwrap();
         }
     }
 }

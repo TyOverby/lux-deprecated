@@ -60,15 +60,12 @@ impl Game for MyGame {
         let (px, py) = self.pos;
         let (vx, vy) = self.speed;
 
-        /*
-        try!(frame.text("Use the [w][a][s][d] keys to move around.", 5.0, 5.0).size(20).draw());
-        try!(frame.text("Hold the spacebar to see the debug fps viewer.", 5.0, 25.0).size(20).draw());
-        */
-
-        frame.circle(px + vx * lag, py + vy * lag, PLAYER_SIZE)
-             .rotate_around((PLAYER_SIZE / 2.0, PLAYER_SIZE / 2.0), self.rotation)
-             .segments(6)
-             .fill();
+        try!(frame.draw(Circle {
+            x: px + vx * lag, y: py + vy * lag,
+            diameter: PLAYER_SIZE,
+            segments: Some(6),
+            .. Default::default()
+        }));
 
         Ok(())
     }

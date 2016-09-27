@@ -249,7 +249,7 @@ impl Drawable for Ellipse {
 pub struct Circle {
     pub x: Float,
     pub y: Float,
-    pub size: Float,
+    pub diameter: Float,
     pub color: [f32; 4],
     pub segments: Option<u32>,
     pub transform: Option<[[Float; 4]; 4]>
@@ -261,7 +261,7 @@ impl Default for Circle {
         Circle {
             x: 0.0,
             y: 0.0,
-            size: 0.0,
+            diameter: 0.0,
             color: rgb(0.0, 0.0, 0.0),
             segments: None,
             transform: None,
@@ -271,7 +271,7 @@ impl Default for Circle {
 
 impl Drawable for Circle {
     fn draw<C: Canvas>(self, canvas: &mut C) -> LuxResult<()> {
-        Ellipse { x: self.x, y: self.y, w: self.size, h: self.size, color: self.color, segments: self.segments, transform: self.transform }.draw(canvas)
+        Ellipse { x: self.x, y: self.y, w: self.diameter, h: self.diameter, color: self.color, segments: self.segments, transform: self.transform }.draw(canvas)
     }
 }
 

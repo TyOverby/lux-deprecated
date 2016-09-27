@@ -18,17 +18,25 @@ fn draw_field(
 
     frame.clear_stencil(stenc);
     frame.draw_to_stencil(stenc.inverse(), |frame| {
-        frame.circle(x, y, 600.0).color(color::BLACK).fill();
+        frame.draw(Circle {
+            x: x,
+            y: y,
+            diameter: 600.0,
+            color: color::BLACK,
+            .. Default::default()
+        }).unwrap();
     });
 
     for x in 0 .. 43 {
         for y in 0 .. 43 {
             let x = x as f32 * DIST_2.sqrt();
             let y = y as f32 * DIST_2.sqrt();
-            frame.rect(x, y, SIZE, SIZE)
-               .rotate_around((SIZE / 2.0, SIZE / 2.0), theta)
-               .color(color)
-               .fill();
+            frame.draw(Square {
+                x: x, y: y,
+                size: SIZE,
+                color: color,
+                transform: Some(*mat4_id().rotate_around((x + SIZE / 2.0, y + SIZE / 2.0), theta))
+            });
         }
     }
 }

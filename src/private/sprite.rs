@@ -20,7 +20,6 @@ use super::color::rgb;
 use super::gfx_integration::{TexVertex, ColorVertex};
 use super::canvas::{Canvas, Rectangle};
 use super::raw::Transform;
-use super::color::Color;
 use super::primitive_canvas::{CachedColorDraw, CachedTexDraw, DrawParamModifier};
 
 use vecmath;
@@ -53,12 +52,11 @@ pub struct Sprite {
 ///
 /// A DrawableTexture can be obtained by calling `as_drawable` on a `Texture`
 /// object.
-pub struct DrawableTexture<'a, D: 'a> {
+pub struct DrawableTexture<'a, D: 'a + StateLike> {
     texture: glium::framebuffer::SimpleFrameBuffer<'a>,
     d: &'a D,
 
     matrix: [[Float; 4]; 4],
-    color: [Float; 4],
 
     color_draw_cache: Option<CachedColorDraw>,
     tex_draw_cache: Option<CachedTexDraw>,
@@ -212,7 +210,6 @@ impl <'a, D: StateLike> DrawableTexture<'a, D> {
             color_draw_cache: None,
             tex_draw_cache: None,
             font_cache: d.state_fields().font_cache.clone(),
-            color: [0.0, 0.0, 0.0, 1.0],
             draw_mod: DrawParamModifier::new()
         }
     }
@@ -227,41 +224,69 @@ impl <'a, D: StateLike> Transform for DrawableTexture<'a, D> {
     }
 }
 
-impl <'a, D> Fetch<Vec<Idx>> for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> Fetch<Vec<Idx>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<Idx>> {
         poison_pool::Item::from_value(vec![])
     }
 }
 
-impl <'a, D> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> Fetch<Vec<TexVertex>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<TexVertex>> {
         poison_pool::Item::from_value(vec![])
     }
 }
 
-impl <'a, D> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> Fetch<Vec<ColorVertex>> for DrawableTexture<'a, D> {
     fn fetch(&self) -> poison_pool::Item<Vec<ColorVertex>> {
         poison_pool::Item::from_value(vec![])
     }
 }
 
-impl <'a, D> StateLike for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> StateLike for DrawableTexture<'a, D> {
     fn state_fields(&self) -> StateFields {
-        unimplemented!();
+        self.d.state_fields()
     }
 }
 
-impl <'a, D> DrawLike for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> DrawLike for DrawableTexture<'a, D> {
     type Surface = glium::framebuffer::SimpleFrameBuffer<'a>;
+
     fn draw_fields(&mut self) -> DrawFields<Self::Surface> {
-        unimplemented!();
+        let StateFields{display, color_shader, texture_shader, ..} = self.d.state_fields();
+
+        DrawFields {
+            display: display,
+            scissor: &mut self.draw_mod.scissor,
+            stencil_state: &mut self.draw_mod.stencil_state,
+            font_cache: &mut self.font_cache,
+            texture_shader: texture_shader,
+            color_shader: color_shader,
+            color_draw_cache: &mut self.color_draw_cache,
+            tex_draw_cache: &mut self.tex_draw_cache,
+            surface: &mut self.texture,
+            matrix: &mut self.matrix,
+        }
+
     }
     fn draw_fields_ref(&self) -> DrawFieldsRef<Self::Surface> {
-        unimplemented!();
+        let StateFields{display, color_shader, texture_shader, ..} = self.d.state_fields();
+
+        DrawFieldsRef {
+            display: display,
+            scissor: &self.draw_mod.scissor,
+            stencil_state: &self.draw_mod.stencil_state,
+            font_cache: &self.font_cache,
+            texture_shader: texture_shader,
+            color_shader: color_shader,
+            color_draw_cache: &self.color_draw_cache,
+            tex_draw_cache: &self.tex_draw_cache,
+            surface: &self.texture,
+            matrix: &self.matrix,
+        }
     }
 }
 
-impl <'a, D> Canvas for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> Canvas for DrawableTexture<'a, D> {
     fn size(&self) -> (Float, Float) {
         use glium::Surface;
         let (w, h) = self.texture.get_dimensions();
@@ -269,7 +294,7 @@ impl <'a, D> Canvas for DrawableTexture<'a, D> {
     }
 }
 
-impl <'a, D> Drop for DrawableTexture<'a, D> {
+impl <'a, D: StateLike> Drop for DrawableTexture<'a, D> {
     fn drop(&mut self) {
         use super::primitive_canvas::PrimitiveCanvas;
         self.flush_draw().unwrap();

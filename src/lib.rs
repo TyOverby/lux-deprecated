@@ -80,7 +80,6 @@ pub mod modifiers {
     pub use private::raw::Transform;
 }
 
-/*
 pub mod game {
     //! A game loop implementation using Lux for windowing and graphics.
     //!
@@ -89,7 +88,7 @@ pub mod game {
     //! implementation
 
     pub use private::game::{Game, GameRunner, Loader};
-}*/
+}
 
 pub mod prelude {
     //! A collection of common traits, structs and functions that are
@@ -106,4 +105,8 @@ pub mod prelude {
 
     pub use LuxError;
     pub use LuxResult;
+
+    pub fn mat4_id() -> [[f32; 4]; 4] {
+        ::vecmath::mat4_id()
+    }
 }
